@@ -1,0 +1,51 @@
+# scene_test.rgd
+
+define y = Character("res://characters/yuko.tres")
+define s = Character("res://characters/saitos.tres")
+
+label scene_test_start:
+    "背景表示テストを開始します。"
+    
+    scene classroom with fade
+    "教室の背景が表示されました。"
+    
+    show y normal at center
+    y "教室にいる優子です。"
+    
+    scene park with fade
+    "場面が公園に変わりました。"
+    
+    show s normal at left  
+    s "公園に来たSaitosです。"
+    
+    menu:
+        "家に移動":
+            jump home_scene
+        "廊下に移動":
+            jump corridor_scene
+        "終了":
+            jump ending
+
+label home_scene:
+    scene home with fade
+    "家の背景になりました。"
+    y "家に帰ってきました。"
+    jump scene_menu
+
+label corridor_scene:
+    scene corridor with fade
+    "廊下の背景になりました。"
+    s "廊下を歩いています。"
+    jump scene_menu
+
+label scene_menu:
+    menu:
+        "最初から":
+            jump scene_test_start
+        "第1章を開始":
+            jump chapter1_start
+        "終了":
+            jump ending
+
+label ending:
+    "背景表示テスト終了です。"

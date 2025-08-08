@@ -1,0 +1,29 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="RenGd"
+run/main_scene="uid://c1x2y3b4a5s6"
+config/features=PackedStringArray("4.4")
+config/icon="res://icon.svg"
+
+[autoload]
+
+AdvScriptPlayer="*res://addons/adv_engine/AdvScriptPlayer.gd"
+VariableManager="*res://addons/adv_engine/managers/VariableManager.gd"
+CharacterManager="*res://addons/adv_engine/managers/CharacterManager.gd"
+UIManager="*res://addons/adv_engine/managers/UIManager.gd"
+TransitionPlayer="*res://addons/adv_engine/managers/TransitionPlayer.gd"
+LabelRegistry="*res://addons/adv_engine/LabelRegistry.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/adv_engine/plugin.cfg")

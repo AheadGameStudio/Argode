@@ -1,0 +1,46 @@
+[gd_scene load_steps=2 format=3 uid="uid://bca0j2urq5u0i"]
+
+[ext_resource type="PackedScene" uid="uid://bvp3ufx6p8qa3" path="res://addons/adv_engine/ui/BaseAdvGameUI.tscn" id="1_base_ui"]
+
+[node name="AutoStartExample" type="Node2D"]
+
+[node name="BackgroundColor" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.2, 0.3, 0.5, 1)
+
+[node name="TitleLabel" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -300.0
+offset_right = 200.0
+offset_bottom = -250.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Auto Start Example"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BaseAdvGameUI" parent="." instance=ExtResource("1_base_ui")]
+
+[node name="InstructionLabel" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 120.0
+theme_override_colors/font_color = Color(1, 1, 1, 0.8)
+theme_override_font_sizes/font_size = 14
+text = "自動起動デモ:
+BaseAdvGameUIが自動で
+scene_test.rgdのstartラベルを実行"
+vertical_alignment = 1

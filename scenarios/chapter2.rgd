@@ -1,0 +1,34 @@
+# chapter2.rgd - 第2章
+
+define teacher = Character("res://characters/teacher.tres")
+
+label chapter2_start:
+    "第2章: 新しい出会い"
+    scene classroom with fade
+    teacher "皆さん、新しいクラスメイトを紹介します。"
+    jump chapter2_introduction
+
+label chapter2_introduction:
+    teacher "自己紹介をお願いします。"
+    
+    menu:
+        "元気よく挨拶":
+            jump chapter2_energetic
+        "控えめに挨拶":
+            jump chapter2_shy
+        "最初に戻る":
+            jump scene_test_start    # scene_test.rgdのラベル！
+
+label chapter2_energetic:
+    "元気よく挨拶しました！"
+    teacher "素晴らしい！"
+    jump chapter2_ending
+
+label chapter2_shy:
+    "控えめに挨拶しました。"
+    teacher "少しずつ慣れていけばいいですよ。"
+    jump chapter2_ending
+
+label chapter2_ending:
+    "第2章終了です。"
+    "デモシナリオを終了します。"

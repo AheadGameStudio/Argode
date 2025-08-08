@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(godot:*)",
+      "Bash(grep:*)",
+      "Bash(where godot)",
+      "Bash(rm:*)"
+    ],
+    "deny": []
+  }
+}

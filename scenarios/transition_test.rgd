@@ -1,0 +1,42 @@
+# トランジション効果テストスクリプト
+# 様々なトランジション効果のデモンストレーション
+
+define y = Character("res://characters/yuko.tres")
+define s = Character("res://characters/saitos.tres")
+
+label transition_test_start:
+    "トランジション効果をテストしてみましょう！"
+    
+    scene classroom with fade
+    "背景がフェードインで表示されました。"
+    
+    show y happy at left with slide_left
+    y "こんにちは！左からスライドインで登場しました。"
+    
+    show s normal at right with fade
+    s "右側からフェードインで登場します。"
+    
+    y "他のトランジションも試してみましょう..."
+    
+    hide y with slide_right
+    "優子が右側にスライドアウトします。"
+    
+    show y happy at center with dissolve
+    y "今度は中央にディゾルブで再登場！"
+    
+    scene park with dissolve
+    "背景がディゾルブで公園に切り替わります。"
+    
+    hide s with fade
+    "Saitosがフェードアウトします。"
+    
+    show s normal at left with slide_up
+    s "下から上にスライドアップで登場！"
+    
+    hide s with slide_down
+    hide y with fade
+    
+    scene home with fade
+    "テスト完了！すべてのトランジションが動作しました。"
+    
+    "Enterキーを押して終了してください。"

@@ -1,0 +1,36 @@
+# chapter1.rgd - 第1章
+
+define protagonist = Character("res://characters/protagonist.tres")
+
+label chapter1_start:
+    "第1章: 新しい始まり"
+    scene school with fade
+    protagonist "学校に到着しました。"
+    jump chapter1_classroom
+
+label chapter1_classroom:
+    scene classroom with fade
+    "教室に入ります。"
+    protagonist "ここが私の新しい教室ですね。"
+    
+    menu:
+        "友達に話しかける":
+            jump chapter1_friend
+        "席に座る":
+            jump chapter1_seat
+        "第2章に進む":
+            jump chapter2_start    # 別ファイルのラベル！
+
+label chapter1_friend:
+    "友達に話しかけました。"
+    protagonist "こんにちは！"
+    jump chapter1_ending
+
+label chapter1_seat:
+    "静かに席に座りました。"
+    protagonist "まずは様子を見よう..."
+    jump chapter1_ending
+
+label chapter1_ending:
+    "第1章終了です。"
+    jump chapter2_start   # 別ファイルへの自動ジャンプ

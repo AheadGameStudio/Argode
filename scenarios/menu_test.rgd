@@ -1,0 +1,38 @@
+# menu_test.rgd
+
+define y = Character("res://characters/yuko.tres")
+define s = Character("res://characters/saitos.tres")
+
+label menu_test_start:
+    set score = 0
+    s "メニューテストシナリオを開始します。"
+    y "どちらを選びますか？"
+    
+    menu:
+        "スコアを増やす":
+            jump increase_score
+        "キャラクターと話す":
+            jump talk_character
+        "ゲームを終了":
+            jump menu_test_ending
+
+label increase_score:
+    set score = score + 10
+    s "スコアを10点増やしました！現在のスコア: {score}"
+    jump another_choice
+
+label talk_character:
+    y "こんにちは！元気ですか？"
+    s "ありがとう、元気だよ。"
+    jump another_choice
+
+label another_choice:
+    "もう一度選択しますか？"
+    menu:
+        "はい":
+            jump menu_test_start
+        "いいえ":
+            jump menu_test_ending
+
+label menu_test_ending:
+    "テスト終了です。最終スコア: {score}"
