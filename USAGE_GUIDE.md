@@ -20,11 +20,11 @@
 #### 手順A: プロジェクト設定で変更
 1. Godotエディタで `Project` → `Project Settings` を開く
 2. `Application` → `Run` → `Main Scene` を変更
-3. `res://design/gui/usage_sample.tscn` を選択
+3. `res://src/scenes/gui/usage_sample.tscn` を選択
 4. ゲームを実行
 
 #### 手順B: シーンを直接実行
-1. Godotエディタで `design/gui/usage_sample.tscn` を開く
+1. Godotエディタで `src/scenes/gui/usage_sample.tscn` を開く
 2. シーンを実行（F6キー）
 
 ## 🎨 UIサンプルの機能
@@ -99,7 +99,7 @@ label ending:
 ## 🛠️ カスタマイズ
 
 ### 独自UIの作成
-1. `design/gui/AdvGameUI.tscn` をコピー
+1. `src/scenes/gui/AdvGameUI.tscn` をコピー
 2. レイアウト・色・フォントを変更  
 3. `setup_ui_manager_integration()` メソッドを実装
 4. メインシーンで使用
@@ -110,8 +110,8 @@ label ending:
 3. `display_name` と `name_color` を設定
 
 ### カスタム画像素材
-- 背景: `images/backgrounds/背景名.png`
-- キャラクター: `images/characters/キャラID_表情.png`
+- 背景: `assets/images/backgrounds/背景名.png`
+- キャラクター: `assets/images/characters/キャラID_表情.png`
 
 ## 🎯 完成済み機能一覧
 

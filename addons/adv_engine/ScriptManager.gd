@@ -11,7 +11,13 @@ var global_label_map: Dictionary = {}  # label -> {"file": filename, "line": lin
 var script_player: Node
 
 func _ready():
-	script_player = get_node("/root/AdvScriptPlayer")
+	var adv_system = get_node("/root/AdvSystem")
+	if not adv_system or not adv_system.Player:
+		push_error("❌ ScriptManager: AdvSystem.Player not available")
+		return
+		
+	script_player = adv_system.Player
+	print("📚 ScriptManager: Connected to AdvSystem.Player")
 
 ## 1. 事前読み込み方式
 func preload_scripts(script_paths: Array):

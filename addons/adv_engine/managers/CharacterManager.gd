@@ -3,15 +3,15 @@ extends Node
 @export var character_container: Node2D
 var character_sprites: Dictionary = {}
 var background_sprite: Sprite2D
-var transition_player: Node
+# v2: AdvSystem統合により、直接参照に変更
+var transition_player  # TransitionPlayer
+var variable_manager  # VariableManager - AdvSystemから設定される
+var character_defs  # CharacterDefinitionManager - v2新機能
+var layer_manager  # LayerManager - v2新機能
 
 func _ready():
-	print("👤 CharacterManager initialized")
-	transition_player = get_node("/root/TransitionPlayer")
-	if transition_player:
-		print("🎬 TransitionPlayer found successfully")
-	else:
-		print("❌ TransitionPlayer not found!")
+	print("👤 CharacterManager initialized (v2)")
+	# v2: 参照はAdvSystemの_setup_manager_references()で設定される
 	
 	# Create character container if not assigned
 	if not character_container:
@@ -35,19 +35,30 @@ func _ready():
 func show_character(char_id: String, expression: String, position: String, transition: String):
 	print("🧍‍♀️ Showing: ", char_id, " (", expression, ") at ", position, " with ", transition)
 	
-	var variable_manager = get_node("/root/VariableManager")
-	if not variable_manager:
-		print("❌ VariableManager not found")
-		return
+	# v2: CharacterDefinitionManagerから定義を取得を試行
+	var char_data = null
+	var display_name = char_id  # デフォルト表示名
 	
-	# Get character data
-	var char_data = variable_manager.get_character_data(char_id)
-	if not char_data:
+	if character_defs and character_defs.has_character(char_id):
+		# v2新式定義を使用
+		var definition = character_defs.get_character_definition(char_id)
+		display_name = definition.get("display_name", char_id)
+		char_data = definition
+		print("✅ v2 Character data loaded for: ", char_id, " -> ", display_name)
+	elif variable_manager and variable_manager.character_defs.has(char_id):
+		# v1互換のdefine文を使用
+		char_data = variable_manager.get_character_data(char_id)
+		if char_data and char_data.has("display_name"):
+			display_name = char_data.display_name
+		print("✅ v1 Character data loaded for: ", char_id, " -> ", display_name)
+	else:
+		# どちらの定義もない場合
 		print("❌ Character data not found for: ", char_id)
-		print("❌ Available characters in variable manager: ", variable_manager.character_defs.keys())
+		var v1_chars = variable_manager.character_defs.keys() if variable_manager else []
+		var v2_chars = character_defs.get_all_character_ids() if character_defs else []
+		print("❌ Available v1 characters: ", v1_chars)
+		print("❌ Available v2 characters: ", v2_chars)
 		return
-	
-	print("✅ Character data loaded for: ", char_id, " -> ", char_data.display_name)
 	
 	# Create or get existing sprite
 	var sprite_key = char_id
@@ -129,7 +140,7 @@ func show_scene(scene_name: String, transition: String):
 		_setup_background()
 	
 	# Try to load background image
-	var image_path = "res://images/backgrounds/" + scene_name + ".png"
+	var image_path = "res://assets/images/backgrounds/" + scene_name + ".png"
 	var texture = load(image_path)
 	
 	if texture:
@@ -190,8 +201,8 @@ func _create_background_placeholder(scene_name: String) -> ImageTexture:
 
 func _load_character_image(sprite: Sprite2D, char_id: String, expression: String):
 	# Try to load character image
-	# Format: res://images/characters/{char_id}_{expression}.png
-	var image_path = "res://images/characters/" + char_id + "_" + expression + ".png"
+	# Format: res://assets/images/characters/{char_id}_{expression}.png
+	var image_path = "res://assets/images/characters/" + char_id + "_" + expression + ".png"
 	
 	var texture = load(image_path)
 	if texture:

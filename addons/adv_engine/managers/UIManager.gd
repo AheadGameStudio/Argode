@@ -5,6 +5,11 @@ var text_label: Control  # Label または RichTextLabel に対応
 var choice_container: VBoxContainer
 var current_sample_ui: Node = null  # 現在のサンプルUI参照
 
+# v2: AdvSystem統合により、直接参照に変更
+var script_player  # AdvScriptPlayer - AdvSystemから設定される
+var character_defs  # CharacterDefinitionManager - v2新機能
+var layer_manager  # LayerManager - v2新機能
+
 func _ready():
 	print("🎨 UIManager initialized")
 	
@@ -12,9 +17,20 @@ func _ready():
 	_check_for_sample_ui()
 
 func show_message(char_data, message: String):
-	# コンソール出力は常に行う
+	# v2: char_dataがnullの場合、char_idから定義を取得を試行
+	var display_name = ""
+	var name_color = Color.WHITE
+	
 	if char_data:
-		print("💬 [", char_data.display_name, "] ", message)
+		# v1: すでにchar_dataがある場合（リソースまたは定義）
+		if char_data.has("display_name"):
+			display_name = char_data.display_name
+		if char_data.has("name_color"):
+			name_color = char_data.name_color
+	
+	# コンソール出力
+	if display_name:
+		print("💬 [", display_name, "] ", message)
 	else:
 		print("💬 ", message)
 	
@@ -22,19 +38,13 @@ func show_message(char_data, message: String):
 	var sample_ui = _find_adv_game_ui(get_tree().current_scene)
 	if sample_ui and sample_ui.has_method("show_message"):
 		current_sample_ui = sample_ui
-		var char_name = char_data.display_name if char_data else ""
-		var char_color = char_data.name_color if char_data else Color.WHITE
-		sample_ui.show_message(char_name, message, char_color)
+		sample_ui.show_message(display_name, message, name_color)
 		return
 	
 	# 基本UIでの表示処理
-	if char_data:
-		if name_label:
-			name_label.text = char_data.display_name
-			name_label.modulate = char_data.name_color
-	else:
-		if name_label:
-			name_label.text = ""
+	if name_label:
+		name_label.text = display_name
+		name_label.modulate = name_color
 	
 	if text_label:
 		# RichTextLabel と Label の両方に対応
@@ -75,7 +85,6 @@ func _on_choice_button_pressed(choice_index: int):
 			child.queue_free()
 	
 	# Notify script player
-	var script_player = get_node("/root/AdvScriptPlayer")
 	if script_player:
 		script_player.on_choice_selected(choice_index)
 
@@ -158,3 +167,116 @@ func handle_input_for_adv_engine(event) -> bool:
 			return false  # 入力を消費しない（ADVエンジンが処理）
 	
 	return false  # その他の入力は処理しない
+
+# === v2新機能: AdvScreenスタック管理 ===
+
+var screen_stack: Array = []  # Array[AdvScreen] - 型を実行時に確認
+var current_screen = null  # AdvScreen - 型を実行時に確認
+var screen_container: Control = null
+
+signal screen_pushed(screen)  # AdvScreen
+signal screen_popped(screen, return_value: Variant)  # screen: AdvScreen
+signal screen_stack_changed()
+
+func _setup_screen_container():
+	"""スクリーン表示用のコンテナを作成"""
+	if screen_container:
+		return
+	
+	# メインシーンにスクリーンコンテナを追加
+	var main_scene = get_tree().current_scene
+	if main_scene:
+		screen_container = Control.new()
+		screen_container.name = "ScreenContainer"
+		screen_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		main_scene.add_child(screen_container)
+		print("📱 Screen container created")
+
+func call_screen(screen_path: String, parameters: Dictionary = {}, caller = null) -> Variant:  # caller: AdvScreen
+	"""画面を呼び出す（スクリーンスタック使用）"""
+	print("📱 Calling screen: ", screen_path, " with params: ", parameters)
+	
+	_setup_screen_container()
+	
+	# スクリーンをロード
+	var screen_scene = load(screen_path)
+	if not screen_scene:
+		push_error("❌ UIManager: Failed to load screen: " + screen_path)
+		return null
+	
+	var screen_instance = screen_scene.instantiate()
+	# AdvScreen型チェック（実行時）
+	if not screen_instance.get_script() or not screen_instance.has_method("close_screen"):
+		push_error("❌ UIManager: Screen is not an AdvScreen: " + screen_path)
+		screen_instance.queue_free()
+		return null
+	
+	# 現在のスクリーンを非アクティブに
+	if current_screen:
+		current_screen.hide_screen()
+		screen_stack.append(current_screen)
+	
+	# 新しいスクリーンを設定
+	current_screen = screen_instance
+	screen_container.add_child(screen_instance)
+	screen_instance.parent_screen = caller
+	
+	# スクリーンを表示
+	screen_instance.show_screen(parameters)
+	
+	# シグナル発火
+	screen_pushed.emit(screen_instance)
+	screen_stack_changed.emit()
+	
+	# スクリーンが閉じられるまで待機
+	var return_value = await screen_instance.screen_closed
+	
+	return return_value
+
+func close_screen(screen, return_value: Variant = null):  # screen: AdvScreen
+	"""画面を閉じる（スクリーンスタックから削除）"""
+	if screen != current_screen:
+		push_warning("⚠️ UIManager: Trying to close non-current screen")
+		return
+	
+	print("📱 Closing screen: ", screen.screen_name, " with return: ", return_value)
+	
+	# 現在のスクリーンを削除
+	current_screen = null
+	screen.queue_free()
+	
+	# 前のスクリーンを復元
+	if screen_stack.size() > 0:
+		current_screen = screen_stack.pop_back()
+		current_screen.show_screen()
+		print("📱 Restored previous screen: ", current_screen.screen_name)
+	
+	# シグナル発火
+	screen_popped.emit(screen, return_value)
+	screen_stack_changed.emit()
+
+func get_current_screen():  # -> AdvScreen
+	"""現在のスクリーンを取得"""
+	return current_screen
+
+func get_screen_stack() -> Array:  # Array[AdvScreen]
+	"""スクリーンスタックを取得"""
+	return screen_stack.duplicate()
+
+func clear_screen_stack():
+	"""スクリーンスタックをクリア"""
+	# 全スクリーンを閉じる
+	while current_screen:
+		var screen = current_screen
+		close_screen(screen)
+	
+	screen_stack.clear()
+	screen_stack_changed.emit()
+	print("📱 Screen stack cleared")
+
+func get_screen_stack_depth() -> int:
+	"""スクリーンスタックの深さを取得"""
+	var depth = screen_stack.size()
+	if current_screen:
+		depth += 1
+	return depth

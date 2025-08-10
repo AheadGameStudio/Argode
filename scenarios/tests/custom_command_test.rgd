@@ -1,0 +1,108 @@
+# custom_command_test.rgd
+# v2新機能: カスタムコマンドシグナル発行システムのテスト用シナリオ
+
+# キャラクター定義
+character y "Yuko" color=#ffaa88
+character s "Saitos" color=#88aaff
+
+# 画像定義
+image yuko happy "res://images/yuko_happy.png"
+image yuko normal "res://images/yuko_normal.png"
+image saitos happy "res://images/saitos_happy.png"
+image saitos normal "res://images/saitos_normal.png"
+
+# 背景定義
+image bg school "res://bg/school.jpg"
+image bg park "res://bg/park.jpg"
+
+label custom_command_test_start:
+
+"カスタムコマンドシステムのテストを開始します。"
+
+# 基本的なカスタムコマンド
+window shake intensity=3.0 duration=0.8
+
+"ウィンドウが揺れましたか？"
+
+# カメラ演出
+camera_shake 2.5 0.5 type=horizontal
+
+"カメラが横に揺れる演出です。"
+
+# 画面フラッシュ
+screen_flash white 0.3
+
+"白いフラッシュが起こりました。"
+
+# 待機コマンド
+wait 1.5
+
+"1.5秒待機しました。"
+
+# キャラクター表示
+scene bg school with fade
+show y happy at center
+
+y "こんにちは！カスタムコマンドのテストをしているよ。"
+
+# 音響効果
+sound_effect button_click volume=0.8
+
+y "ボタンクリック音が鳴りました。"
+
+# バイブレーション（モバイル向け）
+vibrate pattern=short
+
+y "短いバイブレーションです（モバイルでのみ動作）。"
+
+# カスタムトランジション
+custom_transition spiral speed=1.5 direction=clockwise
+
+y "スパイラル型のカスタムトランジションです。"
+
+# 複数パラメータを持つコマンド
+window fullscreen enable=true
+
+y "フルスクリーンモードに切り替えました。"
+
+wait 2.0
+
+window fullscreen enable=false
+
+y "ウィンドウモードに戻しました。"
+
+# 文字列パラメータを含むコマンド
+sound_effect file="explosion.ogg" volume=0.6 loop=false
+
+y "爆発音を再生しました（ファイル名指定）。"
+
+# 位置パラメータ形式
+camera_shake 4.0 1.0 both
+
+y "強いカメラシェイクです（位置パラメータ形式）。"
+
+# 未知のカスタムコマンド（汎用処理のテスト）
+mystery_command arg1="test" arg2=42 arg3=true
+
+y "未知のコマンドを実行しました。ログを確認してください。"
+
+# 色指定テスト
+screen_flash color=red duration=0.4
+
+y "赤いフラッシュです。"
+
+screen_flash #00ff00 0.3
+
+y "緑のフラッシュです（hex形式）。"
+
+# 複雑なパラメータテスト
+custom_transition wave amplitude=3.0 frequency=2.0 direction=vertical duration=1.0
+
+y "波形のカスタムトランジション（複数パラメータ）です。"
+
+y "カスタムコマンドのテストが完了しました！"
+y "コンソールのログでシグナルの発行状況を確認してください。"
+
+"テスト終了です。"
+
+return

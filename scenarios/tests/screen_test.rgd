@@ -1,0 +1,70 @@
+# screen_test.rgd
+# v2新機能: AdvScreenシステムのテスト用スクリプト
+
+label screen_test_start:
+    "📱 AdvScreenシステムのテストを開始します！"
+    
+    # スクリーン呼び出しの基本テスト
+    "call_screenコマンドで設定画面を呼び出してみます..."
+    # call_screen "res://screens/settings_screen.tscn" title="設定画面", mode="test"
+    
+    # 現在はサンプル画面がないため、通常のシナリオを続行
+    "📱 AdvScreenの基本機能："
+    "• AdvScreenを継承したカスタム画面の作成"
+    "• call_screenでの画面呼び出し"
+    "• 画面スタック管理"
+    "• 画面間でのパラメータ受け渡し"
+    "• close_screenでの戻り値設定"
+    
+    menu:
+        "画面システムについて詳しく":
+            jump screen_details
+        "従来のGUIシステムとの比較":
+            jump gui_comparison
+        "テスト終了":
+            jump screen_test_end
+
+label screen_details:
+    "📱 AdvScreenシステムの詳細："
+    
+    "v2では、UI画面はAdvScreenクラスを継承します。"
+    "これにより以下の機能が利用できます："
+    
+    "• シナリオとの直接連携"
+    "• 画面スタック管理（親画面への復帰）"
+    "• パラメータ受け渡し機能"
+    "• 戻り値による結果通知"
+    
+    "例："
+    "call_screen \"res://ui/inventory.tscn\" player=\"main\", category=\"items\""
+    "close_screen \"selected_item_id\""
+    
+    jump screen_test_end
+
+label gui_comparison:
+    "🔄 従来システムとの比較："
+    
+    "【v1 BaseAdvGameUI】"
+    "• CanvasLayerベースの固定UI"
+    "• UIManagerとの手動連携が必要"
+    "• 単一画面での運用"
+    
+    "【v2 AdvScreen】"  
+    "• Controlベースの柔軟なUI構造"
+    "• AdvSystemとの自動統合"
+    "• 画面スタック管理"
+    "• シナリオとの双方向通信"
+    
+    "移行により、より柔軟で高機能なUI構築が可能になりました。"
+    
+    jump screen_test_end
+
+label screen_test_end:
+    "✅ AdvScreenシステムのテストが完了しました！"
+    
+    "実際のプロジェクトでは："
+    "1. AdvScreenを継承したカスタム画面を作成"
+    "2. call_screenでの画面遷移を実装"  
+    "3. 必要に応じて戻り値での結果処理"
+    
+    "これで次世代のUI管理システムが利用可能です。🎉"

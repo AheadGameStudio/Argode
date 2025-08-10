@@ -1,27 +1,39 @@
 @tool
 extends EditorPlugin
 
-const AUTOLOAD_SCRIPT_PLAYER = "AdvScriptPlayer"
-const AUTOLOAD_VARIABLE_MANAGER = "VariableManager"
-const AUTOLOAD_CHARACTER_MANAGER = "CharacterManager"
-const AUTOLOAD_UI_MANAGER = "UIManager"
-const AUTOLOAD_TRANSITION_PLAYER = "TransitionPlayer"
-const AUTOLOAD_LABEL_REGISTRY = "LabelRegistry"
+# v2設計: 単一オートロード
+const AUTOLOAD_ADV_SYSTEM = "AdvSystem"
+
+# v1互換性: 既存のオートロードを削除する場合のリスト
+const V1_AUTOLOADS = [
+	"AdvScriptPlayer",
+	"VariableManager", 
+	"CharacterManager",
+	"UIManager",
+	"TransitionPlayer",
+	"LabelRegistry"
+]
 
 func _enter_tree():
-	# Add autoloads for the core systems
-	add_autoload_singleton(AUTOLOAD_SCRIPT_PLAYER, "res://addons/adv_engine/AdvScriptPlayer.gd")
-	add_autoload_singleton(AUTOLOAD_VARIABLE_MANAGER, "res://addons/adv_engine/managers/VariableManager.gd")
-	add_autoload_singleton(AUTOLOAD_CHARACTER_MANAGER, "res://addons/adv_engine/managers/CharacterManager.gd")
-	add_autoload_singleton(AUTOLOAD_UI_MANAGER, "res://addons/adv_engine/managers/UIManager.gd")
-	add_autoload_singleton(AUTOLOAD_TRANSITION_PLAYER, "res://addons/adv_engine/managers/TransitionPlayer.gd")
-	add_autoload_singleton(AUTOLOAD_LABEL_REGISTRY, "res://addons/adv_engine/LabelRegistry.gd")
+	print("🔧 Installing Ren' Gd ADV Engine v2...")
+	
+	# v1のオートロードがあれば削除
+	_remove_v1_autoloads()
+	
+	# v2の単一オートロードを追加
+	add_autoload_singleton(AUTOLOAD_ADV_SYSTEM, "res://addons/adv_engine/AdvSystem.gd")
+	print("✅ AdvSystem autoload installed")
 
 func _exit_tree():
-	# Remove autoloads when plugin is disabled
-	remove_autoload_singleton(AUTOLOAD_SCRIPT_PLAYER)
-	remove_autoload_singleton(AUTOLOAD_VARIABLE_MANAGER)
-	remove_autoload_singleton(AUTOLOAD_CHARACTER_MANAGER)
-	remove_autoload_singleton(AUTOLOAD_UI_MANAGER)
-	remove_autoload_singleton(AUTOLOAD_TRANSITION_PLAYER)
-	remove_autoload_singleton(AUTOLOAD_LABEL_REGISTRY)
+	print("🗑️ Uninstalling Ren' Gd ADV Engine v2...")
+	
+	# v2オートロードを削除
+	remove_autoload_singleton(AUTOLOAD_ADV_SYSTEM)
+	
+	# 念のため、v1オートロードも削除
+	_remove_v1_autoloads()
+
+func _remove_v1_autoloads():
+	"""v1の古いオートロードを削除（マイグレーション対応）"""
+	for autoload_name in V1_AUTOLOADS:
+		remove_autoload_singleton(autoload_name)

@@ -1,12 +1,12 @@
 extends Node2D
 
-@onready var ui = $AdvGameUI  # AdvGameUI (extends BaseAdvGameUI)
+@onready var ui = $AdvGameUI  # AdvGameUI (v2 AdvScreen-based)
 
 func _ready():
-	print("🎮 Usage Sample Scene started")
+	print("🎮 Usage Sample Scene started (v2 AdvScreen)")
 	
-	# UIManagerとの連携を設定
-	ui.setup_ui_manager_integration()
+	# v2では自動でUIManagerとの連携が設定されます
+	# 手動での setup_ui_manager_integration() 呼び出しは不要
 	
 	# Wait a bit for initialization
 	await get_tree().process_frame
@@ -16,12 +16,10 @@ func _ready():
 
 func show_demo_sequence():
 	"""デモ用のメッセージシーケンスを表示"""
-	print("🎮 Demo sequence disabled - use manual interaction")
+	print("🎮 Demo sequence disabled - AdvGameUI auto-script will run instead")
 	
-	# デモ用の初期メッセージのみ表示
-	ui.show_message("システム", "UIサンプルデモです。\\n• EnterキーまたはSpaceキー: タイプライター中=スキップ、完了後=新しいメッセージを表示", Color.CYAN)
-	
-	# 自動進行は停止 - ユーザーの手動操作に任せる
+	# デモメッセージを無効化 - AdvGameUIの自動スクリプト機能に任せる
+	# ui.show_message("システム", "UIサンプルデモです。\\n• EnterキーまたはSpaceキー: タイプライター中=スキップ、完了後=新しいメッセージを表示", Color.CYAN)
 
 func show_demo_choices():
 	"""デモ用の選択肢を表示"""
@@ -95,10 +93,9 @@ func start_adv_engine_test():
 	
 	await get_tree().create_timer(2.0).timeout
 	
-	# 実際のシナリオを実行
-	var script_player = get_node("/root/AdvScriptPlayer")
-	if script_player:
-		script_player.load_script("res://scenarios/scene_test.rgd")
-		script_player.play_from_label("scene_test_start")
+	# 実際のシナリオを実行 (v2)
+	var adv_system = get_node("/root/AdvSystem")
+	if adv_system and adv_system.Player:
+		adv_system.start_script("res://scenarios/v2_test.rgd", "v2_test_start")
 	else:
-		ui.show_message("エラー", "ADVエンジンが見つかりません", Color.RED)
+		ui.show_message("エラー", "AdvSystemが見つかりません", Color.RED)

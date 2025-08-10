@@ -1,0 +1,48 @@
+# simple_custom_test.rgd
+# 単純なカスタムコマンドテスト
+
+# 背景画像定義
+image bg_classroom "res://bg/classroom.jpg"
+image bg_park "res://bg/park.jpg"
+
+label simple_custom_test_start:
+
+# 背景を表示
+scene bg_classroom with fade
+
+"カスタムコマンドテスト開始"
+"背景が表示されました。これからシェイク効果をテストします。"
+
+# ウィンドウシェイクコマンド
+window shake intensity=5.0 duration=1.0
+
+"ウィンドウシェイクを実行しました"
+
+# カメラシェイクコマンド  
+camera_shake 3.0 0.5 horizontal
+
+"カメラシェイクを実行しました（画面が横に揺れました）"
+
+# 画面フラッシュコマンド
+screen_flash color=white duration=0.5
+
+"白いフラッシュを実行しました"
+
+# 赤いフラッシュ
+screen_flash color=red duration=0.3
+
+"赤いフラッシュを実行しました"
+
+# カスタムトランジション
+custom_transition spiral speed=1.5 direction=clockwise
+
+"スパイラル回転を実行しました"
+
+# 完全にカスタムなコマンド
+my_custom_effect power=10 color=red
+
+"カスタムエフェクトを実行しました（ログを確認してください）"
+
+"テスト終了"
+
+return

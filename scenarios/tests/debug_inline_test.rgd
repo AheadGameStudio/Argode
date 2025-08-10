@@ -1,0 +1,20 @@
+# debug_inline_test.rgd  
+# インラインタグのデバッグ用テスト
+
+# キャラクター定義
+character y "Yuko" color=#ffaa88
+
+# 画像定義  
+image bg school "res://bg/school.jpg"
+
+label debug_inline_test_start:
+
+"インラインタグのテスト：{w=1.0}待機タグです。"
+
+y "こんにちは！赤いBBCode文字と{shake}インラインシェイク{/shake}のテストです。"
+
+y "簡単な色テスト：{icolor=blue}青{/icolor}文字。"
+
+"テスト完了しました。"
+
+return

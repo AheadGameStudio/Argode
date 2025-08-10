@@ -1,0 +1,48 @@
+# inline_tag_test.rgd  
+# v2新機能: カスタムインラインタグ解析システムのテスト用シナリオ
+
+# キャラクター定義
+character y "Yuko" color=#ffaa88
+character s "Saitos" color=#88aaff
+
+# 画像定義  
+image yuko happy "res://images/yuko_happy.png"
+image yuko normal "res://images/yuko_normal.png"
+image bg school "res://bg/school.jpg"
+
+label inline_tag_test_start:
+
+"インラインタグシステムのテストを開始します。"
+
+scene bg school
+show y happy at center
+
+y "こんにちは！{w=1.0}今日はインラインタグのテストをするよ。"
+
+y "まずは{icolor=red}赤い文字{/icolor}で色の変更テストです。"
+
+y "次は{isize=+3}大きな文字{/isize}と{isize=-2}小さな文字{/isize}のサイズテストです。"
+
+y "速度テストも見てみよう。{speed=slow}ゆっくりとした文字{speed=normal}と{speed=fast}速い文字{speed=normal}の比較です。"
+
+y "シェイク効果のテスト：{shake}この部分が揺れるはず！{/shake}どうかな？"
+
+y "待機タグのテスト：ここで{w=2.0}2秒待機します。{w=0.5}0.5秒も待機しました。"
+
+y "ポーズタグのテスト：{p}ここでクリック待ちになります。続きをどうぞ。"
+
+y "複合タグのテスト：{icolor=blue}{isize=+2}{shake}青くて大きくて揺れる文字！{/shake}{/isize}{/icolor}"
+
+y "パラメータ付きタグ：{shake intensity=5 duration=1.0}強烈シェイク！{/shake}"
+
+y "{icolor=green}緑の文字で{speed=slow}ゆっくりと{w=0.8}待機もして{speed=fast}最後は速く！{/icolor}{speed=normal}"
+
+y "エフェクトクリア：{icolor=red}{isize=+4}大きな赤い文字{clear}ここで全リセット。"
+
+y "カスタムタグのテスト：{blink}点滅効果{/blink}や{rainbow}レインボー効果{/rainbow}（未実装）"
+
+y "最後は{icolor=gold}{isize=+1}✨特別な演出✨{/icolor}{/isize}でフィニッシュ！"
+
+"インラインタグのテストが完了しました！コンソールでタグ解析ログを確認してください。"
+
+return

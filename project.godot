@@ -17,12 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-AdvScriptPlayer="*res://addons/adv_engine/AdvScriptPlayer.gd"
-VariableManager="*res://addons/adv_engine/managers/VariableManager.gd"
-CharacterManager="*res://addons/adv_engine/managers/CharacterManager.gd"
-UIManager="*res://addons/adv_engine/managers/UIManager.gd"
-TransitionPlayer="*res://addons/adv_engine/managers/TransitionPlayer.gd"
-LabelRegistry="*res://addons/adv_engine/LabelRegistry.gd"
+AdvSystem="*res://addons/adv_engine/AdvSystem.gd"
 
 [editor_plugins]
 

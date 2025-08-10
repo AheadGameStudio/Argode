@@ -55,19 +55,27 @@ func evaluate_condition(expression_str: String) -> bool:
 		return false
 
 func expand_variables(text: String) -> String:
-	var regex = RegEx.new()
-	regex.compile("\\{([^}]+)\\}")
-	
 	var result = text
-	var matches = regex.search_all(text)
 	
-	for match in matches:
+	# v2新構文: [variable] 形式の変数展開をサポート
+	var regex_v2 = RegEx.new()
+	regex_v2.compile("\\[([^\\]]+)\\]")
+	var matches_v2 = regex_v2.search_all(text)
+	
+	for match in matches_v2:
 		var var_name = match.get_string(1)
 		if global_vars.has(var_name):
 			var value = str(global_vars[var_name])
-			result = result.replace("{" + var_name + "}", value)
+			result = result.replace("[" + var_name + "]", value)
+			print("🔄 Variable expanded: [", var_name, "] -> ", value)
 		else:
 			push_warning("⚠️ Undefined variable in text: " + var_name)
+	
+	# v2設計: {} 形式はインラインタグ専用のため、変数展開では処理しない
+	# v1互換が必要な場合は、明示的に enable_legacy_variable_syntax フラグで制御
+	
+	# 注意: v2では {} はインラインタグ（{shake}, {color=red}等）に使用
+	# 変数展開は [] 形式のみ（[variable_name]）をサポート
 	
 	return result
 

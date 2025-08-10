@@ -303,7 +303,9 @@ func _show_duplicate_label_errors():
 	print("=".repeat(60))
 	
 	# UIManagerに通知（エラーダイアログ表示用）
-	var ui_manager = get_node_or_null("/root/UIManager")
+	# v2: AdvSystem経由でUIManagerにアクセス
+	var adv_system = get_node("/root/AdvSystem")
+	var ui_manager = adv_system.UIManager if adv_system else null
 	if ui_manager and ui_manager.has_method("show_error_message"):
 		var error_message = _create_duplicate_label_error_message()
 		ui_manager.show_error_message("重複ラベルエラー", error_message)

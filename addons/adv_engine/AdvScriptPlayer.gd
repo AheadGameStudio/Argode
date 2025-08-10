@@ -1,6 +1,8 @@
 extends Node
 
 signal script_finished
+# v2新機能: カスタムコマンドシグナル発行システム
+signal custom_command_executed(command_name: String, parameters: Dictionary, line: String)
 
 var script_lines: PackedStringArray = []
 var label_map: Dictionary = {}
@@ -25,24 +27,32 @@ var regex_choice: RegEx
 var regex_hide: RegEx
 var regex_jump_file: RegEx
 
-var variable_manager: Node
-var ui_manager: Node
+# v2新機能: 定義ステートメント用正規表現
+var regex_character_stmt: RegEx
+var regex_image_stmt: RegEx
+var regex_audio_stmt: RegEx
+var regex_shader_stmt: RegEx
+
+# v2新機能: スクリーン関連正規表現
+var regex_call_screen: RegEx
+var regex_close_screen: RegEx
+
+# v2新機能: カスタムコマンド検出用正規表現
+var regex_custom_command: RegEx
+
+# v2: AdvSystem統合により、直接参照に変更
+var character_manager  # CharacterManager
+var ui_manager  # UIManager
+var variable_manager  # VariableManager
+var transition_player  # TransitionPlayer
+var layer_manager  # LayerManager (v2新機能)
+var label_registry  # LabelRegistry
 var script_manager: Node
-var label_registry: Node
 
 func _ready():
 	_compile_regex()
-	variable_manager = get_node("/root/VariableManager")
-	ui_manager = get_node("/root/UIManager")
-	
-	# LabelRegistryをautoloadから取得
-	label_registry = get_node_or_null("/root/LabelRegistry")
-	if label_registry:
-		print("✅ LabelRegistry connected")
-	else:
-		print("⚠️ LabelRegistry not found - cross-file jumps disabled")
-	
-	print("📖 AdvScriptPlayer initialized")
+	# v2: 参照はAdvSystemの_setup_manager_references()で設定される
+	print("📖 AdvScriptPlayer initialized (v2)")
 
 func _compile_regex():
 	regex_label = RegEx.new()
@@ -70,7 +80,7 @@ func _compile_regex():
 	regex_show.compile("^show\\s+(?<char_id>\\w+)\\s+(?<expression>\\w+)(?:\\s+at\\s+(?<position>\\w+))?(?:\\s+with\\s+(?<transition>\\w+))?")
 	
 	regex_scene = RegEx.new()
-	regex_scene.compile("^scene\\s+(?<scene_name>\\w+)(?:\\s+with\\s+(?<transition>\\w+))?")
+	regex_scene.compile("^scene\\s+(?<scene_name>[\\w\\s]+?)(?:\\s+with\\s+(?<transition>\\w+))?$")
 	
 	regex_define = RegEx.new()
 	regex_define.compile("^define\\s+(?<id>\\w+)\\s*=\\s*Character\\(\"(?<resource_path>[^\"]+)\"\\)")
@@ -89,6 +99,30 @@ func _compile_regex():
 	
 	regex_jump_file = RegEx.new()
 	regex_jump_file.compile("^jump_to\\s+(?<filename>[\\w.]+)\\s+(?<label>\\w+)")
+	
+	# v2新機能: 定義ステートメント用正規表現
+	regex_character_stmt = RegEx.new()
+	regex_character_stmt.compile("^character\\s+")
+	
+	regex_image_stmt = RegEx.new()
+	regex_image_stmt.compile("^image\\s+")
+	
+	regex_audio_stmt = RegEx.new()
+	regex_audio_stmt.compile("^audio\\s+")
+	
+	regex_shader_stmt = RegEx.new()
+	regex_shader_stmt.compile("^shader\\s+")
+	
+	# v2新機能: スクリーン関連正規表現
+	regex_call_screen = RegEx.new()
+	regex_call_screen.compile("^call_screen\\s+(?<screen_path>[^\\s]+)(?:\\s+(?<parameters>.*))?")
+	
+	regex_close_screen = RegEx.new()
+	regex_close_screen.compile("^close_screen(?:\\s+(?<return_value>.*))?$")
+	
+	# v2新機能: カスタムコマンド検出用正規表現（基本的な形式をキャッチ）
+	regex_custom_command = RegEx.new()
+	regex_custom_command.compile("^(?<command>\\w+)(?:\\s+(?<parameters>.*))?$")
 
 func load_script(path: String):
 	var file = FileAccess.open(path, FileAccess.READ)
@@ -113,7 +147,10 @@ func _preparse_labels():
 		if define_match:
 			var char_id = define_match.get_string("id")
 			var resource_path = define_match.get_string("resource_path")
-			variable_manager.set_character_def(char_id, resource_path)
+			if variable_manager:
+				variable_manager.set_character_def(char_id, resource_path)
+			else:
+				print("⚠️ AdvScriptPlayer: VariableManager not available for define processing")
 	
 	# Second pass: find all labels
 	for i in range(script_lines.size()):
@@ -180,6 +217,23 @@ func _tick():
 func _parse_and_execute(line: String) -> bool:
 	var regex_match: RegExMatch
 	
+	# v2新機能: 定義ステートメント処理
+	if regex_character_stmt.search(line):
+		_handle_character_statement(line)
+		return false
+	
+	if regex_image_stmt.search(line):
+		_handle_image_statement(line)
+		return false
+	
+	if regex_audio_stmt.search(line):
+		_handle_audio_statement(line)
+		return false
+	
+	if regex_shader_stmt.search(line):
+		_handle_shader_statement(line)
+		return false
+	
 	# label (skip during execution)
 	regex_match = regex_label.search(line)
 	if regex_match:
@@ -195,13 +249,28 @@ func _parse_and_execute(line: String) -> bool:
 	if regex_match:
 		var char_id = regex_match.get_string("char_id")
 		var message = regex_match.get_string("message")
+		# v2新機能: インラインタグ処理は変数展開の前に行う
+		# インラインタグ（{tag}）と変数展開（[var]）を区別
+		# 注意: インラインタグ処理はUIManager/TypewriterTextで行うため、ここでは変数展開のみ
 		message = variable_manager.expand_variables(message)
 		
 		var char_data = null
 		if char_id:
-			char_data = variable_manager.get_character_data(char_id)
+			# v2: AdvSystemのCharDefsから定義を取得を試行
+			var adv_system = get_node("/root/AdvSystem")
+			if adv_system and adv_system.CharDefs and adv_system.CharDefs.has_character(char_id):
+				char_data = adv_system.CharDefs.get_character_definition(char_id)
+			else:
+				# v1互換: VariableManagerからの取得
+				char_data = variable_manager.get_character_data(char_id)
 		
-		ui_manager.show_message(char_data, message)
+		# v2デバッグ: UIManager接続確認
+		if ui_manager:
+			print("💬 AdvScriptPlayer: Showing message via UIManager")
+			ui_manager.show_message(char_data, message)
+		else:
+			print("❌ AdvScriptPlayer: ui_manager is null! Message cannot be displayed")
+			print("❌ Message was: ", message)
 		return true
 	
 	# set
@@ -277,9 +346,15 @@ func _parse_and_execute(line: String) -> bool:
 		if transition.is_empty():
 			transition = "none"
 		
-		var character_manager = get_node("/root/CharacterManager")
-		if character_manager:
-			await character_manager.show_character(char_id, expression, position, transition)
+		# v2: LayerManagerを使用したキャラクター表示
+		if layer_manager:
+			var success = layer_manager.show_character(char_id, expression, position, transition)
+			if not success:
+				push_warning("⚠️ Failed to show character:", char_id)
+		else:
+			# フォールバック: 旧CharacterManager方式
+			if character_manager:
+				await character_manager.show_character(char_id, expression, position, transition)
 		
 		# Only wait for transition if it's not "none"
 		return (transition != "none")
@@ -293,9 +368,15 @@ func _parse_and_execute(line: String) -> bool:
 		if transition.is_empty():
 			transition = "none"
 		
-		var character_manager = get_node("/root/CharacterManager")
-		if character_manager:
-			await character_manager.hide_character(char_id, transition)
+		# v2: LayerManagerを使用したキャラクター非表示
+		if layer_manager:
+			var success = layer_manager.hide_character(char_id, transition)
+			if not success:
+				push_warning("⚠️ Failed to hide character:", char_id)
+		else:
+			# フォールバック: 旧CharacterManager方式
+			if character_manager:
+				await character_manager.hide_character(char_id, transition)
 		
 		# Only wait for transition if it's not "none"
 		return (transition != "none")
@@ -304,7 +385,7 @@ func _parse_and_execute(line: String) -> bool:
 	regex_match = regex_scene.search(line)
 	if regex_match:
 		print("🔍 Scene regex matched line: '", line, "'")
-		var scene_name = regex_match.get_string("scene_name")
+		var scene_name = regex_match.get_string("scene_name").strip_edges()
 		var transition = regex_match.get_string("transition")
 		print("🎬 Parsed scene_name: '", scene_name, "', transition: '", transition, "'")
 		
@@ -312,12 +393,107 @@ func _parse_and_execute(line: String) -> bool:
 			transition = "none"
 			print("🔄 Empty transition, set to: ", transition)
 		
-		var character_manager = get_node("/root/CharacterManager")
-		if character_manager:
-			await character_manager.show_scene(scene_name, transition)
+		# v2: LayerManagerを使用した背景変更
+		if layer_manager:
+			var bg_path = ""
+			
+			# まずImageDefinitionManagerから画像定義を取得を試行
+			var adv_system = get_node("/root/AdvSystem")
+			if adv_system and adv_system.ImageDefs:
+				bg_path = adv_system.ImageDefs.get_image_path(scene_name)
+				print("🔍 ImageDefs lookup for '", scene_name, "': ", bg_path)
+			
+			# 定義が見つからない場合はデフォルトパス構築
+			if bg_path.is_empty():
+				bg_path = "res://assets/images/backgrounds/" + scene_name + ".jpg"
+				print("🔍 Using default path construction: ", bg_path)
+			
+			var success = layer_manager.change_background(bg_path, transition)
+			if not success:
+				push_warning("⚠️ Failed to change background to:", scene_name)
+		else:
+			# フォールバック: 旧CharacterManager方式
+			if character_manager:
+				await character_manager.show_scene(scene_name, transition)
 		
 		# Only wait for transition if it's not "none"
 		return (transition != "none")
+	
+	# call_screen (v2新機能)
+	regex_match = regex_call_screen.search(line)
+	if regex_match:
+		var screen_path = regex_match.get_string("screen_path")
+		var parameters_str = regex_match.get_string("parameters")
+		
+		print("📱 Calling screen: ", screen_path, " with params: ", parameters_str)
+		
+		# パラメータを辞書に変換（簡易実装）
+		var parameters = _parse_screen_parameters(parameters_str)
+		
+		if ui_manager:
+			await ui_manager.call_screen(screen_path, parameters)
+		else:
+			push_error("❌ UIManager not available for call_screen")
+		
+		return true
+	
+	# close_screen (v2新機能)
+	regex_match = regex_close_screen.search(line)
+	if regex_match:
+		var return_value_str = regex_match.get_string("return_value")
+		var return_value = null
+		
+		if not return_value_str.is_empty():
+			return_value = _parse_return_value(return_value_str)
+		
+		print("📱 Closing current screen with return value: ", return_value)
+		
+		if ui_manager and ui_manager.current_screen:
+			ui_manager.current_screen.close_screen(return_value)
+		else:
+			push_warning("⚠️ No current screen to close")
+		
+		return true
+	
+	# v2新機能: カスタムコマンドとしてシグナル発行を試行
+	var custom_match = regex_custom_command.search(line)
+	if custom_match:
+		var command_name = custom_match.get_string("command")
+		var parameters_str = custom_match.get_string("parameters")
+		
+		# 既知のコマンドはスキップ（重複処理を避ける）
+		var known_commands = [
+			"label", "say", "set", "if", "else", "menu", "jump", "call", "return",
+			"show", "hide", "scene", "define", "character", "image", "audio", "shader",
+			"call_screen", "close_screen"
+		]
+		
+		if command_name in known_commands:
+			print("⚠️ Unknown syntax for known command: ", line)
+			return false
+		
+		# カスタムコマンドとして処理
+		var parameters = _parse_custom_command_parameters(parameters_str)
+		print("🎯 Custom command detected: '", command_name, "' with parameters: ", parameters)
+		
+		# 同期が必要なコマンドの場合は待機
+		if _is_synchronous_command(command_name):
+			print("⏳ Synchronous command detected: ", command_name, " - waiting for completion")
+			var custom_handler = get_node("/root/AdvSystem").CustomCommandHandler
+			if custom_handler:
+				# シグナルを発行して完了を待機
+				custom_command_executed.emit(command_name, parameters, line)
+				await custom_handler.synchronous_command_completed
+				print("✅ Synchronous command completed: ", command_name)
+				return false
+			else:
+				print("❌ CustomCommandHandler not found - executing without sync")
+		
+		# 通常のカスタムコマンド
+		custom_command_executed.emit(command_name, parameters, line)
+		
+		# デフォルトでは実行を停止しない（カスタムコマンドは非同期処理が多いため）
+		return false
 	
 	print("⚠️ Unknown command: ", line)
 	return false
@@ -429,3 +605,209 @@ func on_choice_selected(choice_index: int):
 				break
 	
 	print("⚠️ Choice index out of range: ", choice_index)
+
+# === v2新機能: 定義ステートメントハンドラー ===
+
+func _handle_character_statement(line: String):
+	"""character ステートメントを処理"""
+	# AdvSystemの CharDefs に委譲
+	var adv_system = get_node("/root/AdvSystem")
+	if adv_system and adv_system.CharDefs:
+		adv_system.CharDefs.parse_character_statement(line)
+	else:
+		push_warning("⚠️ CharacterDefinitionManager not available")
+
+func _handle_image_statement(line: String):
+	"""image ステートメントを処理"""
+	var adv_system = get_node("/root/AdvSystem")
+	if adv_system and adv_system.ImageDefs:
+		adv_system.ImageDefs.parse_image_statement(line)
+	else:
+		push_warning("⚠️ ImageDefinitionManager not available")
+
+func _handle_audio_statement(line: String):
+	"""audio ステートメントを処理"""
+	var adv_system = get_node("/root/AdvSystem")
+	if adv_system and adv_system.AudioDefs:
+		adv_system.AudioDefs.parse_audio_statement(line)
+	else:
+		push_warning("⚠️ AudioDefinitionManager not available")
+
+func _handle_shader_statement(line: String):
+	"""shader ステートメントを処理"""
+	var adv_system = get_node("/root/AdvSystem")
+	if adv_system and adv_system.ShaderDefs:
+		adv_system.ShaderDefs.parse_shader_statement(line)
+	else:
+		push_warning("⚠️ ShaderDefinitionManager not available")
+
+# === v2新機能: スクリーン関連ヘルパーメソッド ===
+
+func _parse_screen_parameters(parameters_str: String) -> Dictionary:
+	"""スクリーンパラメータ文字列を辞書に変換"""
+	var parameters = {}
+	
+	if parameters_str.is_empty():
+		return parameters
+	
+	# key=value形式をパース（カンマ区切りまたはスペース区切り対応）
+	var pairs = []
+	
+	# まずカンマ区切りを試行
+	if "," in parameters_str:
+		pairs = parameters_str.split(",")
+	else:
+		# スペース区切りでkey=value形式を抽出
+		pairs = _parse_space_separated_key_values(parameters_str)
+	
+	for pair in pairs:
+		pair = pair.strip_edges()
+		if "=" in pair:
+			var parts = pair.split("=", false, 1)
+			if parts.size() == 2:
+				var key = parts[0].strip_edges()
+				var value_str = parts[1].strip_edges()
+				parameters[key] = _parse_parameter_value(value_str)
+	
+	return parameters
+
+func _parse_space_separated_key_values(parameters_str: String) -> Array:
+	"""スペース区切りのkey=value形式を解析"""
+	var pairs = []
+	var tokens = _tokenize_parameters(parameters_str)
+	
+	for token in tokens:
+		if "=" in str(token):
+			pairs.append(str(token))
+	
+	return pairs
+
+func _parse_parameter_value(value_str: String) -> Variant:
+	"""パラメータ値を適切な型に変換"""
+	value_str = value_str.strip_edges()
+	
+	# 文字列（クォートあり）
+	if value_str.begins_with("\"") and value_str.ends_with("\""):
+		return value_str.substr(1, value_str.length() - 2)
+	
+	# 数値
+	if value_str.is_valid_float():
+		if "." in value_str:
+			return value_str.to_float()
+		else:
+			return value_str.to_int()
+	
+	# ブール値
+	if value_str.to_lower() in ["true", "false"]:
+		return value_str.to_lower() == "true"
+	
+	# その他は文字列として扱う
+	return value_str
+
+func _parse_return_value(return_value_str: String) -> Variant:
+	"""リターン値文字列を適切な型に変換"""
+	return _parse_parameter_value(return_value_str)
+
+# === v2新機能: カスタムコマンド関連ヘルパーメソッド ===
+
+func _parse_custom_command_parameters(parameters_str: String) -> Dictionary:
+	"""カスタムコマンドパラメータ文字列を辞書に変換"""
+	var parameters = {}
+	
+	if parameters_str.is_empty():
+		return parameters
+	
+	# 複数の形式をサポート
+	# 1. key=value, key2=value2 形式
+	# 2. value1 value2 value3 形式（位置パラメータ）
+	# 3. "quoted string" 形式
+	
+	parameters_str = parameters_str.strip_edges()
+	
+	# key=value形式をチェック
+	if "=" in parameters_str:
+		# 混合パラメータ（位置パラメータ + key=value）をサポート
+		return _parse_mixed_parameters(parameters_str)
+	else:
+		# 位置パラメータまたは単純な値の配列として処理
+		return _parse_positional_parameters(parameters_str)
+
+func _parse_mixed_parameters(parameters_str: String) -> Dictionary:
+	"""混合パラメータ（位置 + key=value）を解析"""
+	var parameters = {}
+	var tokens = _tokenize_parameters(parameters_str)
+	var arg_index = 0
+	
+	for token in tokens:
+		var token_str = str(token)
+		if "=" in token_str:
+			# key=value形式
+			var parts = token_str.split("=", false, 1)
+			if parts.size() == 2:
+				var key = parts[0].strip_edges()
+				var value_str = parts[1].strip_edges()
+				parameters[key] = _parse_parameter_value(value_str)
+		else:
+			# 位置パラメータ
+			parameters["arg" + str(arg_index)] = token
+			parameters[arg_index] = token
+			arg_index += 1
+	
+	parameters["_count"] = arg_index
+	parameters["_raw"] = parameters_str
+	
+	return parameters
+
+func _parse_positional_parameters(parameters_str: String) -> Dictionary:
+	"""位置パラメータを解析"""
+	var parameters = {}
+	var tokens = _tokenize_parameters(parameters_str)
+	
+	for i in range(tokens.size()):
+		parameters["arg" + str(i)] = tokens[i]
+		parameters[i] = tokens[i]  # 数値インデックスでもアクセス可能
+	
+	parameters["_count"] = tokens.size()
+	parameters["_raw"] = parameters_str
+	
+	return parameters
+
+func _tokenize_parameters(text: String) -> Array:
+	"""パラメータ文字列をトークンに分割（クォート対応）"""
+	var tokens = []
+	var current_token = ""
+	var in_quotes = false
+	var quote_char = ""
+	
+	for i in range(text.length()):
+		var c = text[i]
+		
+		if not in_quotes:
+			if c == '"' or c == "'":
+				in_quotes = true
+				quote_char = c
+			elif c == ' ' or c == '\t':
+				if not current_token.is_empty():
+					tokens.append(_parse_parameter_value(current_token))
+					current_token = ""
+			else:
+				current_token += c
+		else:
+			if c == quote_char:
+				in_quotes = false
+				tokens.append(current_token)
+				current_token = ""
+				quote_char = ""
+			else:
+				current_token += c
+	
+	# 最後のトークンを追加
+	if not current_token.is_empty():
+		tokens.append(_parse_parameter_value(current_token))
+	
+	return tokens
+
+func _is_synchronous_command(command_name: String) -> bool:
+	"""同期が必要なコマンドかどうかを判定"""
+	var synchronous_commands = ["wait"]  # 拡張可能
+	return command_name in synchronous_commands
