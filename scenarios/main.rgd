@@ -1,0 +1,39 @@
+# main.rgd
+# メインシナリオファイル - 各種テスト・デモシナリオへの入り口
+
+# キャラクター定義
+character narrator "システム" color=#00ff00
+
+label start:
+
+narrator "Ren' Gd v2アーキテクチャへようこそ！"
+narrator "実行したいシナリオを選択してください。"
+
+menu:
+    "メインデモ（基本機能テスト）":
+        call main_demo_start
+        jump start
+    "カスタムコマンドテスト":
+        call custom_command_test_start
+        jump start
+    "動的シグナルテスト":
+        call dynamic_signal_test_start
+        jump start
+    "サンプルシナリオ":
+        call sample_start
+        jump start
+    "システム終了":
+        call system_exit
+
+label system_exit:
+
+narrator "システムを終了します。"
+
+# システム終了処理
+return
+
+# 各シナリオファイルのラベルは自動的に利用可能
+# - main_demo_start (main_demo.rgd)
+# - custom_command_test_start (custom_command_test.rgd)
+# - dynamic_signal_test_start (dynamic_signal_test.rgd)
+# - sample_start (sample.rgd)

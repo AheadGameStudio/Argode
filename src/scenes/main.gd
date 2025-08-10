@@ -21,9 +21,9 @@ func _unhandled_input(event):
 	# デバッグ用：Rキーでスクリプトを再開始
 	if event.is_action_pressed("ui_select") and Input.is_action_pressed("ui_cancel"):
 		print("🔄 Restarting script from beginning")
-		var adv_system = get_node("/root/AdvSystem")
+		var adv_system = get_node("/root/ArgodeSystem")
 		if not adv_system or not adv_system.Player:
-			push_error("❌ AdvSystem.Player not available for restart")
+			push_error("❌ ArgodeSystem.Player not available for restart")
 			return
 		
 		adv_system.Player.play_from_label("v2_test_start")

@@ -17,8 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-AdvSystem="*res://addons/adv_engine/AdvSystem.gd"
+ArgodeSystem="*res://addons/argode/core/ArgodeSystem.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/adv_engine/plugin.cfg")
+enabled=PackedStringArray("res://addons/argode/plugin.cfg")

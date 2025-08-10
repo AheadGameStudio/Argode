@@ -39,7 +39,14 @@
       "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script-verbose --path . --script scenarios/sample.rgd --quit)",
       "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . --script src/scenes/gui/usage_sample.gd --quit)",
       "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . --script test_sample.gd --quit)",
-      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . src/scenes/gui/usage_sample.tscn --quit)"
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . src/scenes/gui/usage_sample.tscn --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script register_test_commands.gd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . --script scenarios/custom_command_test.rgd --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_custom_command_scenario.gd --path . --quit)",
+      "Bash(sed:*)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . --script test_custom_commands.gd --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script scenarios/custom_command_test.rgd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_visual_effects_refactor.gd --path . --quit)"
     ],
     "deny": []
   }

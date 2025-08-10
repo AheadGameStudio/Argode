@@ -1,0 +1,74 @@
+# custom_command_test.rgd
+# カスタムコマンド拡張フレームワークのテストシナリオ
+
+# キャラクター定義
+character narrator "ナレーター" color=#ffffff
+
+label custom_command_test_start:
+
+narrator "カスタムコマンド拡張フレームワークのテストを開始します。"
+
+# 1. 既存の組み込みコマンド（BaseCustomCommand化済み）をテスト
+narrator "まず、BaseCustomCommand化された既存コマンドをテスト..."
+
+# Wait コマンド
+wait duration=1.0
+
+# Window コマンド
+window shake intensity=3.0 duration=0.5
+
+# Screen Flash コマンド
+screen_flash color=white duration=0.3
+
+narrator "既存コマンドは正常に動作しています。"
+
+wait 1.0
+
+# 2. プロジェクト側で作成したカスタムコマンドをテスト
+narrator "次に、プロジェクト固有のカスタムコマンドをテスト..."
+
+# MyCustomCommand（BaseCustomCommand継承）
+my_effect type=sparkle intensity=7.0 duration=2.0
+
+wait 1.0
+
+my_effect type=glow intensity=5.0 duration=1.5
+
+wait 1.0
+
+# 3. Callable登録されたコマンドをテスト
+narrator "Callable形式で登録されたコマンドをテスト..."
+
+# hello_world コマンド
+hello_world message="カスタムコマンドからこんにちは！"
+
+wait 1.0
+
+# async_effect コマンド（同期処理）
+narrator "同期処理が必要なコマンドをテスト（2秒間待機）..."
+async_effect duration=2.0
+
+narrator "同期処理完了！"
+
+wait 1.0
+
+# 4. パラメータ形式のテスト
+narrator "様々なパラメータ形式をテスト..."
+
+# 位置パラメータ
+wait 0.5
+
+# キーワードパラメータ
+wait duration=1.0
+
+# 混合パラメータ
+my_effect sparkle intensity=8.0 duration=3.0
+
+narrator "全てのテストが完了しました。カスタムコマンド拡張フレームワークは正常に動作しています！"
+
+wait 2.0
+
+narrator "このシナリオを終了します。"
+
+# テスト終了
+return

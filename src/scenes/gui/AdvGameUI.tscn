@@ -17,6 +17,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_adv_ui")
+message_box_path = NodePath("MessageBox")
+name_label_path = NodePath("MessageBox/MessagePanel/MarginContainer/VBoxContainer/NameLabel")
+message_label_path = NodePath("MessageBox/MessagePanel/MarginContainer/VBoxContainer/MessageLabel")
+choice_container_path = NodePath("ChoiceContainer")
+choice_panel_path = NodePath("ChoiceContainer/ChoicePanel")
+choice_vbox_path = NodePath("ChoiceContainer/ChoicePanel/VBoxContainer")
+continue_prompt_path = NodePath("ContinuePrompt")
 
 [node name="MessageBox" type="Control" parent="."]
 layout_mode = 1

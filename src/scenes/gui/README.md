@@ -1,89 +1,143 @@
-# GUI サンプル
+# Argode v2 GUI
 
-このフォルダには、Ren' Gd ADVエンジンを使用するためのサンプルUIが含まれています。
+このフォルダには、**Argode v2アドオン**を使用するためのサンプルUIが含まれています。
 
 ## ファイル構成
 
-- `AdvGameUI.tscn` - サンプルUIシーン
-- `AdvGameUI.gd` - UIロジック
-- `usage_sample.tscn` - 使用方法のサンプルシーン
+- `AdvGameUI.tscn` - ArgodeScreenベースのサンプルUIシーン
+- `AdvGameUI.gd` - 最小限のUI実装（ArgodeScreen継承）
 - `README.md` - この説明ファイル
 
-## 使用方法
+## v2での変更点
 
-### 1. 基本的な使い方
+### 🎯 **自動化された機能**
 
-1. `AdvGameUI.tscn`をあなたのメインシーンにインスタンス化
-2. `setup_ui_manager_integration()`を呼び出してUIManagerと連携
-3. ADVエンジンが自動的にUIを更新
+v2では以下の機能が**ArgodeScreen基底クラス**で自動提供されます：
 
-### 2. カスタマイズ
+- ✅ **UI要素の自動発見** - NodePath export + 自動フォールバック
+- ✅ **TypewriterTextの自動初期化** - タイプライター効果
+- ✅ **UIManager統合** - 手動連携不要
+- ✅ **カスタムコマンド接続** - 動的シグナル自動接続
+- ✅ **レイヤーマッピング** - 背景・キャラクター・UIレイヤー
+- ✅ **自動スクリプト実行** - エディタで設定可能
 
-このサンプルUIは自由にカスタマイズできます：
+### 📝 **使用方法（v2）**
 
-- **色・フォント**: テーマを変更してスタイルを調整
-- **レイアウト**: パネルやラベルの位置・サイズを変更
-- **アニメーション**: Tween を使って表示・非表示効果を追加
-- **エフェクト**: シェーダーや粒子効果を追加
-
-### 3. UIManagerとの連携
-
-UIManagerは以下の要素を使用します：
-
-```gdscript
-# UIManagerに必要な要素
-ui_manager.name_label = name_label      # キャラクター名表示
-ui_manager.text_label = message_label   # メッセージ表示（RichTextLabel推奨）
-ui_manager.choice_container = choice_vbox # 選択肢ボタンの親ノード
-```
-
-### 4. 主要機能
-
-- **メッセージ表示**: キャラクター名とメッセージを表示
-- **選択肢表示**: 動的にボタンを生成・削除
-- **RichText対応**: 色、太字、斜体などの装飾が可能
-- **キーボード対応**: Enterキーでメッセージ送り
-- **マウス対応**: ボタンクリックで選択肢選択
-
-### 5. シーンのインポート手順
-
-1. あなたのプロジェクトに `AdvGameUI.tscn` をコピー
-2. メインシーンで以下のように使用：
+1. **ArgodeScreenを継承** してプロジェクト固有UIを作成
+2. **@export NodePath** でUI要素を指定（またはフォールバック名使用）
+3. **auto_start_script = true** で自動実行設定
+4. **すべての機能が自動提供される**
 
 ```gdscript
-# MainScene.gd
-extends Node2D
-
-@onready var ui = $AdvGameUI  # UIシーンを追加
+# AdvGameUI.gd - 最小限の実装例
+extends "res://addons/argode/ui/ArgodeScreen.gd"
+class_name AdvGameUI
 
 func _ready():
-    # UIManagerと連携
-    ui.setup_ui_manager_integration()
+    # 基本設定のみ
+    auto_start_script = true
+    default_script_path = "res://scenarios/main.rgd"
+    start_label = "start"
     
-    # ADVエンジン開始
-    AdvScriptPlayer.load_script("res://scenarios/your_script.rgd")
-    AdvScriptPlayer.play_from_label("start")
+    super._ready()  # 親クラスが全自動処理
 ```
 
-## カスタマイズ例
+### 🎛️ **UI要素のNodePath設定**
 
-### テーマの変更
+エディタのインスペクターで柔軟に設定可能：
+
 ```gdscript
-# 背景色を変更（StyleBoxを取得して変更）
-var style = message_panel.get_theme_stylebox("panel").duplicate()
-style.bg_color = Color.BLUE
-message_panel.add_theme_stylebox_override("panel", style)
-
-# フォントサイズを変更
-message_label.add_theme_font_size_override("normal_font_size", 20)
+@export_group("UI Element Paths")
+@export var message_box_path: NodePath = ""      # 空なら"MessageBox"を自動発見
+@export var name_label_path: NodePath = ""       # 空なら"NameLabel"を自動発見
+@export var message_label_path: NodePath = ""    # 空なら"MessageLabel"を自動発見
+@export var choice_container_path: NodePath = "" # 空なら"ChoiceContainer"を自動発見
+# など...
 ```
 
-### アニメーション追加
+### 🗺️ **レイヤーマッピング**
+
 ```gdscript
-func show_message_animated(text: String):
-    var tween = create_tween()
-    tween.tween_property(message_box, "modulate:a", 0.0, 0.0)
-    tween.tween_property(message_box, "modulate:a", 1.0, 0.3)
+@export_group("Layer Paths")
+@export var background_layer_path: NodePath = ""  # BackgroundLayer自動発見
+@export var character_layer_path: NodePath = ""   # CharacterLayer自動発見
+
+# 実行時に自動設定
+layer_mappings = {
+    "background": BackgroundLayer,
+    "character": CharacterLayer, 
+    "ui": self
+}
 ```
 
-このサンプルを基に、あなたのゲームに最適なUIを作成してください！
+### 🎮 **カスタムコマンド統合**
+
+動的シグナルを自動受信：
+
+```gdscript
+func on_dynamic_signal_emitted(signal_name: String, args: Array, source_command: String):
+    # カスタムコマンドからのシグナルを自動受信
+    match signal_name:
+        "custom_project_signal":
+            # プロジェクト固有の処理
+            pass
+```
+
+## v1からv2への移行
+
+### ❌ **v1で必要だった処理（不要になった）**
+
+```gdscript
+# v1 - 手動で必要だった処理
+func _ready():
+    setup_ui_manager_integration()  # 不要
+    connect_to_adv_system()         # 不要
+    initialize_typewriter()         # 不要
+    setup_input_handling()          # 不要
+    configure_layers()              # 不要
+```
+
+### ✅ **v2では自動処理**
+
+```gdscript
+# v2 - すべて自動
+func _ready():
+    auto_start_script = true  # これだけで全自動
+    super._ready()
+```
+
+## ディレクトリ構成
+
+```
+src/scenes/gui/
+├── AdvGameUI.tscn     # ArgodeScreenベースのUIシーン
+├── AdvGameUI.gd       # 最小限の継承実装
+└── README.md          # この説明（v2対応）
+
+addons/argode/ui/
+└── ArgodeScreen.gd    # すべての機能を提供する基底クラス
+```
+
+## カスタマイズ
+
+### 🎨 **UI要素のカスタマイズ**
+
+1. **AdvGameUI.tscn**でレイアウト調整
+2. **@export NodePath**でパス指定
+3. **virtual method**をオーバーライド
+
+```gdscript
+func on_screen_ready():
+    # 初期化完了時の処理
+    pass
+
+func on_character_typed(character: String, position: int):
+    # タイプライター文字入力時の処理
+    pass
+
+func on_dynamic_signal_emitted(signal_name: String, args: Array, source_command: String):
+    # カスタムコマンドシグナル受信時の処理
+    pass
+```
+
+**Argode v2**では、ほとんどの機能が自動化され、プロジェクト固有の最小限のコードだけで高機能なADVゲームUIが実現できます！

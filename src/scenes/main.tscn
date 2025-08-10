@@ -30,3 +30,5 @@ grow_vertical = 2
 
 [node name="AdvGameUI" parent="." instance=ExtResource("2_adv_ui")]
 layout_mode = 1
+background_layer_path = NodePath("../BackgroundLayer")
+character_layer_path = NodePath("../CharacterLayer")
