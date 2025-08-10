@@ -46,7 +46,19 @@
       "Bash(sed:*)",
       "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . --script test_custom_commands.gd --quit)",
       "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script scenarios/custom_command_test.rgd --path . --quit)",
-      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_visual_effects_refactor.gd --path . --quit)"
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_visual_effects_refactor.gd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_shader_flash.gd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_text_animate_debug.gd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . --script scenarios/text_animate_test.rgd --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --path . src/scenes/main.tscn --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_text_animate_direct.gd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_new_commands.gd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_command_execution.gd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script test_direct_commands.gd --path . --quit)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script tools/generate_uid.gd --quit)",
+      "Bash(\"C:/Users/purif/OnDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script tools/generate_uid.gd --quit -- --count 3)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script tools/generate_uid.gd --quit -- --count 3)",
+      "Bash(\"C:/Users/purif/OneDrive/ドキュメント/Projects/GodotEngine/RenGd/.bin/godot.exe\" --headless --script tools/test_runner.gd --quit)"
     ],
     "deny": []
   }

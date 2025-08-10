@@ -16,6 +16,9 @@ menu:
     "カスタムコマンドテスト":
         call custom_command_test_start
         jump start
+    "新規カスタムコマンドテスト":
+        call text_animate_test_start
+        jump start
     "動的シグナルテスト":
         call dynamic_signal_test_start
         jump start

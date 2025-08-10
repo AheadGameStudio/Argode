@@ -99,6 +99,8 @@ func _check_for_sample_ui():
 
 func _find_adv_game_ui(node: Node) -> Node:
 	"""再帰的にAdvGameUIを探す"""
+	if not node:
+		return null
 	if node.get_script():
 		var _class_name = node.get_script().get_global_name()
 		# AdvGameUIまたはBaseAdvGameUIクラスを検索

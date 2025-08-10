@@ -32,6 +32,8 @@ var initialization_errors: Array[String] = []
 
 func _ready():
 	print("🎮 ArgodeSystem: Initializing v2 architecture...")
+	# グループに追加（他のノードから参照しやすくする）
+	add_to_group("argode_system")
 	_create_managers()
 
 func _create_managers():

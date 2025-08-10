@@ -26,4 +26,5 @@ func _unhandled_input(event):
 			push_error("❌ ArgodeSystem.Player not available for restart")
 			return
 		
-		adv_system.Player.play_from_label("v2_test_start")
+		print("🔄 Restarting script from 'start' label")
+		adv_system.Player.play_from_label("start")

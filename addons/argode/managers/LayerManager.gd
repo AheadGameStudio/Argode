@@ -35,6 +35,10 @@ var layer_z_orders: Dictionary = {
 	"ui": 200
 }
 
+# === シェーダー効果システム (v2新機能) ===
+var shader_effect_manager: ShaderEffectManager = null
+var layer_shader_effects: Dictionary = {}  # layer_name -> Array[effect_id]
+
 func initialize_layers(bg_layer: Control, char_layer: Control, ui_layer_ref: Control):
 	"""レイヤーシステムを初期化"""
 	background_layer = bg_layer
@@ -53,6 +57,9 @@ func initialize_layers(bg_layer: Control, char_layer: Control, ui_layer_ref: Con
 	if ui_layer:
 		ui_layer.z_index = layer_z_orders["ui"]
 		print("🗺️ UI layer initialized with z_index:", layer_z_orders["ui"])
+	
+	# シェーダー効果マネージャーを初期化
+	_initialize_shader_system()
 	
 	print("✅ LayerManager: All layers initialized successfully")
 
@@ -348,3 +355,157 @@ func clear_all_layers():
 	background_cache.clear()
 	
 	print("🧹 LayerManager: All layers cleared")
+
+# === シェーダー効果システム ===
+
+func _initialize_shader_system():
+	"""シェーダー効果システムを初期化"""
+	if not shader_effect_manager:
+		var shader_manager_script = preload("res://addons/argode/shaders/ShaderEffectManager.gd")
+		shader_effect_manager = shader_manager_script.new()
+		shader_effect_manager.name = "ShaderEffectManager"
+		add_child(shader_effect_manager)
+		
+		# よく使用するシェーダーを事前読み込み
+		shader_effect_manager.preload_shaders()
+		
+		print("🎨 ShaderEffectManager initialized")
+
+func apply_layer_shader(layer_name: String, shader_name: String, params: Dictionary = {}, duration: float = 0.0) -> int:
+	"""指定レイヤーにシェーダー効果を適用"""
+	if not shader_effect_manager:
+		push_error("❌ ShaderEffectManager not initialized")
+		return -1
+	
+	var layer_node = _get_layer_node(layer_name)
+	if not layer_node:
+		push_error("❌ Layer not found: " + layer_name)
+		return -1
+	
+	var effect_id = shader_effect_manager.apply_layer_effect(layer_node, shader_name, params, duration)
+	
+	if effect_id > 0:
+		# 効果を記録
+		if layer_name not in layer_shader_effects:
+			layer_shader_effects[layer_name] = []
+		layer_shader_effects[layer_name].append(effect_id)
+		
+		print("🎨 Shader effect applied to layer: ", layer_name, " -> ", shader_name)
+	
+	return effect_id
+
+func apply_screen_shader(shader_name: String, params: Dictionary = {}, duration: float = 0.0) -> int:
+	"""画面全体にシェーダー効果を適用"""
+	if not shader_effect_manager:
+		push_error("❌ ShaderEffectManager not initialized")
+		return -1
+	
+	var effect_id = shader_effect_manager.apply_screen_effect(shader_name, params, duration)
+	
+	if effect_id > 0:
+		print("🎨 Screen shader effect applied: ", shader_name)
+	
+	return effect_id
+
+func remove_layer_shader(layer_name: String, effect_id: int) -> bool:
+	"""指定レイヤーから特定のシェーダー効果を除去"""
+	if not shader_effect_manager:
+		return false
+	
+	var layer_node = _get_layer_node(layer_name)
+	if not layer_node:
+		return false
+	
+	var success = shader_effect_manager.remove_effect(layer_node, effect_id)
+	
+	if success and layer_name in layer_shader_effects:
+		layer_shader_effects[layer_name].erase(effect_id)
+		if layer_shader_effects[layer_name].is_empty():
+			layer_shader_effects.erase(layer_name)
+	
+	return success
+
+func remove_all_layer_shaders(layer_name: String) -> bool:
+	"""指定レイヤーから全シェーダー効果を除去"""
+	if not shader_effect_manager:
+		return false
+	
+	var layer_node = _get_layer_node(layer_name)
+	if not layer_node:
+		return false
+	
+	var success = shader_effect_manager.remove_all_effects(layer_node)
+	
+	if success and layer_name in layer_shader_effects:
+		layer_shader_effects.erase(layer_name)
+	
+	return success
+
+func clear_all_shader_effects():
+	"""全シェーダー効果をクリア"""
+	if shader_effect_manager:
+		shader_effect_manager.clear_all_effects()
+		layer_shader_effects.clear()
+
+func _get_layer_node(layer_name: String) -> Node:
+	"""レイヤー名からノードを取得"""
+	match layer_name:
+		"background":
+			return background_layer
+		"character":
+			return character_layer  
+		"ui":
+			return ui_layer
+		_:
+			push_warning("⚠️ Unknown layer name: " + layer_name)
+			return null
+
+# === 便利メソッド ===
+
+func flash_screen(color: Color = Color.WHITE, intensity: float = 1.0, duration: float = 0.3) -> int:
+	"""画面フラッシュ効果（シェーダーベース）"""
+	var params = {
+		"flash_color": color,
+		"flash_intensity": intensity,
+		"flash_time": 1.0  # 開始時は最大強度
+	}
+	
+	var effect_id = apply_screen_shader("flash", params, duration)
+	
+	# フラッシュアニメーション（強→弱→消失）
+	if effect_id > 0 and shader_effect_manager:
+		var overlay = shader_effect_manager._get_or_create_screen_overlay()
+		if overlay:
+			# オーバーレイを可視化
+			overlay.modulate = Color(1.0, 1.0, 1.0, 1.0)
+			
+			# EffectControllerを取得してパラメータアニメーション
+			var effects = shader_effect_manager.active_effects.get(overlay, [])
+			for controller in effects:
+				if controller.effect_id == effect_id:
+					# フラッシュ時間をアニメーション（1.0 → 0.0 でフェードアウト）
+					controller.animate_parameter("flash_time", 1.0, 0.0, duration)
+					print("🎭 Flash animation started: ", duration, "s")
+					break
+	
+	return effect_id
+
+func tint_layer(layer_name: String, color: Color, intensity: float = 0.5, duration: float = 0.0) -> int:
+	"""レイヤー色調調整効果"""
+	var params = {
+		"tint_color": color,
+		"tint_intensity": intensity,
+		"blend_mode": 0  # Mix
+	}
+	
+	return apply_layer_shader(layer_name, "tint", params, duration)
+
+func blur_layer(layer_name: String, amount: float = 2.0, duration: float = 0.0) -> int:
+	"""レイヤーブラー効果"""
+	var params = {
+		"blur_amount": amount,
+		"blur_direction": Vector2(1.0, 1.0),
+		"high_quality": false
+	}
+	
+	return apply_layer_shader(layer_name, "blur", params, duration)
