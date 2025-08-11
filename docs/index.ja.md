@@ -4,6 +4,10 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-2.0-orange.svg)](https://github.com/AheadGameStudio/Argode/releases)
 
+![Argode Logo](images/ArgodeLogo.png)
+
+## Argode（アルゴード）とは？
+
 **Argode** は、**Godot Engine 4.0+** 向けに構築された強力なビジュアルノベルフレームワークです。柔軟性と拡張性を保ちながら、美しいインタラクティブストーリーを簡単に作成できます。
 
 ## ✨ 主要機能

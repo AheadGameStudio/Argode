@@ -7,14 +7,48 @@ repo_url: https://github.com/AheadGameStudio/Argode
 repo_name: AheadGameStudio/Argode
 
 theme:
-  name: gitbook
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+  language: en
 
 plugins:
-  - search
+  - search:
+      lang:
+        - en
+        - ja
   - i18n:
       docs_structure: suffix
       fallback_to_default: true
       reconfigure_search: true
+      reconfigure_material: true
       languages:
         - locale: en
           default: true
@@ -25,6 +59,8 @@ plugins:
           name: 日本語
           build: true
           site_name: "Argode ドキュメント"
+          theme:
+            language: ja
 
 markdown_extensions:
   - pymdownx.highlight:
@@ -93,3 +129,9 @@ extra:
       link: https://discord.gg/your-discord
   version:
     provider: mike
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
