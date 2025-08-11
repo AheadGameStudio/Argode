@@ -22,18 +22,29 @@ func _ready():
 
 func initialize(advSystem: Node):
 	"""ArgodeSystemから初期化される"""
+	print("🔧 CustomCommandHandler.initialize() called")
+	print("🔧 advSystem:", advSystem)
+	print("🔧 advSystem.Player:", advSystem.Player if advSystem else "advSystem is null")
+	
 	adv_system = advSystem
 	
 	# AdvScriptPlayerのカスタムコマンドシグナルに接続
 	if adv_system and adv_system.Player:
+		print("🔧 Attempting to connect to Player:", adv_system.Player)
 		adv_system.Player.custom_command_executed.connect(_on_custom_command_executed)
 		print("✅ CustomCommandHandler connected to AdvScriptPlayer")
 	else:
 		push_warning("⚠️ Cannot connect to AdvScriptPlayer")
+		if not adv_system:
+			print("❌ advSystem is null")
+		elif not adv_system.Player:
+			print("❌ advSystem.Player is null")
 
 func _on_custom_command_executed(command_name: String, parameters: Dictionary, line: String):
 	"""カスタムコマンドが実行された時の処理"""
 	print("🎯 Processing custom command: '", command_name, "' with params: ", parameters)
+	print("🔍 Registered commands: ", registered_commands.keys())
+	print("🔍 Command '", command_name, "' in registered_commands: ", registered_commands.has(command_name))
 	
 	# 1. 登録されたBaseCustomCommandを優先実行
 	if registered_commands.has(command_name):

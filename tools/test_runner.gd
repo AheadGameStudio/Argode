@@ -102,6 +102,22 @@ func _test_custom_commands():
 		
 		_log_result("  - Valid params test: " + ("✅" if valid_result else "❌"), valid_result)
 		_log_result("  - Invalid params test: " + ("✅" if not invalid_result else "❌"), not invalid_result)
+	
+	# UICommand実行テスト
+	if handler.registered_commands.has("ui"):
+		print("🎯 Testing UICommand execution...")
+		var ui_cmd = handler.registered_commands["ui"]
+		
+		# UICommandのパラメータ検証
+		var ui_params = {"action": "show", "scene_path": "res://scenes/ui/test_control_scene.tscn"}
+		var ui_valid = ui_cmd.validate_parameters(ui_params)
+		_log_result("  - UI command params test: " + ("✅" if ui_valid else "❌"), ui_valid)
+		
+		# UICommandの実行（非同期）
+		print("🚀 Attempting to execute UICommand...")
+		await handler._on_custom_command_executed("ui", ui_params, "ui show res://scenes/ui/test_control_scene.tscn")
+		_log_result("  - UI command execution: ✅", true)
+		print("✅ UICommand execution test completed")
 
 func _test_system_integration():
 	"""システム統合テスト"""

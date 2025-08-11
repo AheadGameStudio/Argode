@@ -117,6 +117,10 @@ func _create_managers():
 	CustomCommandHandler.name = "CustomCommandHandler"
 	add_child(CustomCommandHandler)
 	
+	# 🚀 CustomCommandHandlerを即座に初期化
+	print("🔧 Initializing CustomCommandHandler during manager creation...")
+	CustomCommandHandler.initialize(self)
+	
 	# 組み込みコマンドの自動登録
 	_register_builtin_commands()
 	
@@ -285,8 +289,8 @@ func initialize_game(layer_map: Dictionary) -> bool:
 	# 5. フローグラフをビルド (v2新機能 - 未実装)
 	# AssetManager.build_graph_and_associate_assets()
 	
-	# 6. CustomCommandHandlerを初期化 (v2新機能)
-	_initialize_custom_command_handler()
+	# 6. CustomCommandHandlerは既に_create_managers()で初期化済み
+	print("🎯 CustomCommandHandler already initialized during _create_managers()")
 	
 	# 7. マネージャー間の参照を設定
 	_setup_manager_references()
@@ -308,15 +312,6 @@ func _initialize_layer_manager(layer_map: Dictionary):
 	
 	LayerManager.initialize_layers(bg_layer, char_layer, ui_layer)
 	print("🗺️ LayerManager initialized with layers")
-
-func _initialize_custom_command_handler():
-	"""CustomCommandHandlerを初期化"""
-	if not CustomCommandHandler:
-		push_error("❌ CustomCommandHandler not created")
-		return
-	
-	CustomCommandHandler.initialize(self)
-	print("🎯 CustomCommandHandler initialized and connected")
 
 func _setup_manager_references():
 	"""マネージャー間の相互参照を設定"""

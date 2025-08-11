@@ -480,6 +480,8 @@ func _parse_and_execute(line: String) -> bool:
 		var command_name = custom_match.get_string("command")
 		var parameters_str = custom_match.get_string("parameters")
 		
+		print("🔍 Custom command regex matched - command: '", command_name, "', params: '", parameters_str, "'")
+		
 		# 既知のコマンドはスキップ（重複処理を避ける）
 		var known_commands = [
 			"label", "say", "set", "if", "else", "menu", "jump", "call", "return",
@@ -490,6 +492,8 @@ func _parse_and_execute(line: String) -> bool:
 		if command_name in known_commands:
 			print("⚠️ Unknown syntax for known command: ", line)
 			return false
+		
+		print("✅ Processing as custom command: ", command_name)
 		
 		# カスタムコマンドとして処理
 		var parameters = _parse_custom_command_parameters(parameters_str)
@@ -509,7 +513,9 @@ func _parse_and_execute(line: String) -> bool:
 				print("❌ CustomCommandHandler not found - executing without sync")
 		
 		# 通常のカスタムコマンド
+		print("📡 Emitting custom_command_executed signal for:", command_name)
 		custom_command_executed.emit(command_name, parameters, line)
+		print("📡 Signal emitted successfully")
 		
 		# デフォルトでは実行を停止しない（カスタムコマンドは非同期処理が多いため）
 		return false
