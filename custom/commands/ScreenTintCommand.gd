@@ -36,7 +36,7 @@ func execute(params: Dictionary, adv_system: Node) -> void:
 	else:
 		log_error("LayerManager not found")
 
-func execute_visual_effect(params: Dictionary, ui_node: Node) -> void:
+func execute_visual_effect(params: Dictionary, _ui_node: Node) -> void:
 	"""色調調整視覚効果の実行"""
 	var color_str = get_param_value(params, "color", 0, "red")
 	var intensity = get_param_value(params, "intensity", 1, 0.5)

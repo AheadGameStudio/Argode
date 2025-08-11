@@ -65,14 +65,14 @@ func _handle_shake(params: Dictionary, adv_system: Node):
 	# 動的シグナル発行
 	emit_window_shake(intensity, duration, adv_system)
 
-func _handle_minimize(params: Dictionary, adv_system: Node):
+func _handle_minimize(_params: Dictionary, _adv_system: Node):
 	"""ウィンドウ最小化処理"""
 	log_command("Window minimize requested")
 	
 	# Godot 4.x での正しいAPI使用
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
 
-func _handle_fullscreen(params: Dictionary, adv_system: Node):
+func _handle_fullscreen(params: Dictionary, _adv_system: Node):
 	"""フルスクリーン切り替え処理"""
 	var enable = get_param_value(params, "enable", 1, true)
 	

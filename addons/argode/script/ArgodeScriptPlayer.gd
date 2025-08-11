@@ -56,73 +56,72 @@ func _ready():
 
 func _compile_regex():
 	regex_label = RegEx.new()
-	regex_label.compile("^label\\s+(?<name>\\w+):")
+	regex_label.compile("^label\\s+(?<name>\\w+):")  # ラベルはインデントなし
 	
+	# 全てのコマンドをインデント対応
 	regex_say = RegEx.new()
-	regex_say.compile("^(?:(?<char_id>\\w+)\\s+)?\"(?<message>.*)\"")
+	regex_say.compile("^\\s*(?:(?<char_id>\\w+)\\s+)?\"(?<message>.*)\"")
 	
 	regex_set = RegEx.new()
-	regex_set.compile("^set\\s+(?<var_name>\\w+)\\s*=\\s*(?<expression>.+)")
+	regex_set.compile("^\\s*set\\s+(?<var_name>\\w+)\\s*=\\s*(?<expression>.+)")
 	
 	regex_if = RegEx.new()
-	regex_if.compile("^if\\s+(?<condition>.+):")
+	regex_if.compile("^\\s*if\\s+(?<condition>.+):")
 	
 	regex_menu = RegEx.new()
-	regex_menu.compile("^menu:")
+	regex_menu.compile("^\\s*menu:")
 	
 	regex_jump = RegEx.new()
-	regex_jump.compile("^jump\\s+(?<label>\\w+)")
+	regex_jump.compile("^\\s*jump\\s+(?<label>\\w+)")
 	
 	regex_call = RegEx.new()
-	regex_call.compile("^call\\s+(?<label>\\w+)")
+	regex_call.compile("^\\s*call\\s+(?<label>\\w+)")
 	
 	regex_show = RegEx.new()
-	regex_show.compile("^show\\s+(?<char_id>\\w+)\\s+(?<expression>\\w+)(?:\\s+at\\s+(?<position>\\w+))?(?:\\s+with\\s+(?<transition>\\w+))?")
+	regex_show.compile("^\\s*show\\s+(?<char_id>\\w+)\\s+(?<expression>\\w+)(?:\\s+at\\s+(?<position>\\w+))?(?:\\s+with\\s+(?<transition>\\w+))?")
 	
 	regex_scene = RegEx.new()
-	regex_scene.compile("^scene\\s+(?<scene_name>[\\w\\s]+?)(?:\\s+with\\s+(?<transition>\\w+))?$")
+	regex_scene.compile("^\\s*scene\\s+(?<scene_name>[\\w\\s]+?)(?:\\s+with\\s+(?<transition>\\w+))?$")
 	
 	regex_define = RegEx.new()
-	regex_define.compile("^define\\s+(?<id>\\w+)\\s*=\\s*Character\\(\"(?<resource_path>[^\"]+)\"\\)")
+	regex_define.compile("^\\s*define\\s+(?<id>\\w+)\\s*=\\s*Character\\(\"(?<resource_path>[^\"]+)\"\\)")
 	
 	regex_return = RegEx.new()
-	regex_return.compile("^return")
+	regex_return.compile("^\\s*return")
 	
 	regex_else = RegEx.new()
-	regex_else.compile("^else:")
+	regex_else.compile("^\\s*else:")
 	
 	regex_choice = RegEx.new()
-	regex_choice.compile("^\\s+\"([^\"]+)\":\\s*$")
+	regex_choice.compile("^\\s*\"([^\"]+)\":")  # 選択肢もインデント対応
 	
 	regex_hide = RegEx.new()
-	regex_hide.compile("^hide\\s+(?<char_id>\\w+)(?:\\s+with\\s+(?<transition>\\w+))?")
+	regex_hide.compile("^\\s*hide\\s+(?<char_id>\\w+)(?:\\s+with\\s+(?<transition>\\w+))?")
 	
 	regex_jump_file = RegEx.new()
-	regex_jump_file.compile("^jump_to\\s+(?<filename>[\\w.]+)\\s+(?<label>\\w+)")
+	regex_jump_file.compile("^\\s*jump\\s+(?<file>[\\w_/]+)\\.(?<label>\\w+)")
 	
-	# v2新機能: 定義ステートメント用正規表現
+	# v2新機能もインデント対応
 	regex_character_stmt = RegEx.new()
-	regex_character_stmt.compile("^character\\s+")
+	regex_character_stmt.compile("^\\s*character\\s+")
 	
 	regex_image_stmt = RegEx.new()
-	regex_image_stmt.compile("^image\\s+")
+	regex_image_stmt.compile("^\\s*image\\s+")
 	
 	regex_audio_stmt = RegEx.new()
-	regex_audio_stmt.compile("^audio\\s+")
+	regex_audio_stmt.compile("^\\s*audio\\s+")
 	
 	regex_shader_stmt = RegEx.new()
-	regex_shader_stmt.compile("^shader\\s+")
+	regex_shader_stmt.compile("^\\s*shader\\s+")
 	
-	# v2新機能: スクリーン関連正規表現
 	regex_call_screen = RegEx.new()
-	regex_call_screen.compile("^call_screen\\s+(?<screen_path>[^\\s]+)(?:\\s+(?<parameters>.*))?")
+	regex_call_screen.compile("^\\s*call_screen\\s+(?<screen_path>[^\\s]+)(?:\\s+(?<parameters>.*))?")
 	
 	regex_close_screen = RegEx.new()
-	regex_close_screen.compile("^close_screen(?:\\s+(?<return_value>.*))?$")
+	regex_close_screen.compile("^\\s*close_screen(?:\\s+(?<return_value>.*))?$")
 	
-	# v2新機能: カスタムコマンド検出用正規表現（基本的な形式をキャッチ）
 	regex_custom_command = RegEx.new()
-	regex_custom_command.compile("^(?<command>\\w+)(?:\\s+(?<parameters>.*))?$")
+	regex_custom_command.compile("^\\s*(?<command>\\w+)(?:\\s+(?<parameters>.*))?$")
 
 func load_script(path: String):
 	var file = FileAccess.open(path, FileAccess.READ)
@@ -498,35 +497,6 @@ func _parse_and_execute(line: String) -> bool:
 	print("⚠️ Unknown command: ", line)
 	return false
 
-func _skip_to_else_or_end():
-	var depth = 1
-	while current_line_index + 1 < script_lines.size():
-		current_line_index += 1
-		var line = script_lines[current_line_index].strip_edges()
-		
-		if line.is_empty() or line.begins_with("#"):
-			continue
-		
-		if regex_if.search(line):
-			depth += 1
-		elif regex_else.search(line) and depth == 1:
-			return  # Found matching else
-		elif regex_label.search(line):
-			current_line_index -= 1  # Back up one line
-			return
-
-func _skip_else_block():
-	while current_line_index + 1 < script_lines.size():
-		current_line_index += 1
-		var line = script_lines[current_line_index].strip_edges()
-		
-		if line.is_empty() or line.begins_with("#"):
-			continue
-		
-		if regex_label.search(line):
-			current_line_index -= 1  # Back up one line
-			return
-
 func _handle_menu():
 	var choices = []
 	var choice_targets = []
@@ -549,14 +519,16 @@ func _handle_menu():
 			# Find the target after the colon
 			temp_index += 1
 			while temp_index < script_lines.size():
-				var target_line = script_lines[temp_index].strip_edges()
-				if not target_line.is_empty() and not target_line.begins_with("#"):
+				var target_line = script_lines[temp_index]
+				var target_trimmed = target_line.strip_edges()
+				if not target_trimmed.is_empty() and not target_trimmed.begins_with("#"):
 					choice_targets.append(temp_index - 1)
 					break
 				temp_index += 1
 		else:
-			# No more choices, but check if it's indented content
-			if not line.begins_with("    ") and not line.begins_with("\t"):
+			# インデントレベルをチェックしてブロック終了を判定
+			var indent_level = _get_indent_level(line)
+			if indent_level == 0 and not line_trimmed.is_empty():
 				break
 	
 	if choices.size() > 0:
@@ -565,46 +537,60 @@ func _handle_menu():
 	else:
 		print("⚠️ No choices found for menu")
 
-func on_choice_selected(choice_index: int):
-	print("🔔 AdvScriptPlayer: Choice selected - index:", choice_index)
-	is_waiting_for_choice = false
+func _get_indent_level(line: String) -> int:
+	"""行のインデントレベルを取得（スペース4個 or タブ1個 = レベル1）"""
+	var indent = 0
+	for i in range(line.length()):
+		var c = line[i]
+		if c == ' ':
+			indent += 1
+		elif c == '\t':
+			indent += 4  # タブは4スペース相当
+		else:
+			break
+	return indent / 4  # 4スペースで1レベル
+
+func _skip_to_else_or_end():
+	"""if文のelse節または終了まで行をスキップ（インデント考慮）"""
+	var if_indent_level = _get_indent_level(script_lines[current_line_index])
 	
-	# Find the target line for this choice
-	var choices_found = 0
-	var temp_index = current_line_index
-	
-	while temp_index + 1 < script_lines.size():
-		temp_index += 1
-		var line = script_lines[temp_index]
+	while current_line_index + 1 < script_lines.size():
+		current_line_index += 1
+		var line = script_lines[current_line_index]
 		var line_trimmed = line.strip_edges()
 		
 		if line_trimmed.is_empty() or line_trimmed.begins_with("#"):
 			continue
 			
-		var choice_match = regex_choice.search(line)
-		if choice_match:
-			var choice_text = choice_match.get_string(1)
-			print("🔍 Found choice #", choices_found, ": '", choice_text, "'")
-			if choices_found == choice_index:
-				print("✅ Matched selected choice:", choice_index)
-				# Skip to the action line (like "jump increase_score")
-				temp_index += 1
-				while temp_index < script_lines.size():
-					var action_line = script_lines[temp_index].strip_edges()
-					if not action_line.is_empty() and not action_line.begins_with("#"):
-						print("🎯 Executing action:", action_line)
-						current_line_index = temp_index - 1  # Set to line before action
-						_tick()  # This will process the action line
-						return
-					temp_index += 1
-				return
-			choices_found += 1
-		else:
-			# Check if we've moved beyond the menu block
-			if not line.begins_with("    ") and not line.begins_with("\t"):
-				break
+		var current_indent = _get_indent_level(line)
+		
+		# if文と同じインデントレベルでelse文が見つかった場合
+		if current_indent == if_indent_level and regex_else.search(line):
+			return
+			
+		# if文より浅いインデント（ブロック終了）
+		if current_indent < if_indent_level:
+			current_line_index -= 1
+			return
+
+func _skip_else_block():
+	"""else文のブロックをスキップ（インデント考慮）"""
+	var else_indent_level = _get_indent_level(script_lines[current_line_index])
 	
-	print("⚠️ Choice index out of range: ", choice_index)
+	while current_line_index + 1 < script_lines.size():
+		current_line_index += 1
+		var line = script_lines[current_line_index]
+		var line_trimmed = line.strip_edges()
+		
+		if line_trimmed.is_empty() or line_trimmed.begins_with("#"):
+			continue
+			
+		var current_indent = _get_indent_level(line)
+		
+		# else文より浅いインデント（ブロック終了）
+		if current_indent <= else_indent_level:
+			current_line_index -= 1
+			return
 
 # === v2新機能: 定義ステートメントハンドラー ===
 

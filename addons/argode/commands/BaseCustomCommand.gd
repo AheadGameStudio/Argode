@@ -18,11 +18,11 @@ func _init():
 	help_text = "Override this in your custom command"
 
 # メインの実行処理（継承先で必須実装）
-func execute(params: Dictionary, adv_system: Node) -> void:
+func execute(_params: Dictionary, _adv_system: Node) -> void:
 	push_warning("BaseCustomCommand.execute() not implemented in " + command_name)
 
 # 視覚効果実行処理（継承先でオプション実装）
-func execute_visual_effect(params: Dictionary, ui_node: Node) -> void:
+func execute_visual_effect(_params: Dictionary, _ui_node: Node) -> void:
 	# デフォルトでは何もしない
 	# 視覚効果が必要なコマンドは継承先でオーバーライド
 	pass
@@ -45,7 +45,7 @@ func execute_internal_async(params: Dictionary, adv_system: Node) -> void:
 	execute(params, adv_system)
 
 # パラメータのバリデーション（オプション）
-func validate_parameters(params: Dictionary) -> bool:
+func validate_parameters(_params: Dictionary) -> bool:
 	return true
 
 # パラメータ情報の設定ヘルパー

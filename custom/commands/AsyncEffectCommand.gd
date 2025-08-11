@@ -14,7 +14,7 @@ func _init():
 func is_synchronous() -> bool:
 	return true
 
-func execute(params: Dictionary, adv_system: Node) -> void:
+func execute(_params: Dictionary, _adv_system: Node) -> void:
 	# 同期コマンドでは通常のexecuteは呼ばれない
 	log_warning("AsyncEffectCommand: execute() called instead of execute_async()")
 

@@ -455,7 +455,7 @@ func show_message(character_name: String = "", message: String = "", name_color:
 	
 	print("💬 AdvScreen Message: [", character_name, "] ", processed_message)
 
-func show_choices(choices: Array):
+func show_choices(choices: Array, is_numbered: bool = false):
 	"""選択肢を表示する"""
 	if not choice_container or not choice_vbox:
 		push_error("❌ AdvScreen: ChoiceContainer or choice_vbox not available")
@@ -471,8 +471,10 @@ func show_choices(choices: Array):
 	
 	for i in range(choices.size()):
 		var button = Button.new()
-		button.text = str(i + 1) + ". " + choices[i]
-		button.add_theme_font_size_override("font_size", 14)
+		button.text = ""
+		if is_numbered:
+			button.text += str(i + 1) + "."
+		button.text += choices[i]
 		button.pressed.connect(_on_choice_selected.bind(i))
 		choice_vbox.add_child(button)
 	
