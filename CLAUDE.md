@@ -147,7 +147,7 @@ AdvSystemが以下を統合管理：
 ### UI統合（v2 AdvScreen基盤）
 v2ではAdvScreenを継承して使用：
 ```gdscript
-extends "res://addons/adv_engine/ui/AdvScreen.gd"
+extends ArgodeScreen
 class_name AdvGameUI
 
 # 自動設定可能

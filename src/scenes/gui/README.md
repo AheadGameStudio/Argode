@@ -30,7 +30,7 @@ v2では以下の機能が**ArgodeScreen基底クラス**で自動提供され�
 
 ```gdscript
 # AdvGameUI.gd - 最小限の実装例
-extends "res://addons/argode/ui/ArgodeScreen.gd"
+extends ArgodeScreen
 class_name AdvGameUI
 
 func _ready():

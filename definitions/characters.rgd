@@ -1,0 +1,17 @@
+# characters.rgd
+# キャラクター定義ファイル - プロジェクト共通のキャラクター情報
+
+# メインキャラクター
+character narrator "ナレーター" color=#ffffff
+character yuko "由子" color=#ff88aa  
+character takeshi "武" color=#88aaff
+character sensei "先生" color=#ffaa88
+
+# サブキャラクター
+character classmate_a "クラスメイトA" color=#aaffaa
+character classmate_b "クラスメイトB" color=#ffaaff
+character principal "校長" color=#888888
+
+# システムキャラクター
+character system "システム" color=#cccccc
+character announcer "アナウンサー" color=#ffcc88

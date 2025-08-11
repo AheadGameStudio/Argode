@@ -291,22 +291,12 @@ func _parse_and_execute(line: String) -> bool:
 	regex_match = regex_call.search(line)
 	if regex_match:
 		var label_name = regex_match.get_string("label")
-		call_stack.append({"line": current_line_index})
-		play_from_label(label_name)
-		return true
+		return _handle_call(label_name)
 	
 	# return
 	regex_match = regex_return.search(line)
 	if regex_match:
-		if call_stack.size() > 0:
-			var return_info = call_stack.pop_back()
-			current_line_index = return_info["line"]
-			print("🔙 Returning to line: ", current_line_index + 1)
-			return false  # Continue execution from return point
-		else:
-			push_warning("⚠️ return called with empty call stack")
-			is_playing = false
-			return true
+		return _handle_return()
 	
 	# if
 	regex_match = regex_if.search(line)
@@ -845,3 +835,61 @@ func _is_synchronous_command(command_name: String) -> bool:
 	"""同期が必要なコマンドかどうかを判定"""
 	var synchronous_commands = ["wait"]  # 拡張可能
 	return command_name in synchronous_commands
+
+# === Call/Return 処理メソッド ===
+
+func _handle_call(label_name: String) -> bool:
+	"""call コマンドの処理（クロスファイル対応）"""
+	# 次の行を保存（戻ってきたときの継続ポイント）
+	var return_line = current_line_index + 1
+	
+	# 現在のファイル情報を保存
+	call_stack.append({
+		"line": return_line,
+		"script_lines": script_lines.duplicate(),  # 現在のスクリプト内容を保存
+		"label_map": label_map.duplicate(),        # 現在のラベルマップを保存
+		"file_info": "current_script"              # 将来的にファイルパスを保存
+	})
+	
+	print("📞 CALL DEBUG: Calling label '", label_name, "' from line ", current_line_index + 1)
+	print("📞 CALL DEBUG: Will return to line ", return_line + 1, " (", script_lines[return_line] if return_line < script_lines.size() else "EOF", ")")
+	print("📚 CALL DEBUG: Call stack depth: ", call_stack.size())
+	print("📁 CALL DEBUG: Saved current script with ", script_lines.size(), " lines and ", label_map.size(), " labels")
+	
+	# 指定されたラベルに移動
+	play_from_label(label_name)
+	return true  # 実行を停止（ラベルジャンプのため）
+
+func _handle_return() -> bool:
+	"""return コマンドの処理（クロスファイル対応）"""
+	if call_stack.size() > 0:
+		var return_info = call_stack.pop_back()
+		var return_line = return_info["line"]
+		
+		print("🔙 RETURN DEBUG: Returning from call stack")
+		
+		# 保存されたスクリプト情報があるかチェック
+		if return_info.has("script_lines") and return_info.has("label_map"):
+			print("🔙 RETURN DEBUG: Restoring previous script context")
+			# 元のスクリプトコンテキストを復元
+			script_lines = return_info["script_lines"]
+			label_map = return_info["label_map"]
+			print("� RETURN DEBUG: Restored script with ", script_lines.size(), " lines and ", label_map.size(), " labels")
+		
+		print("�🔙 RETURN DEBUG: Return line: ", return_line, " (", script_lines[return_line] if return_line < script_lines.size() else "EOF", ")")
+		print("🔙 RETURN DEBUG: Remaining stack depth: ", call_stack.size())
+		
+		# 戻り先の行に移動（-1しておくことで、_tick()の+1と合わせて正確な行に到達）
+		current_line_index = return_line - 1
+		print("🔙 RETURN DEBUG: Set current_line_index to: ", current_line_index)
+		
+		# 実行状態をリセット
+		is_playing = true
+		is_waiting_for_choice = false
+		
+		return false  # 実行を継続（戻った行から処理を続ける）
+	else:
+		push_warning("⚠️ return called with empty call stack")
+		print("🛑 No call to return from - stopping script execution")
+		is_playing = false
+		return true  # 実行を停止

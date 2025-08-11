@@ -1,7 +1,7 @@
 # UISlideCommand.gd
 # UI要素スライドアニメーションコマンド
 class_name UISlideCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "ui_slide"

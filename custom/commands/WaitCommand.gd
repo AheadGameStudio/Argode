@@ -1,7 +1,7 @@
 # WaitCommand.gd
 # wait コマンド実装 - 指定時間待機する同期コマンド
 class_name WaitCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "wait"

@@ -1,7 +1,7 @@
 # ScreenFlashShaderCommand.gd
 # シェーダーベース screen_flash コマンド実装 (v2)
 class_name ScreenFlashShaderCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "screen_flash"

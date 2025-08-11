@@ -1,7 +1,7 @@
 # WindowCommand.gd
 # window コマンド実装 - ウィンドウ操作コマンド
 class_name WindowCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "window"

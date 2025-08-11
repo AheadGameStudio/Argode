@@ -1,7 +1,7 @@
 # TestAutoDiscoveryCommand.gd
 # 自動検出テスト用のカスタムコマンド
 class_name TestAutoDiscoveryCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "test_auto_discovery"

@@ -1,7 +1,7 @@
 # HelloWorldCommand.gd
 # Callable形式での登録例：シンプルなコマンド
 class_name HelloWorldCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "hello_world"

@@ -1,0 +1,40 @@
+# definition_test.rgd
+# 定義ファイル動作確認用テストシナリオ
+
+label definition_test_start:
+    
+    # 定義済みキャラクターを使用
+    narrator "定義ファイルシステムのテストを開始します。"
+    
+    # 定義済み背景を使用
+    scene bg_classroom with fade
+    
+    # 定義済みキャラクター・表情を使用
+    show yuko_happy at center with dissolve
+    yuko "こんにちは！定義システムで作られた由子です。"
+    yuko "好感度は現在[yuko_affection]です。"
+    
+    show takeshi_normal at left with fade
+    takeshi "俺は武だ。よろしくな。"
+    
+    # 定義済み変数を表示
+    narrator "プレイヤー名: [player_name]"
+    narrator "プレイヤー年齢: [player_age]歳"
+    narrator "テキスト速度: [text_speed]"
+    
+    menu:
+        "好感度を上げる":
+            set yuko_affection = yuko_affection + 1
+            yuko "ありがとう！好感度が[yuko_affection]になったよ。"
+        "設定を確認する":
+            narrator "BGM音量: [bgm_volume]"
+            narrator "SE音量: [se_volume]"
+            narrator "初回起動: [first_launch]"
+    
+    hide yuko_happy with fade
+    hide takeshi_normal with fade
+    scene bg_black with fade
+    
+    narrator "定義ファイルテスト完了！"
+    
+    return

@@ -1,7 +1,7 @@
 # MyCustomCommand.gd
 # プロジェクト側でのカスタムコマンド実装例
 class_name MyCustomCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "my_effect"

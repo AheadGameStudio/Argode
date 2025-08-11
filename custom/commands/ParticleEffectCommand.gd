@@ -1,7 +1,7 @@
 # ParticleEffectCommand.gd
 # particles コマンド実装 - パーティクル効果
 class_name ParticleEffectCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "particles"

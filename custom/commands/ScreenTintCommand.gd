@@ -1,7 +1,7 @@
 # ScreenTintCommand.gd
 # スクリーン全体の色調調整コマンド (シェーダーベース)
 class_name ScreenTintCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "tint"

@@ -1,7 +1,7 @@
 # CameraShakeCommand.gd
 # camera_shake コマンド実装 - カメラシェイク効果
 class_name CameraShakeCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "camera_shake"

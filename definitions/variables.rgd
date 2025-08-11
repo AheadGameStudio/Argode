@@ -1,0 +1,35 @@
+# variables.rgd
+# 初期変数定義ファイル - ゲーム開始時の変数設定
+
+# プレイヤー情報
+set player_name = "プレイヤー"
+set player_gender = "male"
+set player_age = 17
+
+# ゲーム進行フラグ
+set game_started = false
+set prologue_completed = false
+set chapter1_unlocked = false
+set chapter2_unlocked = false
+
+# キャラクター好感度
+set yuko_affection = 0
+set takeshi_friendship = 0
+set sensei_respect = 0
+
+# ゲーム設定
+set text_speed = 1.0
+set auto_play_speed = 2.0
+set master_volume = 1.0
+set bgm_volume = 0.8
+set se_volume = 0.9
+
+# システムフラグ
+set first_launch = true
+set tutorial_completed = false
+set debug_mode = false
+
+# 統計情報
+set play_time_seconds = 0
+set choices_made = 0
+set scenes_viewed = 0

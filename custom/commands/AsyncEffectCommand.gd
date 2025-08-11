@@ -1,7 +1,7 @@
 # AsyncEffectCommand.gd
 # 同期処理（await）が必要なコマンド例
 class_name AsyncEffectCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "async_effect"

@@ -3,9 +3,13 @@
 class_name ArgodeSystemCore
 extends Node
 
+# プリロード
+const DefinitionLoader = preload("res://addons/argode/core/DefinitionLoader.gd")
+
 # === シグナル ===
 signal system_initialized
 signal system_error(message: String)
+signal definition_loaded(results: Dictionary)
 
 # === 各Managerへのパブリックな参照 ===
 var Player  # ArgodeScriptPlayer
@@ -35,6 +39,12 @@ func _ready():
 	# グループに追加（他のノードから参照しやすくする）
 	add_to_group("argode_system")
 	_create_managers()
+	
+	# 定義ファイルを最優先で読み込み
+	_load_definitions()
+	
+	# LabelRegistryの初期化は定義読み込み後に実行
+	_initialize_label_registry()
 
 func _create_managers():
 	"""既存のManagerインスタンスを子ノードとして作成・統合"""
@@ -449,3 +459,25 @@ func list_custom_commands() -> Array[String]:
 		return []
 	
 	return CustomCommandHandler.list_registered_commands()
+
+func _load_definitions():
+	"""定義ファイルの自動読み込み"""
+	print("📋 Loading definition files...")
+	var definition_results = DefinitionLoader.load_all_definitions(self)
+	
+	if definition_results.total_files == 0:
+		print("⚠️ No definition files found in definitions/ directory")
+		print("   Expected location: ", DefinitionLoader.DEFINITIONS_DIR)
+	else:
+		print("✅ Definition files loaded successfully")
+		
+	# 定義読み込み完了をシグナル発行
+	definition_loaded.emit(definition_results)
+
+func _initialize_label_registry():
+	"""LabelRegistryの初期化（定義読み込み後）"""
+	if LabelRegistry:
+		# scenariosディレクトリもスキャン対象に追加（型を明示）
+		var scan_dirs: Array[String] = ["res://scenarios/", "res://definitions/"]
+		LabelRegistry.scan_directories = scan_dirs
+		print("🏷️ LabelRegistry scan directories updated: ", scan_dirs)

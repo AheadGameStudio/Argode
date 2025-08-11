@@ -1,7 +1,7 @@
 # AdvGameUI.gd
 # v2設計: AdvScreenを継承した最小限のADVゲーム用UI実装例
 # 大部分の機能はAdvScreenで自動提供されます
-extends "res://addons/argode/ui/ArgodeScreen.gd"
+extends ArgodeScreen
 class_name AdvGameUI
 
 # === プロジェクト固有の設定をここで初期化 ===
@@ -37,7 +37,7 @@ func on_screen_shown(parameters: Dictionary = {}):
 
 # === プロジェクト固有のカスタマイズ ===
 
-func on_character_typed(character: String, position: int):
+func on_character_typed(_character: String, _position: int):
 	"""文字が入力された時のカスタム処理"""
 	# 例: 文字入力時のサウンド効果など
 	pass

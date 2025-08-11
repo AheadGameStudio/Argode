@@ -108,6 +108,7 @@ coverage/
 # Documentation Build
 docs/_build/
 docs/build/
+site/
 
 # Project Specific
 # サンプル用一時ファイル

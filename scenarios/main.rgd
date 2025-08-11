@@ -7,32 +7,44 @@ character narrator "システム" color=#00ff00
 label start:
 
     narrator "Ren' Gd v2アーキテクチャへようこそ！"
+
+label main_menu:
     narrator "実行したいシナリオを選択してください。"
 
     menu:
         "メインデモ（基本機能テスト）":
             call main_demo_start
-            jump start
+            narrator "メインデモが完了しました。"
+            jump after_test_completion
         "カスタムコマンドテスト":
             call custom_command_test_start
-            jump start
+            narrator "カスタムコマンドテストが完了しました。"
+            jump after_test_completion
         "新規カスタムコマンドテスト":
             call text_animate_test_start
-            jump start
+            narrator "新規カスタムコマンドテストが完了しました。"
+            jump after_test_completion
         "動的シグナルテスト":
             call dynamic_signal_test_start
-            jump start
-        "サンプルシナリオ":
-            call sample_start
-            jump start
+            narrator "動的シグナルテストが完了しました。"
+            jump after_test_completion
+        "定義ファイルテスト":
+            call definition_test_start
+            narrator "定義ファイルテストが完了しました。"
+            jump after_test_completion
         "システム終了":
-            call system_exit
+            jump system_exit
+
+label after_test_completion:
+    # テスト完了後の選択肢
+    menu:
+        "他のテストを実行する":
+            jump main_menu
+        "システムを終了する":
+            jump system_exit
 
 label system_exit:
-
     narrator "システムを終了します。"
-
-    # システム終了処理
     return
 
 # 各シナリオファイルのラベルは自動的に利用可能

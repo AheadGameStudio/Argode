@@ -1,7 +1,7 @@
 # LayerTintCommand.gd
 # レイヤー別色調調整コマンド (シェーダーベース)
 class_name LayerTintCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "layer_tint"

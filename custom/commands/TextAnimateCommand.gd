@@ -1,7 +1,7 @@
 # TextAnimateCommand.gd
 # テキストアニメーション効果コマンド
 class_name TextAnimateCommand
-extends "res://addons/argode/commands/BaseCustomCommand.gd"
+extends BaseCustomCommand
 
 func _init():
 	command_name = "text_animate"
