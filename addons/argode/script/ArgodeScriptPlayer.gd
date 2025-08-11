@@ -501,13 +501,24 @@ func _parse_and_execute(line: String) -> bool:
 		
 		# 同期が必要なコマンドの場合は待機
 		if _is_synchronous_command(command_name):
-			print("⏳ Synchronous command detected: ", command_name, " - waiting for completion")
+			print("⏳ [AdvScriptPlayer] Synchronous command detected: ", command_name, " - waiting for completion")
 			var custom_handler = get_node("/root/ArgodeSystem").CustomCommandHandler
 			if custom_handler:
+				print("🔗 [AdvScriptPlayer] CustomCommandHandler found, connecting signal...")
 				# シグナルを発行して完了を待機
+				print("📡 [AdvScriptPlayer] Emitting custom_command_executed for: ", command_name)
 				custom_command_executed.emit(command_name, parameters, line)
-				await custom_handler.synchronous_command_completed
-				print("✅ Synchronous command completed: ", command_name)
+				print("⏳ [AdvScriptPlayer] Waiting for synchronous_command_completed signal...")
+				
+				# 特定のコマンド名でフィルタリングして待機
+				var completed_command_name = ""
+				while completed_command_name != command_name:
+					completed_command_name = await custom_handler.synchronous_command_completed
+					print("🔔 [AdvScriptPlayer] Got completion signal for: ", completed_command_name)
+					if completed_command_name != command_name:
+						print("⏳ [AdvScriptPlayer] Waiting for completion of '", command_name, "', but got '", completed_command_name, "'")
+				
+				print("✅ [AdvScriptPlayer] Synchronous command completed: ", command_name)
 				return false
 			else:
 				print("❌ CustomCommandHandler not found - executing without sync")
@@ -869,15 +880,21 @@ func _tokenize_parameters(text: String) -> Array:
 
 func _is_synchronous_command(command_name: String) -> bool:
 	"""同期が必要なコマンドかどうかを判定"""
+	print("🔍 [AdvScriptPlayer] Checking if '", command_name, "' is synchronous...")
+	
 	# CustomCommandHandlerに登録されているコマンドから判定
 	var custom_handler = get_node("/root/ArgodeSystem").CustomCommandHandler
 	if custom_handler and custom_handler.registered_commands.has(command_name):
 		var command = custom_handler.registered_commands[command_name] as BaseCustomCommand
-		return command.is_synchronous()
+		var is_sync = command.is_synchronous()
+		print("🔍 [AdvScriptPlayer] Command '", command_name, "' found in CustomCommandHandler, is_synchronous: ", is_sync)
+		return is_sync
 	
 	# フォールバック：既知の同期コマンド
 	var synchronous_commands = ["wait"]
-	return command_name in synchronous_commands
+	var is_fallback_sync = command_name in synchronous_commands
+	print("🔍 [AdvScriptPlayer] Command '", command_name, "' using fallback check, is_synchronous: ", is_fallback_sync)
+	return is_fallback_sync
 
 # === Call/Return 処理メソッド ===
 

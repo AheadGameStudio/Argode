@@ -15,14 +15,20 @@ func is_synchronous() -> bool:
 	return true  # 同期処理が必要
 
 func execute_internal_async(params: Dictionary, adv_system: Node) -> void:
+	print("⏳ [WaitCommand] execute_internal_async called with params: ", params)
 	var duration = get_param_value(params, "duration", 0, 1.0)
+	print("⏳ [WaitCommand] Parsed duration: ", duration, " (type: ", typeof(duration), ")")
 	
+	print("⏳ [WaitCommand] Wait starting: ", duration, " seconds")
 	log_command("Wait requested: " + str(duration) + " seconds")
 	
 	if duration > 0:
+		print("⏳ [WaitCommand] Creating timer for ", duration, " seconds...")
 		await adv_system.get_tree().create_timer(duration).timeout
+		print("✅ [WaitCommand] Wait completed after ", duration, " seconds")
 		log_command("Wait completed")
 	else:
+		print("❌ [WaitCommand] Invalid duration: ", duration)
 		log_warning("Invalid duration: " + str(duration) + ", skipping wait")
 
 func validate_parameters(params: Dictionary) -> bool:

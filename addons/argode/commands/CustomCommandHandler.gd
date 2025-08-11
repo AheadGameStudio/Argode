@@ -212,10 +212,15 @@ func _execute_registered_command(custom_command: BaseCustomCommand, parameters: 
 # 遅延実行メソッド群
 func _execute_registered_command_deferred(command: BaseCustomCommand, parameters: Dictionary):
 	"""登録コマンドの遅延実行"""
+	print("🔹 [CustomCommandHandler] Starting deferred execution: ", command.command_name)
+	print("🔹 [CustomCommandHandler] Parameters: ", parameters)
+	print("🔹 [CustomCommandHandler] Is synchronous: ", command.is_synchronous())
+	
 	await command.execute_async(parameters, adv_system)
-	print("🔹 Custom command execution completed: ", command.command_name)
+	print("🔹 [CustomCommandHandler] Custom command execution completed: ", command.command_name)
 	
 	# 同期コマンド完了シグナルを発行
+	print("🔹 [CustomCommandHandler] Emitting synchronous_command_completed signal for: ", command.command_name)
 	synchronous_command_completed.emit(command.command_name)
 
 func _execute_callable_command_deferred(command: Callable, parameters: Dictionary):
