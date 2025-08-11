@@ -82,7 +82,10 @@ func _compile_regex():
 	regex_call.compile("^\\s*call\\s+(?<label>\\w+)")
 	
 	regex_show = RegEx.new()
-	regex_show.compile("^\\s*show\\s+(?<char_id>\\w+)\\s+(?<expression>\\w+)(?:\\s+at\\s+(?<position>\\w+))?(?:\\s+with\\s+(?<transition>\\w+))?")
+	# v2.1: showコマンドを拡張 - キャラクターまたはシーン/ファイルを表示
+	# show character_id expression [at position] [with transition]
+	# show scene scene_path [at position] [with transition]
+	regex_show.compile("^\\s*show\\s+(?<target>\\w+)\\s+(?<param1>\\w+|scene)(?:\\s+(?<param2>[\\w\\/\\.]+))?(?:\\s+at\\s+(?<position>\\w+))?(?:\\s+with\\s+(?<transition>\\w+))?")
 	
 	regex_scene = RegEx.new()
 	regex_scene.compile("^\\s*scene\\s+(?<scene_name>[\\w\\s]+?)(?:\\s+with\\s+(?<transition>\\w+))?$")
@@ -331,8 +334,9 @@ func _parse_and_execute(line: String) -> bool:
 	# show
 	regex_match = regex_show.search(line)
 	if regex_match:
-		var char_id = regex_match.get_string("char_id")
-		var expression = regex_match.get_string("expression")
+		var target = regex_match.get_string("target")
+		var param1 = regex_match.get_string("param1")
+		var param2 = regex_match.get_string("param2")
 		var position = regex_match.get_string("position")
 		var transition = regex_match.get_string("transition")
 		
@@ -342,15 +346,28 @@ func _parse_and_execute(line: String) -> bool:
 		if transition.is_empty():
 			transition = "none"
 		
-		# v2: LayerManagerを使用したキャラクター表示
-		if layer_manager:
-			var success = layer_manager.show_character(char_id, expression, position, transition)
-			if not success:
-				push_warning("⚠️ Failed to show character:", char_id)
+		# v2.1: Controlベースのシーン表示対応
+		if param1 == "scene" and not param2.is_empty():
+			# show something scene path/to/scene.tscn [at position] [with transition]
+			print("🎬 AdvScriptPlayer: Loading scene:", param2, "at", position)
+			var scene_success = await _show_control_scene(param2, position, transition)
+			if not scene_success:
+				push_warning("⚠️ Failed to load scene:", param2)
+			return (transition != "none")
 		else:
-			# フォールバック: 旧CharacterManager方式
-			if character_manager:
-				await character_manager.show_character(char_id, expression, position, transition)
+			# 従来のキャラクター表示処理
+			var char_id = target
+			var expression = param1
+			
+			# v2: LayerManagerを使用したキャラクター表示
+			if layer_manager:
+				var success = layer_manager.show_character(char_id, expression, position, transition)
+				if not success:
+					push_warning("⚠️ Failed to show character:", char_id)
+			else:
+				# フォールバック: 旧CharacterManager方式
+				if character_manager:
+					await character_manager.show_character(char_id, expression, position, transition)
 		
 		# Only wait for transition if it's not "none"
 		return (transition != "none")
@@ -920,3 +937,71 @@ func _handle_return() -> bool:
 		print("🛑 No call to return from - stopping script execution")
 		is_playing = false
 		return true  # 実行を停止
+
+## Scene Display Methods (v2.1)
+
+func _show_control_scene(scene_path: String, position: String = "center", transition: String = "none") -> bool:
+	"""Controlベースのシーンを表示する"""
+	print("🎬 Loading Control scene:", scene_path)
+	
+	# シーンファイルの読み込み
+	var scene_resource = load(scene_path)
+	if not scene_resource:
+		push_warning("⚠️ Failed to load scene resource:", scene_path)
+		return false
+	
+	# シーンのインスタンス化
+	var scene_instance = scene_resource.instantiate()
+	if not scene_instance:
+		push_warning("⚠️ Failed to instantiate scene:", scene_path)
+		return false
+	
+	# Controlノードかチェック
+	if not scene_instance is Control:
+		push_warning("⚠️ Scene is not a Control node:", scene_path)
+		scene_instance.queue_free()
+		return false
+	
+	# LayerManagerまたはUIManagerに追加
+	var display_success = false
+	if layer_manager and layer_manager.has_method("show_control_scene"):
+		display_success = layer_manager.show_control_scene(scene_instance, position, transition)
+	elif ui_manager and ui_manager.has_method("show_control_scene"):
+		display_success = ui_manager.show_control_scene(scene_instance, position, transition)
+	else:
+		# フォールバック: メインシーンに直接追加
+		display_success = _fallback_show_control_scene(scene_instance, position)
+	
+	if not display_success:
+		push_warning("⚠️ Failed to display Control scene")
+		scene_instance.queue_free()
+		return false
+	
+	print("✅ Control scene displayed successfully:", scene_path)
+	return true
+
+func _fallback_show_control_scene(scene_instance: Control, position: String) -> bool:
+	"""LayerManager/UIManagerが利用できない場合のフォールバック処理"""
+	var main_scene = get_tree().current_scene
+	if not main_scene:
+		return false
+	
+	# メインシーンに追加
+	main_scene.add_child(scene_instance)
+	
+	# 位置設定（簡易版）
+	match position:
+		"left":
+			scene_instance.anchor_left = 0.0
+			scene_instance.anchor_right = 0.3
+		"right":
+			scene_instance.anchor_left = 0.7
+			scene_instance.anchor_right = 1.0
+		"center", _:
+			scene_instance.anchor_left = 0.2
+			scene_instance.anchor_right = 0.8
+	
+	scene_instance.anchor_top = 0.1
+	scene_instance.anchor_bottom = 0.9
+	
+	return true

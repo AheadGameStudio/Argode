@@ -54,14 +54,43 @@ else:
     "その他の値です"
 ```
 
-## 👤 キャラクター
+## 👤 キャラクター・シーン表示
 
 ### `show`
-キャラクターを表示。
+キャラクターまたはControlシーンを表示。
+
+#### キャラクター表示（従来機能）
 ```rgd
 show character_name
 show character_name at left
 show character_name happy
+show yuko happy at center with fade
+```
+
+#### Controlシーン表示（v2.1新機能）
+```rgd
+show scene_id scene path/to/scene.tscn
+show ui_panel scene res://scenes/ui/panel.tscn at center
+show popup_menu scene res://ui/menu.tscn at right with fade
+```
+
+**パラメータ：**
+- `character_name` または `scene_id`: 表示対象の識別子
+- `expression`: キャラクターの表情（キャラクター表示時）
+- `scene`: Controlシーン表示の指示キーワード
+- `scene_path`: 表示するシーンファイルのパス
+- `at position`: 表示位置（left, center, right）
+- `with transition`: トランジション効果（fade, slide_from_left, slide_from_right, none）
+
+**使用例：**
+```rgd
+# キャラクター表示
+show yuko happy at left with fade
+show saitos normal at right
+
+# Controlシーン表示
+show status_panel scene res://ui/status.tscn at center with fade
+show inventory scene res://ui/inventory.tscn at right with slide_from_right
 ```
 
 ### `hide`

@@ -1,0 +1,28 @@
+# Scene Display Test
+# showコマンドでControlベースのシーンを表示するテスト
+
+narrator: "Let's test the new scene display feature!"
+
+# 従来のキャラクター表示
+show yuko happy at center with fade
+
+yuko: "Hello! This is the normal character display."
+
+# 新機能：Controlベースのシーン表示
+narrator: "Now let's show a Control scene..."
+
+show test_ui scene res://scenes/ui/test_control_scene.tscn at center with fade
+
+narrator: "The Control scene should now be displayed!"
+
+# 別の位置での表示テスト
+show test_ui_right scene res://scenes/ui/test_control_scene.tscn at right with slide_from_right
+
+narrator: "And another one from the right side!"
+
+# キャラクターと同時表示のテスト
+show saitos normal at left
+
+saitos: "I can appear alongside Control scenes!"
+
+narrator: "Test complete!"

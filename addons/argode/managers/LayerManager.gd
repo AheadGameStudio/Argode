@@ -331,6 +331,87 @@ func _execute_character_transition(char_node: TextureRect, transition: String, i
 
 # === ユーティリティ ===
 
+## Control Scene Display (v2.1)
+
+func show_control_scene(scene_instance: Control, position: String = "center", transition: String = "none") -> bool:
+	"""Controlベースのシーンを表示する"""
+	if not ui_layer:
+		push_warning("⚠️ UI layer not initialized")
+		return false
+	
+	if not scene_instance or not scene_instance is Control:
+		push_warning("⚠️ Invalid Control scene instance")
+		return false
+	
+	print("🎬 LayerManager: Displaying Control scene at", position)
+	
+	# 位置設定
+	_set_control_scene_position(scene_instance, position)
+	
+	# UIレイヤーに追加
+	ui_layer.add_child(scene_instance)
+	
+	# トランジション効果
+	if transition != "none":
+		_execute_control_scene_transition(scene_instance, transition, true)
+	
+	print("✅ Control scene added to UI layer")
+	return true
+
+func _set_control_scene_position(scene_node: Control, position: String):
+	"""Controlシーンの位置を設定"""
+	match position:
+		"left":
+			scene_node.anchor_left = 0.0
+			scene_node.anchor_right = 0.4
+			scene_node.anchor_top = 0.1
+			scene_node.anchor_bottom = 0.9
+		"right":
+			scene_node.anchor_left = 0.6
+			scene_node.anchor_right = 1.0
+			scene_node.anchor_top = 0.1
+			scene_node.anchor_bottom = 0.9
+		"center", _:
+			scene_node.anchor_left = 0.2
+			scene_node.anchor_right = 0.8
+			scene_node.anchor_top = 0.1
+			scene_node.anchor_bottom = 0.9
+	
+	# アンカーに基づいて実際の位置を設定
+	scene_node.offset_left = 0
+	scene_node.offset_right = 0
+	scene_node.offset_top = 0
+	scene_node.offset_bottom = 0
+
+func _execute_control_scene_transition(scene_node: Control, transition: String, is_showing: bool):
+	"""Controlシーンのトランジション効果を実行"""
+	var duration = 0.3
+	
+	match transition:
+		"fade":
+			if is_showing:
+				scene_node.modulate.a = 0.0
+				var tween = create_tween()
+				tween.tween_property(scene_node, "modulate:a", 1.0, duration)
+			else:
+				var tween = create_tween()
+				tween.tween_property(scene_node, "modulate:a", 0.0, duration)
+				await tween.finished
+		"slide_from_left":
+			if is_showing:
+				var original_x = scene_node.position.x
+				scene_node.position.x -= get_viewport().size.x
+				var tween = create_tween()
+				tween.tween_property(scene_node, "position:x", original_x, duration)
+		"slide_from_right":
+			if is_showing:
+				var original_x = scene_node.position.x
+				scene_node.position.x += get_viewport().size.x
+				var tween = create_tween()
+				tween.tween_property(scene_node, "position:x", original_x, duration)
+
+# === ユーティリティ ===
+
 func get_layer_info() -> Dictionary:
 	"""デバッグ用レイヤー情報を取得"""
 	return {
