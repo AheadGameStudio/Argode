@@ -16,7 +16,7 @@ label definition_test_start:
     
     show takeshi_normal at left with fade
     takeshi "俺は武だ。よろしくな。"
-    
+
     # 定義済み変数を表示
     narrator "プレイヤー名: [player_name]"
     narrator "プレイヤー年齢: [player_age]歳"

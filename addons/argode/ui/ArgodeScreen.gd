@@ -20,12 +20,19 @@ var adv_system: Node = null
 
 # === UI要素NodePath設定（エディタで指定可能） ===
 @export_group("UI Element Paths")
+## メッセージボックス全体のコンテナ（キャラクター名＋メッセージを含む）
 @export var message_box_path: NodePath = ""
+## キャラクター名を表示するラベル（「由子」「斎藤」など）
 @export var name_label_path: NodePath = ""
+## メッセージ本文を表示するRichTextLabel（「こんにちは」など）
 @export var message_label_path: NodePath = ""
+## 選択肢UI全体のコンテナ（選択肢が表示される際に表示される）
 @export var choice_container_path: NodePath = ""
+## 選択肢の背景パネルコンテナ（選択肢ボタンの背景装飾＋自動配置）
 @export var choice_panel_path: NodePath = ""
+## 選択肢ボタンが配置されるVBoxContainer（縦に並ぶボタンの親）
 @export var choice_vbox_path: NodePath = ""
+## 「▼」や「クリックで続行」などの継続プロンプト表示
 @export var continue_prompt_path: NodePath = ""
 
 # === 標準UI要素参照（実行時に設定される） ===
@@ -33,7 +40,7 @@ var message_box: Control = null
 var name_label: Label = null  
 var message_label: RichTextLabel = null
 var choice_container: Control = null
-var choice_panel: Panel = null
+var choice_panel: PanelContainer = null
 var choice_vbox: VBoxContainer = null
 var continue_prompt: Label = null
 
@@ -43,20 +50,26 @@ var is_message_complete: bool = false
 var handle_input: bool = true
 
 # === 自動スクリプト設定 ===
+## シーン開始時に自動的にスクリプトを実行するかどうか
 @export var auto_start_script: bool = false
+## 自動実行するスクリプトファイルのパス（.rgdファイル）
 @export var default_script_path: String = ""
+## スクリプト開始時のラベル名（通常は"start"）
 @export var start_label: String = "start"
 
 # === レイヤーNodePath設定（エディタで指定可能） ===
 @export_group("Layer Paths")
+## 背景画像を表示するレイヤーノード（CanvasLayerやControlなど）
 @export var background_layer_path: NodePath = ""
+## キャラクター画像を表示するレイヤーノード（CanvasLayerやControlなど）
 @export var character_layer_path: NodePath = ""
 
 # === レイヤーマッピング設定 ===
+## レイヤーの実際のノード参照（背景・キャラクター・UIの3層構造）
 @export var layer_mappings: Dictionary = {
-	"background": null,
-	"character": null,
-	"ui": null
+	"background": null,    # 背景レイヤー（最下層）
+	"character": null,     # キャラクターレイヤー（中層）
+	"ui": null            # UIレイヤー（最上層、通常はArgodeScreen自身）
 }
 
 func _ready():
