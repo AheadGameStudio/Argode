@@ -16,7 +16,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Python
         uses: actions/setup-python@v4
@@ -30,23 +29,9 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.name "GitHub Actions"
+          git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
 
       - name: Deploy to GitHub Pages
         run: |
-          mkdocs gh-deploy --force
-          git fetch origin gh-pages:gh-pages
-          git checkout gh-pages
-          if [ -f CNAME ]; then
-            echo "Removing CNAME file to disable custom domain redirect"
-            rm CNAME
-            git add -A
-            git commit -m "Remove CNAME file - disable custom domain redirect" || true
-            git push origin gh-pages
-          else
-            echo "No CNAME file found"
-          fi
-          git checkout main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          mkdocs gh-deploy --clean --force
