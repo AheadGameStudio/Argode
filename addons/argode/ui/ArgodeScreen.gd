@@ -63,13 +63,15 @@ var handle_input: bool = true
 @export var background_layer_path: NodePath = ""
 ## キャラクター画像を表示するレイヤーノード（CanvasLayerやControlなど）
 @export var character_layer_path: NodePath = ""
+## UIレイヤーノード（通常は空の場合、このArgodeScreen自身が使用される）
+@export var ui_layer_path: NodePath = ""
 
 # === レイヤーマッピング設定 ===
 ## レイヤーの実際のノード参照（背景・キャラクター・UIの3層構造）
 @export var layer_mappings: Dictionary = {
 	"background": null,	# 背景レイヤー（最下層）
 	"character": null,	 # キャラクターレイヤー（中層）
-	"ui": null			# UIレイヤー（最上層、通常はArgodeScreen自身）
+	"ui": null			# UIレイヤー（最上層、通常はArgodeScreen自身またはui_layer_pathで指定）
 }
 
 func _ready():
@@ -108,6 +110,9 @@ func _emit_screen_ready():
 	
 	# レイヤーマッピング初期化
 	_initialize_layer_mappings()
+	
+	# ArgodeSystemのレイヤー初期化を確実に実行
+	_ensure_layer_manager_initialization()
 	
 	# カスタムコマンド接続
 	_connect_custom_command_signals()
@@ -338,9 +343,25 @@ func on_character_typed(_character: String, _position: int):
 
 # === レイヤーマッピングシステム ===
 
+func _ensure_layer_manager_initialization():
+	"""LayerManagerの初期化を確実に実行する"""
+	if not adv_system:
+		print("⚠️ ArgodeSystem not available - skipping layer initialization")
+		return
+	
+	if adv_system.is_initialized:
+		print("✅ ArgodeSystem already initialized")
+		return
+	
+	print("🚀 Initializing ArgodeSystem LayerManager...")
+	var success = adv_system.initialize_game(layer_mappings)
+	if not success:
+		print("❌ ArgodeSystem LayerManager initialization failed")
+	else:
+		print("✅ ArgodeSystem LayerManager initialization successful")
+
 func _initialize_layer_mappings():
 	"""レイヤーマッピングの初期化（@export NodePath優先、フォールバック自動発見）"""
-	layer_mappings["ui"] = self
 	
 	var parent_scene = get_tree().current_scene
 	if not parent_scene:
@@ -357,6 +378,15 @@ func _initialize_layer_mappings():
 	if char_layer:
 		layer_mappings["character"] = char_layer
 	
+	# UILayer（NodePathが指定されていない場合はself、指定されている場合はそのノードを使用）
+	var ui_layer = _get_layer_from_path_or_fallback(ui_layer_path, "", parent_scene)
+	if ui_layer:
+		layer_mappings["ui"] = ui_layer
+		print("   🎯 Using specified UI layer: ", ui_layer.get_path())
+	else:
+		layer_mappings["ui"] = self
+		print("   🎯 Using self as UI layer: ", self.get_path())
+	
 	print("📱 AdvScreen: Layer mappings initialized:", layer_mappings)
 
 func _get_layer_from_path_or_fallback(node_path: NodePath, fallback_name: String, parent_scene: Node) -> Node:
@@ -366,12 +396,16 @@ func _get_layer_from_path_or_fallback(node_path: NodePath, fallback_name: String
 	if not node_path.is_empty():
 		var node = get_node_or_null(node_path)
 		if node:
-			print("   ✅ Using layer NodePath: ", fallback_name, " -> ", node_path)
+			print("   ✅ Using layer NodePath: ", fallback_name if not fallback_name.is_empty() else "UILayer", " -> ", node_path)
 			return node
 		else:
-			print("   ⚠️ Layer NodePath not found: ", node_path, " for ", fallback_name)
+			print("   ⚠️ Layer NodePath not found: ", node_path, " for ", fallback_name if not fallback_name.is_empty() else "UILayer")
 	
-	# 2. フォールバック：自動発見
+	# 2. フォールバック：自動発見（UIレイヤーの場合はスキップ）
+	if fallback_name.is_empty():
+		# UIレイヤーの場合は自動発見をスキップ（selfがデフォルト）
+		return null
+	
 	var node = parent_scene.find_child(fallback_name, true, false)
 	if node:
 		print("   🔍 Auto-discovered layer: ", fallback_name, " -> ", node.get_path())
@@ -434,9 +468,9 @@ func _start_auto_script():
 	
 	print("🎬 Auto-starting script:", default_script_path, "from label:", start_label)
 	
-	# ArgodeSystemにレイヤーマッピングを渡して初期化
+	# LayerManager初期化は_ensure_layer_manager_initialization()で実行済み
 	if not adv_system.is_initialized:
-		print("🚀 Initializing ArgodeSystem...")
+		print("⚠️ ArgodeSystem not initialized - this should not happen")
 		var success = adv_system.initialize_game(layer_mappings)
 		if not success:
 			print("❌ ArgodeSystem initialization failed")

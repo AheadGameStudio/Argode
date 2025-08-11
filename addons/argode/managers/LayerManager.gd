@@ -335,12 +335,21 @@ func _execute_character_transition(char_node: TextureRect, transition: String, i
 
 func show_control_scene(scene_instance: Control, position: String = "center", transition: String = "none") -> bool:
 	"""Controlベースのシーンを表示する"""
+	print("🎬 LayerManager: show_control_scene called")
+	print("🔍 scene_instance:", scene_instance)
+	print("🔍 position:", position)
+	print("🔍 transition:", transition)
+	print("🔍 ui_layer:", ui_layer)
+	print("🔍 ui_layer is null:", ui_layer == null)
+	
 	if not ui_layer:
 		push_warning("⚠️ UI layer not initialized")
+		print("❌ LayerManager: UI layer is null - cannot display scene")
 		return false
 	
 	if not scene_instance or not scene_instance is Control:
 		push_warning("⚠️ Invalid Control scene instance")
+		print("❌ LayerManager: Invalid scene instance")
 		return false
 	
 	print("🎬 LayerManager: Displaying Control scene at", position)
@@ -349,6 +358,7 @@ func show_control_scene(scene_instance: Control, position: String = "center", tr
 	_set_control_scene_position(scene_instance, position)
 	
 	# UIレイヤーに追加
+	print("🔍 Adding scene to ui_layer:", ui_layer.get_path() if ui_layer else "null")
 	ui_layer.add_child(scene_instance)
 	
 	# トランジション効果
