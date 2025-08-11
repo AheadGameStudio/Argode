@@ -537,6 +537,54 @@ func _handle_menu():
 	else:
 		print("⚠️ No choices found for menu")
 
+func on_choice_selected(choice_index: int):
+	print("🔔 AdvScriptPlayer: Choice selected - index:", choice_index)
+	is_waiting_for_choice = false
+	
+	# Find the target line for this choice
+	var choices_found = 0
+	var temp_index = current_line_index
+	
+	while temp_index + 1 < script_lines.size():
+		temp_index += 1
+		var line = script_lines[temp_index]
+		var line_trimmed = line.strip_edges()
+		
+		if line_trimmed.is_empty() or line_trimmed.begins_with("#"):
+			continue
+		
+		var choice_match = regex_choice.search(line)
+		if choice_match:
+			if choices_found == choice_index:
+				print("🎯 Found target choice at line:", temp_index)
+				# Find the first non-empty line after this choice
+				temp_index += 1
+				while temp_index < script_lines.size():
+					var target_line = script_lines[temp_index]
+					var target_trimmed = target_line.strip_edges()
+					if not target_trimmed.is_empty() and not target_trimmed.begins_with("#"):
+						current_line_index = temp_index - 1  # -1 because _tick() will increment
+						print("🚀 Jumping to line:", current_line_index + 1, "->", target_trimmed)
+						call_deferred("_tick")
+						return
+					temp_index += 1
+				
+				# If no valid line found after choice, end menu processing
+				print("⚠️ No valid line found after choice")
+				current_line_index = temp_index - 1
+				call_deferred("_tick")
+				return
+			
+			choices_found += 1
+		else:
+			# インデントレベルをチェックしてブロック終了を判定
+			var indent_level = _get_indent_level(line)
+			if indent_level == 0 and not line_trimmed.is_empty():
+				print("📋 Menu block ended at line:", temp_index)
+				break
+	
+	print("❌ Choice index", choice_index, "not found. Found", choices_found, "choices total.")
+
 func _get_indent_level(line: String) -> int:
 	"""行のインデントレベルを取得（スペース4個 or タブ1個 = レベル1）"""
 	var indent = 0
