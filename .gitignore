@@ -142,3 +142,12 @@ node_modules/
 .env
 .env.local
 .env.*.local
+
+# Development Documentation (Local Only)
+# 開発用ドキュメント（ローカル専用管理）
+CLAUDE.md
+TODO.md
+BUILTIN_COMMANDS.md
+CUSTOM_COMMANDS.md
+DESIGN_DOCUMENT*.md
+USAGE_GUIDE.md
