@@ -51,8 +51,8 @@ class ProcessResult:
 	var tags: Array[ParsedTag]  # 解析されたタグ情報
 	var position_mapping: Array[int]  # 元の位置から新しい位置へのマッピング
 	
-	func _init():
-		clean_text = ""
+	func _init(initial_text: String = ""):
+		clean_text = initial_text
 		tags = []
 		position_mapping = []
 
@@ -60,7 +60,7 @@ class ProcessResult:
 
 func process_text(input_text: String) -> ProcessResult:
 	"""テキストを解析してインラインタグを抽出・処理"""
-	var result = ProcessResult.new()
+	var result = ProcessResult.new(input_text)
 	var regex = RegEx.new()
 	regex.compile("\\{([^}]+)\\}")
 	
