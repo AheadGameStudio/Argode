@@ -169,7 +169,7 @@ func _execute_show(args: PackedStringArray, adv_system: Node) -> void:
 			print("❌ UI layer is null! Layer info:", adv_system.LayerManager.get_layer_info())
 		
 		print("🔍 Calling show_control_scene with:", scene_instance, position, transition)
-		var success = adv_system.LayerManager.show_control_scene(scene_instance, position, transition)
+		var success = await adv_system.LayerManager.show_control_scene(scene_instance, position, transition)
 		print("🔍 show_control_scene returned:", success)
 		print("🔍 show_control_scene returned:", success)
 		if not success:
@@ -405,7 +405,7 @@ func _execute_call(args: PackedStringArray, adv_system: Node) -> void:
 	
 	# LayerManagerで表示
 	if adv_system.LayerManager:
-		var success = adv_system.LayerManager.show_control_scene(scene_instance, position, transition)
+		var success = await adv_system.LayerManager.show_control_scene(scene_instance, position, transition)
 		if success:
 			print("✅ Call screen displayed successfully")
 			# シーン追跡に追加

@@ -363,7 +363,7 @@ func show_control_scene(scene_instance: Control, position: String = "center", tr
 	
 	# トランジション効果
 	if transition != "none":
-		_execute_control_scene_transition(scene_instance, transition, true)
+		await _execute_control_scene_transition(scene_instance, transition, true)
 	
 	print("✅ Control scene added to UI layer")
 	return true
@@ -403,6 +403,7 @@ func _execute_control_scene_transition(scene_node: Control, transition: String, 
 				scene_node.modulate.a = 0.0
 				var tween = create_tween()
 				tween.tween_property(scene_node, "modulate:a", 1.0, duration)
+				await tween.finished
 			else:
 				var tween = create_tween()
 				tween.tween_property(scene_node, "modulate:a", 0.0, duration)
@@ -413,12 +414,14 @@ func _execute_control_scene_transition(scene_node: Control, transition: String, 
 				scene_node.position.x -= get_viewport().size.x
 				var tween = create_tween()
 				tween.tween_property(scene_node, "position:x", original_x, duration)
+				await tween.finished
 		"slide_from_right":
 			if is_showing:
 				var original_x = scene_node.position.x
 				scene_node.position.x += get_viewport().size.x
 				var tween = create_tween()
 				tween.tween_property(scene_node, "position:x", original_x, duration)
+				await tween.finished
 
 # === ユーティリティ ===
 
