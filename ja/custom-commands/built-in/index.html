@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>Built-in Commands - Argode ドキュメント</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="A powerful visual novel framework for Godot Engine">
+<meta name="generator" content="mkdocs-1.6.1, mkdocs-gitbook-1.0.7">
+<meta name="author" content="AheadGameStudio">
+<link rel="shortcut icon" href="../../../images/favicon.ico" type="image/x-icon">
+<meta name="HandheldFriendly" content="true"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta rel="next" href="" />
+<link href="../../../css/style.min.css" rel="stylesheet"> 
+</head>
+
+<body>
+<div class="book">
+<div class="book-summary">
+<div id="book-search-input" role="search">
+<input type="text" placeholder="Type to search" />
+</div> <!-- end of book-search-input -->
+
+<nav role="navigation">
+<ul class="summary">
+<li>
+<a href="../../" target="_blank" class="custom-link">Argode ドキュメント</a>
+</li>
+<li class="divider"></li>
+<li class="chapter" data-path="ja/">
+<a href="../../">Home</a>
+<li class="header">Getting Started</li>
+
+<li>
+<a href="../../getting-started/quick-start/" class="">Quick Start</a>
+</li>
+
+<li>
+<a href="../../../getting-started/installation.md" class="">Installation</a>
+</li>
+
+<li>
+<a href="../../../getting-started/basic-setup.md" class="">Basic Setup</a>
+</li>
+
+<li class="header">Architecture</li>
+
+<li>
+<a href="../../architecture/design-philosophy/" class="">Design Philosophy</a>
+</li>
+
+<li>
+<a href="../../../architecture/system-overview.md" class="">System Overview</a>
+</li>
+
+<li>
+<a href="../../../architecture/core-components.md" class="">Core Components</a>
+</li>
+
+<li class="header">Script Reference</li>
+
+<li>
+<a href="../../../script/rgd-syntax.md" class="">RGD Syntax</a>
+</li>
+
+<li>
+<a href="../../../script/commands.md" class="">Commands</a>
+</li>
+
+<li>
+<a href="../../../script/variables.md" class="">Variables & Expressions</a>
+</li>
+
+<li>
+<a href="../../../script/definitions.md" class="">Definitions</a>
+</li>
+
+<li class="header">Custom Commands</li>
+
+<li>
+<a href="../overview/" class="">Overview</a>
+</li>
+
+<li>
+<a href="./" class="active">Built-in Commands</a>
+</li>
+
+<li>
+<a href="../../../custom-commands/creating.md" class="">Creating Commands</a>
+</li>
+
+<li class="header">UI System</li>
+
+<li>
+<a href="../../../ui/advscreen.md" class="">AdvScreen</a>
+</li>
+
+<li>
+<a href="../../../ui/themes.md" class="">Themes</a>
+</li>
+
+<li>
+<a href="../../../ui/custom.md" class="">Custom UI</a>
+</li>
+
+<li class="header">Advanced Topics</li>
+
+<li>
+<a href="../../../advanced/asset-management.md" class="">Asset Management</a>
+</li>
+
+<li>
+<a href="../../../advanced/performance.md" class="">Performance Optimization</a>
+</li>
+
+<li>
+<a href="../../../advanced/debugging.md" class="">Debugging</a>
+</li>
+
+<li class="header">Examples</li>
+
+<li>
+<a href="../../../examples/simple-vn.md" class="">Simple VN</a>
+</li>
+
+<li>
+<a href="../../../examples/custom-features.md" class="">Custom Features</a>
+</li>
+
+<li>
+<a href="../../../examples/best-practices.md" class="">Best Practices</a>
+</li>
+
+<li class="header">API Reference</li>
+
+<li>
+<a href="../../../api/argode-system.md" class="">ArgodeSystem</a>
+</li>
+
+<li>
+<a href="../../../api/script-player.md" class="">ScriptPlayer</a>
+</li>
+
+<li>
+<a href="../../../api/managers.md" class="">Managers</a>
+</li>
+
+<li class="divider"></li>
+
+
+
+<li><a href="http://www.mkdocs.org">
+Published with MkDocs
+</a></li>
+
+<li><a href="https://github.com/GitbookIO/theme-default">
+Theme by GitBook
+</a></li>
+</ul>
+
+</nav>
+
+</div> <!-- end of book-summary -->
+
+<div class="book-body">
+<div class="body-inner">
+<div class="book-header" role="navigation">
+
+<!-- Title -->
+<h1>
+<i class="fa fa-circle-o-notch fa-spin"></i>
+<a href="." ></a>
+</h1>
+
+</div> <!-- end of book-header -->
+
+<div class="page-wrapper" tabindex="-1" role="main">
+<div class="page-inner">
+<div id="book-search-results">
+<div class="search-noresults">
+
+<section class="normal markdown-section">
+
+
+
+<h1 id="built-in-custom-commands">Built-in Custom Commands</h1>
+<p>Argode includes a comprehensive set of pre-built custom commands that you can use immediately in your visual novels. These commands demonstrate best practices and provide common functionality out of the box.</p>
+<h2 id="window-operations">🪟 Window Operations</h2>
+<h3 id="window-shake"><code>window shake</code></h3>
+<p>Shake the game window for dramatic effect.</p>
+<pre class="highlight"><code class="language-rgd">window shake intensity=5.0 duration=0.5
+window shake 3.0 0.8  # Positional parameters</code></pre>
+<p><strong>Parameters:</strong>
+- <code>intensity</code> (float): Shake strength (default: 5.0)
+- <code>duration</code> (float): Duration in seconds (default: 0.5)</p>
+<p><strong>Use Cases:</strong>
+- Explosions and impacts
+- Earthquake scenes<br />
+- Dramatic reveals</p>
+<hr />
+<h3 id="window-fullscreen"><code>window fullscreen</code></h3>
+<p>Toggle fullscreen mode.</p>
+<pre class="highlight"><code class="language-rgd">window fullscreen true
+window fullscreen false
+window fullscreen toggle  # Toggles current state</code></pre>
+<p><strong>Parameters:</strong>
+- <code>state</code> (bool/string): <code>true</code>, <code>false</code>, or <code>"toggle"</code></p>
+<hr />
+<h3 id="window-minimize"><code>window minimize</code></h3>
+<p>Minimize the game window.</p>
+<pre class="highlight"><code class="language-rgd">window minimize</code></pre>
+<p><strong>Use Cases:</strong>
+- Easter eggs
+- Breaking the fourth wall
+- Special story moments</p>
+<h2 id="camera-effects">📹 Camera Effects</h2>
+<h3 id="camera_shake"><code>camera_shake</code></h3>
+<p>Shake the camera/screen for visual impact.</p>
+<pre class="highlight"><code class="language-rgd">camera_shake intensity=2.0 duration=0.5 type=both
+camera_shake 3.0 1.0 horizontal  # Positional parameters</code></pre>
+<p><strong>Parameters:</strong>
+- <code>intensity</code> (float): Shake strength (default: 1.0)
+- <code>duration</code> (float): Duration in seconds (default: 0.5)<br />
+- <code>type</code> (string): Direction - <code>both</code>, <code>horizontal</code>, <code>vertical</code> (default: both)</p>
+<p><strong>Examples:</strong>
+<pre class="highlight"><code class="language-rgd"># Subtle character emotion
+camera_shake intensity=0.5 duration=0.2 type=horizontal
+
+# Major explosion
+camera_shake intensity=8.0 duration=1.5 type=both
+
+# Vertical impact
+camera_shake intensity=3.0 duration=0.8 type=vertical</code></pre></p>
+<h2 id="screen-effects">🎨 Screen Effects</h2>
+<h3 id="screen_tint"><code>screen_tint</code></h3>
+<p>Apply a color tint to the entire screen.</p>
+<pre class="highlight"><code class="language-rgd">screen_tint color=#ff0000 intensity=0.3 duration=1.0
+screen_tint red 0.5 2.0  # Positional parameters</code></pre>
+<p><strong>Parameters:</strong>
+- <code>color</code> (Color): Tint color (default: #ffffff)
+- <code>intensity</code> (float): Tint strength 0.0-1.0 (default: 0.5)
+- <code>duration</code> (float): Fade-in duration (default: 1.0)</p>
+<p><strong>Use Cases:</strong>
+<pre class="highlight"><code class="language-rgd"># Danger/anger scene
+screen_tint color=#ff0000 intensity=0.2 duration=0.5
+
+# Sadness/melancholy  
+screen_tint color=#0066ff intensity=0.3 duration=2.0
+
+# Sickness/poison
+screen_tint color=#00ff00 intensity=0.4 duration=1.0
+
+# Remove tint
+screen_tint color=#ffffff intensity=0.0 duration=1.5</code></pre></p>
+<hr />
+<h3 id="screen_flash"><code>screen_flash</code></h3>
+<p>Quick screen flash effect.</p>
+<pre class="highlight"><code class="language-rgd">screen_flash color=#ffffff duration=0.1 intensity=1.0
+screen_flash white 0.05  # Positional parameters</code></pre>
+<p><strong>Parameters:</strong>
+- <code>color</code> (Color): Flash color (default: #ffffff) 
+- <code>duration</code> (float): Flash duration (default: 0.1)
+- <code>intensity</code> (float): Flash brightness (default: 1.0)</p>
+<p><strong>Examples:</strong>
+<pre class="highlight"><code class="language-rgd"># Lightning flash
+screen_flash color=#ffffff duration=0.05 intensity=0.8
+
+# Magic spell effect  
+screen_flash color=#ff00ff duration=0.2 intensity=0.6
+
+# Camera flash
+screen_flash color=#ffffff duration=0.1 intensity=1.0</code></pre></p>
+<hr />
+<h3 id="screen_blur"><code>screen_blur</code></h3>
+<p>Apply blur effect to the screen.</p>
+<pre class="highlight"><code class="language-rgd">screen_blur intensity=2.0 duration=0.5
+screen_blur 1.5 1.0  # Positional parameters</code></pre>
+<p><strong>Parameters:</strong>
+- <code>intensity</code> (float): Blur amount (default: 1.0)
+- <code>duration</code> (float): Transition duration (default: 0.5)</p>
+<p><strong>Use Cases:</strong>
+<pre class="highlight"><code class="language-rgd"># Character loses focus
+screen_blur intensity=3.0 duration=1.0
+
+# Dream sequence start
+screen_blur intensity=2.0 duration=2.0
+
+# Remove blur
+screen_blur intensity=0.0 duration=1.0</code></pre></p>
+<h2 id="audio-commands">🎵 Audio Commands</h2>
+<h3 id="play_sound"><code>play_sound</code></h3>
+<p>Play a sound effect.</p>
+<pre class="highlight"><code class="language-rgd">play_sound "door_open.wav" volume=1.0
+play_sound footsteps.ogg 0.8  # Positional parameters</code></pre>
+<p><strong>Parameters:</strong>
+- <code>file</code> (string): Audio file path
+- <code>volume</code> (float): Volume 0.0-1.0 (default: 1.0)</p>
+<hr />
+<h3 id="play_music"><code>play_music</code></h3>
+<p>Play background music with optional fade.</p>
+<pre class="highlight"><code class="language-rgd">play_music "theme.ogg" volume=0.7 fade_in=2.0
+play_music battle_music.ogg  # Positional parameters</code></pre>
+<p><strong>Parameters:</strong>
+- <code>file</code> (string): Music file path
+- <code>volume</code> (float): Volume 0.0-1.0 (default: 0.8)
+- <code>fade_in</code> (float): Fade-in duration (default: 0.0)</p>
+<hr />
+<h3 id="stop_music"><code>stop_music</code></h3>
+<p>Stop background music with optional fade-out.</p>
+<pre class="highlight"><code class="language-rgd">stop_music fade_out=1.5
+stop_music 2.0  # Positional parameter</code></pre>
+<p><strong>Parameters:</strong>
+- <code>fade_out</code> (float): Fade-out duration (default: 0.0)</p>
+<h2 id="particle-effects">✨ Particle Effects</h2>
+<h3 id="particle_effect"><code>particle_effect</code></h3>
+<p>Create particle effects at specified positions.</p>
+<pre class="highlight"><code class="language-rgd">particle_effect explosion x=400 y=300 scale=1.0
+particle_effect snow x=640 y=100 scale=0.5</code></pre>
+<p><strong>Parameters:</strong>
+- <code>type</code> (string): Effect type (<code>explosion</code>, <code>snow</code>, <code>fire</code>, <code>sparkle</code>)
+- <code>x</code> (float): X position (default: screen center)
+- <code>y</code> (float): Y position (default: screen center)<br />
+- <code>scale</code> (float): Effect scale (default: 1.0)</p>
+<p><strong>Built-in Effect Types:</strong>
+- <code>explosion</code>: Fiery explosion with debris
+- <code>snow</code>: Gentle falling snow
+- <code>fire</code>: Flickering flames
+- <code>sparkle</code>: Magical sparkles
+- <code>smoke</code>: Rising smoke clouds</p>
+<h2 id="layer-effects">🎭 Layer Effects</h2>
+<h3 id="layer_tint"><code>layer_tint</code></h3>
+<p>Apply tint to specific layers.</p>
+<pre class="highlight"><code class="language-rgd">layer_tint background color=#0066cc intensity=0.5 duration=1.0
+layer_tint characters red 0.3 2.0  # Positional parameters</code></pre>
+<p><strong>Parameters:</strong>
+- <code>layer</code> (string): Layer name (<code>background</code>, <code>characters</code>, <code>ui</code>)
+- <code>color</code> (Color): Tint color
+- <code>intensity</code> (float): Tint strength 0.0-1.0
+- <code>duration</code> (float): Transition duration</p>
+<p><strong>Examples:</strong>
+<pre class="highlight"><code class="language-rgd"># Sunset lighting on background
+layer_tint background color=#ff8800 intensity=0.4 duration=3.0
+
+# Character in shadow
+layer_tint characters color=#000066 intensity=0.6 duration=1.0</code></pre></p>
+<h2 id="timing-commands">🕐 Timing Commands</h2>
+<h3 id="wait"><code>wait</code></h3>
+<p>Pause script execution for specified duration.</p>
+<pre class="highlight"><code class="language-rgd">wait duration=2.0
+wait 1.5  # Positional parameter</code></pre>
+<p><strong>Parameters:</strong>
+- <code>duration</code> (float): Wait time in seconds</p>
+<p><strong>Use Cases:</strong>
+<pre class="highlight"><code class="language-rgd">narrator "Something is about to happen..."
+wait 2.0
+screen_flash
+narrator "There it is!"</code></pre></p>
+<hr />
+<h3 id="wait_for_input"><code>wait_for_input</code></h3>
+<p>Wait for player input before continuing.</p>
+<pre class="highlight"><code class="language-rgd">wait_for_input message="Press any key to continue"
+wait_for_input  # Uses default message</code></pre>
+<p><strong>Parameters:</strong>
+- <code>message</code> (string): Instruction text (optional)</p>
+<h2 id="save-system-commands">💾 Save System Commands</h2>
+<h3 id="quicksave"><code>quicksave</code></h3>
+<p>Create a quick save at current position.</p>
+<pre class="highlight"><code class="language-rgd">quicksave slot=1 message="Progress saved!"
+quicksave  # Uses default slot</code></pre>
+<p><strong>Parameters:</strong>
+- <code>slot</code> (int): Save slot number (default: 1)
+- <code>message</code> (string): Confirmation message (optional)</p>
+<hr />
+<h3 id="quickload"><code>quickload</code></h3>
+<p>Load from quick save slot.</p>
+<pre class="highlight"><code class="language-rgd">quickload slot=1
+quickload  # Loads from default slot</code></pre>
+<p><strong>Parameters:</strong>
+- <code>slot</code> (int): Save slot number (default: 1)</p>
+<h2 id="advanced-examples">🎮 Advanced Examples</h2>
+<h3 id="combining-commands">Combining Commands</h3>
+<pre class="highlight"><code class="language-rgd">label dramatic_reveal:
+    narrator "The truth is about to be revealed..."
+
+    # Build tension
+    camera_shake intensity=1.0 duration=0.5 type=horizontal
+    wait 0.5
+
+    # Major revelation
+    screen_flash color=#ffffff duration=0.1
+    screen_tint color=#ff0000 intensity=0.3 duration=0.5
+    window shake intensity=8.0 duration=1.0
+    play_sound "dramatic_sting.wav" volume=1.0
+
+    narrator "I am your father!"
+
+    # Calm down
+    wait 2.0
+    screen_tint color=#ffffff intensity=0.0 duration=2.0</code></pre>
+<h3 id="atmospheric-scene">Atmospheric Scene</h3>
+<pre class="highlight"><code class="language-rgd">label forest_night:
+    scene bg_forest_night with fade
+
+    # Set night atmosphere
+    screen_tint color=#000066 intensity=0.4 duration=2.0
+    layer_tint background color=#001122 intensity=0.6 duration=2.0
+    play_music "night_ambience.ogg" volume=0.5 fade_in=3.0
+
+    # Add environmental effects
+    particle_effect snow x=320 y=100 scale=0.3
+    wait 1.0
+    particle_effect snow x=500 y=150 scale=0.4
+
+    alice "It's getting cold..."</code></pre>
+<h2 id="implementation-notes">🔧 Implementation Notes</h2>
+<p>All built-in custom commands are implemented in <code>CustomCommandHandler.gd</code> and follow these patterns:</p>
+<ul>
+<li><strong>Parameter validation</strong>: All inputs are validated and clamped to safe ranges</li>
+<li><strong>Error handling</strong>: Invalid parameters generate warnings instead of crashes</li>
+<li><strong>Async support</strong>: Long-running commands properly signal completion</li>
+<li><strong>Resource cleanup</strong>: Effects are automatically cleaned up when scenes change</li>
+</ul>
+<h2 id="next-steps">📚 Next Steps</h2>
+<ul>
+<li><strong><a href="creating.md">Creating Custom Commands</a></strong>: Build your own commands</li>
+<li><strong><a href="../examples/custom-features.md">Advanced Patterns</a></strong>: Complex command combinations</li>
+<li><strong><a href="../advanced/performance.md">Performance Tips</a></strong>: Optimizing command usage</li>
+</ul>
+<hr />
+<p>These built-in commands provide a solid foundation for most visual novel needs. Combined with the ability to create your own custom commands, Argode offers unlimited creative possibilities!</p>
+<p><a class="md-button md-button--primary" href="creating.md">Learn to Create Commands →</a>
+<a class="md-button" href="../examples/custom-features.md">View Examples →</a></p>
+
+
+</section>
+</div> <!-- end of search-noresults -->
+<div class="search-results">
+<div class="has-results">
+
+<h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+<ul class="search-results-list"></ul>
+
+</div> <!-- end of has-results -->
+<div class="no-results">
+
+<h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+
+</div> <!-- end of no-results -->
+</div> <!-- end of search-results -->
+</div> <!-- end of book-search-results -->
+
+</div> <!-- end of page-inner -->
+</div> <!-- end of page-wrapper -->
+
+</div> <!-- end of body-inner -->
+
+</div> <!-- end of book-body -->
+<script src="../../../js/main.js"></script>
+<script src="../../../search/main.js"></script>
+<script src="../../../js/gitbook.min.js"></script>
+<script src="../../../js/theme.min.js"></script>
+</body>
+</html>

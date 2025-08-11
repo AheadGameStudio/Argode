@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<title>Overview - Argode Documentation</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="A powerful visual novel framework for Godot Engine">
+<meta name="generator" content="mkdocs-1.6.1, mkdocs-gitbook-1.0.7">
+<meta name="author" content="AheadGameStudio">
+<link rel="shortcut icon" href="../../images/favicon.ico" type="image/x-icon">
+<meta name="HandheldFriendly" content="true"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta rel="next" href="" />
+<link href="../../css/style.min.css" rel="stylesheet"> 
+</head>
+
+<body>
+<div class="book">
+<div class="book-summary">
+<div id="book-search-input" role="search">
+<input type="text" placeholder="Type to search" />
+</div> <!-- end of book-search-input -->
+
+<nav role="navigation">
+<ul class="summary">
+<li>
+<a href="../.." target="_blank" class="custom-link">Argode Documentation</a>
+</li>
+<li class="divider"></li>
+<li class="chapter" data-path="">
+<a href="../..">Home</a>
+<li class="header">Getting Started</li>
+
+<li>
+<a href="../../getting-started/quick-start/" class="">Quick Start</a>
+</li>
+
+<li>
+<a href="../../getting-started/installation.md" class="">Installation</a>
+</li>
+
+<li>
+<a href="../../getting-started/basic-setup.md" class="">Basic Setup</a>
+</li>
+
+<li class="header">Architecture</li>
+
+<li>
+<a href="../../architecture/design-philosophy/" class="">Design Philosophy</a>
+</li>
+
+<li>
+<a href="../../architecture/system-overview.md" class="">System Overview</a>
+</li>
+
+<li>
+<a href="../../architecture/core-components.md" class="">Core Components</a>
+</li>
+
+<li class="header">Script Reference</li>
+
+<li>
+<a href="../../script/rgd-syntax.md" class="">RGD Syntax</a>
+</li>
+
+<li>
+<a href="../../script/commands.md" class="">Commands</a>
+</li>
+
+<li>
+<a href="../../script/variables.md" class="">Variables & Expressions</a>
+</li>
+
+<li>
+<a href="../../script/definitions.md" class="">Definitions</a>
+</li>
+
+<li class="header">Custom Commands</li>
+
+<li>
+<a href="./" class="active">Overview</a>
+</li>
+
+<li>
+<a href="../built-in/" class="">Built-in Commands</a>
+</li>
+
+<li>
+<a href="../creating.md" class="">Creating Commands</a>
+</li>
+
+<li class="header">UI System</li>
+
+<li>
+<a href="../../ui/advscreen.md" class="">AdvScreen</a>
+</li>
+
+<li>
+<a href="../../ui/themes.md" class="">Themes</a>
+</li>
+
+<li>
+<a href="../../ui/custom.md" class="">Custom UI</a>
+</li>
+
+<li class="header">Advanced Topics</li>
+
+<li>
+<a href="../../advanced/asset-management.md" class="">Asset Management</a>
+</li>
+
+<li>
+<a href="../../advanced/performance.md" class="">Performance Optimization</a>
+</li>
+
+<li>
+<a href="../../advanced/debugging.md" class="">Debugging</a>
+</li>
+
+<li class="header">Examples</li>
+
+<li>
+<a href="../../examples/simple-vn.md" class="">Simple VN</a>
+</li>
+
+<li>
+<a href="../../examples/custom-features.md" class="">Custom Features</a>
+</li>
+
+<li>
+<a href="../../examples/best-practices.md" class="">Best Practices</a>
+</li>
+
+<li class="header">API Reference</li>
+
+<li>
+<a href="../../api/argode-system.md" class="">ArgodeSystem</a>
+</li>
+
+<li>
+<a href="../../api/script-player.md" class="">ScriptPlayer</a>
+</li>
+
+<li>
+<a href="../../api/managers.md" class="">Managers</a>
+</li>
+
+<li class="divider"></li>
+
+
+
+<li><a href="http://www.mkdocs.org">
+Published with MkDocs
+</a></li>
+
+<li><a href="https://github.com/GitbookIO/theme-default">
+Theme by GitBook
+</a></li>
+</ul>
+
+</nav>
+
+</div> <!-- end of book-summary -->
+
+<div class="book-body">
+<div class="body-inner">
+<div class="book-header" role="navigation">
+
+<!-- Title -->
+<h1>
+<i class="fa fa-circle-o-notch fa-spin"></i>
+<a href="." ></a>
+</h1>
+
+</div> <!-- end of book-header -->
+
+<div class="page-wrapper" tabindex="-1" role="main">
+<div class="page-inner">
+<div id="book-search-results">
+<div class="search-noresults">
+
+<section class="normal markdown-section">
+
+
+
+<h1 id="custom-commands-overview">Custom Commands Overview</h1>
+<p>One of Argode's most powerful features is its <strong>unlimited extensibility</strong> through custom commands. Any command not recognized by the built-in script parser is automatically forwarded as a signal, allowing you to implement game-specific functionality seamlessly.</p>
+<h2 id="how-custom-commands-work">🎯 How Custom Commands Work</h2>
+<p>When Argode encounters an unknown command in your script, it follows this process:</p>
+<pre class="mermaid"><code>graph TD
+    A[Parse Script Line] --&gt; B{Built-in Command?}
+    B --&gt;|Yes| C[Execute Built-in]
+    B --&gt;|No| D[Extract Command &amp; Parameters]
+    D --&gt; E[Emit custom_command_executed Signal]
+    E --&gt; F[Your Handler Receives Signal]
+    F --&gt; G[Execute Custom Logic]
+    G --&gt; H[Continue Script]
+
+    style E fill:#e1f5fe
+    style F fill:#f3e5f5</code></pre>
+<h2 id="basic-example">📝 Basic Example</h2>
+<p>Let's create a custom screen shake effect:</p>
+<h3 id="in-your-script-storyrgd">In Your Script (story.rgd)</h3>
+<pre class="highlight"><code class="language-rgd">label earthquake_scene:
+    narrator "The ground begins to shake!"
+    screen_shake intensity=8.0 duration=2.0
+    narrator "That was intense!"</code></pre>
+<h3 id="in-your-code-maingd">In Your Code (Main.gd)</h3>
+<pre class="highlight"><code class="language-gdscript">extends Control
+
+func _ready():
+    # Connect to the custom command signal
+    ArgodeSystem.ScriptPlayer.custom_command_executed.connect(_handle_custom_command)
+
+func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
+    match command_name:
+        "screen_shake":
+            var intensity = parameters.get("intensity", 5.0)
+            var duration = parameters.get("duration", 1.0)
+            _shake_screen(intensity, duration)
+
+func _shake_screen(intensity: float, duration: float):
+    var tween = create_tween()
+    var original_position = global_position
+
+    for i in range(int(duration * 60)):  # 60 FPS
+        var offset = Vector2(
+            randf_range(-intensity, intensity),
+            randf_range(-intensity, intensity)
+        )
+        tween.tween_to(global_position + offset, 1.0/60.0)
+
+    tween.tween_to(original_position, 0.1)</code></pre>
+<h2 id="parameter-parsing">🔧 Parameter Parsing</h2>
+<p>Argode automatically parses parameters in multiple formats:</p>
+<h3 id="key-value-parameters">Key-Value Parameters</h3>
+<p><pre class="highlight"><code class="language-rgd">particle_effect type="explosion" x=100 y=200 scale=1.5</code></pre>
+<pre class="highlight"><code class="language-gdscript"># parameters["type"] = "explosion"
+# parameters["x"] = 100
+# parameters["y"] = 200  
+# parameters["scale"] = 1.5</code></pre></p>
+<h3 id="positional-parameters">Positional Parameters</h3>
+<p><pre class="highlight"><code class="language-rgd">fade_to_color red 2.0 ease_in</code></pre>
+<pre class="highlight"><code class="language-gdscript"># parameters["arg0"] = "red"
+# parameters["arg1"] = 2.0
+# parameters["arg2"] = "ease_in"
+# parameters["_count"] = 3</code></pre></p>
+<h3 id="mixed-parameters">Mixed Parameters</h3>
+<p><pre class="highlight"><code class="language-rgd">spawn_enemy goblin attack=15 x=300 magical=true</code></pre>
+<pre class="highlight"><code class="language-gdscript"># parameters["arg0"] = "goblin"
+# parameters["attack"] = 15
+# parameters["x"] = 300
+# parameters["magical"] = true</code></pre></p>
+<h2 id="built-in-custom-commands">🎮 Built-in Custom Commands</h2>
+<p>Argode includes several pre-built custom commands that demonstrate best practices:</p>
+<h3 id="window-effects">Window Effects</h3>
+<pre class="highlight"><code class="language-rgd">window shake intensity=5.0 duration=0.5
+window fullscreen toggle
+window resize 1280 720</code></pre>
+<h3 id="screen-effects">Screen Effects</h3>
+<pre class="highlight"><code class="language-rgd">screen_tint color=#ff0000 intensity=0.3 duration=1.0
+screen_flash color=#ffffff duration=0.1
+screen_blur intensity=2.0 duration=0.5</code></pre>
+<h3 id="advanced-effects">Advanced Effects</h3>
+<pre class="highlight"><code class="language-rgd">particle_effect explosion x=400 y=300
+camera_shake intensity=3.0 duration=1.5 
+layer_tint background color=#0066cc intensity=0.5</code></pre>
+<p><a class="md-button" href="../built-in/">View All Built-in Commands →</a></p>
+<h2 id="synchronous-vs-asynchronous-commands">⚡ Synchronous vs Asynchronous Commands</h2>
+<p>Commands can be either <strong>synchronous</strong> (block script execution) or <strong>asynchronous</strong> (run in parallel):</p>
+<h3 id="asynchronous-default">Asynchronous (Default)</h3>
+<pre class="highlight"><code class="language-gdscript">func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
+    match command_name:
+        "play_sound":
+            # Script continues immediately
+            audio_player.play_sound(parameters.get("file"))</code></pre>
+<h3 id="synchronous">Synchronous</h3>
+<pre class="highlight"><code class="language-gdscript">func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
+    match command_name:
+        "wait":
+            # Script waits for completion
+            var duration = parameters.get("duration", 1.0)
+            await get_tree().create_timer(duration).timeout
+            ArgodeSystem.CustomCommandHandler.synchronous_command_completed.emit()</code></pre>
+<h2 id="advanced-use-cases">🎨 Advanced Use Cases</h2>
+<h3 id="game-mechanics-integration">Game Mechanics Integration</h3>
+<pre class="highlight"><code class="language-rgd"># RPG-style commands
+add_item "Magic Sword" quantity=1
+gain_experience 250
+level_up_check
+
+# Inventory management
+show_inventory category="weapons"
+equip_item "Magic Sword"</code></pre>
+<h3 id="visual-effects">Visual Effects</h3>
+<pre class="highlight"><code class="language-rgd"># Complex animations
+animate_character alice slide_in from=left duration=0.8 easing=bounce
+morph_background from=day to=night duration=3.0
+create_weather rain intensity=0.7</code></pre>
+<h3 id="custom-ui">Custom UI</h3>
+<pre class="highlight"><code class="language-rgd"># Mini-games and interactive elements
+start_minigame "puzzle_box" difficulty=3
+show_map location="forest" interactive=true
+display_stats character="alice" style="detailed"</code></pre>
+<h2 id="best-practices">📚 Best Practices</h2>
+<h3 id="1-consistent-naming">1. Consistent Naming</h3>
+<p>Use clear, descriptive command names:
+<pre class="highlight"><code class="language-rgd">✅ screen_shake intensity=5.0
+✅ play_music "battle_theme" volume=0.8
+❌ shake 5
+❌ music battle_theme  </code></pre></p>
+<h3 id="2-parameter-validation">2. Parameter Validation</h3>
+<p>Always validate parameters in your handlers:
+<pre class="highlight"><code class="language-gdscript">func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
+    match command_name:
+        "screen_shake":
+            var intensity = clamp(parameters.get("intensity", 5.0), 0.1, 50.0)
+            var duration = clamp(parameters.get("duration", 1.0), 0.1, 10.0)
+            _shake_screen(intensity, duration)</code></pre></p>
+<h3 id="3-error-handling">3. Error Handling</h3>
+<p>Provide meaningful error messages:
+<pre class="highlight"><code class="language-gdscript">func _handle_play_sound(parameters: Dictionary):
+    var file = parameters.get("file", "")
+    if file.is_empty():
+        push_error("play_sound command requires 'file' parameter")
+        return
+
+    if not FileAccess.file_exists("res://audio/" + file):
+        push_error("Audio file not found: " + file)
+        return
+
+    audio_player.stream = load("res://audio/" + file)
+    audio_player.play()</code></pre></p>
+<h3 id="4-documentation">4. Documentation</h3>
+<p>Document your custom commands:
+<pre class="highlight"><code class="language-gdscript">## Shakes the screen with specified intensity and duration
+## Parameters:
+##   intensity (float): Shake strength (0.1 - 50.0, default: 5.0)  
+##   duration (float): Shake duration in seconds (0.1 - 10.0, default: 1.0)
+## Example: screen_shake intensity=3.0 duration=0.8
+func _handle_screen_shake(parameters: Dictionary):
+    # Implementation...</code></pre></p>
+<h2 id="next-steps">🚀 Next Steps</h2>
+<p>Ready to create your own custom commands?</p>
+<ul>
+<li><strong><a href="../built-in/">Built-in Commands Reference</a></strong>: See all available commands</li>
+<li><strong><a href="creating.md">Creating Custom Commands</a></strong>: Step-by-step implementation guide  </li>
+<li><strong><a href="../examples/custom-features.md">Advanced Patterns</a></strong>: Complex command examples</li>
+</ul>
+<hr />
+<p>The custom command system makes Argode infinitely extensible—from simple effects to complex game mechanics, anything is possible!</p>
+<p><a class="md-button md-button--primary" href="../built-in/">View Built-in Commands →</a>
+<a class="md-button" href="creating.md">Create Your Own →</a></p>
+
+
+</section>
+</div> <!-- end of search-noresults -->
+<div class="search-results">
+<div class="has-results">
+
+<h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+<ul class="search-results-list"></ul>
+
+</div> <!-- end of has-results -->
+<div class="no-results">
+
+<h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+
+</div> <!-- end of no-results -->
+</div> <!-- end of search-results -->
+</div> <!-- end of book-search-results -->
+
+</div> <!-- end of page-inner -->
+</div> <!-- end of page-wrapper -->
+
+</div> <!-- end of body-inner -->
+
+</div> <!-- end of book-body -->
+<script src="../../js/main.js"></script>
+<script src="../../search/main.js"></script>
+<script src="../../js/gitbook.min.js"></script>
+<script src="../../js/theme.min.js"></script>
+</body>
+</html>
