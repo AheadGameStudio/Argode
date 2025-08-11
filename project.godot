@@ -24,6 +24,11 @@ ArgodeSystem="*res://addons/argode/core/ArgodeSystem.gd"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 
+[editor]
+
+script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "rgd")
+script/file_dialog_access=["*.rgd"]
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/argode/plugin.cfg")
