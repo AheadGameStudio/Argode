@@ -40,6 +40,9 @@ func _ready():
 	add_to_group("argode_system")
 	_create_managers()
 	
+	# 🔧 マネージャー間の参照を早期設定
+	_setup_manager_references()
+	
 	# 定義ファイルを最優先で読み込み
 	_load_definitions()
 	

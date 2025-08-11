@@ -7,6 +7,7 @@ signal custom_command_executed(command_name: String, parameters: Dictionary, lin
 var script_lines: PackedStringArray = []
 var label_map: Dictionary = {}
 var call_stack: Array[Dictionary] = []
+var current_script_path: String = ""  # 現在実行中のスクリプトファイルパス
 var current_line_index: int = -1
 var is_playing: bool = false
 var is_waiting_for_choice: bool = false

@@ -100,7 +100,7 @@ offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ChoicePanel" type="Panel" parent="ChoiceContainer"]
+[node name="ChoicePanel" type="PanelContainer" parent="ChoiceContainer"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
