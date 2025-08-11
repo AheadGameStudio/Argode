@@ -1,19 +1,7 @@
 name: Deploy MkDocs Documentation
-      - name: Deploy to GitHub Pages
-        run: |
-          mkdocs gh-deploy --force
-          git fetch origin gh-pages:gh-pages
-          git checkout gh-pages
-          if [ -f CNAME ]; then
-            echo "Removing CNAME file to disable custom domain redirect"
-            rm CNAME
-            git add -A
-            git commit -m "Remove CNAME file - disable custom domain redirect" || true
-            git push origin gh-pages
-          else
-            echo "No CNAME file found"
-          fi
-          git checkout main
+
+on:
+  push:
     branches:
       - main
 
@@ -45,9 +33,9 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-      - name: Deploy with MkDocs and remove CNAME
+      - name: Deploy to GitHub Pages
         run: |
-          mkdocs gh-deploy --force --no-jekyll
+          mkdocs gh-deploy --force
           git fetch origin gh-pages:gh-pages
           git checkout gh-pages
           if [ -f CNAME ]; then
