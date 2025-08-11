@@ -9,51 +9,51 @@ image bg_classroom "res://bg/classroom.jpg"
 
 label main_demo_start:
 
-# 最初のメッセージ（背景なし）
-"システム動作テストを開始します。"
+    # 最初のメッセージ（背景なし）
+    "システム動作テストを開始します。"
 
-# 背景を表示
-scene classroom with fade
+    # 背景を表示
+    scene classroom with fade
 
-"背景が表示されました。"
+    "背景が表示されました。"
 
-# キャラクターメッセージ
-narrator "これはナレーターのメッセージです。"
+    # キャラクターメッセージ
+    narrator "これはナレーターのメッセージです。"
 
-# カスタムコマンドテスト - 基本効果
-window shake intensity=3.0 duration=0.8
+    # カスタムコマンドテスト - 基本効果
+    window shake intensity=3.0 duration=0.8
 
-"ウィンドウが揺れました。"
+    "ウィンドウが揺れました。"
 
-screen_flash color=white duration=0.3
+    screen_flash color=white duration=0.3
 
-"画面が光りました。"
+    "画面が光りました。"
 
-# カスタムコマンドテスト - 新しい効果
-text_animate shake intensity=2.0 duration=1.0
+    # カスタムコマンドテスト - 新しい効果
+    text_animate shake intensity=2.0 duration=1.0
 
-"テキストがシェイクしています。"
+    "テキストがシェイクしています。"
 
-wait duration=1.0
+    wait duration=1.0
 
-ui_slide in direction=up duration=0.7
+    ui_slide in direction=up duration=0.7
 
-"UIがスライドインしました。"
+    "UIがスライドインしました。"
 
-particles sparkle intensity=high duration=3.0
+    particles sparkle intensity=high duration=3.0
 
-"スパークル効果が表示されました。"
+    "スパークル効果が表示されました。"
 
-tint red intensity=0.3 duration=1.5
+    tint red intensity=0.3 duration=1.5
 
-"画面が赤く染まりました。"
+    "画面が赤く染まりました。"
 
-wait duration=2.0
+    wait duration=2.0
 
-tint reset
+    tint reset
 
-"色調がリセットされました。"
+    "色調がリセットされました。"
 
-"新しいカスタムコマンドのテスト完了です！"
+    "新しいカスタムコマンドのテスト完了です！"
 
-return
+    return
