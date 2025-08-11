@@ -198,7 +198,6 @@ func jump_to_label(label_name: String, script_player: Node) -> bool:
 	"""指定ラベルにジャンプ（ファイルを跨いでも動作）"""
 	
 	print("🔍 LabelRegistry: Looking for label '", label_name, "'")
-	print("📋 Registry keys: ", label_registry.keys())
 	
 	if not label_registry.has(label_name):
 		print("❌ Label not found in registry: ", label_name)
@@ -215,12 +214,24 @@ func jump_to_label(label_name: String, script_player: Node) -> bool:
 	
 	print("✅ File loaded successfully: ", lines.size(), " lines")
 	
-	# AdvScriptPlayerにスクリプトを設定
+	# スクリプトプレイヤーにスクリプトを設定
 	script_player.script_lines = lines
+	script_player.current_script_path = label_info.file_path  # パスも更新
 	script_player._preparse_labels()
-	script_player.play_from_label(label_name)
 	
-	return true
+	# ⚠️ 重要: play_from_label()を呼ばずに、直接ラベルに移動
+	if script_player.label_map.has(label_name):
+		script_player.current_line_index = script_player.label_map[label_name]
+		script_player.is_playing = true
+		script_player.is_waiting_for_choice = false
+		print("✅ Successfully positioned at label: ", label_name, " line: ", script_player.current_line_index)
+		
+		# _tick()を呼んで実行開始
+		script_player.call_deferred("_tick")
+		return true
+	else:
+		print("❌ Label '", label_name, "' not found after loading file: ", label_info.file_path)
+		return false
 
 ## ===== メモリ管理・デバッグ機能 =====
 
