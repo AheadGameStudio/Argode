@@ -45,6 +45,7 @@ label after_test_completion:
 
 label system_exit:
     narrator "システムを終了します。"
+    window hide with dissolve
     return
 
 # 各シナリオファイルのラベルは自動的に利用可能

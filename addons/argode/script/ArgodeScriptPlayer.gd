@@ -41,6 +41,9 @@ var regex_close_screen: RegEx
 # v2新機能: カスタムコマンド検出用正規表現
 var regex_custom_command: RegEx
 
+# v2新機能: ウィンドウ制御用正規表現
+var regex_window: RegEx
+
 # v2: ArgodeSystem統合により、直接参照に変更
 var character_manager  # CharacterManager
 var ui_manager  # UIManager
@@ -120,6 +123,9 @@ func _compile_regex():
 	
 	regex_close_screen = RegEx.new()
 	regex_close_screen.compile("^\\s*close_screen(?:\\s+(?<return_value>.*))?$")
+	
+	regex_window = RegEx.new()
+	regex_window.compile("^\\s*window\\s+(?<action>show|hide|auto)(?:\\s+with\\s+(?<transition>\\w+))?$")
 	
 	regex_custom_command = RegEx.new()
 	regex_custom_command.compile("^\\s*(?<command>\\w+)(?:\\s+(?<parameters>.*))?$")
@@ -445,6 +451,26 @@ func _parse_and_execute(line: String) -> bool:
 		
 		return true
 	
+	# window (v2新機能: メッセージウィンドウ制御)
+	regex_match = regex_window.search(line)
+	if regex_match:
+		var action = regex_match.get_string("action")
+		var transition = regex_match.get_string("transition")
+		print("🪟 Window control: ", action, " with transition: ", transition)
+		
+		if ui_manager:
+			if transition and not transition.is_empty():
+				# トランジション効果付きの場合は非同期処理
+				await ui_manager.set_message_window_mode_with_transition(action, transition)
+				return true  # トランジション完了まで待機
+			else:
+				# 即座に切り替え
+				ui_manager.set_message_window_mode(action)
+				return false
+		else:
+			push_warning("⚠️ UIManager not available for window control")
+			return false
+	
 	# v2新機能: カスタムコマンドとしてシグナル発行を試行
 	var custom_match = regex_custom_command.search(line)
 	if custom_match:
@@ -455,7 +481,7 @@ func _parse_and_execute(line: String) -> bool:
 		var known_commands = [
 			"label", "say", "set", "if", "else", "menu", "jump", "call", "return",
 			"show", "hide", "scene", "define", "character", "image", "audio", "shader",
-			"call_screen", "close_screen"
+			"call_screen", "close_screen", "window"
 		]
 		
 		if command_name in known_commands:

@@ -30,11 +30,21 @@ func show_message(char_data, message: String):
 		if char_data.has("name_color"):
 			name_color = char_data.name_color
 	
-	# コンソール出力
+	# コンソール出力（HIDEモードでもログは出力される）
 	if display_name:
 		print("💬 [", display_name, "] ", message)
 	else:
 		print("💬 ", message)
+	
+	# v2: メッセージウィンドウモード制御
+	match message_window_mode:
+		WindowMode.AUTO:
+			_update_message_window_visibility(true)  # メッセージ表示時は表示
+		WindowMode.SHOW:
+			_update_message_window_visibility(true)  # 常に表示
+		WindowMode.HIDE:
+			_update_message_window_visibility(false) # 常に非表示（ログのみ）
+			return  # UI表示をスキップ
 	
 	# 🚀 v2優先: current_screenを最初にチェック
 	print("🔍 Checking current_screen: ", current_screen)
@@ -295,3 +305,161 @@ func get_screen_stack_depth() -> int:
 	if current_screen:
 		depth += 1
 	return depth
+
+# === v2新機能: メッセージウィンドウ制御 ===
+
+enum WindowMode {
+	SHOW,  # 常に表示
+	HIDE,  # 常に非表示
+	AUTO   # 自動制御（メッセージ表示時のみ表示）
+}
+
+var message_window_mode: WindowMode = WindowMode.AUTO
+
+func set_message_window_mode(mode_str: String):
+	"""メッセージウィンドウの表示モードを設定"""
+	match mode_str.to_lower():
+		"show":
+			message_window_mode = WindowMode.SHOW
+			print("🪟 Message window mode: SHOW (always visible)")
+			_update_message_window_visibility(true)
+		"hide":
+			message_window_mode = WindowMode.HIDE
+			print("🪟 Message window mode: HIDE (always hidden)")
+			_update_message_window_visibility(false)
+		"auto":
+			message_window_mode = WindowMode.AUTO
+			print("🪟 Message window mode: AUTO (show during messages)")
+		_:
+			push_warning("⚠️ Unknown window mode: " + mode_str)
+
+func _update_message_window_visibility(visible: bool):
+	"""Argode UI全体の表示/非表示を制御（CanvasLayerレベル）"""
+	print("🪟 UIManager: Setting visibility to ", visible)
+	
+	# UIManager自体がCanvasLayerなので、直接visible制御
+	self.visible = visible
+	
+	# current_screenがある場合はそちらも制御
+	if current_screen:
+		current_screen.visible = visible
+		print("📱 Current screen visibility also set to: ", visible)
+	
+	# フォールバック: sample_ui制御
+	var sample_ui = _find_adv_game_ui(get_tree().current_scene)
+	if sample_ui:
+		sample_ui.visible = visible
+		print("🔧 Sample UI visibility set to: ", visible)
+
+func set_message_window_mode_with_transition(mode_str: String, transition: String):
+	"""トランジション効果付きでメッセージウィンドウモードを設定"""
+	print("🪟 Window control with transition: ", mode_str, " -> ", transition)
+	
+	# モードを設定
+	match mode_str.to_lower():
+		"show":
+			message_window_mode = WindowMode.SHOW
+		"hide":
+			message_window_mode = WindowMode.HIDE
+		"auto":
+			message_window_mode = WindowMode.AUTO
+		_:
+			push_warning("⚠️ Unknown window mode: " + mode_str)
+			return
+	
+	# トランジション効果を適用
+	var target_visible = (mode_str.to_lower() != "hide")
+	
+	# ArgodeSystemのTransitionPlayerを取得
+	var argode_system = get_node("/root/ArgodeSystem")
+	if argode_system and argode_system.TransitionPlayer:
+		print("🎬 Applying transition: ", transition, " to UI visibility")
+		
+		# トランジション対象のUIを特定
+		var transition_target = null
+		if current_screen:
+			transition_target = current_screen
+			print("🎯 Using current_screen as transition target")
+		else:
+			var sample_ui = _find_adv_game_ui(get_tree().current_scene)
+			if sample_ui:
+				transition_target = sample_ui
+				print("🎯 Using sample_ui as transition target")
+		
+		if transition_target:
+			print("� Transition target:", transition_target.get_class(), "- visible:", transition_target.visible)
+			
+			if target_visible:
+				# 表示する場合: UIを表示状態にしてからフェードイン
+				if not self.visible:
+					self.visible = true
+				if not transition_target.visible:
+					transition_target.visible = true
+					if transition_target.has_property("modulate"):
+						transition_target.modulate.a = 0.0  # 透明から開始
+						print("� Target set to visible with alpha 0.0")
+				
+				# フェードインエフェクト実行
+				print("▶️ Starting fade-in transition")
+				await argode_system.TransitionPlayer.play(transition_target, transition)
+			else:
+				# 非表示にする場合: フェードアウト後にUIを非表示
+				if transition_target.visible:
+					print("▶️ Starting fade-out transition")
+					# フェードアウトエフェクト実行
+					await argode_system.TransitionPlayer.play(transition_target, transition, 0.5, true)  # reverse = true
+					
+					# エフェクト完了後に非表示
+					transition_target.visible = false
+					self.visible = false  # CanvasLayer自体も非表示
+					print("📱 Target and UIManager set to invisible")
+			
+			print("✅ Window transition completed: ", transition)
+		else:
+			# トランジション対象が見つからない場合は即座に切り替え
+			print("⚠️ No transition target found, switching immediately")
+			_update_message_window_visibility(target_visible)
+	else:
+		# TransitionPlayerが無い場合は即座に切り替え
+		push_warning("⚠️ TransitionPlayer not available, switching immediately")
+		_update_message_window_visibility(target_visible)
+
+func _apply_canvas_layer_fade(target_visible: bool, transition: String, duration: float = 0.5):
+	"""CanvasLayer用の独自フェード処理（代替案）"""
+	print("🎨 Applying CanvasLayer fade transition: ", transition)
+	
+	# 全ての子ノードに対してフェード効果を適用
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_OUT)
+	tween.set_trans(Tween.TRANS_CUBIC)
+	
+	var child_nodes = []
+	_collect_ui_children(self, child_nodes)
+	
+	if target_visible:
+		# フェードイン: 透明→不透明
+		for node in child_nodes:
+			if node.has_property("modulate"):
+				node.modulate.a = 0.0
+		
+		self.visible = true
+		
+		for node in child_nodes:
+			if node.has_property("modulate"):
+				tween.parallel().tween_property(node, "modulate:a", 1.0, duration)
+	else:
+		# フェードアウト: 不透明→透明
+		for node in child_nodes:
+			if node.has_property("modulate"):
+				tween.parallel().tween_property(node, "modulate:a", 0.0, duration)
+		
+		await tween.finished
+		self.visible = false
+
+func _collect_ui_children(node: Node, result: Array):
+	"""UI要素となる子ノードを再帰的に収集"""
+	if node != self and (node is Control or node is Node2D):
+		result.append(node)
+	
+	for child in node.get_children():
+		_collect_ui_children(child, result)

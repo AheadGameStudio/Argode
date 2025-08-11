@@ -248,4 +248,43 @@ class_name AdvGameUI
 - **v1→v2移行**: 手動処理→自動発見システムに変更
 - **信号システム変更**: 固定信号→動的信号(`on_dynamic_signal_emitted`)に移行
 - **ドキュメント化**: サンプルコード→包括的なREADMEガイドに置き換え
+
+### Phase 4: メッセージウィンドウ制御機能（完了 🆕）
+- **window コマンド実装**: `window show/hide/auto [with transition]` ビルトインコマンド追加
+- **UIManager拡張**: WindowMode enum とArgode UI全体制御システム
+- **CanvasLayer制御**: 個別UI要素ではなくUIManager（CanvasLayer）レベルで制御
+- **トランジション統合**: TransitionPlayerと連携した滑らかなUI表示/非表示効果
+- **ゲームモード統合**: バトル、マップ探索、通常会話の切り替え支援
+- **完全ドキュメント化**: BUILTIN_COMMANDS.md、USAGE_GUIDE.md更新
+
+#### 技術仕様
+- **コマンド構文**: `window <show|hide|auto> [with <transition>]` - トランジション効果対応
+- **制御レベル**: CanvasLayer（UIManager）全体の表示/非表示制御
+- **自動制御**: AUTO（デフォルト）はメッセージ表示時のみUI表示
+- **トランジション効果**: fade, dissolve, slide系 等のTransitionPlayer効果を適用
+- **統合アーキテクチャ**: ArgodeScriptPlayer → UIManager → CanvasLayer.visible + TransitionPlayer
+- **後方互換**: sample_ui フォールバックで既存プロジェクトも動作
+
+#### 実装詳細
+- **ArgodeScriptPlayer**: `regex_window` パターン + トランジション効果キャプチャ + await処理
+- **UIManager**: `set_message_window_mode_with_transition()` メソッド追加
+- **制御範囲**: メッセージボックス、キャラクター名、選択肢、全ArgodeUI要素
+- **HIDEモード**: UIは非表示だがコンソールログは出力（デバッグ用）
+- **非同期処理**: トランジション中はスクリプト実行が一時停止
+- **テストスクリプト**: `window_control_test.rgd` によるトランジション効果確認
+
+#### 使用例
+```rgd
+# バトルモードでArgode UIをフェードインで表示
+window show with fade
+call_screen battle_system
+
+# マップ探索で画面全体を使用（UIをディゾルブで非表示）
+window hide with dissolve
+call_screen map_explorer
+
+# 通常会話（スライドで自動制御）
+window auto with slide_down
+character_name "お疲れ様でした！"
+```
 - **メンテナンス性向上**: "ゴミファイル"削減によるプロジェクト整理

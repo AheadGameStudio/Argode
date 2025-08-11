@@ -592,3 +592,19 @@ func debug_info() -> Dictionary:
 			"typewriter": typewriter != null
 		}
 	}
+
+# === v2新機能: メッセージウィンドウ表示制御 ===
+# 注意: v2.1でUIManagerがCanvasLayerレベル制御に変更されたため、
+# 個別UI要素制御は不要になりました。UIManager.visible で全体制御されます。
+
+func set_message_window_visible(visible: bool):
+	"""メッセージウィンドウの表示/非表示を制御（レガシー互換用）"""
+	print("🪟 ArgodeScreen.set_message_window_visible(", visible, ") - レガシー互換")
+	print("ℹ️  現在はUIManager.visible で全体制御されるため、この処理は無効です")
+	
+	# 互換性のため残しておくが、実際の制御はUIManagerで行われる
+	# if message_box:
+	#     message_box.visible = visible
+	#     print("📦 Message box visibility set to:", visible)
+	# else:
+	#     print("⚠️ message_box not found for visibility control")

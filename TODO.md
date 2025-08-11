@@ -49,8 +49,10 @@
   - [x] テキストボックス表示
   - [x] 選択肢UI生成・制御
   - [x] ボタンイベント処理
+  - [x] **v2新機能:** ウィンドウ制御システム（window show/hide/auto）🆕
 - [x] `BaseAdvGameUI.gd` 基本UIクラス *(v1仕様)*
-- [ ] **v2移行:** AdvScreen基底クラス実装 *(v2の重要機能)*
+- [x] **v2移行:** AdvScreen基底クラス実装 *(v2の重要機能)*
+  - [x] **v2新機能:** メッセージウィンドウ表示制御🆕
 - [ ] **v2新機能:** スクリーンスタック管理
 - [ ] **v2新機能:** `call_screen` コマンド対応
 
@@ -96,6 +98,7 @@
 - [x] **CRITICAL:** 定義ステートメント (`character`, `image`, `audio`, `shader`) - 事前解析システム完了
 - [x] **HIGH:** カスタムコマンドシグナル発行 (例: `window`, `camera_shake`) - ✅ 14種類完全実装
 - [x] **HIGH:** カスタムインラインタグ解析 (例: `{shake}`, `{w=0.5}`) - ✅ InlineTagProcessor完全実装
+- [x] **HIGH:** `window` コマンド（メッセージウィンドウ制御）🆕
 - [ ] **MEDIUM:** `call_screen` コマンド実装
 - [x] **MEDIUM:** 変数展開と インラインタグの構文分離 (`[var]` vs `{tag}`)
 

@@ -1,0 +1,33 @@
+# Window Control Test Script - CanvasLayer Level Control with Transitions
+# Tests the new window control commands with transition effects
+
+label start:
+    "Window control with transition test started."
+    "This test controls the entire Argode UI with smooth transitions."
+    
+    "Testing auto mode (default)..."
+    window auto
+    "Message displays UI automatically (CanvasLayer visible)."
+    
+    "Testing show mode with fade transition..."
+    window show with fade
+    "Entire Argode UI fades in and stays visible!"
+    
+    "Testing hide mode with dissolve transition..."
+    window hide with dissolve
+    "UI dissolves out! (Only console logs visible)"
+    "This message appears in console but UI dissolved away."
+    
+    "Testing show mode with slide transition..."
+    window show with slide_down
+    "UI slides back in from top!"
+    
+    "Testing hide mode with different transition..."
+    window hide with fade
+    "UI fades out smoothly..."
+    
+    "Returning to auto mode with transition..."
+    window auto with fade
+    "Back to normal behavior - UI fades back in!"
+    
+    "Test completed! Transition effects working correctly."

@@ -83,6 +83,39 @@ label ending:
 - `fade` - フェード効果
 - `dissolve` - ディゾルブ効果  
 - `slide_left/right/up/down` - スライド効果
+
+#### ウィンドウ制御（v2新機能）
+```rgd
+# ゲームモード切り替え例 - トランジション効果付きUI制御
+label game_menu:
+    y "何をしますか？"
+    menu:
+        "バトルをする":
+            jump battle_mode
+        "マップを探索":
+            jump explore_mode
+        "普通に会話":
+            jump normal_chat
+
+label battle_mode:
+    window show with fade  # UIをフェードインで表示
+    "バトルモード開始！UIがフェードインします。"
+    # call_screen battle_system
+    window auto with dissolve  # 終了後はディゾルブで自動制御
+    jump game_menu
+
+label explore_mode:
+    window hide with dissolve  # UIをディゾルブで非表示
+    "マップ探索モード開始！UIがディゾルブして消えます。"
+    # call_screen map_explorer
+    window auto with slide_down  # 終了後はスライドで自動制御
+    jump game_menu
+
+label normal_chat:
+    window auto with fade  # 通常の会話（フェードで自動制御）
+    y "のんびりお話ししましょう。"
+    jump game_menu
+```
 - `none` - トランジションなし
 
 #### フロー制御
@@ -127,12 +160,14 @@ label ending:
 - すべての演出コマンド（scene, show, hide, with句）
 - 選択肢システム（menu）
 - キャラクター定義（define）
+- UI全体制御（window show/hide/auto）🆕
 
 ✅ **UI・表示**
 - プレースホルダー画像システム
 - コンソール出力モード
 - ビジュアルUIサンプル
 - RichTextLabel対応
+- Argode UI全体制御システム（CanvasLayer）🆕
 
 ✅ **サンプル・ドキュメント**  
 - 複数のテストシナリオ
