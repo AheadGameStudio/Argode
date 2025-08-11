@@ -151,3 +151,7 @@ BUILTIN_COMMANDS.md
 CUSTOM_COMMANDS.md
 DESIGN_DOCUMENT*.md
 USAGE_GUIDE.md
+
+# Claude AI Configuration (Local Only)
+# Claude AI設定（ローカル専用管理）
+.claude/
