@@ -67,19 +67,34 @@ var handle_input: bool = true
 # === レイヤーマッピング設定 ===
 ## レイヤーの実際のノード参照（背景・キャラクター・UIの3層構造）
 @export var layer_mappings: Dictionary = {
-	"background": null,    # 背景レイヤー（最下層）
-	"character": null,     # キャラクターレイヤー（中層）
-	"ui": null            # UIレイヤー（最上層、通常はArgodeScreen自身）
+	"background": null,	# 背景レイヤー（最下層）
+	"character": null,	 # キャラクターレイヤー（中層）
+	"ui": null			# UIレイヤー（最上層、通常はArgodeScreen自身）
 }
 
 func _ready():
-	screen_name = get_scene_file_path().get_file().get_basename() if get_scene_file_path() else name
-	print("📱 AdvScreen initialized: ", screen_name)
+	print("📱 AdvScreen initializing:", name, " (", get_class(), ")")
 	
-	# ArgodeSystemへの参照を取得
-	adv_system = get_node("/root/ArgodeSystem")
+	# ArgodeSystemの参照を取得
+	adv_system = get_node_or_null("/root/ArgodeSystem")
 	if not adv_system:
-		push_warning("⚠️ AdvScreen: ArgodeSystem not found")
+		push_error("❌ AdvScreen: ArgodeSystem not found!")
+		return
+	
+	# 🚀 v2: UIManagerにcurrent_screenとして自動登録
+	if adv_system.UIManager:
+		print("📱 Auto-registering as current_screen with UIManager")
+		adv_system.UIManager.current_screen = self
+		print("✅ current_screen set to:", self.name, " (", self.get_class(), ")")
+		
+		# デバッグ: 登録確認
+		await get_tree().process_frame  # 1フレーム待つ
+		if adv_system.UIManager.current_screen == self:
+			print("✅ Registration confirmed: current_screen is", self.name)
+		else:
+			print("❌ Registration failed: current_screen is", adv_system.UIManager.current_screen)
+	else:
+		print("❌ UIManager not found")
 	
 	# 初期化完了を通知
 	call_deferred("_emit_screen_ready")

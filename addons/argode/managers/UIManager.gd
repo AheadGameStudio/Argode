@@ -17,12 +17,14 @@ func _ready():
 	_check_for_sample_ui()
 
 func show_message(char_data, message: String):
+	print("💬 UIManager.show_message called")
+	print("  📥 message: '", message, "'")
+	
 	# v2: char_dataがnullの場合、char_idから定義を取得を試行
 	var display_name = ""
 	var name_color = Color.WHITE
 	
 	if char_data:
-		# v1: すでにchar_dataがある場合（リソースまたは定義）
 		if char_data.has("display_name"):
 			display_name = char_data.display_name
 		if char_data.has("name_color"):
@@ -34,14 +36,25 @@ func show_message(char_data, message: String):
 	else:
 		print("💬 ", message)
 	
-	# サンプルUIが連携している場合は、そちらのメッセージ表示を使用
+	# 🚀 v2優先: current_screenを最初にチェック
+	print("🔍 Checking current_screen: ", current_screen)
+	if current_screen and current_screen.has_method("show_message"):
+		print("✅ Using v2 current_screen.show_message()")
+		current_screen.show_message(display_name, message, name_color)
+		return
+	
+	# 🔄 フォールバック: sample_ui検索（後方互換性）
+	print("⚠️ current_screen not available, falling back to sample_ui detection")
 	var sample_ui = _find_adv_game_ui(get_tree().current_scene)
 	if sample_ui and sample_ui.has_method("show_message"):
+		print("🔧 Using legacy sample_ui.show_message()")
 		current_sample_ui = sample_ui
 		sample_ui.show_message(display_name, message, name_color)
 		return
 	
-	# 基本UIでの表示処理
+	print("❌ No UI found for message display")
+	
+	# 基本UIでの表示処理（最後の手段）
 	if name_label:
 		name_label.text = display_name
 		name_label.modulate = name_color
