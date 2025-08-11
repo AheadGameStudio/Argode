@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - main
-      - master
   pull_request:
     branches:
       - main
-      - master
 
 permissions:
   contents: read
@@ -33,9 +31,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install mkdocs
-          pip install mkdocs-gitbook
-          pip install mkdocs-static-i18n
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Build documentation
         run: mkdocs build
@@ -49,7 +46,7 @@ jobs:
           path: site
 
   deploy:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
