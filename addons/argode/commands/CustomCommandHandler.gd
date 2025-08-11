@@ -49,17 +49,18 @@ func _on_custom_command_executed(command_name: String, parameters: Dictionary, l
 	# 1. 登録されたBaseCustomCommandを優先実行
 	if registered_commands.has(command_name):
 		var custom_command = registered_commands[command_name] as BaseCustomCommand
-		await _execute_registered_command(custom_command, parameters)
+		# シグナルハンドラーからは直接awaitできないため、call_deferredを使用
+		call_deferred("_execute_registered_command_deferred", custom_command, parameters)
 		return
 	
 	# 2. 登録されたCallableを実行
 	if registered_callables.has(command_name):
 		var callable = registered_callables[command_name] as Callable
-		await _execute_callable_command(callable, parameters)
+		call_deferred("_execute_callable_command_deferred", callable, parameters)
 		return
 	
 	# 3. 従来の組み込みコマンドをフォールバック実行（後で削除予定）
-	await _execute_builtin_command(command_name, parameters, line)
+	call_deferred("_execute_builtin_command_deferred", command_name, parameters, line)
 
 # === カスタムコマンド登録API ===
 
@@ -207,6 +208,23 @@ func _execute_registered_command(custom_command: BaseCustomCommand, parameters: 
 	# 2. 視覚効果がある場合は実行
 	if custom_command.has_visual_effect():
 		_execute_visual_effect_for_command(custom_command, parameters)
+
+# 遅延実行メソッド群
+func _execute_registered_command_deferred(command: BaseCustomCommand, parameters: Dictionary):
+	"""登録コマンドの遅延実行"""
+	await command.execute_async(parameters, adv_system)
+	print("🔹 Custom command execution completed: ", command.command_name)
+
+func _execute_callable_command_deferred(command: Callable, parameters: Dictionary):
+	"""Callableコマンドの遅延実行"""
+	await command.call(parameters)
+	print("🔹 Callable command execution completed")
+
+func _execute_builtin_command_deferred(command_name: String, parameters: Dictionary):
+	"""Built-inコマンドの遅延実行"""
+	if adv_system:
+		await adv_system.commands.execute_command(command_name, parameters, false)
+		print("🔹 Built-in command execution completed: ", command_name)
 
 func _execute_visual_effect_for_command(custom_command: BaseCustomCommand, parameters: Dictionary):
 	"""コマンドの視覚効果を実行"""

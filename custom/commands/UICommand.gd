@@ -23,6 +23,39 @@ var call_screen_stack: Array[String] = []
 # call_screenで表示されたシーンの結果を保存
 var call_screen_results: Dictionary = {}
 
+# === 同期処理サポート ===
+func is_synchronous() -> bool:
+	"""UIコマンドは非同期処理が必要"""
+	return true
+
+func execute_internal_async(params: Dictionary, adv_system: Node) -> void:
+	"""非同期処理版のexecute"""
+	var raw_params = params.get("_raw", "")
+	var args = _parse_raw_params(raw_params)
+	
+	if args.size() < 1:
+		push_error("❌ ui command: サブコマンドが必要です")
+		return
+	
+	var subcommand = args[0]
+	log_command("UI command: " + subcommand)
+	
+	match subcommand:
+		"show":
+			await _execute_show(args.slice(1), adv_system)
+		"call_screen", "call":
+			await _execute_call(args.slice(1), adv_system)
+		"close_screen", "close":
+			_execute_close(args.slice(1), adv_system)
+		"free":
+			_execute_free(args.slice(1), adv_system)
+		"list":
+			_execute_list(args.slice(1), adv_system)
+		"hide":
+			_execute_hide(args.slice(1), adv_system)
+		_:
+			push_error("❌ ui command: 不明なサブコマンド: " + subcommand)
+
 func execute(params: Dictionary, adv_system: Node) -> void:
 	var raw_params = params.get("_raw", "")
 	var args = _parse_raw_params(raw_params)
