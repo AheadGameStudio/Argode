@@ -52,7 +52,7 @@ func execute_internal_async(params: Dictionary, adv_system: Node) -> void:
 		"list":
 			_execute_list(args.slice(1), adv_system)
 		"hide":
-			_execute_hide(args.slice(1), adv_system)
+			await _execute_hide(args.slice(1), adv_system)
 		_:
 			push_error("❌ ui command: 不明なサブコマンド: " + subcommand)
 
@@ -355,10 +355,50 @@ func _execute_list(_args: PackedStringArray, adv_system: Node) -> void:
 	log_command("UI list: " + str(total_scenes) + " active scenes (" + str(call_scenes) + " call_screens)")
 	emit_dynamic_signal("ui_scenes_listed", [active_ui_scenes.keys(), call_screen_stack], adv_system)
 
-func _execute_hide(_args: PackedStringArray, _adv_system: Node) -> void:
+func _execute_hide(args: PackedStringArray, adv_system: Node) -> void:
 	"""UIシーンを非表示"""
-	push_warning("⚠️ ui hide: 未実装")
-	log_command("UI hide: not implemented")
+	print("🎯 [UICommand] _execute_hide called with args:", args)
+	
+	if args.size() < 1:
+		push_error("❌ ui hide: シーンパスが必要です")
+		return
+	
+	var scene_path = args[0]
+	var position = "center"
+	var transition = "none"
+	
+	# 引数解析
+	var i = 1
+	while i < args.size():
+		match args[i]:
+			"left", "right", "center":
+				position = args[i]
+			"with":
+				if i + 1 < args.size():
+					transition = args[i + 1]
+					i += 1
+		i += 1
+	
+	print("🎯 [UICommand] Hide screen:", scene_path, "position:", position, "transition:", transition)
+	
+	# アクティブシーンから該当するものを探す
+	var scene_key = scene_path + "_" + position
+	if scene_key not in active_ui_scenes:
+		push_warning("⚠️ ui hide: シーンが表示されていません: " + scene_key)
+		return
+	
+	var scene_instance = active_ui_scenes[scene_key]
+	
+	# LayerManagerを使って非表示
+	if adv_system.LayerManager and adv_system.LayerManager.has_method("hide_control_scene"):
+		var success = await adv_system.LayerManager.hide_control_scene(scene_instance, transition)
+		if success:
+			active_ui_scenes.erase(scene_key)
+			log_command("UI scene hidden: " + scene_path)
+		else:
+			push_error("❌ Failed to hide UI scene: " + scene_path)
+	else:
+		push_error("❌ LayerManager not available or hide_control_scene method not found")
 
 func _execute_call(args: PackedStringArray, adv_system: Node) -> void:
 	"""UIシーンを呼び出し（モーダル表示・スタック管理）"""
