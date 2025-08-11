@@ -42,7 +42,7 @@ var message_label: RichTextLabel = null
 var choice_container: Control = null
 var choice_panel: PanelContainer = null
 var choice_vbox: VBoxContainer = null
-var continue_prompt: Label = null
+var continue_prompt: Control = null
 
 # === TypewriterText統合 ===
 var typewriter: TypewriterText = null
