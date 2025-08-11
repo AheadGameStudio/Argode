@@ -869,7 +869,14 @@ func _tokenize_parameters(text: String) -> Array:
 
 func _is_synchronous_command(command_name: String) -> bool:
 	"""同期が必要なコマンドかどうかを判定"""
-	var synchronous_commands = ["wait"]  # 拡張可能
+	# CustomCommandHandlerに登録されているコマンドから判定
+	var custom_handler = get_node("/root/ArgodeSystem").CustomCommandHandler
+	if custom_handler and custom_handler.registered_commands.has(command_name):
+		var command = custom_handler.registered_commands[command_name] as BaseCustomCommand
+		return command.is_synchronous()
+	
+	# フォールバック：既知の同期コマンド
+	var synchronous_commands = ["wait"]
 	return command_name in synchronous_commands
 
 # === Call/Return 処理メソッド ===
