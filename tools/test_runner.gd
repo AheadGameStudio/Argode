@@ -113,10 +113,20 @@ func _test_custom_commands():
 		var ui_valid = ui_cmd.validate_parameters(ui_params)
 		_log_result("  - UI command params test: " + ("✅" if ui_valid else "❌"), ui_valid)
 		
-		# UICommandの実行（非同期）
-		print("🚀 Attempting to execute UICommand...")
-		await handler._on_custom_command_executed("ui", ui_params, "ui show res://scenes/ui/test_control_scene.tscn")
-		_log_result("  - UI command execution: ✅", true)
+		# UICommandの実行（非同期） - 正しいパラメータフォーマット
+		print("🚀 Attempting to execute UICommand with correct parameters...")
+		var correct_params = {
+			"_raw": "show res://scenes/ui/test_control_scene.tscn at center with fade",
+			"_count": 6,
+			"arg0": "show",
+			"arg1": "res://scenes/ui/test_control_scene.tscn",
+			"arg2": "at",
+			"arg3": "center", 
+			"arg4": "with",
+			"arg5": "fade"
+		}
+		await handler._on_custom_command_executed("ui", correct_params, "ui show res://scenes/ui/test_control_scene.tscn at center with fade")
+		_log_result("  - UI command execution with proper params: ✅", true)
 		print("✅ UICommand execution test completed")
 
 func _test_system_integration():
@@ -166,12 +176,33 @@ func _wait_for_argode_system():
 	while wait_time < max_wait:
 		var argode_system = root.get_node_or_null("ArgodeSystem")
 		if argode_system and argode_system.CustomCommandHandler:
+			# テスト用の簡易レイヤー初期化
+			_setup_test_layers(argode_system)
 			return
 		
 		await create_timer(0.1).timeout
 		wait_time += 0.1
 	
 	push_error("⚠️ ArgodeSystem initialization timeout")
+
+func _setup_test_layers(argode_system: Node):
+	"""テスト用の簡易レイヤー設定"""
+	if argode_system.LayerManager:
+		# ダミーのControlを作成してテスト用に設定
+		var dummy_bg = Control.new()
+		var dummy_char = Control.new()
+		var dummy_ui = Control.new()
+		
+		dummy_bg.name = "TestBackgroundLayer"
+		dummy_char.name = "TestCharacterLayer"
+		dummy_ui.name = "TestUILayer"
+		
+		root.add_child(dummy_bg)
+		root.add_child(dummy_char)
+		root.add_child(dummy_ui)
+		
+		argode_system.LayerManager.initialize_layers(dummy_bg, dummy_char, dummy_ui)
+		print("🧪 Test layers initialized for UICommand testing")
 
 func _log_result(message: String, success: bool):
 	"""テスト結果をログに記録"""

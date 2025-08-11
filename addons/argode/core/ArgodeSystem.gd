@@ -129,10 +129,13 @@ func _create_managers():
 func _register_builtin_commands():
 	"""カスタムコマンドを自動発見・登録"""
 	print("📝 Auto-discovering custom commands...")
+	print("📝 Current working directory:", OS.get_executable_path().get_base_dir())
+	print("📝 Project path:", ProjectSettings.globalize_path("res://"))
 	
 	var registered_count = _auto_discover_and_register_commands()
 	
 	print("📝 Auto-registration completed: ", registered_count, " commands registered")
+	print("📝 Final registered commands list:", CustomCommandHandler.list_registered_commands())
 
 func _auto_discover_and_register_commands() -> int:
 	"""カスタムコマンドを自動発見・登録する"""
@@ -160,9 +163,10 @@ func _scan_directory_for_commands(directory_path: String) -> Array[String]:
 	if directory_path.contains("*"):
 		return _scan_wildcard_directories(directory_path)
 	
+	print("🔍 Attempting to scan directory: ", directory_path)
 	var dir = DirAccess.open(directory_path)
 	if not dir:
-		# ディレクトリが存在しない場合は警告しない（オプションディレクトリ）
+		print("⚠️ Directory not accessible: ", directory_path)
 		return command_files
 	
 	print("🔍 Scanning for commands in: ", directory_path)
@@ -170,13 +174,17 @@ func _scan_directory_for_commands(directory_path: String) -> Array[String]:
 	var file_name = dir.get_next()
 	
 	while file_name != "":
+		print("   🔎 Found file: ", file_name)
 		if file_name.ends_with(".gd") and not file_name.begins_with("."):
 			var full_path = directory_path + file_name
 			
+			print("   🔎 Checking if custom command: ", full_path)
 			# BaseCustomCommandを継承しているかチェック
 			if _is_custom_command_file(full_path):
 				command_files.append(full_path)
 				print("   🎯 Found custom command: ", file_name)
+			else:
+				print("   ❌ Not a custom command: ", file_name)
 		
 		file_name = dir.get_next()
 	
@@ -228,12 +236,17 @@ func _scan_wildcard_directories(wildcard_path: String) -> Array[String]:
 
 func _is_custom_command_file(script_path: String) -> bool:
 	"""ファイルがBaseCustomCommandを継承しているかチェック"""
+	print("🔍 Checking if file is custom command: ", script_path)
 	var file = FileAccess.open(script_path, FileAccess.READ)
 	if not file:
+		print("❌ Failed to open file: ", script_path)
 		return false
 	
 	var content = file.get_as_text()
 	file.close()
+	
+	print("🔍 File content length: ", content.length())
+	print("🔍 First 200 characters: ", content.substr(0, 200))
 	
 	# BaseCustomCommandを継承しているかチェック
 	var inherits_base_command = (
@@ -241,13 +254,21 @@ func _is_custom_command_file(script_path: String) -> bool:
 		content.contains("extends \"res://addons/argode/commands/BaseCustomCommand.gd\"")
 	)
 	
+	print("🔍 Contains 'extends BaseCustomCommand': ", content.contains("extends BaseCustomCommand"))
+	print("🔍 Contains full path extends: ", content.contains("extends \"res://addons/argode/commands/BaseCustomCommand.gd\""))
+	
 	# class_nameが定義されているかもチェック（推奨パターン）
 	var has_class_name = content.contains("class_name") and content.contains("Command")
+	
+	print("🔍 Has class_name with Command: ", has_class_name)
+	print("🔍 Final result - inherits_base_command: ", inherits_base_command)
 	
 	return inherits_base_command
 
 func _try_load_and_register_command(script_path: String) -> bool:
 	"""指定されたスクリプトパスからカスタムコマンドをロード・登録"""
+	print("🔍 Trying to load command from: ", script_path)
+	
 	if not ResourceLoader.exists(script_path):
 		print("⚠️ Command script not found: ", script_path)
 		return false
@@ -259,10 +280,13 @@ func _try_load_and_register_command(script_path: String) -> bool:
 	
 	var command_instance = script.new() as BaseCustomCommand
 	if not command_instance:
-		print("❌ Failed to create command instance: ", script_path)
+		print("❌ Failed to create command instance or not BaseCustomCommand: ", script_path)
 		return false
 	
-	return CustomCommandHandler.add_custom_command(command_instance)
+	print("✅ Created command instance: ", command_instance.command_name, " from ", script_path)
+	var success = CustomCommandHandler.add_custom_command(command_instance)
+	print("🎯 Registration result for ", command_instance.command_name, ": ", success)
+	return success
 
 func initialize_game(layer_map: Dictionary) -> bool:
 	"""
