@@ -161,6 +161,130 @@ func _on_cancel_button_pressed():
     close_ui_call_screen("res://ui/specific_menu.tscn")  # Close specific scene
 ```
 
+## 🔍 UI State Check Methods
+
+### Check call_screen Display Status
+
+```gdscript
+func is_call_screen_active(scene_path: String = "") -> bool:
+    """Check if specified call_screen is currently displayed"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return false
+    
+    if scene_path.is_empty():
+        # Check if any call_screen is currently displayed
+        return not ui_command.call_screen_stack.is_empty()
+    else:
+        # Check if specified scene is in call_screen_stack
+        return scene_path in ui_command.call_screen_stack
+
+func get_active_call_screens() -> Array[String]:
+    """Get list of currently displayed call_screens"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return []
+    
+    return ui_command.call_screen_stack.duplicate()
+
+func get_current_call_screen() -> String:
+    """Get currently displayed top-level call_screen"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return ""
+    
+    if ui_command.call_screen_stack.is_empty():
+        return ""
+    
+    return ui_command.call_screen_stack[-1]  # Last element (top-level)
+
+func is_ui_scene_active(scene_path: String) -> bool:
+    """Check if specified UI scene is currently displayed (call/show regardless)"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return false
+    
+    return scene_path in ui_command.active_ui_scenes
+
+func get_all_active_ui_scenes() -> Array[String]:
+    """Get list of all currently displayed UI scenes"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return []
+    
+    return ui_command.active_ui_scenes.keys()
+```
+
+### Usage Examples
+
+```gdscript
+# Check if specific menu is currently displayed
+func _on_pause_button_pressed():
+    if is_call_screen_active("res://ui/pause_menu.tscn"):
+        print("Pause menu is already displayed")
+        return
+    
+    # Display pause menu
+    await call_ui_scene("res://ui/pause_menu.tscn")
+
+# Check current call_screen
+func _on_check_current_menu():
+    var current_menu = get_current_call_screen()
+    if current_menu.is_empty():
+        print("No call_screen currently displayed")
+    else:
+        print("Current menu: " + current_menu)
+
+# Handle multiple layered call_screens
+func _on_back_button_pressed():
+    var call_screens = get_active_call_screens()
+    if call_screens.size() > 1:
+        print("Menus are " + str(call_screens.size()) + " layers deep")
+        # Close only top-level menu
+        close_ui_call_screen()
+    elif call_screens.size() == 1:
+        print("Closing menu: " + call_screens[0])
+        close_ui_call_screen()
+    else:
+        print("No menu to close")
+
+# Debug all UI states
+func _on_debug_ui_status():
+    var call_screens = get_active_call_screens()
+    var all_ui_scenes = get_all_active_ui_scenes()
+    
+    print("=== UI Status Debug ===")
+    print("Call Screens: " + str(call_screens.size()) + " active")
+    for i in range(call_screens.size()):
+        print("  " + str(i + 1) + ". " + call_screens[i])
+    
+    print("All UI Scenes: " + str(all_ui_scenes.size()) + " active")
+    for scene_path in all_ui_scenes:
+        var is_call = scene_path in call_screens
+        var type_str = " [call]" if is_call else " [show]"
+        print("  - " + scene_path + type_str)
+```
+
 ## 🎵 Combining with AudioManager
 
 ```gdscript

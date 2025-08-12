@@ -176,6 +176,130 @@ func _on_cancel_button_pressed():
     close_ui_call_screen("res://ui/specific_menu.tscn")  # 特定のシーンを閉じる
 ```
 
+## 🔍 UI状態確認メソッド
+
+### call_screenの表示状況を確認
+
+```gdscript
+func is_call_screen_active(scene_path: String = "") -> bool:
+    """指定されたcall_screenが表示中かどうかを確認"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return false
+    
+    if scene_path.is_empty():
+        # 何らかのcall_screenが表示中かを確認
+        return not ui_command.call_screen_stack.is_empty()
+    else:
+        # 指定されたシーンがcall_screen_stackにあるかを確認
+        return scene_path in ui_command.call_screen_stack
+
+func get_active_call_screens() -> Array[String]:
+    """表示中のcall_screen一覧を取得"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return []
+    
+    return ui_command.call_screen_stack.duplicate()
+
+func get_current_call_screen() -> String:
+    """現在表示中の最上位call_screenを取得"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return ""
+    
+    if ui_command.call_screen_stack.is_empty():
+        return ""
+    
+    return ui_command.call_screen_stack[-1]  # 最後の要素（最上位）
+
+func is_ui_scene_active(scene_path: String) -> bool:
+    """指定されたUIシーンが表示中かどうかを確認（call/show問わず）"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return false
+    
+    return scene_path in ui_command.active_ui_scenes
+
+func get_all_active_ui_scenes() -> Array[String]:
+    """表示中のすべてのUIシーン一覧を取得"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if not ui_command:
+        push_error("UI command not found")
+        return []
+    
+    return ui_command.active_ui_scenes.keys()
+```
+
+### 使用例
+
+```gdscript
+# 特定のメニューが表示中かチェック
+func _on_pause_button_pressed():
+    if is_call_screen_active("res://ui/pause_menu.tscn"):
+        print("ポーズメニューは既に表示中です")
+        return
+    
+    # ポーズメニューを表示
+    await call_ui_scene("res://ui/pause_menu.tscn")
+
+# 現在のcall_screenを確認
+func _on_check_current_menu():
+    var current_menu = get_current_call_screen()
+    if current_menu.is_empty():
+        print("現在表示中のcall_screenはありません")
+    else:
+        print("現在のメニュー: " + current_menu)
+
+# 複数のcall_screenが開いている場合の処理
+func _on_back_button_pressed():
+    var call_screens = get_active_call_screens()
+    if call_screens.size() > 1:
+        print("メニューが" + str(call_screens.size()) + "層重なっています")
+        # 最上位のメニューのみ閉じる
+        close_ui_call_screen()
+    elif call_screens.size() == 1:
+        print("メニューを閉じます: " + call_screens[0])
+        close_ui_call_screen()
+    else:
+        print("閉じるメニューがありません")
+
+# すべてのUIの状態を確認
+func _on_debug_ui_status():
+    var call_screens = get_active_call_screens()
+    var all_ui_scenes = get_all_active_ui_scenes()
+    
+    print("=== UI状態デバッグ ===")
+    print("Call Screens: " + str(call_screens.size()) + " 個")
+    for i in range(call_screens.size()):
+        print("  " + str(i + 1) + ". " + call_screens[i])
+    
+    print("All UI Scenes: " + str(all_ui_scenes.size()) + " 個")
+    for scene_path in all_ui_scenes:
+        var is_call = scene_path in call_screens
+        var type_str = " [call]" if is_call else " [show]"
+        print("  - " + scene_path + type_str)
+```
+
 ## 🎵 AudioManagerとの組み合わせ
 
 ```gdscript
