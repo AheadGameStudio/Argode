@@ -70,7 +70,7 @@ func _ready():
     
     [:octicons-arrow-right-24: クイックスタート](getting-started/quick-start.ja.md)
 
--   :material-architecture: **アーキテクチャ**
+-   🏗️ **アーキテクチャ**
     
     ---
     
@@ -102,7 +102,7 @@ func _ready():
     
     [:octicons-arrow-right-24: UIフレームワーク](ui/advscreen.ja.md)
 
--   :material-code-array: **APIリファレンス**
+-   ⚙️ **APIリファレンス**
     
     ---
     

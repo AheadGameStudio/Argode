@@ -70,7 +70,7 @@ func _ready():
     
     [:octicons-arrow-right-24: Quick Start](getting-started/quick-start.md)
 
--   :material-architecture: **Architecture**
+-   🏗️ **Architecture**
     
     ---
     
@@ -102,7 +102,7 @@ func _ready():
     
     [:octicons-arrow-right-24: UI Framework](ui/advscreen.md)
 
--   :material-code-array: **API Reference**
+-   ⚙️ **API Reference**
     
     ---
     

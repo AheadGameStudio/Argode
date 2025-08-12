@@ -105,6 +105,9 @@ Display character stats (HP, MP, Level) stored in an Argode dictionary variable 
 
 A custom UI scene could host a simple mini-game. When the mini-game finishes, it emits `screen_result(true)` for success or `screen_result(false)` for failure, allowing the `.rgd` script to branch accordingly after the `ui call` command.
 
+!!! note "Automatic UI Closing on Jump"
+    When a `jump` command is executed in your `.rgd` script, any currently displayed UI scenes (opened with `ui show` or `ui call`) will be automatically closed. This ensures a clean state when transitioning to a new section of your story.
+
 ---
 
 By combining Godot's powerful UI tools with Argode's scripting capabilities, you can create truly unique and interactive experiences for your visual novel.

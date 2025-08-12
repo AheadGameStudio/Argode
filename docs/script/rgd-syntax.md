@@ -1,6 +1,6 @@
 # RGD Script Syntax Reference
 
-RGD (Ren'Py-like Godot) Script is the core language for writing your visual novel stories in Argode. It's designed to be simple, human-readable, and intuitive for visual novel creators.
+RGD Script is the core language for writing your visual novel stories in Argode. It's designed to be simple, human-readable, and intuitive for visual novel creators.
 
 ## Basic Structure
 
