@@ -114,7 +114,7 @@ func _compile_regex():
 	regex_image_stmt.compile("^\\s*image\\s+")
 	
 	regex_audio_stmt = RegEx.new()
-	regex_audio_stmt.compile("^\\s*audio\\s+")
+	regex_audio_stmt.compile("^\\s*audio\\s+\\w+\\s+\".*\"\\s*$")
 	
 	regex_shader_stmt = RegEx.new()
 	regex_shader_stmt.compile("^\\s*shader\\s+")
@@ -485,7 +485,7 @@ func _parse_and_execute(line: String) -> bool:
 		# 既知のコマンドはスキップ（重複処理を避ける）
 		var known_commands = [
 			"label", "say", "set", "if", "else", "menu", "jump", "call", "return",
-			"show", "hide", "scene", "define", "character", "image", "audio", "shader",
+			"show", "hide", "scene", "define", "character", "image", "shader",
 			"call_screen", "close_screen", "window"
 		]
 		
