@@ -79,6 +79,7 @@ plugins:
               - 概要: custom-commands/overview.ja.md
               - ビルトインコマンド: custom-commands/built-in.ja.md
               - コマンド作成: custom-commands/creating.ja.md
+              - GDScript連携: custom-commands/gdscript-integration.ja.md
             - UIシステム:
               - AdvScreen: ui/advscreen.ja.md
               - テーマ: ui/themes.ja.md
@@ -141,6 +142,7 @@ nav:
     - Overview: custom-commands/overview.md
     - Built-in Commands: custom-commands/built-in.md
     - Creating Commands: custom-commands/creating.md
+    - GDScript Integration: custom-commands/gdscript-integration.md
   - UI System:
     - AdvScreen: ui/advscreen.md
     - Themes: ui/themes.md
