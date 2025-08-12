@@ -26,6 +26,7 @@ var CharacterManager  # CharacterManager
 var VariableManager  # VariableManager
 var TransitionPlayer  # TransitionPlayer
 var LayerManager  # LayerManager (v2新機能)
+var AudioManager  # AudioManager (v2新機能)
 var CustomCommandHandler  # CustomCommandHandler (v2新機能)
 
 # === レイヤーマッピング (v2新機能) ===
@@ -116,6 +117,12 @@ func _create_managers():
 	LayerManager = layer_manager_script.new()
 	LayerManager.name = "LayerManager"
 	add_child(LayerManager)
+	
+	# v2新機能: AudioManager
+	var audio_manager_script = preload("res://addons/argode/managers/AudioManager.gd")
+	AudioManager = audio_manager_script.new()
+	AudioManager.name = "AudioManager"
+	add_child(AudioManager)
 	
 	# v2新機能: CustomCommandHandler
 	var custom_command_script = preload("res://addons/argode/commands/CustomCommandHandler.gd")
@@ -364,6 +371,9 @@ func _setup_manager_references():
 	UIManager.script_player = Player
 	UIManager.character_defs = CharDefs  # v2新機能
 	UIManager.layer_manager = LayerManager  # v2新機能
+	
+	# AudioManagerに定義マネージャーへの参照を設定
+	AudioManager.audio_defs = AudioDefs  # v2新機能
 	
 	print("🔗 Manager references configured")
 
