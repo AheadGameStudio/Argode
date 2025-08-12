@@ -370,11 +370,8 @@ func setup_ui_callbacks():
     custom_handler.connect_to_dynamic_signal("ui_call_screen_shown", _on_ui_call_screen_shown)
     custom_handler.connect_to_dynamic_signal("ui_call_screen_closed", _on_ui_call_screen_closed)
 
-func _on_ui_call_screen_result(args: Array):
+func _on_ui_call_screen_result(scene_path: String, result: Variant):
     """Handle results from call_screen"""
-    var scene_path = args[0] as String
-    var result = args[1]
-    
     print("UI Callback Result:", scene_path, "->", result)
     
     # Handle results by scene
@@ -386,16 +383,12 @@ func _on_ui_call_screen_result(args: Array):
         _:
             print("Unhandled UI result:", scene_path, result)
 
-func _on_ui_call_screen_shown(args: Array):
+func _on_ui_call_screen_shown(scene_path: String, position: String, transition: String):
     """Handle call_screen display"""
-    var scene_path = args[0] as String
-    var position = args[1] as String
-    var transition = args[2] as String
-    print("UI displayed:", scene_path)
+    print("UI displayed:", scene_path, "at", position, "with", transition)
 
-func _on_ui_call_screen_closed(args: Array):
+func _on_ui_call_screen_closed(scene_path: String):
     """Handle call_screen closure"""
-    var scene_path = args[0] as String
     print("UI closed:", scene_path)
 
 func _handle_choice_result(result: Variant):
@@ -488,13 +481,44 @@ func _on_tree_exiting():
 
 ## 🔧 Troubleshooting
 
+### ⚠️ Important: Correct Callback Function Parameter Definition
+
+**Wrong way** (old format):
+```gdscript
+# ❌ Wrong: args: Array is the old format
+func _on_ui_call_screen_closed(args: Array):
+    var scene_path = args[0] as String
+    print("UI closed:", scene_path)
+
+func _on_ui_call_screen_result(args: Array):
+    var scene_path = args[0] as String
+    var result = args[1]
+    print("Result:", result)
+```
+
+**Correct way** (new format):
+```gdscript
+# ✅ Correct: Define as individual parameters
+func _on_ui_call_screen_closed(scene_path: String):
+    print("UI closed:", scene_path)
+
+func _on_ui_call_screen_result(scene_path: String, result: Variant):
+    print("Result:", result)
+
+func _on_ui_call_screen_shown(scene_path: String, position: String, transition: String):
+    print("UI shown:", scene_path, "at", position, "with", transition)
+```
+
 ### UI Callbacks Not Working
 
 **Symptom**: `🎯 [ui] Emitted signal: ui_call_screen_closed` appears in logs but callback functions are not called
 
 **Causes and Solutions**:
 
-1. **LayerManager Not Initialized**
+1. **Callback Function Parameter Definition is Wrong**
+   - Please refer to the "Correct Callback Function Parameter Definition" above
+
+2. **LayerManager Not Initialized**
    ```gdscript
    # Solution: Initialize LayerManager manually
    func setup_layer_manager():

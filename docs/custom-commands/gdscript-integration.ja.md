@@ -385,11 +385,8 @@ func setup_ui_callbacks():
     custom_handler.connect_to_dynamic_signal("ui_call_screen_shown", _on_ui_call_screen_shown)
     custom_handler.connect_to_dynamic_signal("ui_call_screen_closed", _on_ui_call_screen_closed)
 
-func _on_ui_call_screen_result(args: Array):
+func _on_ui_call_screen_result(scene_path: String, result: Variant):
     """call_screenから結果が返ってきた時の処理"""
-    var scene_path = args[0] as String
-    var result = args[1]
-    
     print("UIコールバック結果:", scene_path, "->", result)
     
     # シーンごとの結果処理
@@ -401,16 +398,12 @@ func _on_ui_call_screen_result(args: Array):
         _:
             print("未処理のUI結果:", scene_path, result)
 
-func _on_ui_call_screen_shown(args: Array):
+func _on_ui_call_screen_shown(scene_path: String, position: String, transition: String):
     """call_screenが表示された時の処理"""
-    var scene_path = args[0] as String
-    var position = args[1] as String
-    var transition = args[2] as String
-    print("UIが表示されました:", scene_path)
+    print("UIが表示されました:", scene_path, "at", position, "with", transition)
 
-func _on_ui_call_screen_closed(args: Array):
+func _on_ui_call_screen_closed(scene_path: String):
     """call_screenが閉じられた時の処理"""
-    var scene_path = args[0] as String
     print("UIが閉じられました:", scene_path)
 
 func _handle_choice_result(result: Variant):
@@ -490,10 +483,7 @@ func show_choice_with_callback(scene_path: String, callback: Callable, options: 
     # UI表示
     await call_ui_scene(scene_path)
 
-func _on_ui_result(args: Array):
-    var scene_path = args[0] as String
-    var result = args[1]
-    
+func _on_ui_result(scene_path: String, result: Variant):
     # 保存されたコールバックを実行
     if scene_path in choice_callbacks:
         var callback = choice_callbacks[scene_path] as Callable
@@ -569,13 +559,44 @@ func _on_tree_exiting():
 
 ## 🔧 トラブルシューティング
 
+### ⚠️ 重要：正しいコールバック関数の引数定義
+
+**間違った書き方**（古い形式）:
+```gdscript
+# ❌ 間違い：args: Arrayは古い形式です
+func _on_ui_call_screen_closed(args: Array):
+    var scene_path = args[0] as String
+    print("UIが閉じられました:", scene_path)
+
+func _on_ui_call_screen_result(args: Array):
+    var scene_path = args[0] as String
+    var result = args[1]
+    print("結果:", result)
+```
+
+**正しい書き方**（新しい形式）:
+```gdscript
+# ✅ 正しい：個別の引数として定義
+func _on_ui_call_screen_closed(scene_path: String):
+    print("UIが閉じられました:", scene_path)
+
+func _on_ui_call_screen_result(scene_path: String, result: Variant):
+    print("結果:", result)
+
+func _on_ui_call_screen_shown(scene_path: String, position: String, transition: String):
+    print("UIが表示されました:", scene_path, "at", position, "with", transition)
+```
+
 ### UIコールバックが動作しない場合
 
 **症状**: `🎯 [ui] Emitted signal: ui_call_screen_closed`がログに出力されるが、コールバック関数が呼ばれない
 
 **原因と解決策**:
 
-1. **LayerManagerが未初期化**
+1. **コールバック関数の引数定義が間違っている**
+   - 上記の「正しいコールバック関数の引数定義」を参照してください
+
+2. **LayerManagerが未初期化**
    ```gdscript
    # 解決方法：LayerManagerを手動で初期化
    func setup_layer_manager():
