@@ -94,7 +94,7 @@ func _setup_se_container():
 func _setup_argode_references():
 	"""Argodeシステムの参照を設定"""
 	var argode_system = get_node_or_null("/root/ArgodeSystem")
-	if argode_system and argode_system.has_property("AudioDefs"):
+	if argode_system and "AudioDefs" in argode_system:
 		audio_defs = argode_system.AudioDefs
 		print("🔗 AudioDefs reference set")
 	else:
