@@ -22,7 +22,7 @@
     
     
       
-        <title>ArgodeUIScene 使用ガイド - Argode Documentation</title>
+        <title>Creating Interactive UI Scenes - Argode Documentation</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#argodeuiscene" class="md-skip">
+        <a href="#creating-interactive-ui-scenes" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ArgodeUIScene 使用ガイド
+              Creating Interactive UI Scenes
             
           </span>
         </div>
@@ -1511,64 +1511,37 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#ui-scene-structure" class="md-nav__link">
     <span class="md-ellipsis">
-      概要
+      🎨 UI Scene Structure
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#interacting-with-argode" class="md-nav__link">
     <span class="md-ellipsis">
-      基本的な使い方
+      📡 Interacting with Argode
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="基本的な使い方">
+    <nav class="md-nav" aria-label="📡 Interacting with Argode">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
+  <a href="#1-executing-argode-commands-from-ui" class="md-nav__link">
     <span class="md-ellipsis">
-      1. シーンファイルの作成
+      1. Executing Argode Commands from UI
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
+  <a href="#2-closing-ui-call-screens-and-returning-results" class="md-nav__link">
     <span class="md-ellipsis">
-      2. ゲームコマンドの実行
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3" class="md-nav__link">
-    <span class="md-ellipsis">
-      3. メッセージウィンドウとの連携
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4" class="md-nav__link">
-    <span class="md-ellipsis">
-      4. 変数の操作
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-call_screen" class="md-nav__link">
-    <span class="md-ellipsis">
-      5. call_screenとしての使用
+      2. Closing ui call Screens and Returning Results
     </span>
   </a>
   
@@ -1580,69 +1553,27 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#accessing-argode-system-functionalities" class="md-nav__link">
     <span class="md-ellipsis">
-      実装例
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="実装例">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      タイトル画面
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      セーブ/ロード画面
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      設定画面
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
-    <span class="md-ellipsis">
-      シナリオからの使用方法
+      📚 Accessing Argode System Functionalities
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
+  <a href="#example-simple-title-screen" class="md-nav__link">
     <span class="md-ellipsis">
-      利用可能なシグナル
+      🎬 Example: Simple Title Screen
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
+  <a href="#using-ui-scenes-in-scripts" class="md-nav__link">
     <span class="md-ellipsis">
-      自動設定される参照
+      📜 Using UI Scenes in Scripts
     </span>
   </a>
   
@@ -1667,165 +1598,129 @@
   
 
 
-<h1 id="argodeuiscene">ArgodeUIScene 使用ガイド</h1>
-<h2 id="_1">概要</h2>
-<p><code>ArgodeUIScene</code> は、UICommandで表示されるControlシーンがArgodeシステムと連携するための基底クラスです。</p>
-<h2 id="_2">基本的な使い方</h2>
-<h3 id="1">1. シーンファイルの作成</h3>
+<h1 id="creating-interactive-ui-scenes">Creating Interactive UI Scenes</h1>
+<p>Argode allows you to integrate custom Godot UI scenes (<code>.tscn</code> files with a <code>Control</code> node as their root) directly into your visual novel flow using the <code>ui</code> command. These scenes can be simple displays or complex interactive elements like menus, inventory screens, or mini-games.</p>
+<h2 id="ui-scene-structure">🎨 UI Scene Structure</h2>
+<p>To make your UI scene interact seamlessly with Argode, follow these guidelines:</p>
 <ol>
-<li>Godotエディタで新しいシーンを作成</li>
-<li>ルートノードを <code>Control</code> に設定</li>
-<li>スクリプトを作成し、<code>ArgodeUIScene</code> を継承</li>
+<li><strong>Root Node:</strong> The root node of your scene <strong>must be a <code>Control</code> node</strong>.</li>
+<li><strong>Script:</strong> Attach a script to your root <code>Control</code> node.</li>
+<li><strong>Optional <code>_setup_argode_references</code> Method:</strong> Implement this method in your UI scene's script. The <code>ui</code> command will call this method to inject the <code>ArgodeSystem</code> instance and other useful references.</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">ArgodeUIScene</span><span class="w">  </span><span class="c1"># または &quot;res://addons/argode/ui/ArgodeUIScene.gd&quot;</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">super</span><span class="o">.</span><span class="n">_ready</span><span class="p">()</span><span class="w">  </span><span class="c1"># 必須：親クラスの初期化を呼び出し</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="c1"># ここにカスタム初期化処理</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Your UI Scene&#39;s Script (e.g., MyMenu.gd)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">extends</span><span class="w"> </span><span class="n">Control</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># These will be automatically set by the UICommand</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="p">:</span><span class="w"> </span><span class="n">Node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb nb-Type">null</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">var</span><span class="w"> </span><span class="n">adv_screen</span><span class="p">:</span><span class="w"> </span><span class="n">Node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="w"> </span><span class="c1"># Reference to the main message window (AdvScreen)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># This method is called by UICommand to inject Argode references.</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># It&#39;s a good place to initialize your UI based on game state.</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="k">func</span><span class="w"> </span><span class="n">_setup_argode_references</span><span class="p">(</span><span class="n">system_node</span><span class="p">:</span><span class="w"> </span><span class="n">Node</span><span class="p">,</span><span class="w"> </span><span class="n">screen_node</span><span class="p">:</span><span class="w"> </span><span class="n">Node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">):</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="bp">self</span><span class="o">.</span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">system_node</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="bp">self</span><span class="o">.</span><span class="n">adv_screen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">screen_node</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UI Scene: Argode references set!&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="c1"># Example: Get a variable from the game state</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">player_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argode_system</span><span class="o">.</span><span class="n">VariableManager</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;player_name&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">player_name</span><span class="p">:</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello, &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">player_name</span><span class="p">)</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="c1"># Your UI initialization logic here</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">    </span><span class="k">pass</span>
 </code></pre></div>
-<h3 id="2">2. ゲームコマンドの実行</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># ラベルにジャンプ</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">execute_argode_command</span><span class="p">(</span><span class="s2">&quot;jump&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;main_menu&quot;</span><span class="p">})</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># 別ファイルのラベルを呼び出し</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">execute_argode_command</span><span class="p">(</span><span class="s2">&quot;call&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shop_scene&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;res://scenarios/shop.rgd&quot;</span><span class="p">})</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># 変数を設定</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">execute_argode_command</span><span class="p">(</span><span class="s2">&quot;set&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;player_name&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;太郎&quot;</span><span class="p">})</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># 戻る</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">execute_argode_command</span><span class="p">(</span><span class="s2">&quot;return&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{})</span>
-</code></pre></div>
-<h3 id="3">3. メッセージウィンドウとの連携</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># メッセージを表示</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">show_message</span><span class="p">(</span><span class="s2">&quot;ナレーター&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ようこそ、冒険の世界へ！&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># 選択肢を表示</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="k">var</span><span class="w"> </span><span class="n">choices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;はい&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;いいえ&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;わからない&quot;</span><span class="p">]</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">var</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">await</span><span class="w"> </span><span class="n">show_choices</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1"># メッセージウィンドウを隠す/表示</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="n">hide_message_window</span><span class="p">()</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">show_message_window</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="4">4. 変数の操作</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># 変数を取得</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">var</span><span class="w"> </span><span class="n">player_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;player_level&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># 変数を設定</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;current_scene&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;title&quot;</span><span class="p">)</span>
+<h2 id="interacting-with-argode">📡 Interacting with Argode</h2>
+<p>Your UI scene can interact with the Argode system by emitting specific signals. The <code>UICommand</code> listens for these signals and acts accordingly.</p>
+<h3 id="1-executing-argode-commands-from-ui">1. Executing Argode Commands from UI</h3>
+<p>If your UI needs to trigger an Argode command (e.g., <code>jump</code> to a new label, <code>set</code> a variable, or <code>show</code> a character), emit the <code>argode_command_requested</code> signal.</p>
+<p><strong>Signal:</strong> <code>argode_command_requested(command_name: String, parameters: Dictionary)</code></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># In your UI scene&#39;s script (e.g., a button&#39;s _pressed() function)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_start_game_button_pressed</span><span class="p">():</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="c1"># Request Argode to jump to the &#39;prologue&#39; label</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="n">emit_signal</span><span class="p">(</span><span class="s2">&quot;argode_command_requested&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;jump&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prologue&quot;</span><span class="p">})</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="c1"># Request Argode to set a variable</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="n">emit_signal</span><span class="p">(</span><span class="s2">&quot;argode_command_requested&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;set&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;game_started&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">true</span><span class="p">})</span>
+</code></pre></div></p>
+<h3 id="2-closing-ui-call-screens-and-returning-results">2. Closing <code>ui call</code> Screens and Returning Results</h3>
+<p>When you use <code>ui call</code> to display a modal UI (like a menu or a choice screen), the Argode script waits for that UI to close. Your UI scene should emit one of two signals to indicate it's done:</p>
+<ul>
+<li><strong><code>close_screen()</code></strong>: Closes the UI scene without returning any specific result. The Argode script will simply resume.</li>
+<li><strong><code>screen_result(result: Variant)</code></strong>: Closes the UI scene and passes a <code>Variant</code> value back to the Argode system. This result can then be accessed in your <code>.rgd</code> script (though direct access in <code>.rgd</code> is not yet implemented, it's useful for internal logic).</li>
+</ul>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># In your UI scene&#39;s script (e.g., a choice button&#39;s _pressed() function)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_choice_a_button_pressed</span><span class="p">():</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="c1"># Close the UI and return a string result</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="n">emit_signal</span><span class="p">(</span><span class="s2">&quot;screen_result&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;choice_A_made&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_cancel_button_pressed</span><span class="p">():</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="c1"># Close the UI without returning a specific result</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="n">emit_signal</span><span class="p">(</span><span class="s2">&quot;close_screen&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="accessing-argode-system-functionalities">📚 Accessing Argode System Functionalities</h2>
+<p>Through the <code>argode_system</code> reference injected by <code>_setup_argode_references</code>, your UI scene can access various Argode managers and functionalities:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Example: Accessing VariableManager</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_get_player_level</span><span class="p">():</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">argode_system</span><span class="o">.</span><span class="n">VariableManager</span><span class="p">:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">argode_system</span><span class="o">.</span><span class="n">VariableManager</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;player_level&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># フラグをチェック</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">if</span><span class="w"> </span><span class="n">is_flag_set</span><span class="p">(</span><span class="s2">&quot;tutorial_completed&quot;</span><span class="p">):</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="c1"># チュートリアル完了済みの処理</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1"># フラグを設定</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="n">set_flag</span><span class="p">(</span><span class="s2">&quot;first_visit&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Example: Showing a message via UIManager (if UIManager exposes such a method)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">func</span><span class="w"> </span><span class="n">_show_game_message</span><span class="p">(</span><span class="n">text</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="n">argode_system</span><span class="o">.</span><span class="n">UIManager</span><span class="p">:</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">        </span><span class="c1"># Assuming UIManager has a method like show_message_window</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="n">argode_system</span><span class="o">.</span><span class="n">UIManager</span><span class="o">.</span><span class="n">show_message_window</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="5-call_screen">5. call_screenとしての使用</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># 結果を返して閉じる</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_ok_pressed</span><span class="p">():</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="n">return_result</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ok&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;data&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">input_text</span><span class="p">})</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># 結果なしで閉じる</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_cancel_pressed</span><span class="p">():</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="n">return_result</span><span class="p">(</span><span class="nb nb-Type">null</span><span class="p">)</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1"># 自分自身を閉じる</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_close_pressed</span><span class="p">():</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="n">close_self</span><span class="p">()</span>
+<h2 id="example-simple-title-screen">🎬 Example: Simple Title Screen</h2>
+<p>Here's a basic example of a title screen that interacts with Argode:</p>
+<p><strong>Scene Setup:</strong>
+- Root Node: <code>Control</code> (named <code>TitleScreen</code>) with script <code>TitleScreen.gd</code> attached.
+- Child Nodes: <code>Button</code> (named <code>StartButton</code>), <code>Button</code> (named <code>ExitButton</code>).</p>
+<p><strong><code>TitleScreen.gd</code>:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># res://scenes/ui/TitleScreen.gd</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">extends</span><span class="w"> </span><span class="n">Control</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="p">:</span><span class="w"> </span><span class="n">Node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb nb-Type">null</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="k">func</span><span class="w"> </span><span class="n">_setup_argode_references</span><span class="p">(</span><span class="n">system_node</span><span class="p">:</span><span class="w"> </span><span class="n">Node</span><span class="p">,</span><span class="w"> </span><span class="n">_screen_node</span><span class="p">:</span><span class="w"> </span><span class="n">Node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb nb-Type">null</span><span class="p">):</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="bp">self</span><span class="o">.</span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">system_node</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TitleScreen: ArgodeSystem reference set.&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="o">$</span><span class="n">StartButton</span><span class="o">.</span><span class="n">pressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_StartButton_pressed</span><span class="p">)</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="o">$</span><span class="n">ExitButton</span><span class="o">.</span><span class="n">pressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_ExitButton_pressed</span><span class="p">)</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_StartButton_pressed</span><span class="p">():</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="c1"># Request Argode to jump to the &#39;start_game&#39; label</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">    </span><span class="n">emit_signal</span><span class="p">(</span><span class="s2">&quot;argode_command_requested&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;jump&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;start_game&quot;</span><span class="p">})</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">    </span><span class="c1"># Request to close this title screen</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="n">emit_signal</span><span class="p">(</span><span class="s2">&quot;close_screen&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_ExitButton_pressed</span><span class="p">():</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">    </span><span class="c1"># Request Argode to quit the game (assuming a &#39;quit&#39; command exists)</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">    </span><span class="n">emit_signal</span><span class="p">(</span><span class="s2">&quot;argode_command_requested&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;quit&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{})</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">    </span><span class="c1"># Request to close this title screen</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">    </span><span class="n">emit_signal</span><span class="p">(</span><span class="s2">&quot;close_screen&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="using-ui-scenes-in-scripts">📜 Using UI Scenes in Scripts</h2>
+<p>Once your UI scene is set up, you can use it in your <code>.rgd</code> scripts with the <code>ui</code> command:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a># Display a UI scene (non-modal)
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>ui show &quot;res://scenes/ui/TitleScreen.tscn&quot; at center with fade
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a># Call a UI scene (modal - script waits for it to close)
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>ui call &quot;res://scenes/ui/ChoiceMenu.tscn&quot;
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a># Hide a UI scene
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>ui hide &quot;res://scenes/ui/TitleScreen.tscn&quot;
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a># Free a UI scene
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>ui free &quot;res://scenes/ui/TitleScreen.tscn&quot;
 </code></pre></div>
-<h2 id="_3">実装例</h2>
-<h3 id="_4">タイトル画面</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">ArgodeUIScene</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="err">@</span><span class="k">export</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">start_button</span><span class="p">:</span><span class="w"> </span><span class="n">Button</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="err">@</span><span class="k">export</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">exit_button</span><span class="p">:</span><span class="w"> </span><span class="n">Button</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="n">super</span><span class="o">.</span><span class="n">_ready</span><span class="p">()</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="n">start_button</span><span class="o">.</span><span class="n">pressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_start_pressed</span><span class="p">)</span>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="n">exit_button</span><span class="o">.</span><span class="n">pressed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_exit_pressed</span><span class="p">)</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_start_pressed</span><span class="p">():</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="c1"># ゲーム開始</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;game_started&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">)</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="n">show_message_window</span><span class="p">()</span>
-<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span><span class="n">execute_argode_command</span><span class="p">(</span><span class="s2">&quot;jump&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;prologue_start&quot;</span><span class="p">})</span>
-<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span><span class="n">close_self</span><span class="p">()</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
-<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_exit_pressed</span><span class="p">():</span>
-<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span><span class="c1"># 終了確認</span>
-<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">choice</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">await</span><span class="w"> </span><span class="n">show_choices</span><span class="p">([</span><span class="s2">&quot;はい&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;いいえ&quot;</span><span class="p">])</span>
-<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">choice</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">:</span>
-<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">        </span><span class="n">execute_argode_command</span><span class="p">(</span><span class="s2">&quot;jump&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;game_exit&quot;</span><span class="p">})</span>
-<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">        </span><span class="n">close_self</span><span class="p">()</span>
-</code></pre></div>
-<h3 id="_5">セーブ/ロード画面</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">ArgodeUIScene</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_save_slot_pressed</span><span class="p">(</span><span class="n">slot_number</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">):</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="c1"># セーブデータを保存</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="n">execute_argode_command</span><span class="p">(</span><span class="s2">&quot;save&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;slot&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">slot_number</span><span class="p">})</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="n">show_message</span><span class="p">(</span><span class="s2">&quot;システム&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;セーブしました&quot;</span><span class="p">)</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="c1"># 結果を返して閉じる</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="n">return_result</span><span class="p">({</span><span class="s2">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;saved&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;slot&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">slot_number</span><span class="p">})</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_load_slot_pressed</span><span class="p">(</span><span class="n">slot_number</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">):</span>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">    </span><span class="c1"># セーブデータをロード</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">    </span><span class="n">execute_argode_command</span><span class="p">(</span><span class="s2">&quot;load&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;slot&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">slot_number</span><span class="p">})</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">    </span><span class="c1"># 結果を返して閉じる</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">    </span><span class="n">return_result</span><span class="p">({</span><span class="s2">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;loaded&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;slot&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">slot_number</span><span class="p">})</span>
-</code></pre></div>
-<h3 id="_6">設定画面</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">ArgodeUIScene</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="err">@</span><span class="k">export</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">bgm_slider</span><span class="p">:</span><span class="w"> </span><span class="n">Slider</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="err">@</span><span class="k">export</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">se_slider</span><span class="p">:</span><span class="w"> </span><span class="n">Slider</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="n">super</span><span class="o">.</span><span class="n">_ready</span><span class="p">()</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="c1"># 現在の設定値を取得</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="n">bgm_slider</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;bgm_volume&quot;</span><span class="p">)</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="n">se_slider</span><span class="o">.</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_variable</span><span class="p">(</span><span class="s2">&quot;se_volume&quot;</span><span class="p">)</span>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
-<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_bgm_slider_changed</span><span class="p">(</span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="p">):</span>
-<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">    </span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;bgm_volume&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
-<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">    </span><span class="c1"># 実際の音量も更新</span>
-<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">    </span><span class="n">AudioServer</span><span class="o">.</span><span class="n">set_bus_volume_db</span><span class="p">(</span><span class="n">AudioServer</span><span class="o">.</span><span class="n">get_bus_index</span><span class="p">(</span><span class="s2">&quot;BGM&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">linear_to_db</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
-<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
-<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_apply_pressed</span><span class="p">():</span>
-<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">    </span><span class="c1"># 設定を保存</span>
-<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">    </span><span class="n">show_message</span><span class="p">(</span><span class="s2">&quot;システム&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;設定を保存しました&quot;</span><span class="p">)</span>
-<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">    </span><span class="n">return_result</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;applied&quot;</span><span class="p">})</span>
-</code></pre></div>
-<h2 id="_7">シナリオからの使用方法</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a># 通常の表示
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>@ui show res://screens/title/Title.tscn center with fade
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a># モーダルとして呼び出し（結果待ち）
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>@ui call res://screens/save_load/SaveLoad.tscn center with fade
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a># 非表示
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>@ui hide res://screens/title/Title.tscn center with fade
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a># 削除
-<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>@ui free res://screens/title/Title.tscn
-</code></pre></div>
-<h2 id="_8">利用可能なシグナル</h2>
-<ul>
-<li><code>screen_result(result: Variant)</code>: call_screenの結果を返す</li>
-<li><code>close_screen()</code>: 自分自身を閉じる要求</li>
-<li><code>argode_command_requested(command_name: String, parameters: Dictionary)</code>: カスタムコマンド実行要求</li>
-</ul>
-<h2 id="_9">自動設定される参照</h2>
-<ul>
-<li><code>argode_system</code>: ArgodeSystemへの参照</li>
-<li><code>adv_screen</code>: メッセージウィンドウ（AdvScreen）への参照</li>
-</ul>
-<p>これらの参照により、Argodeシステムの全機能にアクセス可能です。</p>
+<hr />
+<p>By following these guidelines, you can create rich, interactive user interfaces that seamlessly integrate with your Argode visual novel.</p>
 
 
 
