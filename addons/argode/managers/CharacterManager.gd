@@ -2,7 +2,8 @@ extends Node
 
 @export var character_container: Node2D
 var character_sprites: Dictionary = {}
-var background_sprite: Sprite2D
+# v2: 古い背景処理は完全廃止 - LayerManagerを使用してください
+
 # v2: ArgodeSystem統合により、直接参照に変更
 var transition_player  # TransitionPlayer
 var variable_manager  # VariableManager - ArgodeSystemから設定される
@@ -29,8 +30,7 @@ func _ready():
 				print("📦 Created character container at: ", character_container.position)
 			print("📦 Created character container in main scene")
 	
-	# Create background sprite
-	_setup_background()
+	# v2: 古い背景処理は完全廃止済み - LayerManagerを使用
 
 func show_character(char_id: String, expression: String, position: String, transition: String):
 	print("🧍‍♀️ Showing: ", char_id, " (", expression, ") at ", position, " with ", transition)
@@ -117,87 +117,17 @@ func hide_character(char_id: String, transition: String):
 	else:
 		print("⚠️ Character not found to hide: ", char_id)
 
-func _setup_background():
-	var main_scene = get_tree().current_scene
-	if main_scene:
-		background_sprite = Sprite2D.new()
-		background_sprite.name = "BackgroundSprite"
-		# Add background behind everything else
-		main_scene.add_child(background_sprite)
-		main_scene.move_child(background_sprite, 0)  # Move to back
-		
-		# Position background at screen center
-		var viewport = get_viewport()
-		if viewport:
-			var screen_size = viewport.get_visible_rect().size
-			background_sprite.position = Vector2(screen_size.x / 2, screen_size.y / 2)
-			print("🖼️ Created background sprite at: ", background_sprite.position)
+# v2: 古い背景処理は完全廃止 - LayerManagerを使用してください
 
-func show_scene(scene_name: String, transition: String):
-	print("🏞️ Showing scene: ", scene_name, " with ", transition)
+func show_scene(scene_name: String, transition: String = ""):
+	print("🎬 [DEPRECATED] CharacterManager.show_scene is deprecated. Use LayerManager.change_background instead")
+	# LayerManagerに委譲
+	if layer_manager:
+		var bg_path = "res://assets/images/backgrounds/" + scene_name + ".png"
+		await layer_manager.change_background(bg_path, transition)
+		return
 	
-	if not background_sprite:
-		_setup_background()
-	
-	# Try to load background image
-	var image_path = "res://assets/images/backgrounds/" + scene_name + ".png"
-	var texture = load(image_path)
-	
-	if texture:
-		background_sprite.texture = texture
-		print("🖼️ Loaded background: ", image_path)
-	else:
-		# Create a colored background as placeholder
-		var placeholder = _create_background_placeholder(scene_name)
-		background_sprite.texture = placeholder
-		print("🎨 Using background placeholder for: ", scene_name)
-	
-	# Show with transition
-	if transition != "none" and transition_player:
-		print("🎬 Executing transition: ", transition)
-		background_sprite.visible = true
-		await transition_player.play(background_sprite, transition)
-		print("✅ Transition completed: ", transition)
-	else:
-		print("📄 No transition specified or TransitionPlayer missing")
-		background_sprite.visible = true
-	
-	# Debug information
-	print("🔍 Background sprite debug:")
-	print("  - Visible: ", background_sprite.visible)
-	print("  - Position: ", background_sprite.position)
-	print("  - Texture: ", background_sprite.texture != null)
-	print("  - Parent: ", background_sprite.get_parent().name if background_sprite.get_parent() else "No parent")
-	
-	print("✅ Scene displayed: ", scene_name, " with transition: ", transition)
-
-func _create_background_placeholder(scene_name: String) -> ImageTexture:
-	var viewport = get_viewport()
-	var screen_size = Vector2(1152, 648)  # Default size
-	if viewport:
-		screen_size = viewport.get_visible_rect().size
-	
-	var image = Image.create(int(screen_size.x), int(screen_size.y), false, Image.FORMAT_RGB8)
-	
-	# Different colors for different scenes
-	var color: Color
-	match scene_name:
-		"classroom":
-			color = Color.LIGHT_BLUE
-		"corridor":
-			color = Color.LIGHT_GRAY
-		"park":
-			color = Color.LIGHT_GREEN
-		"home":
-			color = Color.WHEAT
-		_:
-			color = Color.DARK_GRAY
-	
-	image.fill(color)
-	
-	var texture = ImageTexture.new()
-	texture.set_image(image)
-	return texture
+	print("❌ No LayerManager available for background handling")
 
 func _load_character_image(sprite: Sprite2D, char_id: String, expression: String):
 	# Try to load character image
