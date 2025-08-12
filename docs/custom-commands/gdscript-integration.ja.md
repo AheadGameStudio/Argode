@@ -49,7 +49,7 @@ func build_command_params(command_line: String) -> Dictionary:
 ### 3. コマンドの実行
 
 ```gdscript
-func execute_custom_command_example(custom_handler: CustomCommandHandler):
+func execute_ui_command_example(custom_handler: CustomCommandHandler):
     # ui callコマンドの実行
     var ui_params = {
         "_raw": "call res://ui/choice_menu.tscn at center with fade",
@@ -62,7 +62,14 @@ func execute_custom_command_example(custom_handler: CustomCommandHandler):
         "arg5": "fade"
     }
     
-    custom_handler.execute_custom_command("ui", ui_params, "")
+    print("🎯 Executing ui call command from GDScript")
+    
+    # 登録されたUICommandを取得して直接実行
+    var ui_command = custom_handler.registered_commands.get("ui")
+    if ui_command:
+        await custom_handler._execute_registered_command(ui_command, ui_params)
+    else:
+        push_error("UI command not found in registered commands")
 ```
 
 ## 🎯 UIコマンドの便利メソッド
@@ -86,11 +93,16 @@ func call_ui_scene(scene_path: String, position: String = "center", transition: 
         "arg5": transition
     }
     
-    custom_handler.execute_custom_command("ui", params, "")
+    # 登録されたUICommandを取得して実行
+    var ui_command = custom_handler.registered_commands.get("ui")
+    if ui_command:
+        await custom_handler._execute_registered_command(ui_command, params)
+    else:
+        push_error("UI command not found")
 
 # 使用例
 func _on_choice_button_pressed():
-    call_ui_scene("res://ui/player_choice.tscn", "center", "fade")
+    await call_ui_scene("res://ui/player_choice.tscn", "center", "fade")
     print("プレイヤーが選択を完了しました")  # 選択後に実行される
 ```
 
@@ -113,7 +125,12 @@ func show_ui_scene(scene_path: String, position: String = "center", transition: 
         "arg5": transition
     }
     
-    custom_handler.execute_custom_command("ui", params, "")
+    # 登録されたUICommandを取得して実行
+    var ui_command = custom_handler.registered_commands.get("ui")
+    if ui_command:
+        ui_command.execute(params, argode_system)
+    else:
+        push_error("UI command not found")
 
 # 使用例
 func _on_status_button_pressed():
@@ -146,7 +163,12 @@ func close_ui_call_screen(scene_path: String = ""):
             "arg1": scene_path
         }
     
-    custom_handler.execute_custom_command("ui", params, "")
+    # 登録されたUICommandを取得して実行
+    var ui_command = custom_handler.registered_commands.get("ui")
+    if ui_command:
+        ui_command.execute(params, argode_system)
+    else:
+        push_error("UI command not found")
 
 # 使用例
 func _on_cancel_button_pressed():
@@ -165,7 +187,7 @@ func _on_menu_button_pressed():
     argode_system.AudioManager.play_se("menu_open", 0.8)
     
     # メニューをモーダル表示（プレイヤーの選択を待つ）
-    call_ui_scene("res://ui/game_menu.tscn", "center", "fade")
+    await call_ui_scene("res://ui/game_menu.tscn", "center", "fade")
     
     # メニューが閉じられた後に実行
     argode_system.AudioManager.play_se("menu_close", 0.8)
@@ -206,13 +228,13 @@ func _ready():
 func show_main_menu():
     """メインメニュー表示"""
     audio_manager.play_bgm("menu_theme", true, 0.8)
-    call_ui_scene("res://ui/main_menu.tscn")
+    await call_ui_scene("res://ui/main_menu.tscn")
 
 func show_pause_menu():
     """ポーズメニュー表示"""
     audio_manager.set_bgm_volume(0.3)  # BGM音量を下げる
     audio_manager.play_se("pause", 0.7)
-    call_ui_scene("res://ui/pause_menu.tscn")
+    await call_ui_scene("res://ui/pause_menu.tscn")
 
 func close_pause_menu():
     """ポーズメニュー終了"""
@@ -237,7 +259,9 @@ func call_ui_scene(scene_path: String, position: String = "center", transition: 
         "arg4": "with",
         "arg5": transition
     }
-    custom_handler.execute_custom_command("ui", params, "")
+    var ui_command = custom_handler.registered_commands.get("ui")
+    if ui_command:
+        await custom_handler._execute_registered_command(ui_command, params)
 
 func show_ui_scene(scene_path: String, position: String = "center", transition: String = "none"):
     var params = {
@@ -250,7 +274,9 @@ func show_ui_scene(scene_path: String, position: String = "center", transition: 
         "arg4": "with",
         "arg5": transition
     }
-    custom_handler.execute_custom_command("ui", params, "")
+    var ui_command = custom_handler.registered_commands.get("ui")
+    if ui_command:
+        ui_command.execute(params, argode_system)
 
 func close_ui_call_screen(scene_path: String = ""):
     var params = {}
@@ -267,7 +293,9 @@ func close_ui_call_screen(scene_path: String = ""):
             "arg0": "close",
             "arg1": scene_path
         }
-    custom_handler.execute_custom_command("ui", params, "")
+    var ui_command = custom_handler.registered_commands.get("ui")
+    if ui_command:
+        ui_command.execute(params, argode_system)
 ```
 
 ## 📚 重要なポイント

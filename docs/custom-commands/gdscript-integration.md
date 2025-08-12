@@ -49,7 +49,7 @@ func build_command_params(command_line: String) -> Dictionary:
 ### 3. Command Execution
 
 ```gdscript
-func execute_custom_command_example(custom_handler: CustomCommandHandler):
+func execute_ui_command_example(custom_handler: CustomCommandHandler):
     # Execute ui call command
     var ui_params = {
         "_raw": "call res://ui/choice_menu.tscn at center with fade",
@@ -62,7 +62,14 @@ func execute_custom_command_example(custom_handler: CustomCommandHandler):
         "arg5": "fade"
     }
     
-    custom_handler.execute_custom_command("ui", ui_params, "")
+    print("🎯 Executing ui call command from GDScript")
+    
+    # Get registered UICommand and execute directly
+    var ui_command = custom_handler.registered_commands.get("ui")
+    if ui_command:
+        await custom_handler._execute_registered_command(ui_command, ui_params)
+    else:
+        push_error("UI command not found in registered commands")
 ```
 
 ## 🎯 UI Command Convenience Methods
