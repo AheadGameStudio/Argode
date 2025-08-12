@@ -949,7 +949,7 @@ func _handle_return() -> bool:
 		
 		return false  # 実行を継続（戻った行から処理を続ける）
 	else:
-		push_warning("⚠️ return called with empty call stack")
+		print("ℹ️ return called with empty call stack (likely from jump command)")
 		print("🛑 No call to return from - stopping script execution")
 		is_playing = false
 		return true  # 実行を停止

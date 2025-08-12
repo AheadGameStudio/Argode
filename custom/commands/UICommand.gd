@@ -602,12 +602,51 @@ func _on_scene_command_requested(cmd_name: String, parameters: Dictionary, adv_s
 	"""シーンからのコマンド要求を処理"""
 	print("🎯 [UICommand] Scene requested command:", cmd_name, "with params:", parameters)
 	
-	# カスタムコマンドハンドラーに転送
+	# jumpコマンドの場合は、コマンド実行後にUIシーンを自動的に閉じる
+	if cmd_name == "jump":
+		print("🚀 [UICommand] Jump command detected - will close UI scene after execution")
+		# コマンドを実行
+		if adv_system.CustomCommandHandler:
+			adv_system.Player.custom_command_executed.emit(cmd_name, parameters, "")
+			print("📡 [UICommand] Jump command forwarded to CustomCommandHandler")
+		
+		# 遅延実行でUIシーンを閉じる（jumpが完了してから）
+		call_deferred("_close_ui_scene_after_jump", adv_system)
+		return
+	
+	# その他のコマンドは通常処理
 	if adv_system.CustomCommandHandler:
 		adv_system.Player.custom_command_executed.emit(cmd_name, parameters, "")
 		print("📡 [UICommand] Command forwarded to CustomCommandHandler")
 	else:
 		print("❌ [UICommand] CustomCommandHandler not available")
+
+func _close_ui_scene_after_jump(adv_system: Node):
+	"""jumpコマンド実行後にUIシーンを自動的に閉じる"""
+	print("🔚 [UICommand] Auto-closing UI scene after jump command")
+	
+	# 最後に表示されたUIシーンを閉じる
+	if not active_ui_scenes.is_empty():
+		var last_scene_path = ""
+		var last_scene_instance = null
+		
+		# 最後のシーンを見つける
+		for scene_path in active_ui_scenes.keys():
+			var scene_instance = active_ui_scenes[scene_path]
+			if scene_instance and is_instance_valid(scene_instance):
+				last_scene_path = scene_path
+				last_scene_instance = scene_instance
+		
+		if last_scene_instance:
+			print("🗑️ [UICommand] Closing UI scene:", last_scene_path)
+			last_scene_instance.queue_free()
+			active_ui_scenes.erase(last_scene_path)
+			
+			# call_screenスタックからも削除（もしあれば）
+			if last_scene_path in call_screen_stack:
+				call_screen_stack.erase(last_scene_path)
+			
+			emit_dynamic_signal("ui_scene_auto_closed_after_jump", [last_scene_path], adv_system)
 
 func _connect_call_screen_signals(scene_instance: Node, scene_path: String, adv_system: Node) -> void:
 	"""call_screenのシグナル接続を行う"""
