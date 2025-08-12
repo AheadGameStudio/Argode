@@ -20,6 +20,7 @@ var ImageDefs  # ImageDefinitionManager
 var CharDefs  # CharacterDefinitionManager  
 var AudioDefs  # AudioDefinitionManager
 var ShaderDefs  # ShaderDefinitionManager
+var UISceneDefs  # UISceneDefinitionManager (v2新機能)
 var UIManager  # UIManager
 var CharacterManager  # CharacterManager
 var VariableManager  # VariableManager
@@ -104,6 +105,11 @@ func _create_managers():
 	ShaderDefs = shader_def_script.new()
 	ShaderDefs.name = "ShaderDefinitionManager"
 	add_child(ShaderDefs)
+	
+	var ui_scene_def_script = preload("res://addons/argode/managers/UISceneDefinitionManager.gd")
+	UISceneDefs = ui_scene_def_script.new()
+	UISceneDefs.name = "UISceneDefinitionManager"
+	add_child(UISceneDefs)
 	
 	# v2新機能: LayerManager
 	var layer_manager_script = preload("res://addons/argode/managers/LayerManager.gd")
@@ -368,6 +374,7 @@ func _build_definitions():
 	ImageDefs.build_definitions()
 	AudioDefs.build_definitions()
 	ShaderDefs.build_definitions()
+	UISceneDefs.build_definitions()
 	print("✅ All definitions built")
 
 func _emit_initialization_errors():
@@ -432,6 +439,9 @@ func _preparse_v2_definitions(script_lines: PackedStringArray):
 		elif line.begins_with("shader "):
 			if ShaderDefs and ShaderDefs.parse_shader_statement(line):
 				definitions_found += 1
+		elif line.begins_with("ui_scene "):
+			if UISceneDefs and UISceneDefs.parse_ui_scene_statement(line):
+				definitions_found += 1
 	
 	print("✅ Preparsed ", definitions_found, " v2 definition statements")
 	
@@ -448,6 +458,8 @@ func _rebuild_definition_counts():
 		AudioDefs.build_definitions()
 	if ShaderDefs:
 		ShaderDefs.build_definitions()
+	if UISceneDefs:
+		UISceneDefs.build_definitions()
 
 func next_line():
 	"""次の行に進む（ユーザー入力処理用）"""

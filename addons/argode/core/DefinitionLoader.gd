@@ -15,6 +15,7 @@ static func load_all_definitions(argode_system: Node) -> Dictionary:
 		"images": 0,
 		"audio": 0,
 		"shaders": 0,
+		"ui_scenes": 0,
 		"variables": 0,
 		"total_files": 0
 	}
@@ -35,6 +36,7 @@ static func load_all_definitions(argode_system: Node) -> Dictionary:
 		results.images += file_results.images
 		results.audio += file_results.audio
 		results.shaders += file_results.shaders
+		results.ui_scenes += file_results.ui_scenes
 		results.variables += file_results.variables
 	
 	_print_summary(results)
@@ -84,6 +86,7 @@ static func _load_definition_file(file_path: String, argode_system: Node) -> Dic
 		"images": 0,
 		"audio": 0,
 		"shaders": 0,
+		"ui_scenes": 0,
 		"variables": 0
 	}
 	
@@ -152,6 +155,16 @@ static func _process_definition_line(line: String, argode_system: Node, file_pat
 			print("⚠️ ShaderDefs not available for: ", line)
 		return "shaders"
 	
+	# ui_scene定義
+	var ui_scene_regex = RegEx.new()
+	ui_scene_regex.compile("^ui_scene\\s+")
+	if ui_scene_regex.search(line):
+		if argode_system.UISceneDefs and argode_system.UISceneDefs.has_method("parse_ui_scene_statement"):
+			argode_system.UISceneDefs.parse_ui_scene_statement(line)
+		else:
+			print("⚠️ UISceneDefs not available for: ", line)
+		return "ui_scenes"
+	
 	# set変数定義
 	var set_regex = RegEx.new()
 	set_regex.compile("^set\\s+")
@@ -176,5 +189,6 @@ static func _print_summary(results: Dictionary):
 	print("   🖼️ Images: ", results.images)
 	print("   🔊 Audio: ", results.audio)
 	print("   🎨 Shaders: ", results.shaders)
+	print("   🎬 UI Scenes: ", results.ui_scenes)
 	print("   📊 Variables: ", results.variables)
-	print("   📈 Total definitions: ", results.characters + results.images + results.audio + results.shaders + results.variables)
+	print("   📈 Total definitions: ", results.characters + results.images + results.audio + results.shaders + results.ui_scenes + results.variables)

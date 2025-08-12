@@ -109,6 +109,12 @@ func _execute_show(args: PackedStringArray, adv_system: Node) -> void:
 	
 	print("🎯 [UICommand] Initial scene_path:", scene_path)
 	
+	# UIScene定義名からパスを解決
+	var resolved_scene_path = _resolve_ui_scene_path(scene_path, adv_system)
+	if resolved_scene_path != scene_path:
+		print("🎯 [UICommand] Resolved scene path:", scene_path, "->", resolved_scene_path)
+		scene_path = resolved_scene_path
+	
 	# 既に表示中のシーンをチェック
 	if scene_path in active_ui_scenes:
 		var existing_scene = active_ui_scenes[scene_path]
@@ -232,7 +238,7 @@ func _execute_free(args: PackedStringArray, adv_system: Node) -> void:
 		_free_all_ui_scenes(adv_system)
 	else:
 		# 引数ありの場合：指定されたシーンを解放
-		var scene_path = args[0]
+		var scene_path = _resolve_ui_scene_path(args[0], adv_system)
 		_free_specific_ui_scene(scene_path, adv_system)
 
 func _free_all_ui_scenes(adv_system: Node) -> void:
@@ -367,7 +373,7 @@ func _execute_hide(args: PackedStringArray, adv_system: Node) -> void:
 		push_error("❌ ui hide: シーンパスが必要です")
 		return
 	
-	var scene_path = args[0]
+	var scene_path = _resolve_ui_scene_path(args[0], adv_system)
 	var transition = "none"
 	
 	# 引数解析（transitionオプションのみサポート）
@@ -416,7 +422,7 @@ func _execute_call(args: PackedStringArray, adv_system: Node) -> void:
 		push_error("❌ ui call: シーンパスが必要です")
 		return
 	
-	var scene_path = args[0]
+	var scene_path = _resolve_ui_scene_path(args[0], adv_system)
 	var position = "center"
 	var transition = "fade"
 	
@@ -529,7 +535,7 @@ func _execute_close(args: PackedStringArray, adv_system: Node) -> void:
 		print("🔚 Closing top call screen:", scene_path_to_close)
 	else:
 		# 引数ありの場合：指定されたシーンを閉じる
-		scene_path_to_close = args[0]
+		scene_path_to_close = _resolve_ui_scene_path(args[0], adv_system)
 		print("🔚 Closing specific call screen:", scene_path_to_close)
 		
 		# 指定されたシーンがcall_screenスタックにあるかチェック
@@ -697,3 +703,24 @@ func _on_call_screen_close(scene_path: String, adv_system: Node) -> void:
 	"""call_screenが自分自身を閉じる時の処理"""
 	print("🔚 [UICommand] Call screen requested close:", scene_path)
 	_close_call_screen(scene_path, adv_system)
+
+func _resolve_ui_scene_path(scene_path: String, adv_system: Node) -> String:
+	"""
+	UIシーンパスを解決する
+	定義名が指定された場合は実際のパスに変換、そうでなければそのまま返す
+	"""
+	# 既に.tscnファイルパスの場合はそのまま返す
+	if scene_path.ends_with(".tscn"):
+		return scene_path
+	
+	# UISceneDefsが利用可能な場合、定義名からパスを取得
+	if adv_system.has_property("UISceneDefs") and adv_system.UISceneDefs:
+		if adv_system.UISceneDefs.has_ui_scene(scene_path):
+			var resolved_path = adv_system.UISceneDefs.get_ui_scene_path(scene_path)
+			print("🎬 [UICommand] UI scene resolved:", scene_path, "->", resolved_path)
+			return resolved_path
+		else:
+			print("🔍 [UICommand] UI scene name not found in definitions:", scene_path)
+	
+	# 定義が見つからない場合、そのままパスとして扱う
+	return scene_path
