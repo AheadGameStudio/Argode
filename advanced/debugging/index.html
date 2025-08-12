@@ -1018,6 +1018,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Debugging
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1029,6 +1042,61 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#real-time-debugging-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-time Debugging Features
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#godots-debugging-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Godot's Debugging Tools
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ide-integration-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      IDE Integration (VS Code)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Practices
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1372,50 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#real-time-debugging-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-time Debugging Features
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#godots-debugging-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Godot's Debugging Tools
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ide-integration-vs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      IDE Integration (VS Code)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Practices
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1434,43 @@
 
 
 <h1 id="debugging">Debugging</h1>
-<p>This document is a work in progress.</p>
+<p>Argode is designed to provide a smooth and efficient development experience, with several features aimed at simplifying the debugging process. This section outlines the tools and practices that can help you identify and resolve issues in your visual novel.</p>
+<h2 id="real-time-debugging-features">Real-time Debugging Features</h2>
+<p>Argode integrates seamlessly with Godot's development environment to offer real-time debugging capabilities:</p>
+<ul>
+<li><strong>Script Hot Reloading</strong>: Make changes to your <code>.rgd</code> script files and see them reflected instantly in the running game without needing to restart. This significantly speeds up iteration and testing.</li>
+<li><strong>Variable Inspection</strong>: Argode's <code>VariableManager</code> allows for real-time inspection of all game variables. You can monitor their values as the script executes, helping to track down logic errors related to data manipulation.</li>
+<li><strong>Label Registry Updates</strong>: As you add or modify labels in your <code>.rgd</code> scripts, Argode's <code>LabelRegistry</code> automatically updates, ensuring that jumps and calls to labels remain valid.</li>
+<li><strong>Command Validation</strong>: The framework provides immediate feedback on syntax errors within your <code>.rgd</code> commands, helping to catch issues early in development.</li>
+</ul>
+<h2 id="godots-debugging-tools">Godot's Debugging Tools</h2>
+<p>Argode projects benefit from Godot Engine's comprehensive suite of debugging tools:</p>
+<ul>
+<li><strong>Remote Debugging</strong>: Connect to a running game instance (even on a separate device) to inspect nodes, variables, and execute code in real-time.</li>
+<li><strong>Profiler</strong>: Use Godot's built-in profiler to identify performance bottlenecks in your game logic, rendering, or physics.</li>
+<li><strong>Monitor</strong>: Track various performance metrics like FPS, memory usage, and network activity.</li>
+<li><strong>Debugger</strong>: Set breakpoints in your GDScript code, step through execution, and inspect the call stack.</li>
+<li><strong>Remote Scene Tree</strong>: View and modify the live scene tree of your running game, allowing you to inspect node properties and hierarchy.</li>
+</ul>
+<h2 id="ide-integration-vs-code">IDE Integration (VS Code)</h2>
+<p>For <code>.rgd</code> script development, the dedicated <a href="https://github.com/AheadGameStudio/Argode-rgd-syntax-highlighter">VS Code extension</a> significantly enhances the debugging experience:</p>
+<ul>
+<li><strong>Syntax Highlighting</strong>: Clearly visualize the structure of your <code>.rgd</code> scripts with proper syntax highlighting.</li>
+<li><strong>IntelliSense Support</strong>: Get auto-completion suggestions for Argode commands, variables, and labels, reducing typos and speeding up coding.</li>
+<li><strong>Error Detection</strong>: Real-time validation of script syntax helps you identify and fix errors as you type.</li>
+</ul>
+<h2 id="debugging-practices">Debugging Practices</h2>
+<p>To effectively debug your Argode project, consider the following practices:</p>
+<ul>
+<li><strong>Use <code>print</code> Statements</strong>: Temporarily add <code>print</code> commands in your <code>.rgd</code> scripts to output variable values or execution flow messages to the console.</li>
+<li><strong>Isolate Issues</strong>: When encountering a bug, try to isolate the problematic section of your script or scene to narrow down the cause.</li>
+<li><strong>Version Control</strong>: Regularly commit your changes to a version control system (like Git) to easily revert to previous working states if a bug is introduced.</li>
+<li><strong>Test Thoroughly</strong>: Implement a testing strategy for your <code>.rgd</code> scripts and custom GDScript logic to catch regressions.</li>
+</ul>
+<p>By leveraging Argode's built-in features and Godot's powerful debugging tools, you can efficiently troubleshoot and refine your visual novel, ensuring a polished final product.</p>
+<hr />
+<p><a class="md-button" href="../performance/">Learn About Performance Optimization →</a>
+<a class="md-button" href="../../examples/best-practices/">Learn About Best Practices →</a></p>
 
 
 

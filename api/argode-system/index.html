@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#argodesystem-api" class="md-skip">
+        <a href="#argodesystem-api-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -1214,6 +1214,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    ArgodeSystem
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1225,6 +1238,193 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-argodesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing ArgodeSystem
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initialization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Initialization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialize_gamelayer_map-dictionary-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      initialize_game(layer_map: Dictionary) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#script-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script Execution
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Script Execution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start_scriptscript_path-string-label_name-string-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      start_script(script_path: String, label_name: String = "start")
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next_line" class="md-nav__link">
+    <span class="md-ellipsis">
+      next_line()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_playing-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_playing() -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-command-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Command Management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Command Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_custom_command_handler-customcommandhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_custom_command_handler() -&gt; CustomCommandHandler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_custom_commandcustom_command-basecustomcommand-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_custom_command(custom_command: BaseCustomCommand) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_custom_commands-arraystring" class="md-nav__link">
+    <span class="md-ellipsis">
+      list_custom_commands() -&gt; Array[String]
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signals
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system_initialized" class="md-nav__link">
+    <span class="md-ellipsis">
+      system_initialized
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#system_errormessage-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      system_error(message: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition_loadedresults-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      definition_loaded(results: Dictionary)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1504,182 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-argodesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing ArgodeSystem
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Initialization
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Initialization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialize_gamelayer_map-dictionary-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      initialize_game(layer_map: Dictionary) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#script-execution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script Execution
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Script Execution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start_scriptscript_path-string-label_name-string-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      start_script(script_path: String, label_name: String = "start")
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next_line" class="md-nav__link">
+    <span class="md-ellipsis">
+      next_line()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_playing-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_playing() -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-command-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Custom Command Management
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Custom Command Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_custom_command_handler-customcommandhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_custom_command_handler() -&gt; CustomCommandHandler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_custom_commandcustom_command-basecustomcommand-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_custom_command(custom_command: BaseCustomCommand) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_custom_commands-arraystring" class="md-nav__link">
+    <span class="md-ellipsis">
+      list_custom_commands() -&gt; Array[String]
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signals
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system_initialized" class="md-nav__link">
+    <span class="md-ellipsis">
+      system_initialized
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#system_errormessage-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      system_error(message: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition_loadedresults-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      definition_loaded(results: Dictionary)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1321,8 +1697,85 @@
   
 
 
-<h1 id="argodesystem-api">ArgodeSystem API</h1>
-<p>This document is a work in progress.</p>
+<h1 id="argodesystem-api-reference">ArgodeSystem API Reference</h1>
+<p>The <code>ArgodeSystem</code> is the central singleton of the Argode framework, providing the core functionalities and acting as the orchestrator for all other managers. It is the primary entry point for integrating Argode into your Godot project.</p>
+<h2 id="accessing-argodesystem">Accessing ArgodeSystem</h2>
+<p>Since <code>ArgodeSystem</code> is an autoloaded singleton, you can access it globally from any script in your Godot project:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Accessing ArgodeSystem</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1"># If you named your autoload &quot;ArgodeSystem&quot;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Or, if you set it as a global singleton in Project Settings</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># var argode_system = ArgodeSystem</span>
+</code></pre></div>
+<h2 id="initialization">Initialization</h2>
+<p>Before using Argode's features, you must initialize the system. This is typically done once at the start of your game, usually from your main scene's script.</p>
+<h3 id="initialize_gamelayer_map-dictionary-bool"><code>initialize_game(layer_map: Dictionary) -&gt; bool</code></h3>
+<p>This function performs the comprehensive initialization of the Argode framework. It sets up the visual layers, builds asset definitions, and configures the internal managers.</p>
+<ul>
+<li><strong><code>layer_map</code> (Dictionary)</strong>: A dictionary mapping layer role names (e.g., <code>"background"</code>, <code>"character"</code>, <code>"ui"</code>, <code>"effects"</code>) to their corresponding Godot <code>CanvasLayer</code> nodes. This allows Argode to integrate with your custom scene structure.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># In your main scene&#39;s _ready() function</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">layer_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="s2">&quot;background&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Background</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="s2">&quot;character&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Characters</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="s2">&quot;ui&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_UI</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="s2">&quot;effects&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Effects</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">initialize_game</span><span class="p">(</span><span class="n">layer_map</span><span class="p">):</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystem initialized successfully!&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystem initialization failed.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="script-execution">Script Execution</h2>
+<p><code>ArgodeSystem</code> provides methods to control the execution of your <code>.rgd</code> scripts.</p>
+<h3 id="start_scriptscript_path-string-label_name-string-start"><code>start_script(script_path: String, label_name: String = "start")</code></h3>
+<p>Loads and begins execution of an <code>.rgd</code> script file from a specified label.</p>
+<ul>
+<li><strong><code>script_path</code> (String)</strong>: The <code>res://</code> path to the <code>.rgd</code> script file (e.g., <code>"res://scenarios/chapter1.rgd"</code>).</li>
+<li><strong><code>label_name</code> (String)</strong>: (Optional) The name of the label within the script to start execution from. Defaults to <code>"start"</code>.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">start_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/main_story.rgd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;prologue&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="next_line"><code>next_line()</code></h3>
+<p>Advances the script to the next line. This is typically called in response to user input (e.g., a mouse click or key press) to progress dialogue or narrative.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">func</span><span class="w"> </span><span class="n">_input</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">event</span><span class="o">.</span><span class="n">is_action_pressed</span><span class="p">(</span><span class="s2">&quot;ui_accept&quot;</span><span class="p">):</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">next_line</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="is_playing-bool"><code>is_playing() -&gt; bool</code></h3>
+<p>Returns <code>true</code> if an <code>.rgd</code> script is currently being played, <code>false</code> otherwise.</p>
+<h2 id="custom-command-management">Custom Command Management</h2>
+<p><code>ArgodeSystem</code> provides an API to interact with the <code>CustomCommandHandler</code>, allowing you to register and manage your custom GDScript commands.</p>
+<h3 id="get_custom_command_handler-customcommandhandler"><code>get_custom_command_handler() -&gt; CustomCommandHandler</code></h3>
+<p>Returns the <code>CustomCommandHandler</code> instance, providing direct access to its methods for advanced usage.</p>
+<h3 id="register_custom_commandcustom_command-basecustomcommand-bool"><code>register_custom_command(custom_command: BaseCustomCommand) -&gt; bool</code></h3>
+<p>Registers an instance of a <code>BaseCustomCommand</code> (your custom GDScript command) with the framework.</p>
+<ul>
+<li><strong><code>custom_command</code> (BaseCustomCommand)</strong>: An instance of your custom command script that extends <code>BaseCustomCommand</code>.</li>
+</ul>
+<h3 id="register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool"><code>register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool</code></h3>
+<p>Registers a custom command by associating a command name with a <code>Callable</code> (a function or method). This is a convenient way to quickly expose GDScript functions as <code>.rgd</code> commands.</p>
+<ul>
+<li><strong><code>command_name</code> (String)</strong>: The name of the command as it will appear in <code>.rgd</code> scripts (e.g., <code>"my_effect"</code>).</li>
+<li><strong><code>callable</code> (Callable)</strong>: The <code>Callable</code> (e.g., <code>my_node.my_function</code>) that will be executed when the command is encountered.</li>
+<li><strong><code>is_sync</code> (bool)</strong>: (Optional) If <code>true</code>, the script will wait for the <code>Callable</code> to complete before proceeding. Defaults to <code>false</code> (asynchronous).</li>
+</ul>
+<h3 id="list_custom_commands-arraystring"><code>list_custom_commands() -&gt; Array[String]</code></h3>
+<p>Returns an array of strings containing the names of all currently registered custom commands. Useful for debugging or dynamic command listing.</p>
+<h2 id="signals">Signals</h2>
+<p><code>ArgodeSystem</code> emits several signals that you can connect to for custom logic or monitoring.</p>
+<h3 id="system_initialized"><code>system_initialized</code></h3>
+<p>Emitted when the <code>initialize_game()</code> function successfully completes all initialization steps.</p>
+<h3 id="system_errormessage-string"><code>system_error(message: String)</code></h3>
+<p>Emitted when a critical error occurs during ArgodeSystem's initialization or operation. The <code>message</code> parameter provides details about the error.</p>
+<h3 id="definition_loadedresults-dictionary"><code>definition_loaded(results: Dictionary)</code></h3>
+<p>Emitted after all definition files (e.g., <code>characters.rgd</code>, <code>assets.rgd</code>) have been loaded and processed. The <code>results</code> dictionary contains information about the loaded definitions.</p>
+<hr />
+<p><a class="md-button" href="../script-player/">Learn About ScriptPlayer API →</a>
+<a class="md-button" href="../managers/">Learn About Managers API →</a></p>
 
 
 

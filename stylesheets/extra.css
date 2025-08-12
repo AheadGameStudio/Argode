@@ -38,3 +38,6 @@
 .highlight code {
   font-family: "Fira Code", "Monaco", "Menlo", "Ubuntu Mono", monospace;
 }
+
+/* Add Material Icons import */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');

@@ -253,6 +253,12 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/architecture/design-philosophy/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/architecture/layer-system-guide/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/architecture/layer-system-guide/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/architecture/system-overview/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>

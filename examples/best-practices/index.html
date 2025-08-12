@@ -1139,6 +1139,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Best Practices
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1150,6 +1163,88 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Structure
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rgd-scripting" class="md-nav__link">
+    <span class="md-ellipsis">
+      RGD Scripting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asset-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asset Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ui-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      UI Development
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensibility-with-custom-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extensibility with Custom Commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-and-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance and Debugging
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Control
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1399,77 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      Project Structure
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rgd-scripting" class="md-nav__link">
+    <span class="md-ellipsis">
+      RGD Scripting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asset-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asset Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ui-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      UI Development
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extensibility-with-custom-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extensibility with Custom Commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-and-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance and Debugging
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#version-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version Control
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1488,67 @@
 
 
 <h1 id="best-practices">Best Practices</h1>
-<p>This document is a work in progress.</p>
+<p>Developing visual novels with Argode can be a smooth and efficient process when following certain best practices. This guide provides recommendations to help you build maintainable, performant, and scalable projects.</p>
+<h2 id="project-structure">Project Structure</h2>
+<p>A well-organized project structure is crucial for long-term maintainability. While Argode is flexible, consider these suggestions:</p>
+<ul>
+<li><strong>Separate Assets</strong>: Keep your <code>assets/</code> directory clean, categorizing images, audio, and other media.</li>
+<li><strong>Organize RGD Scripts</strong>: Place your <code>.rgd</code> script files in a dedicated <code>scenarios/</code> directory, possibly with subfolders for chapters or routes.</li>
+<li><strong>Custom Commands</strong>: Store your custom GDScript commands in <code>custom/commands/</code> or a similar dedicated folder.</li>
+<li><strong>UI Scenes</strong>: Keep your <code>.tscn</code> UI scenes in a <code>ui/</code> or <code>scenes/ui/</code> directory.</li>
+<li><strong>Definitions</strong>: Centralize your <code>character</code>, <code>image</code>, <code>audio</code>, etc., definitions in dedicated <code>.rgd</code> files (e.g., <code>definitions/characters.rgd</code>, <code>definitions/assets.rgd</code>).</li>
+</ul>
+<h2 id="rgd-scripting">RGD Scripting</h2>
+<p>Writing clean and efficient <code>.rgd</code> scripts is key to a manageable project:</p>
+<ul>
+<li><strong>Use Labels for Flow Control</strong>: Utilize <code>label</code> and <code>jump</code> commands for clear navigation between story segments.</li>
+<li><strong>Modularize Scripts</strong>: Break down long narratives into smaller, manageable <code>.rgd</code> files (e.g., one file per scene or chapter). Use <code>call</code> or <code>jump</code> to link them.</li>
+<li><strong>Consistent Naming Conventions</strong>: Establish and stick to clear naming conventions for labels, variables, and assets.</li>
+<li><strong>Comments</strong>: Use <code>#</code> for single-line comments and <code>/* ... */</code> for multi-line comments to explain complex logic or temporary notes.</li>
+<li><strong>Variable Usage</strong>: Leverage the <code>VariableManager</code> and its <code>set_array</code>, <code>set_dict</code> commands for structured data.</li>
+<li><strong>Avoid Hardcoding</strong>: Whenever possible, use variables or definitions instead of hardcoding values directly in the narrative.</li>
+</ul>
+<h2 id="asset-management">Asset Management</h2>
+<p>Argode's script-centric asset definition simplifies management. Follow these tips:</p>
+<ul>
+<li><strong>Define Assets Centrally</strong>: Declare all your <code>character</code>, <code>image</code>, <code>audio</code>, <code>shader</code>, and <code>ui_scene</code> definitions in dedicated <code>.rgd</code> definition files. This makes them easy to find and modify.</li>
+<li><strong>Consistent Paths</strong>: Use consistent <code>res://</code> paths for all your assets.</li>
+<li><strong>Optimize Assets</strong>: Ensure your image, audio, and video assets are optimized for size and format to improve loading times and reduce memory usage (refer to <a href="../../advanced/performance/">Performance Optimization</a>).</li>
+</ul>
+<h2 id="ui-development">UI Development</h2>
+<p>Argode's UI system is powerful. Here are some best practices:</p>
+<ul>
+<li><strong>Use <code>AdvScreen</code></strong>: For complex UI elements that interact with the script, extend <code>AdvScreen</code> in your GDScript.</li>
+<li><strong>Layer Roles</strong>: Clearly define and use <code>LayerManager</code> roles for your <code>CanvasLayer</code> nodes to maintain visual order.</li>
+<li><strong>Modular UI Scenes</strong>: Break down complex UIs into smaller, reusable <code>.tscn</code> components.</li>
+<li><strong>Responsive Design</strong>: Design your UI scenes to adapt well to different screen resolutions and aspect ratios using Godot's Control nodes and anchors.</li>
+</ul>
+<h2 id="extensibility-with-custom-commands">Extensibility with Custom Commands</h2>
+<p>Argode's extensibility is a major strength. Use it wisely:</p>
+<ul>
+<li><strong>Encapsulate Logic</strong>: When creating custom commands, encapsulate specific game logic or visual effects within them.</li>
+<li><strong>Clear Parameters</strong>: Design your custom commands with clear and intuitive parameters.</li>
+<li><strong>Signal-Based Communication</strong>: Leverage the <code>CustomCommandHandler</code>'s signals to trigger GDScript functions from your <code>.rgd</code> scripts.</li>
+<li><strong>Documentation</strong>: Document your custom commands thoroughly, including their purpose, parameters, and examples.</li>
+</ul>
+<h2 id="performance-and-debugging">Performance and Debugging</h2>
+<p>Refer to the dedicated sections for in-depth guidance:</p>
+<ul>
+<li><a href="../../advanced/performance/">Performance Optimization</a>: Learn about Argode's built-in optimizations and general Godot performance tips.</li>
+<li><a href="../../advanced/debugging/">Debugging</a>: Explore Argode's real-time debugging features and Godot's powerful debugging tools.</li>
+</ul>
+<h2 id="version-control">Version Control</h2>
+<p>Always use a version control system (like Git) for your project. This allows you to:</p>
+<ul>
+<li><strong>Track Changes</strong>: Keep a history of all modifications to your code and assets.</li>
+<li><strong>Collaborate</strong>: Work effectively with a team.</li>
+<li><strong>Experiment Safely</strong>: Create branches for new features or bug fixes without affecting the main project.</li>
+<li><strong>Revert Changes</strong>: Easily roll back to previous versions if something goes wrong.</li>
+</ul>
+<p>By adopting these best practices, you can harness the full power of Argode to create engaging and high-quality visual novels.</p>
+<hr />
+<p><a class="md-button" href="../simple-vn/">Learn About Simple VN Example →</a>
+<a class="md-button" href="../custom-features/">Learn About Custom Features Example →</a></p>
 
 
 

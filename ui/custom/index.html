@@ -1640,6 +1640,10 @@
 <p>Display character stats (HP, MP, Level) stored in an Argode dictionary variable (<code>set_dict player_stats {...}</code>). The UI would read these variables via <code>argode_system.VariableManager.get_variable()</code>.</p>
 <h3 id="mini-game-integration">Mini-game Integration</h3>
 <p>A custom UI scene could host a simple mini-game. When the mini-game finishes, it emits <code>screen_result(true)</code> for success or <code>screen_result(false)</code> for failure, allowing the <code>.rgd</code> script to branch accordingly after the <code>ui call</code> command.</p>
+<div class="admonition note">
+<p class="admonition-title">Automatic UI Closing on Jump</p>
+<p>When a <code>jump</code> command is executed in your <code>.rgd</code> script, any currently displayed UI scenes (opened with <code>ui show</code> or <code>ui call</code>) will be automatically closed. This ensures a clean state when transitioning to a new section of your story.</p>
+</div>
 <hr />
 <p>By combining Godot's powerful UI tools with Argode's scripting capabilities, you can create truly unique and interactive experiences for your visual novel.</p>
 

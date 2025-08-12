@@ -15,6 +15,10 @@
         <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/ja/getting-started/basic-setup/">
       
       
+        <link rel="prev" href="../installation/">
+      
+      
+        <link rel="next" href="../../architecture/design-philosophy/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -22,7 +26,7 @@
     
     
       
-        <title>基本セットアップガイド - Argode ドキュメント</title>
+        <title>基本設定 - Argode ドキュメント</title>
       
     
     
@@ -116,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              基本セットアップガイド
+              基本設定
             
           </span>
         </div>
@@ -283,8 +287,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -295,13 +301,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
@@ -317,7 +321,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             はじめに
@@ -374,10 +378,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../getting-started/basic-setup.ja.ja.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    基本設定
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -388,6 +414,95 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      オートロードの設定
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      メインシーンの設定
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      視覚レイヤーの準備
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="視覚レイヤーの準備">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#argodescreen" class="md-nav__link">
+    <span class="md-ellipsis">
+      推奨アプローチ: ArgodeScreenの使用（最も簡単）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canvaslayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      代替: 手動でのCanvasLayer設定（上級者向け）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argodesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgodeSystemの初期化
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      プロジェクトの実行
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1308,7 +1423,58 @@
         <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
-      メインシーンとして設定
+      メインシーンの設定
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      視覚レイヤーの準備
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="視覚レイヤーの準備">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#argodescreen" class="md-nav__link">
+    <span class="md-ellipsis">
+      推奨アプローチ: ArgodeScreenの使用（最も簡単）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canvaslayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      代替: 手動でのCanvasLayer設定（上級者向け）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argodesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgodeSystemの初期化
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      プロジェクトの実行
     </span>
   </a>
   
@@ -1333,25 +1499,93 @@
   
 
 
-<h1 id="_1">基本セットアップガイド</h1>
-<p>このガイドでは、ArgodeをGodotプロジェクトで動作させるための基本的なセットアップ手順を説明します。</p>
+<h1 id="_1">基本設定ガイド</h1>
+<p>このガイドでは、ArgodeをGodotプロジェクトで動作させるための基本的な設定手順を説明します。</p>
 <h2 id="_2">オートロードの設定</h2>
 <ol>
-<li><strong>プロジェクト設定</strong> を開く（<code>Project → Project Settings</code>）</li>
-<li><strong>オートロード</strong> タブに移動</li>
-<li><strong>ArgodeSystem</strong> を追加：</li>
+<li><strong>プロジェクト設定</strong>（<code>プロジェクト → プロジェクト設定</code>）を開きます。</li>
+<li><strong>オートロード</strong>タブに移動します。</li>
+<li><strong>ArgodeSystem</strong>を追加します。<ul>
 <li><strong>パス</strong>: <code>res://addons/argode/core/ArgodeSystem.gd</code></li>
 <li><strong>ノード名</strong>: <code>ArgodeSystem</code></li>
-<li><strong>有効</strong> にチェック</li>
+<li><strong>有効</strong>にチェックを入れます。</li>
+</ul>
+</li>
 </ol>
 <p><img alt="オートロード設定" src="../images/autoload-setup.png" /></p>
-<h2 id="_3">メインシーンとして設定</h2>
+<h2 id="_3">メインシーンの設定</h2>
 <ol>
-<li>まだ作成していない場合は、新しいシーンを作成し（<code>Scene → New Scene</code>）、保存します（例: <code>Main.tscn</code>）。</li>
-<li><strong>プロジェクト設定</strong> を開きます（<code>Project → Project Settings</code>）。</li>
-<li><strong>アプリケーション → 実行</strong> セクションで、<strong>メインシーン</strong> を<code>Main.tscn</code>（またはメインシーンに付けた名前）に設定します。</li>
-<li><strong>F5</strong> を押してプロジェクトを実行します。</li>
+<li>まだ作成していない場合は、新しいシーンを作成し（<code>シーン → 新しいシーン</code>）、保存します（例：<code>Main.tscn</code>）。</li>
+<li><strong>プロジェクト設定</strong>（<code>プロジェクト → プロジェクト設定</code>）に移動します。</li>
+<li><strong>アプリケーション → 実行</strong>セクションで、<strong>メインシーン</strong>を<code>Main.tscn</code>（またはメインシーンに付けた名前）に設定します。</li>
 </ol>
+<h2 id="_4">視覚レイヤーの準備</h2>
+<p>Argodeは、Godotの<code>CanvasLayer</code>ノードを利用して、背景、キャラクター、UI要素の視覚的な深度と表示を管理します。これらのレイヤーを手動で設定することもできますが、Argodeは<code>ArgodeScreen</code>ノードを使用した合理化されたアプローチを提供します。</p>
+<h3 id="argodescreen">推奨アプローチ: <code>ArgodeScreen</code>の使用（最も簡単）</h3>
+<p><code>ArgodeScreen</code>ノード（<code>res://addons/argode/ui/ArgodeScreen.tscn</code>にあります）は、レイヤー管理を簡素化するために設計された、事前に構成された<code>Control</code>ノードです。「レイヤー自動展開」プロパティが有効になっている場合（デフォルト）、一般的な役割（背景、キャラクター、UI、エフェクト）の<code>CanvasLayer</code>ノードの作成と割り当てを自動的に処理します。</p>
+<ol>
+<li>メインシーン（<code>Main.tscn</code>）で、ルートノードの直接の子として<code>ArgodeScreen</code>ノードを追加します。</li>
+<li>インスペクターで<code>ArgodeScreen</code>ノードの「レイヤー自動展開」プロパティが有効になっていることを確認します（通常はデフォルトでオンになっています）。</li>
+<li>
+<p>シーンツリーは次のようになります。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>- Main (Node2DまたはControl)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  - ArgodeScreen (Control)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    - Background (CanvasLayer)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    - Characters (CanvasLayer)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    - UI (CanvasLayer)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    - Effects (CanvasLayer)
+</code></pre></div>
+<p><code>CanvasLayer</code>ノードは、視覚的な深度に適した値に<code>Layer</code>プロパティが自動的に設定されます。</p>
+</li>
+</ol>
+<h3 id="canvaslayer">代替: 手動での<code>CanvasLayer</code>設定（上級者向け）</h3>
+<p>上級ユーザーや特定のプロジェクトのニーズに合わせて、<code>CanvasLayer</code>ノードを手動で作成および構成できます。</p>
+<ol>
+<li>
+<p>メインシーン（<code>Main.tscn</code>）で、ルートノードの直接の子として以下の<code>CanvasLayer</code>ノードを作成します。</p>
+<ul>
+<li><strong>背景レイヤー</strong>: 背景を表示します。<code>Layer</code>プロパティを低い値（例：<code>0</code>または<code>1</code>）に設定します。</li>
+<li><strong>キャラクターレイヤー</strong>: キャラクターを表示します。<code>Layer</code>プロパティを背景よりも高い値（例：<code>2</code>または<code>3</code>）に設定します。</li>
+<li><strong>UIレイヤー</strong>: ユーザーインターフェース要素を表示します。<code>Layer</code>プロパティを高い値（例：<code>10</code>または<code>100</code>）に設定します。</li>
+<li><strong>エフェクトレイヤー</strong>: （オプションですが推奨）画面全体のエフェクトを表示します。<code>Layer</code>プロパティを最も高い値（例：<code>200</code>）に設定します。</li>
+</ul>
+</li>
+<li>
+<p>シーンツリーは次のようになります。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>- Main (Node2DまたはControl)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  - BackgroundLayer (CanvasLayer)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  - CharactersLayer (CanvasLayer)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  - UILayer (CanvasLayer)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  - EffectsLayer (CanvasLayer)
+</code></pre></div>
+</li>
+</ol>
+<h2 id="argodesystem">ArgodeSystemの初期化</h2>
+<p>メインシーン（<code>Main.tscn</code>）にアタッチされたスクリプトで、準備した<code>CanvasLayer</code>ノードをそれぞれの役割にマッピングして<code>ArgodeSystem</code>を初期化する必要があります。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Main.gd（メインシーンのルートノードにアタッチ）</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">extends</span><span class="w"> </span><span class="n">Node2D</span><span class="w"> </span><span class="c1"># またはControl、ルートノードのタイプに応じて</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="c1"># CanvasLayerノードをArgodeのレイヤーロールにマッピングします</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="c1"># ArgodeScreenを使用している場合は、その子CanvasLayersにアクセスします</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">layer_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="s2">&quot;background&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">ArgodeScreen</span><span class="o">/</span><span class="n">Background</span><span class="p">,</span><span class="w"> </span><span class="c1"># または手動設定の場合は$BackgroundLayer</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="s2">&quot;character&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">ArgodeScreen</span><span class="o">/</span><span class="n">Characters</span><span class="p">,</span><span class="w"> </span><span class="c1"># または手動設定の場合は$CharactersLayer</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="s2">&quot;ui&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">ArgodeScreen</span><span class="o">/</span><span class="n">UI</span><span class="p">,</span><span class="w">             </span><span class="c1"># または手動設定の場合は$UILayer</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="s2">&quot;effects&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">ArgodeScreen</span><span class="o">/</span><span class="n">Effects</span><span class="w">    </span><span class="c1"># または手動設定の場合は$EffectsLayer（オプション）</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="c1"># ArgodeSystemを初期化します</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">initialize_game</span><span class="p">(</span><span class="n">layer_map</span><span class="p">):</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystemが正常に初期化されました！&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">        </span><span class="c1"># 最初のRGDスクリプトを開始します</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">start_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/main.rgd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystemの初期化に失敗しました。&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">        </span><span class="c1"># 初期化エラーを処理します（例：エラーメッセージを表示）</span>
+</code></pre></div>
+<h2 id="_5">プロジェクトの実行</h2>
+<p><strong>F5</strong>キーを押してプロジェクトを実行します。すべてが正しく設定されていれば、Argodeが初期化され、<code>res://scenarios/main.rgd</code>スクリプトの実行が開始されます。</p>
 
 
 

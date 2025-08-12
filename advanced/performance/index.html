@@ -995,6 +995,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Performance Optimization
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1006,6 +1019,52 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#intelligent-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intelligent Defaults
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-knobs-for-fine-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Knobs for Fine-Tuning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-godot-optimization-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      General Godot Optimization Tips
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1363,41 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#intelligent-defaults" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intelligent Defaults
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-knobs-for-fine-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Knobs for Fine-Tuning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-godot-optimization-tips" class="md-nav__link">
+    <span class="md-ellipsis">
+      General Godot Optimization Tips
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1416,38 @@
 
 
 <h1 id="performance-optimization">Performance Optimization</h1>
-<p>This document is a work in progress.</p>
+<p>Argode is designed to balance ease of use with robust performance, ensuring your visual novel runs smoothly across various platforms. The framework achieves this through intelligent default behaviors and provides "performance knobs" for advanced optimization when needed.</p>
+<h2 id="intelligent-defaults">Intelligent Defaults</h2>
+<p>Argode incorporates several smart defaults that automatically optimize your project's performance without requiring manual intervention:</p>
+<ul>
+<li><strong>Predictive Asset Preloading</strong>: As detailed in the <a href="../asset-management/">Asset Management</a> section, Argode intelligently preloads assets based on script analysis, minimizing loading times and memory spikes.</li>
+<li><strong>Automatic Texture Format Selection</strong>: The framework can automatically select optimal texture formats for different platforms, reducing VRAM usage and improving rendering efficiency.</li>
+<li><strong>Intelligent Garbage Collection Timing</strong>: Argode aims to perform garbage collection at opportune moments (e.g., during scene transitions or waits) to avoid hitches during critical gameplay.</li>
+<li><strong>Adaptive Quality Settings</strong>: Depending on the target platform and device capabilities, Argode can adapt certain quality settings to maintain a consistent frame rate.</li>
+<li><strong>Lazy Loading of Non-Critical Assets</strong>: Assets that are not immediately required are loaded only when they become necessary, reducing initial startup times and memory footprint.</li>
+</ul>
+<h2 id="performance-knobs-for-fine-tuning">Performance Knobs for Fine-Tuning</h2>
+<p>For projects with specific performance requirements or targeting highly optimized experiences, Argode exposes various "performance knobs" that allow for fine-grained control:</p>
+<ul>
+<li><strong>Manual Memory Management Controls</strong>: While Argode handles much of the memory automatically, advanced users can implement custom memory management strategies for specific assets or scenarios.</li>
+<li><strong>Custom Asset Loading Strategies</strong>: Beyond the predictive preloading, you can define custom asset loading and unloading routines to suit unique project needs.</li>
+<li><strong>Performance Profiling Hooks</strong>: Argode provides hooks that integrate with Godot's built-in profiler and other debugging tools, allowing you to identify performance bottlenecks.</li>
+<li><strong>Platform-Specific Optimizations</strong>: The framework is built to allow for platform-specific adjustments, enabling you to tailor performance for desktop, mobile, or web targets.</li>
+</ul>
+<h2 id="general-godot-optimization-tips">General Godot Optimization Tips</h2>
+<p>While Argode handles many optimizations internally, adhering to general Godot best practices will further enhance your project's performance:</p>
+<ul>
+<li><strong>Optimize Scene Structure</strong>: Keep your scene trees shallow and avoid excessive nesting.</li>
+<li><strong>Batching</strong>: Utilize Godot's batching capabilities for drawing similar objects.</li>
+<li><strong>Texture Compression</strong>: Ensure your textures are compressed appropriately for your target platforms.</li>
+<li><strong>Shader Optimization</strong>: Write efficient shaders and avoid complex calculations where possible.</li>
+<li><strong>Physics Optimization</strong>: If your visual novel incorporates physics, optimize collision shapes and physics processes.</li>
+<li><strong>Profiling</strong>: Regularly use Godot's built-in profiler to identify and address performance bottlenecks.</li>
+</ul>
+<p>By combining Argode's built-in optimizations with sound Godot development practices, you can ensure your visual novel delivers a smooth and responsive experience to your players.</p>
+<hr />
+<p><a class="md-button" href="../asset-management/">Learn About Asset Management →</a>
+<a class="md-button" href="../debugging/">Learn About Debugging →</a></p>
 
 
 

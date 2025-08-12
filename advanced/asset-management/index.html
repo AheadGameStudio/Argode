@@ -972,6 +972,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Asset Management
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -983,6 +996,52 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#script-centric-asset-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script-Centric Asset Definition
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#predictive-asset-preloading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Predictive Asset Preloading
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asset-paths-and-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asset Paths and Resolution
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1363,41 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#script-centric-asset-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script-Centric Asset Definition
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#predictive-asset-preloading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Predictive Asset Preloading
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asset-paths-and-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Asset Paths and Resolution
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1416,51 @@
 
 
 <h1 id="asset-management">Asset Management</h1>
-<p>This document is a work in progress.</p>
+<p>Argode provides a robust and intelligent system for managing game assets, designed to simplify the developer's workflow while optimizing performance. The core philosophy revolves around script-centric definitions and predictive preloading.</p>
+<h2 id="script-centric-asset-definition">Script-Centric Asset Definition</h2>
+<p>Unlike traditional game development workflows that often require manual asset import and configuration in an editor, Argode allows you to define most of your game assets directly within your <code>.rgd</code> script files. This approach offers several benefits:</p>
+<ul>
+<li><strong>Version Control Friendly</strong>: All asset definitions are plain text, making them easy to track, diff, and merge in version control systems.</li>
+<li><strong>Writer-Friendly</strong>: Writers can declare assets alongside their narrative, reducing the need to switch between different tools.</li>
+<li><strong>Batch Operations</strong>: Renaming, reorganizing, or duplicating assets becomes straightforward through simple text manipulation.</li>
+<li><strong>Self-Documenting</strong>: Asset definitions serve as inline documentation within your scripts.</li>
+</ul>
+<p>You define assets using specific statements in your <code>.rgd</code> files:</p>
+<ul>
+<li><strong><code>character</code></strong>: Defines characters with names, display names, and colors.
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>character alice &quot;Alice&quot; color=#ff69b4
+</code></pre></div></li>
+<li><strong><code>image</code></strong>: Defines images, typically backgrounds and character sprites, with smart path resolution.
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>image bg_forest &quot;backgrounds/forest_day.jpg&quot;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>image alice_happy &quot;characters/alice/happy.png&quot;
+</code></pre></div></li>
+<li><strong><code>audio</code></strong>: Defines audio files for background music (BGM) and sound effects (SFX), with options for preloading.
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>audio bgm_main &quot;music/main_theme.ogg&quot; preload=true
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>audio sfx_door &quot;sounds/door_open.wav&quot;
+</code></pre></div></li>
+<li><strong><code>shader</code></strong>: Defines custom shader resources for visual effects.
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>shader screen_blur &quot;shaders/blur.gdshader&quot;
+</code></pre></div></li>
+<li><strong><code>ui_scene</code></strong>: Defines UI scenes (<code>.tscn</code> files) for use with the <code>ui</code> command.
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ui_scene main_menu &quot;ui/main_menu.tscn&quot;
+</code></pre></div></li>
+</ul>
+<p>These definitions are processed by dedicated <strong>Definition Managers</strong> (e.g., <code>AudioDefinitionManager</code>, <code>ImageDefinitionManager</code>, <code>CharacterDefinitionManager</code>, <code>ShaderDefinitionManager</code>, <code>UISceneDefinitionManager</code>), which ensure assets are correctly registered and prepared for use.</p>
+<h2 id="predictive-asset-preloading">Predictive Asset Preloading</h2>
+<p>One of Argode's most powerful features is its intelligent, predictive asset preloading system. At startup, Argode performs a static analysis of your entire <code>.rgd</code> script structure to build a comprehensive control flow graph.</p>
+<p>This graph allows Argode to:</p>
+<ul>
+<li><strong>Analyze Reachability</strong>: Determine which assets are reachable from any given point in the script.</li>
+<li><strong>Anticipate Needs</strong>: Predict which assets will likely be required next based on the narrative flow and potential player choices.</li>
+<li><strong>Optimize Loading</strong>: Automatically preload assets just before they are needed, minimizing loading screens and ensuring a seamless player experience.</li>
+<li><strong>Manage Memory</strong>: Efficiently unload assets that are no longer reachable, optimizing memory usage.</li>
+</ul>
+<p>This automatic optimization means you typically don't need to manually manage asset loading or unloading, allowing you to focus on storytelling.</p>
+<h2 id="asset-paths-and-resolution">Asset Paths and Resolution</h2>
+<p>Argode uses Godot's resource path system (e.g., <code>res://</code>) for asset paths. When defining assets, you provide paths relative to your project's <code>res://</code> root. Argode's definition managers handle the resolution and loading of these resources.</p>
+<hr />
+<p><a class="md-button" href="system-overview.md">Learn About System Overview →</a>
+<a class="md-button" href="core-components.md">View Core Components →</a></p>
 
 
 

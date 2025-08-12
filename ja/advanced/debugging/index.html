@@ -381,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/basic-setup.ja.ja.md" class="md-nav__link">
+      <a href="../../getting-started/basic-setup/" class="md-nav__link">
         
   
   
@@ -1018,6 +1018,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    デバッグ
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1029,6 +1042,61 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      リアルタイムデバッグ機能
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#godot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Godotのデバッグツール
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#idevs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      IDE統合（VS Code）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      デバッグの実践
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1372,50 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      リアルタイムデバッグ機能
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#godot" class="md-nav__link">
+    <span class="md-ellipsis">
+      Godotのデバッグツール
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#idevs-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      IDE統合（VS Code）
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      デバッグの実践
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1434,43 @@
 
 
 <h1 id="_1">デバッグ</h1>
-<p>このドキュメントは現在作成中です。</p>
+<p>Argodeは、デバッグプロセスを簡素化することを目的としたいくつかの機能を備え、スムーズで効率的な開発体験を提供するように設計されています。このセクションでは、ビジュアルノベルの問題を特定して解決するのに役立つツールと実践方法について説明します。</p>
+<h2 id="_2">リアルタイムデバッグ機能</h2>
+<p>ArgodeはGodotの開発環境とシームレスに統合されており、リアルタイムのデバッグ機能を提供します。</p>
+<ul>
+<li><strong>スクリプトのホットリロード</strong>: <code>.rgd</code>スクリプトファイルに変更を加え、ゲームを再起動することなく実行中のゲームに即座に反映させることができます。これにより、イテレーションとテストが大幅に高速化されます。</li>
+<li><strong>変数検査</strong>: Argodeの<code>VariableManager</code>は、すべてのゲーム変数をリアルタイムで検査できます。スクリプトの実行中にその値を監視できるため、データ操作に関連するロジックエラーを追跡するのに役立ちます。</li>
+<li><strong>ラベルレジストリの更新</strong>: <code>.rgd</code>スクリプトにラベルを追加または変更すると、Argodeの<code>LabelRegistry</code>が自動的に更新され、ラベルへのジャンプや呼び出しが有効なままになります。</li>
+<li><strong>コマンド検証</strong>: フレームワークは、<code>.rgd</code>コマンド内の構文エラーについて即座にフィードバックを提供し、開発の早い段階で問題を捕捉するのに役立ちます。</li>
+</ul>
+<h2 id="godot">Godotのデバッグツール</h2>
+<p>Argodeプロジェクトは、Godot Engineの包括的なデバッグツールスイートの恩恵を受けます。</p>
+<ul>
+<li><strong>リモートデバッグ</strong>: 実行中のゲームインスタンス（別のデバイス上でも）に接続して、ノード、変数、コードをリアルタイムで検査および実行できます。</li>
+<li><strong>プロファイラー</strong>: Godotの組み込みプロファイラーを使用して、ゲームロジック、レンダリング、または物理演算におけるパフォーマンスのボトルネックを特定します。</li>
+<li><strong>モニター</strong>: FPS、メモリ使用量、ネットワークアクティビティなど、さまざまなパフォーマンスメトリックを追跡します。</li>
+<li><strong>デバッガー</strong>: GDScriptコードにブレークポイントを設定し、実行をステップ実行し、コールスタックを検査します。</li>
+<li><strong>リモートシーンツリー</strong>: 実行中のゲームのライブシーンツリーを表示および変更し、ノードのプロパティと階層を検査できます。</li>
+</ul>
+<h2 id="idevs-code">IDE統合（VS Code）</h2>
+<p><code>.rgd</code>スクリプト開発の場合、専用の<a href="https://github.com/AheadGameStudio/Argode-rgd-syntax-highlighter">VS Code拡張機能</a>はデバッグエクスペリエンスを大幅に向上させます。</p>
+<ul>
+<li><strong>構文ハイライト</strong>: 適切な構文ハイライトにより、<code>.rgd</code>スクリプトの構造を明確に視覚化します。</li>
+<li><strong>IntelliSenseサポート</strong>: Argodeコマンド、変数、ラベルのオートコンプリート候補を取得し、タイプミスを減らし、コーディングを高速化します。</li>
+<li><strong>エラー検出</strong>: スクリプト構文のリアルタイム検証により、入力中にエラーを特定して修正するのに役立ちます。</li>
+</ul>
+<h2 id="_3">デバッグの実践</h2>
+<p>Argodeプロジェクトを効果的にデバッグするには、次の実践方法を検討してください。</p>
+<ul>
+<li><strong><code>print</code>ステートメントの使用</strong>: <code>.rgd</code>スクリプトに一時的に<code>print</code>コマンドを追加して、変数または実行フローメッセージをコンソールに出力します。</li>
+<li><strong>問題の分離</strong>: バグに遭遇した場合は、スクリプトまたはシーンの問題のあるセクションを分離して、原因を絞り込みます。</li>
+<li><strong>バージョン管理</strong>: バグが導入された場合に以前の作業状態に簡単に戻せるように、変更をバージョン管理システム（Gitなど）に定期的にコミットします。</li>
+<li><strong>徹底的なテスト</strong>: <code>.rgd</code>スクリプトとカスタムGDScriptロジックのテスト戦略を実装して、回帰を捕捉します。</li>
+</ul>
+<p>Argodeの組み込み機能とGodotの強力なデバッグツールを活用することで、ビジュアルノベルを効率的にトラブルシューティングおよび改良し、洗練された最終製品を保証できます。</p>
+<hr />
+<p><a class="md-button" href="../performance/">パフォーマンス最適化について学ぶ →</a>
+<a class="md-button" href="../../examples/best-practices/">ベストプラクティスについて学ぶ →</a></p>
 
 
 

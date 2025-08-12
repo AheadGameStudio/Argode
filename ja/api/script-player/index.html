@@ -381,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/basic-setup.ja.ja.md" class="md-nav__link">
+      <a href="../../getting-started/basic-setup/" class="md-nav__link">
         
   
   
@@ -1237,6 +1237,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    ScriptPlayer
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1248,6 +1261,211 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      コア機能
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="コア機能">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプトのロードと開始
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="スクリプトのロードと開始">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#load_scriptpath-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_script(path: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play_from_labellabel_name-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      play_from_label(label_name: String)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプトの進行
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="スクリプトの進行">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    <span class="md-ellipsis">
+      next()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプトの状態
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="スクリプトの状態">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#is_playing-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_playing() -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      フロー制御
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="フロー制御">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on_choice_selectedchoice_index-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      on_choice_selected(choice_index: int)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      外部呼び出し/戻り（UI統合用）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="外部呼び出し/戻り（UI統合用）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#call_labellabel_name-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      call_label(label_name: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#return_from_call" class="md-nav__link">
+    <span class="md-ellipsis">
+      return_from_call()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      シグナル
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="シグナル">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#script_finished" class="md-nav__link">
+    <span class="md-ellipsis">
+      script_finished
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom_command_executedcommand_name-string-parameters-dictionary-line-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      custom_command_executed(command_name: String, parameters: Dictionary, line: String)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1522,200 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      コア機能
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="コア機能">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプトのロードと開始
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="スクリプトのロードと開始">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#load_scriptpath-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_script(path: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play_from_labellabel_name-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      play_from_label(label_name: String)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプトの進行
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="スクリプトの進行">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    <span class="md-ellipsis">
+      next()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプトの状態
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="スクリプトの状態">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#is_playing-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_playing() -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      フロー制御
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="フロー制御">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on_choice_selectedchoice_index-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      on_choice_selected(choice_index: int)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      外部呼び出し/戻り（UI統合用）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="外部呼び出し/戻り（UI統合用）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#call_labellabel_name-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      call_label(label_name: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#return_from_call" class="md-nav__link">
+    <span class="md-ellipsis">
+      return_from_call()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      シグナル
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="シグナル">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#script_finished" class="md-nav__link">
+    <span class="md-ellipsis">
+      script_finished
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom_command_executedcommand_name-string-parameters-dictionary-line-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      custom_command_executed(command_name: String, parameters: Dictionary, line: String)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1321,8 +1733,89 @@
   
 
 
-<h1 id="scriptplayer-api">ScriptPlayer API</h1>
-<p>このドキュメントは現在作成中です。</p>
+<h1 id="scriptplayer-api">ScriptPlayer APIリファレンス</h1>
+<p><code>ScriptPlayer</code>は、<code>.rgd</code>スクリプトファイルを解釈および実行するコアコンポーネントです。物語の流れを管理し、コマンドを処理し、他のArgodeマネージャーとの相互作用を処理します。<code>ScriptPlayer</code>は<code>ArgodeSystem</code>の内部コンポーネントですが、その主要な機能は使いやすさのために<code>ArgodeSystem</code>の公開APIを通じて公開されています。</p>
+<h2 id="_1">コア機能</h2>
+<h3 id="_2">スクリプトのロードと開始</h3>
+<p><code>ScriptPlayer</code>は<code>.rgd</code>ファイルをロードし、指定されたポイントから実行を開始します。</p>
+<h4 id="load_scriptpath-string"><code>load_script(path: String)</code></h4>
+<p><code>.rgd</code>スクリプトファイルを<code>ScriptPlayer</code>にロードします。これにより、スクリプトは実行準備が整いますが、すぐに開始されるわけではありません。</p>
+<ul>
+<li><strong><code>path</code> (String)</strong>: <code>.rgd</code>スクリプトファイルへの<code>res://</code>パス（例：<code>"res://scenarios/chapter1.rgd"</code>）。</li>
+</ul>
+<p><strong>例:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">load_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/my_story.rgd&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="play_from_labellabel_name-string"><code>play_from_label(label_name: String)</code></h4>
+<p>現在ロードされているスクリプト内の特定の<code>label</code>からスクリプトの実行を開始または再開します。ラベルが別の<code>.rgd</code>ファイルにある場合、<code>ScriptPlayer</code>は<code>LabelRegistry</code>を使用してクロスファイルジャンプを試行します。</p>
+<ul>
+<li><strong><code>label_name</code> (String)</strong>: ジャンプする<code>label</code>の名前（例：<code>"start"</code>、<code>"chapter_2_intro"</code>）。</li>
+</ul>
+<p><strong>例:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># スクリプトをロードした後</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">play_from_label</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># または、ArgodeSystemの公開APIの一部として</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">start_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/my_story.rgd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_3">スクリプトの進行</h3>
+<h4 id="next"><code>next()</code></h4>
+<p>スクリプトを次の行に進めます。このメソッドは通常、ユーザー入力（例：ダイアログを進めるためのマウスクリック）に応答して<code>ArgodeSystem.next_line()</code>によって呼び出されます。</p>
+<p><strong>例:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># 入力ハンドラー内</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_input</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">event</span><span class="o">.</span><span class="n">is_action_pressed</span><span class="p">(</span><span class="s2">&quot;ui_accept&quot;</span><span class="p">):</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">next_line</span><span class="p">()</span><span class="w"> </span><span class="c1"># これは内部的にScriptPlayer.next()を呼び出します</span>
+</code></pre></div>
+<h3 id="_4">スクリプトの状態</h3>
+<h4 id="is_playing-bool"><code>is_playing() -&gt; bool</code></h4>
+<p><code>ScriptPlayer</code>が現在<code>.rgd</code>スクリプトを実行中であれば<code>true</code>を、そうでなければ<code>false</code>を返します。</p>
+<h2 id="_5">フロー制御</h2>
+<p><code>ScriptPlayer</code>は、<code>jump</code>、<code>call</code>、<code>return</code>、<code>if</code>/<code>else</code>、<code>menu</code>など、<code>.rgd</code>スクリプトで定義されたさまざまなフロー制御コマンドを処理します。</p>
+<h3 id="on_choice_selectedchoice_index-int"><code>on_choice_selected(choice_index: int)</code></h3>
+<p>このメソッドは、ユーザーが<code>menu</code>コマンドから選択を行ったときに<code>UIManager</code>によって呼び出されます。選択されたオプションに基づいて、<code>ScriptPlayer</code>をスクリプトの適切なブランチに誘導します。</p>
+<ul>
+<li><strong><code>choice_index</code> (int)</strong>: 選択された選択肢の0ベースのインデックス。</li>
+</ul>
+<p><strong>例（内部呼び出し）:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># UIManagerは選択が行われた後にこれを呼び出します</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">on_choice_selected</span><span class="p">(</span><span class="n">selected_index</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="ui">外部呼び出し/戻り（UI統合用）</h3>
+<p>これらのメソッドは、一時的にスクリプトフローを制御し、その後戻る必要がある<code>AdvScreen</code>ノードまたはその他のカスタムGodotシーンによって主に使用されます。</p>
+<h4 id="call_labellabel_name-string"><code>call_label(label_name: String)</code></h4>
+<p>現在のスクリプト位置をコールスタックにプッシュし、指定された<code>label</code>にジャンプします。これは<code>.rgd</code>の<code>call</code>コマンドに似ていますが、GDScriptからトリガーできます。</p>
+<ul>
+<li><strong><code>label_name</code> (String)</strong>: 呼び出す<code>label</code>の名前。</li>
+</ul>
+<p><strong>例:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># AdvScreenスクリプトから</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">call_label</span><span class="p">(</span><span class="s2">&quot;game_over_scene&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="return_from_call"><code>return_from_call()</code></h4>
+<p>コールスタックから最後の位置をポップし、その時点からスクリプトの実行を再開します。これは<code>.rgd</code>の<code>return</code>コマンドに似ています。</p>
+<p><strong>例:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># AdvScreenスクリプトから、モーダル画面が閉じられた後</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">return_from_call</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="_6">シグナル</h2>
+<p><code>ScriptPlayer</code>は、その状態の変化やイベントについてシステムの他の部分に通知するためにシグナルを発行します。</p>
+<h3 id="script_finished"><code>script_finished</code></h3>
+<p><code>ScriptPlayer</code>が現在ロードされているスクリプトの終わりに達したときに発行されます。</p>
+<h3 id="custom_command_executedcommand_name-string-parameters-dictionary-line-string"><code>custom_command_executed(command_name: String, parameters: Dictionary, line: String)</code></h3>
+<p><code>ScriptPlayer</code>が<code>.rgd</code>スクリプト内で組み込みコマンドではないコマンドを検出したときに発行されます。このシグナルは、主に<code>CustomCommandHandler</code>によってカスタムGDScriptロジックにディスパッチするために使用されます。</p>
+<ul>
+<li><strong><code>command_name</code> (String)</strong>: カスタムコマンドの名前。</li>
+<li>
+<p><strong><code>parameters</code> (Dictionary)</strong>: カスタムコマンドの解析されたパラメータを含む辞書。</p>
+</li>
+<li>
+<p><strong><code>line</code> (String)</strong>: <code>.rgd</code>スクリプトからの元の完全な行。</p>
+</li>
+</ul>
+<hr />
+<p><a class="md-button" href="../argode-system/">ArgodeSystem APIについて学ぶ →</a>
+<a class="md-button" href="../managers/">マネージャーAPIについて学ぶ →</a></p>
 
 
 

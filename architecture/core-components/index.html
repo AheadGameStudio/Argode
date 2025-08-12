@@ -511,6 +511,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Core Components
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -522,6 +535,115 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#argodesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgodeSystem
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scriptplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScriptPlayer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uimanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      UIManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variablemanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      VariableManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#charactermanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      CharacterManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layermanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      LayerManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customcommandhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      CustomCommandHandler
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#labelregistry" class="md-nav__link">
+    <span class="md-ellipsis">
+      LabelRegistry
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#definition-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Definition Managers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transitionplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      TransitionPlayer
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1426,104 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#argodesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgodeSystem
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scriptplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      ScriptPlayer
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#uimanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      UIManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variablemanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      VariableManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#charactermanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      CharacterManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#layermanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      LayerManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customcommandhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      CustomCommandHandler
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#labelregistry" class="md-nav__link">
+    <span class="md-ellipsis">
+      LabelRegistry
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#definition-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Definition Managers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transitionplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      TransitionPlayer
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1542,37 @@
 
 
 <h1 id="core-components">Core Components</h1>
-<p>This document is a work in progress.</p>
+<p>Argode's architecture is built around a set of specialized managers, each responsible for a distinct aspect of the visual novel experience. These managers operate as child nodes of the central <code>ArgodeSystem</code> singleton, ensuring a modular and organized codebase.</p>
+<h2 id="argodesystem">ArgodeSystem</h2>
+<p>The <code>ArgodeSystem</code> is the central hub of the framework, acting as the single autoloaded singleton in your Godot project. It orchestrates the interactions between all other managers and provides global access to Argode's functionalities.</p>
+<h2 id="scriptplayer">ScriptPlayer</h2>
+<p>The <code>ScriptPlayer</code> is the engine that drives your narrative. It is responsible for parsing and executing <code>.rgd</code> script files, interpreting commands, managing the flow of the story, and handling script-related events.</p>
+<h2 id="uimanager">UIManager</h2>
+<p>The <code>UIManager</code> handles all aspects of the user interface. It manages the loading, displaying, and freeing of UI scenes (<code>.tscn</code> files), including menus, dialogue boxes, choice buttons, and other interactive elements. It works in conjunction with the <code>LayerManager</code> to place UI elements correctly.</p>
+<h2 id="variablemanager">VariableManager</h2>
+<p>The <code>VariableManager</code> is responsible for managing all game-related variables. It supports various data types, including complex structures like arrays and dictionaries, allowing for rich and dynamic story states. It provides methods for setting, getting, and manipulating variables directly from <code>.rgd</code> scripts.</p>
+<h2 id="charactermanager">CharacterManager</h2>
+<p>The <code>CharacterManager</code> oversees the definition and display of characters within your visual novel. It handles character names, display names, colors, and expressions, ensuring consistent presentation throughout the story.</p>
+<h2 id="layermanager">LayerManager</h2>
+<p>The <code>LayerManager</code> provides a flexible and adaptable system for managing visual layers. Instead of imposing a fixed scene structure, it allows you to define roles for Godot's <code>CanvasLayer</code> nodes (e.g., "background", "characters", "ui", "effects"). This enables seamless integration with existing Godot projects and supports highly customized visual layouts.</p>
+<h2 id="customcommandhandler">CustomCommandHandler</h2>
+<p>The <code>CustomCommandHandler</code> is a key component for Argode's extensibility. It acts as a bridge between the <code>.rgd</code> script and your custom Godot game logic. When the <code>ScriptPlayer</code> encounters an unknown command in an <code>.rgd</code> file, the <code>CustomCommandHandler</code> emits a signal, allowing you to implement unique game mechanics and effects using GDScript or C#.</p>
+<h2 id="labelregistry">LabelRegistry</h2>
+<p>The <code>LabelRegistry</code> is responsible for indexing and managing all labels defined within your <code>.rgd</code> script files. This enables efficient navigation and jumping between different sections of your story, supporting complex branching narratives.</p>
+<h2 id="definition-managers">Definition Managers</h2>
+<p>Argode utilizes several specialized definition managers to handle the loading and management of various asset types declared in your <code>.rgd</code> scripts. These managers ensure that assets are correctly identified, preloaded (if configured), and made available to the framework.</p>
+<ul>
+<li><strong><code>AudioDefinitionManager</code></strong>: Manages audio assets (BGM, SFX).</li>
+<li><strong><code>CharacterDefinitionManager</code></strong>: Manages character definitions.</li>
+<li><strong><code>ImageDefinitionManager</code></strong>: Manages image assets (backgrounds, sprites).</li>
+<li><strong><code>ShaderDefinitionManager</code></strong>: Manages custom shader resources.</li>
+<li><strong><code>UISceneDefinitionManager</code></strong>: Manages UI scene definitions.</li>
+</ul>
+<h2 id="transitionplayer">TransitionPlayer</h2>
+<p>The <code>TransitionPlayer</code> handles visual transitions between scenes and other visual elements. It provides a centralized system for applying effects like fades, dissolves, and custom transitions, enhancing the visual appeal of your visual novel.</p>
+<hr />
+<p><a class="md-button" href="../system-overview/">Learn About System Overview →</a>
+<a class="md-button" href="../design-philosophy/">Learn About Design Philosophy →</a></p>
 
 
 

@@ -381,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/basic-setup.ja.ja.md" class="md-nav__link">
+      <a href="../../getting-started/basic-setup/" class="md-nav__link">
         
   
   
@@ -1139,6 +1139,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    ベストプラクティス
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1150,6 +1163,88 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      プロジェクト構造
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rgd" class="md-nav__link">
+    <span class="md-ellipsis">
+      RGDスクリプト
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      アセット管理
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      UI開発
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      カスタムコマンドによる拡張性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      パフォーマンスとデバッグ
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      バージョン管理
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1399,77 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      プロジェクト構造
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rgd" class="md-nav__link">
+    <span class="md-ellipsis">
+      RGDスクリプト
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      アセット管理
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      UI開発
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      カスタムコマンドによる拡張性
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      パフォーマンスとデバッグ
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      バージョン管理
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1488,71 @@
 
 
 <h1 id="_1">ベストプラクティス</h1>
-<p>このドキュメントは現在作成中です。</p>
+<p>Argodeでビジュアルノベルを開発する際、特定のベストプラクティスに従うことで、スムーズで効率的なプロセスを実現できます。このガイドでは、保守可能で高性能、かつスケーラブルなプロジェクトを構築するための推奨事項を提供します。</p>
+<h2 id="_2">プロジェクト構造</h2>
+<p>適切に整理されたプロジェクト構造は、長期的な保守性にとって非常に重要です。Argodeは柔軟ですが、以下の提案を検討してください。</p>
+<ul>
+<li><strong>アセットの分離</strong>: <code>assets/</code>ディレクトリを整理し、画像、オーディオ、その他のメディアを分類します。</li>
+<li><strong>RGDスクリプトの整理</strong>: <code>.rgd</code>スクリプトファイルを専用の<code>scenarios/</code>ディレクトリに配置し、章やルートごとにサブフォルダを作成することもできます。</li>
+<li><strong>カスタムコマンド</strong>: カスタムGDScriptコマンドを<code>custom/commands/</code>または同様の専用フォルダに保存します。</li>
+<li><strong>UIシーン</strong>: <code>.tscn</code>UIシーンを<code>ui/</code>または<code>scenes/ui/</code>ディレクトリに保持します。</li>
+<li><strong>定義</strong>: <code>character</code>、<code>image</code>、<code>audio</code>などの定義を専用の<code>.rgd</code>定義ファイル（例：<code>definitions/characters.rgd</code>、<code>definitions/assets.rgd</code>）に一元化します。</li>
+</ul>
+<h2 id="rgd">RGDスクリプト</h2>
+<p>クリーンで効率的な<code>.rgd</code>スクリプトを作成することは、管理しやすいプロジェクトの鍵です。</p>
+<ul>
+<li><strong>フロー制御にラベルを使用</strong>: <code>label</code>および<code>jump</code>コマンドを使用して、ストーリーセグメント間の明確なナビゲーションを実現します。</li>
+<li><strong>スクリプトのモジュール化</strong>: 長い物語を、より小さく管理しやすい<code>.rgd</code>ファイル（例：シーンごと、章ごと）に分割します。<code>call</code>または<code>jump</code>を使用してそれらをリンクします。</li>
+<li><strong>一貫した命名規則</strong>: ラベル、変数、アセットに対して明確な命名規則を確立し、それに従います。</li>
+<li>
+<p><strong>コメント</strong>: <code>#</code>で単一行コメント、<code>/* ... */</code>で複数行コメントを使用して、複雑なロジックや一時的なメモを説明します。</p>
+</li>
+<li>
+<p><strong>変数の使用</strong>: <code>VariableManager</code>とその<code>set_array</code>、<code>set_dict</code>コマンドを活用して、構造化されたデータを扱います。</p>
+</li>
+<li><strong>ハードコーディングの回避</strong>: 可能な限り、物語に直接値をハードコーディングするのではなく、変数または定義を使用します。</li>
+</ul>
+<h2 id="_3">アセット管理</h2>
+<p>Argodeのスクリプト中心のアセット定義は、管理を簡素化します。以下のヒントに従ってください。</p>
+<ul>
+<li><strong>アセットを一元的に定義</strong>: すべての<code>character</code>、<code>image</code>、<code>audio</code>、<code>shader</code>、<code>ui_scene</code>定義を専用の<code>.rgd</code>定義ファイルで宣言します。これにより、それらを簡単に見つけて変更できます。</li>
+<li><strong>一貫したパス</strong>: すべてのアセットに一貫した<code>res://</code>パスを使用します。</li>
+<li><strong>アセットの最適化</strong>: 画像、オーディオ、ビデオアセットがサイズと形式に関して最適化されていることを確認し、ロード時間を改善し、メモリ使用量を削減します（<a href="../../advanced/performance/">パフォーマンス最適化</a>を参照）。</li>
+</ul>
+<h2 id="ui">UI開発</h2>
+<p>ArgodeのUIシステムは強力です。いくつかのベストプラクティスを以下に示します。</p>
+<ul>
+<li><strong><code>AdvScreen</code>の使用</strong>: スクリプトと対話する複雑なUI要素の場合、GDScriptで<code>AdvScreen</code>を拡張します。</li>
+<li><strong>レイヤーの役割</strong>: 視覚的な順序を維持するために、<code>CanvasLayer</code>ノードの<code>LayerManager</code>の役割を明確に定義して使用します。</li>
+<li><strong>モジュール式UIシーン</strong>: 複雑なUIを、より小さく再利用可能な<code>.tscn</code>コンポーネントに分割します。</li>
+<li><strong>レスポンシブデザイン</strong>: GodotのControlノードとアンカーを使用して、さまざまな画面解像度とアスペクト比に適切に適応するようにUIシーンを設計します。</li>
+</ul>
+<h2 id="_4">カスタムコマンドによる拡張性</h2>
+<p>Argodeの拡張性は大きな強みです。賢く使用してください。</p>
+<ul>
+<li><strong>ロジックのカプセル化</strong>: カスタムコマンドを作成する際、特定のゲームロジックまたは視覚効果をその中にカプセル化します。</li>
+<li><strong>明確なパラメータ</strong>: 明確で直感的なパラメータを持つカスタムコマンドを設計します。</li>
+<li><strong>シグナルベースの通信</strong>: <code>CustomCommandHandler</code>のシグナルを活用して、<code>.rgd</code>スクリプトからGDScript関数をトリガーします。</li>
+<li><strong>ドキュメント</strong>: カスタムコマンドの目的、パラメータ、例を含むドキュメントを徹底的に作成します。</li>
+</ul>
+<h2 id="_5">パフォーマンスとデバッグ</h2>
+<p>詳細なガイダンスについては、専用のセクションを参照してください。</p>
+<ul>
+<li><a href="../../advanced/performance/">パフォーマンス最適化</a>: Argodeの組み込み最適化と一般的なGodotのパフォーマンスのヒントについて学びます。</li>
+<li><a href="../../advanced/debugging/">デバッグ</a>: Argodeのリアルタイムデバッグ機能とGodotの強力なデバッグツールについて学びます。</li>
+</ul>
+<h2 id="_6">バージョン管理</h2>
+<p>プロジェクトには常にバージョン管理システム（Gitなど）を使用してください。これにより、次のことが可能になります。</p>
+<ul>
+<li><strong>変更の追跡</strong>: コードとアセットへのすべての変更履歴を保持します。</li>
+<li><strong>共同作業</strong>: チームと効果的に作業します。</li>
+<li><strong>安全な実験</strong>: メインプロジェクトに影響を与えることなく、新機能やバグ修正のためにブランチを作成します。</li>
+<li><strong>変更の元に戻し</strong>: 何か問題が発生した場合でも、以前のバージョンに簡単にロールバックできます。</li>
+</ul>
+<p>これらのベストプラクティスを採用することで、Argodeの全機能を活用して、魅力的で高品質なビジュアルノベルを作成できます。</p>
+<hr />
+<p><a class="md-button" href="../simple-vn/">シンプルなVNの例について学ぶ →</a>
+<a class="md-button" href="../custom-features/">カスタム機能の例について学ぶ →</a></p>
 
 
 

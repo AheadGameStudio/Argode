@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="ja" class="no-js">
   <head>
     
       <meta charset="utf-8">
@@ -12,28 +12,24 @@
         <meta name="author" content="AheadGameStudio">
       
       
-        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/getting-started/basic-setup/">
+        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/ja/architecture/layer-system-guide/">
       
       
-        <link rel="prev" href="../installation/">
       
       
-        <link rel="next" href="../../architecture/design-philosophy/">
-      
-      
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
     
     
       
-        <title>Basic Setup - Argode Documentation</title>
+        <title>Argodeレイヤーシステム使用ガイド - Argode ドキュメント</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e37652d.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -52,9 +48,9 @@
       
     
     
-      <link rel="stylesheet" href="../../stylesheets/extra.css">
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -80,8 +76,8 @@
     <div data-md-component="skip">
       
         
-        <a href="#basic-setup-guide" class="md-skip">
-          Skip to content
+        <a href="#argode" class="md-skip">
+          コンテンツにスキップ
         </a>
       
     </div>
@@ -99,8 +95,8 @@
   
 
 <header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Argode Documentation" class="md-header__button md-logo" aria-label="Argode Documentation" data-md-component="logo">
+  <nav class="md-header__inner md-grid" aria-label="ヘッダー">
+    <a href="../../" title="Argode ドキュメント" class="md-header__button md-logo" aria-label="Argode ドキュメント" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -114,13 +110,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Argode Documentation
+            Argode ドキュメント
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Basic Setup
+              Argodeレイヤーシステム使用ガイド
             
           </span>
         </div>
@@ -168,16 +164,16 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <input type="text" class="md-search__input" name="query" aria-label="検索" placeholder="検索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
-      <nav class="md-search__options" aria-label="Search">
+      <nav class="md-search__options" aria-label="検索">
         
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="クリア" aria-label="クリア" tabindex="-1">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
@@ -190,7 +186,7 @@
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
-            Initializing search
+            検索を初期化
           </div>
           <ol class="md-search-result__list" role="presentation"></ol>
         </div>
@@ -202,7 +198,7 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/AheadGameStudio/Argode" title="Go to repository" class="md-source" data-md-component="source">
+        <a href="https://github.com/AheadGameStudio/Argode" title="リポジトリへ" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
@@ -236,19 +232,19 @@
 
 
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="ナビゲーション" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Argode Documentation" class="md-nav__button md-logo" aria-label="Argode Documentation" data-md-component="logo">
+    <a href="../../" title="Argode ドキュメント" class="md-nav__button md-logo" aria-label="Argode ドキュメント" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Argode Documentation
+    Argode ドキュメント
   </label>
   
     <div class="md-nav__source">
-      <a href="https://github.com/AheadGameStudio/Argode" title="Go to repository" class="md-source" data-md-component="source">
+      <a href="https://github.com/AheadGameStudio/Argode" title="リポジトリへ" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
@@ -268,12 +264,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Home
+    ホーム
     
   </span>
   
@@ -287,8 +283,6 @@
       
   
   
-    
-  
   
   
     
@@ -301,11 +295,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
@@ -313,7 +309,7 @@
   
   
   <span class="md-ellipsis">
-    Getting Started
+    はじめに
     
   </span>
   
@@ -321,10 +317,10 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
-            Getting Started
+            はじめに
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -335,12 +331,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../quick-start/" class="md-nav__link">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Quick Start
+    クイックスタート
     
   </span>
   
@@ -358,12 +354,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../../getting-started/installation/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Installation
+    インストール
     
   </span>
   
@@ -378,131 +374,20 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Basic Setup
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../getting-started/basic-setup/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Basic Setup
+    基本設定
     
   </span>
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#setup-autoload" class="md-nav__link">
-    <span class="md-ellipsis">
-      Setup Autoload
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#set-as-main-scene" class="md-nav__link">
-    <span class="md-ellipsis">
-      Set as Main Scene
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prepare-visual-layers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Prepare Visual Layers
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Prepare Visual Layers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#recommended-approach-using-argodescreen-simplest" class="md-nav__link">
-    <span class="md-ellipsis">
-      Recommended Approach: Using ArgodeScreen (Simplest)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#alternative-manual-canvaslayer-setup-advanced" class="md-nav__link">
-    <span class="md-ellipsis">
-      Alternative: Manual CanvasLayer Setup (Advanced)
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#initialize-argodesystem" class="md-nav__link">
-    <span class="md-ellipsis">
-      Initialize ArgodeSystem
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#run-your-project" class="md-nav__link">
-    <span class="md-ellipsis">
-      Run Your Project
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -545,7 +430,7 @@
   
   
   <span class="md-ellipsis">
-    Architecture
+    アーキテクチャ
     
   </span>
   
@@ -556,7 +441,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Architecture
+            アーキテクチャ
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -567,12 +452,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/design-philosophy/" class="md-nav__link">
+      <a href="../design-philosophy/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Design Philosophy
+    設計思想
     
   </span>
   
@@ -590,12 +475,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../system-overview/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    System Overview
+    システム概要
     
   </span>
   
@@ -613,12 +498,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/core-components/" class="md-nav__link">
+      <a href="../core-components/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Core Components
+    コアコンポーネント
     
   </span>
   
@@ -666,7 +551,7 @@
   
   
   <span class="md-ellipsis">
-    Script Reference
+    スクリプトリファレンス
     
   </span>
   
@@ -677,7 +562,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Script Reference
+            スクリプトリファレンス
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -693,7 +578,7 @@
   
   
   <span class="md-ellipsis">
-    RGD Syntax
+    RGD構文
     
   </span>
   
@@ -716,7 +601,7 @@
   
   
   <span class="md-ellipsis">
-    Commands
+    コマンド
     
   </span>
   
@@ -739,7 +624,7 @@
   
   
   <span class="md-ellipsis">
-    Variables & Expressions
+    変数と式
     
   </span>
   
@@ -762,7 +647,7 @@
   
   
   <span class="md-ellipsis">
-    Definitions
+    定義
     
   </span>
   
@@ -810,7 +695,7 @@
   
   
   <span class="md-ellipsis">
-    Custom Commands
+    カスタムコマンド
     
   </span>
   
@@ -821,7 +706,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Custom Commands
+            カスタムコマンド
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -837,7 +722,7 @@
   
   
   <span class="md-ellipsis">
-    Overview
+    概要
     
   </span>
   
@@ -860,7 +745,7 @@
   
   
   <span class="md-ellipsis">
-    Built-in Commands
+    ビルトインコマンド
     
   </span>
   
@@ -883,7 +768,7 @@
   
   
   <span class="md-ellipsis">
-    Creating Commands
+    コマンド作成
     
   </span>
   
@@ -931,7 +816,7 @@
   
   
   <span class="md-ellipsis">
-    UI System
+    UIシステム
     
   </span>
   
@@ -942,7 +827,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            UI System
+            UIシステム
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -981,7 +866,7 @@
   
   
   <span class="md-ellipsis">
-    Themes
+    テーマ
     
   </span>
   
@@ -1004,7 +889,7 @@
   
   
   <span class="md-ellipsis">
-    Custom UI
+    カスタムUI
     
   </span>
   
@@ -1052,7 +937,7 @@
   
   
   <span class="md-ellipsis">
-    Advanced Topics
+    高度なトピック
     
   </span>
   
@@ -1063,7 +948,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
-            Advanced Topics
+            高度なトピック
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1079,7 +964,7 @@
   
   
   <span class="md-ellipsis">
-    Asset Management
+    アセット管理
     
   </span>
   
@@ -1102,7 +987,7 @@
   
   
   <span class="md-ellipsis">
-    Performance Optimization
+    パフォーマンス最適化
     
   </span>
   
@@ -1125,7 +1010,7 @@
   
   
   <span class="md-ellipsis">
-    Debugging
+    デバッグ
     
   </span>
   
@@ -1173,7 +1058,7 @@
   
   
   <span class="md-ellipsis">
-    Examples
+    例
     
   </span>
   
@@ -1184,7 +1069,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            例
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1200,7 +1085,7 @@
   
   
   <span class="md-ellipsis">
-    Simple VN
+    シンプルなVN
     
   </span>
   
@@ -1223,7 +1108,7 @@
   
   
   <span class="md-ellipsis">
-    Custom Features
+    カスタム機能
     
   </span>
   
@@ -1246,7 +1131,7 @@
   
   
   <span class="md-ellipsis">
-    Best Practices
+    ベストプラクティス
     
   </span>
   
@@ -1294,7 +1179,7 @@
   
   
   <span class="md-ellipsis">
-    API Reference
+    APIリファレンス
     
   </span>
   
@@ -1305,7 +1190,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
-            API Reference
+            APIリファレンス
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1367,7 +1252,7 @@
   
   
   <span class="md-ellipsis">
-    Managers
+    マネージャー
     
   </span>
   
@@ -1398,7 +1283,7 @@
                   <div class="md-sidebar__inner">
                     
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+<nav class="md-nav md-nav--secondary" aria-label="目次">
   
   
   
@@ -1407,51 +1292,24 @@
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
-      Table of contents
+      目次
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#setup-autoload" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
-      Setup Autoload
+      🎨 レイヤー構造の理解
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#set-as-main-scene" class="md-nav__link">
-    <span class="md-ellipsis">
-      Set as Main Scene
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#prepare-visual-layers" class="md-nav__link">
-    <span class="md-ellipsis">
-      Prepare Visual Layers
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Prepare Visual Layers">
+    <nav class="md-nav" aria-label="🎨 レイヤー構造の理解">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#recommended-approach-using-argodescreen-simplest" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
-      Recommended Approach: Using ArgodeScreen (Simplest)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#alternative-manual-canvaslayer-setup-advanced" class="md-nav__link">
-    <span class="md-ellipsis">
-      Alternative: Manual CanvasLayer Setup (Advanced)
+      推奨シーン構造
     </span>
   </a>
   
@@ -1463,20 +1321,149 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#initialize-argodesystem" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
-      Initialize ArgodeSystem
+      🚀 自動展開モードの使用方法
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 自動展開モードの使用方法">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#argodescreen" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgodeScreenでの設定
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#run-your-project" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
-      Run Your Project
+      手動でのレイヤー作成
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#argodescreen_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      🎯 ArgodeScreenの配置パターン
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 ArgodeScreenの配置パターン">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-argodescreen-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      パターン1: ArgodeScreen = UIレイヤー（推奨）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-argodescreen" class="md-nav__link">
+    <span class="md-ellipsis">
+      パターン2: ArgodeScreenを別レイヤー内に配置
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      ⚙️ レイヤー管理のベストプラクティス
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚙️ レイヤー管理のベストプラクティス">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#z-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      Z-Index値の標準
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-vs-canvaslayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Control vs CanvasLayer
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      🔧 カスタムレイヤーの追加
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 カスタムレイヤーの追加">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      追加レイヤーの作成例
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      💡 トラブルシューティング
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 トラブルシューティング">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      よくある問題
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1499,91 +1486,104 @@
   
 
 
-<h1 id="basic-setup-guide">Basic Setup Guide</h1>
-<p>This guide covers the essential setup steps for your Godot project to work with Argode.</p>
-<h2 id="setup-autoload">Setup Autoload</h2>
-<ol>
-<li>Open <strong>Project Settings</strong> (<code>Project → Project Settings</code>)</li>
-<li>Go to <strong>Autoload</strong> tab</li>
-<li>Add <strong>ArgodeSystem</strong>:</li>
-<li><strong>Path</strong>: <code>res://addons/argode/core/ArgodeSystem.gd</code></li>
-<li><strong>Node Name</strong>: <code>ArgodeSystem</code></li>
-<li>Check <strong>Enable</strong></li>
-</ol>
-<p><img alt="Autoload Setup" src="../images/autoload-setup.png" /></p>
-<h2 id="set-as-main-scene">Set as Main Scene</h2>
-<ol>
-<li>Create a new scene (<code>Scene → New Scene</code>) if you haven't already, and save it (e.g., <code>Main.tscn</code>).</li>
-<li>Go to <strong>Project Settings</strong> (<code>Project → Project Settings</code>).</li>
-<li>Under the <strong>Application → Run</strong> section, set <strong>Main Scene</strong> to your <code>Main.tscn</code> (or whatever you named your main scene).</li>
-</ol>
-<h2 id="prepare-visual-layers">Prepare Visual Layers</h2>
-<p>Argode utilizes Godot's <code>CanvasLayer</code> nodes to manage the visual depth and display of backgrounds, characters, and UI elements. While you can manually set up these layers, Argode provides a streamlined approach using the <code>ArgodeScreen</code> node.</p>
-<h3 id="recommended-approach-using-argodescreen-simplest">Recommended Approach: Using <code>ArgodeScreen</code> (Simplest)</h3>
-<p>The <code>ArgodeScreen</code> node (found at <code>res://addons/argode/ui/ArgodeScreen.tscn</code>) is a pre-configured <code>Control</code> node designed to simplify layer management. It automatically handles the creation and assignment of <code>CanvasLayer</code> nodes for common roles (background, characters, UI, effects) when its "Auto Layer Expansion" property is enabled (which is the default).</p>
-<ol>
-<li>In your main scene (<code>Main.tscn</code>), add an <code>ArgodeScreen</code> node as a direct child of your root node.</li>
-<li>Ensure the <code>ArgodeScreen</code> node's "Auto Layer Expansion" property is enabled in the Inspector (it's usually on by default).</li>
-<li>
-<p>Your scene tree will look like this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>- Main (Node2D or Control)
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  - ArgodeScreen (Control)
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    - Background (CanvasLayer)
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    - Characters (CanvasLayer)
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    - UI (CanvasLayer)
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    - Effects (CanvasLayer)
+<h1 id="argode">Argodeレイヤーシステム使用ガイド</h1>
+<h2 id="_1">🎨 レイヤー構造の理解</h2>
+<h3 id="_2">推奨シーン構造</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Main (Node2D または Control)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── BackgroundLayer (Control) [z_index: 0]   ← 背景画像専用
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>├── CharacterLayer (Control)  [z_index: 100] ← キャラクター立ち絵専用  
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>└── GameUI (ArgodeScreen)     [z_index: 200] ← UIレイヤー（メッセージ・選択肢等）
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    ├── MessageBox (Control)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    ├── ChoiceContainer (Control)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    └── ... (その他UI要素)
 </code></pre></div>
-<p>The <code>CanvasLayer</code> nodes created by <code>ArgodeScreen</code> will have their <code>Layer</code> properties automatically set to appropriate values for visual depth.</p>
-</li>
-</ol>
-<h3 id="alternative-manual-canvaslayer-setup-advanced">Alternative: Manual <code>CanvasLayer</code> Setup (Advanced)</h3>
-<p>For advanced users or specific project needs, you can manually create and configure <code>CanvasLayer</code> nodes.</p>
-<ol>
-<li>
-<p>In your main scene (<code>Main.tscn</code>), create the following <code>CanvasLayer</code> nodes as direct children of your root node:</p>
+<h2 id="_3">🚀 自動展開モードの使用方法</h2>
+<h3 id="argodescreen">ArgodeScreenでの設定</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># GameUI.gd (ArgodeScreenを継承)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">extends</span><span class="w"> </span><span class="n">ArgodeScreen</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># エディタで設定</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="err">@</span><span class="k">export</span><span class="w"> </span><span class="k">var</span><span class="w"> </span><span class="n">auto_create_layers</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="w">  </span><span class="c1"># ← これをONにする</span>
+</code></pre></div>
+<h3 id="_4">手動でのレイヤー作成</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># メインシーンの_ready()で実行</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">layers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AutoLayerSetup</span><span class="o">.</span><span class="n">create_argode_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="c1"># layers[&quot;background&quot;], layers[&quot;character&quot;], layers[&quot;ui&quot;] が使用可能</span>
+</code></pre></div>
+<h2 id="argodescreen_1">🎯 ArgodeScreenの配置パターン</h2>
+<h3 id="1-argodescreen-ui">パターン1: ArgodeScreen = UIレイヤー（推奨）</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Main
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>├── BackgroundLayer (自動作成)
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>├── CharacterLayer (自動作成)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>└── GameUI (ArgodeScreen) ← これ自体がUIレイヤー
+</code></pre></div>
+<h3 id="2-argodescreen">パターン2: ArgodeScreenを別レイヤー内に配置</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Main  
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>├── BackgroundLayer
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>├── CharacterLayer
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>└── UILayer
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    └── GameUI (ArgodeScreen) ← UIレイヤー内に配置
+</code></pre></div>
+<h2 id="_5">⚙️ レイヤー管理のベストプラクティス</h2>
+<h3 id="z-index">Z-Index値の標準</h3>
 <ul>
-<li><strong>Background Layer</strong>: For displaying backgrounds. Set its <code>Layer</code> property to a low value (e.g., <code>0</code> or <code>1</code>).</li>
-<li><strong>Characters Layer</strong>: For displaying characters. Set its <code>Layer</code> property higher than the background (e.g., <code>2</code> or <code>3</code>).</li>
-<li><strong>UI Layer</strong>: For displaying user interface elements. Set its <code>Layer</code> property to a high value (e.g., <code>10</code> or <code>100</code>).</li>
-<li><strong>Effects Layer</strong>: (Optional, but recommended) For displaying screen-wide effects. Set its <code>Layer</code> property to the highest value (e.g., <code>200</code>).</li>
+<li><strong>Background Layer</strong>: 0-99</li>
+<li><strong>Character Layer</strong>: 100-199  </li>
+<li><strong>UI Layer</strong>: 200-299</li>
+<li><strong>Overlay/Effect</strong>: 300+</li>
 </ul>
+<h3 id="control-vs-canvaslayer">Control vs CanvasLayer</h3>
+<p><strong>Control を使用する理由：</strong>
+- ✅ アンカー・マージンでレスポンシブレイアウト
+- ✅ 細かいZ-Index制御
+- ✅ シェーダー効果の適用が容易
+- ✅ レイアウト管理が直感的</p>
+<p><strong>CanvasLayer は以下の場合のみ：</strong>
+- 独立したカメラ制御が必要
+- 異なる描画順序が必要
+- パフォーマンス最適化が重要</p>
+<h2 id="_6">🔧 カスタムレイヤーの追加</h2>
+<h3 id="_7">追加レイヤーの作成例</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># エフェクトレイヤーを追加</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">func</span><span class="w"> </span><span class="n">add_effect_layer</span><span class="p">():</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">effect_layer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Control</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">effect_layer</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;EffectLayer&quot;</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="n">effect_layer</span><span class="o">.</span><span class="n">set_anchors_and_offsets_preset</span><span class="p">(</span><span class="n">Control</span><span class="o">.</span><span class="n">PRESET_FULL_RECT</span><span class="p">)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="n">effect_layer</span><span class="o">.</span><span class="n">z_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">300</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="n">effect_layer</span><span class="o">.</span><span class="n">mouse_filter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Control</span><span class="o">.</span><span class="n">MOUSE_FILTER_IGNORE</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="n">get_parent</span><span class="p">()</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">effect_layer</span><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="c1"># LayerManagerに登録</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">layer_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_layer_mappings</span><span class="p">()</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="n">layer_map</span><span class="p">[</span><span class="s2">&quot;effects&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">effect_layer</span>
+</code></pre></div>
+<h2 id="_8">💡 トラブルシューティング</h2>
+<h3 id="_9">よくある問題</h3>
+<ol>
+<li><strong>レイヤーが表示されない</strong></li>
+<li>Z-Indexの重複チェック</li>
+<li>
+<p>親ノードのvisibilityチェック</p>
 </li>
 <li>
-<p>Your scene tree might look something like this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>- Main (Node2D or Control)
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  - BackgroundLayer (CanvasLayer)
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  - CharactersLayer (CanvasLayer)
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  - UILayer (CanvasLayer)
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  - EffectsLayer (CanvasLayer)
-</code></pre></div>
+<p><strong>UIが背景に隠れる</strong></p>
 </li>
+<li>
+<p>UIレイヤーのZ-Indexを200以上に設定</p>
+</li>
+<li>
+<p><strong>キャラクターが背景と同じ深度</strong></p>
+</li>
+<li>
+<p>CharacterLayerのZ-Indexを100に設定</p>
+</li>
+<li>
+<p><strong>マウスイベントが通らない</strong>  </p>
+</li>
+<li><code>mouse_filter = Control.MOUSE_FILTER_IGNORE</code> を設定</li>
 </ol>
-<h2 id="initialize-argodesystem">Initialize ArgodeSystem</h2>
-<p>In the script attached to your main scene (<code>Main.tscn</code>), you need to initialize <code>ArgodeSystem</code> by mapping the <code>CanvasLayer</code> nodes you've prepared to their respective roles.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Main.gd (attached to your Main scene&#39;s root node)</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">extends</span><span class="w"> </span><span class="n">Node2D</span><span class="w"> </span><span class="c1"># Or Control, depending on your root node type</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="c1"># Map your CanvasLayer nodes to Argode&#39;s layer roles</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="c1"># If using ArgodeScreen, access its child CanvasLayers</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">layer_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="s2">&quot;background&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">ArgodeScreen</span><span class="o">/</span><span class="n">Background</span><span class="p">,</span><span class="w"> </span><span class="c1"># Or $BackgroundLayer if manual setup</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="s2">&quot;character&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">ArgodeScreen</span><span class="o">/</span><span class="n">Characters</span><span class="p">,</span><span class="w"> </span><span class="c1"># Or $CharactersLayer if manual setup</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="s2">&quot;ui&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">ArgodeScreen</span><span class="o">/</span><span class="n">UI</span><span class="p">,</span><span class="w">             </span><span class="c1"># Or $UILayer if manual setup</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">        </span><span class="s2">&quot;effects&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">ArgodeScreen</span><span class="o">/</span><span class="n">Effects</span><span class="w">    </span><span class="c1"># Or $EffectsLayer if manual setup (Optional)</span>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="c1"># Initialize ArgodeSystem</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">initialize_game</span><span class="p">(</span><span class="n">layer_map</span><span class="p">):</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystem initialized successfully!&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">        </span><span class="c1"># Start your first RGD script</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">start_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/main.rgd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">    </span><span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystem initialization failed.&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">        </span><span class="c1"># Handle initialization errors (e.g., display an error message)</span>
-</code></pre></div>
-<h2 id="run-your-project">Run Your Project</h2>
-<p>Press <strong>F5</strong> to run your project. If everything is set up correctly, Argode will initialize, and your <code>res://scenarios/main.rgd</code> script will begin executing.</p>
 
 
 
@@ -1609,7 +1609,7 @@
           <button type="button" class="md-top md-icon" data-md-component="top" hidden>
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
+  ページトップへ戻る
 </button>
         
       </main>
@@ -1666,12 +1666,12 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.tracking", "search.highlight", "search.suggest", "content.code.copy", "content.code.select", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.tracking", "search.highlight", "search.suggest", "content.code.copy", "content.code.select", "content.tabs.link"], "search": "../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\u30b3\u30d4\u30fc\u3057\u307e\u3057\u305f", "clipboard.copy": "\u30af\u30ea\u30c3\u30d7\u30dc\u30fc\u30c9\u3078\u30b3\u30d4\u30fc", "search.result.more.one": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3082\u30461\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.more.other": "\u3053\u306e\u30da\u30fc\u30b8\u5185\u306b\u3042\u3068#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.none": "\u4f55\u3082\u898b\u3064\u304b\u308a\u307e\u305b\u3093\u3067\u3057\u305f", "search.result.one": "1\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.other": "#\u4ef6\u898b\u3064\u304b\u308a\u307e\u3057\u305f", "search.result.placeholder": "\u691c\u7d22\u30ad\u30fc\u30ef\u30fc\u30c9\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044", "search.result.term.missing": "\u691c\u7d22\u306b\u542b\u307e\u308c\u306a\u3044", "select.version": "\u30d0\u30fc\u30b8\u30e7\u30f3\u5207\u308a\u66ff\u3048"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.50899def.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.50899def.min.js"></script>
       
-        <script src="../../javascripts/extra.js"></script>
+        <script src="../../../javascripts/extra.js"></script>
       
     
   </body>

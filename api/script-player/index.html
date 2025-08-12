@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#scriptplayer-api" class="md-skip">
+        <a href="#scriptplayer-api-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -1237,6 +1237,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    ScriptPlayer
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1248,6 +1261,211 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-functionalities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Functionalities
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Functionalities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loading-and-starting-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading and Starting Scripts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Loading and Starting Scripts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#load_scriptpath-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_script(path: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play_from_labellabel_name-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      play_from_label(label_name: String)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advancing-the-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advancing the Script
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advancing the Script">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    <span class="md-ellipsis">
+      next()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script State
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Script State">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#is_playing-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_playing() -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flow-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flow Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Flow Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on_choice_selectedchoice_index-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      on_choice_selected(choice_index: int)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-callreturn-for-ui-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      External Call/Return (for UI Integration)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="External Call/Return (for UI Integration)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#call_labellabel_name-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      call_label(label_name: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#return_from_call" class="md-nav__link">
+    <span class="md-ellipsis">
+      return_from_call()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signals
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#script_finished" class="md-nav__link">
+    <span class="md-ellipsis">
+      script_finished
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom_command_executedcommand_name-string-parameters-dictionary-line-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      custom_command_executed(command_name: String, parameters: Dictionary, line: String)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1522,200 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-functionalities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Functionalities
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Functionalities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#loading-and-starting-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading and Starting Scripts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Loading and Starting Scripts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#load_scriptpath-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      load_script(path: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#play_from_labellabel_name-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      play_from_label(label_name: String)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advancing-the-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advancing the Script
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advancing the Script">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    <span class="md-ellipsis">
+      next()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script State
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Script State">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#is_playing-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_playing() -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flow-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flow Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Flow Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#on_choice_selectedchoice_index-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      on_choice_selected(choice_index: int)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-callreturn-for-ui-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      External Call/Return (for UI Integration)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="External Call/Return (for UI Integration)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#call_labellabel_name-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      call_label(label_name: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#return_from_call" class="md-nav__link">
+    <span class="md-ellipsis">
+      return_from_call()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signals
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Signals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#script_finished" class="md-nav__link">
+    <span class="md-ellipsis">
+      script_finished
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom_command_executedcommand_name-string-parameters-dictionary-line-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      custom_command_executed(command_name: String, parameters: Dictionary, line: String)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1321,8 +1733,85 @@
   
 
 
-<h1 id="scriptplayer-api">ScriptPlayer API</h1>
-<p>This document is a work in progress.</p>
+<h1 id="scriptplayer-api-reference">ScriptPlayer API Reference</h1>
+<p>The <code>ScriptPlayer</code> is the core component responsible for interpreting and executing your <code>.rgd</code> script files. It manages the flow of your narrative, processes commands, and handles interactions with other Argode managers. While <code>ScriptPlayer</code> is an internal component of <code>ArgodeSystem</code>, its key functionalities are exposed through <code>ArgodeSystem</code>'s public API for ease of use.</p>
+<h2 id="core-functionalities">Core Functionalities</h2>
+<h3 id="loading-and-starting-scripts">Loading and Starting Scripts</h3>
+<p>The <code>ScriptPlayer</code> loads your <code>.rgd</code> files and begins execution from a specified point.</p>
+<h4 id="load_scriptpath-string"><code>load_script(path: String)</code></h4>
+<p>Loads an <code>.rgd</code> script file into the <code>ScriptPlayer</code>. This prepares the script for execution but does not start it immediately.</p>
+<ul>
+<li><strong><code>path</code> (String)</strong>: The <code>res://</code> path to the <code>.rgd</code> script file (e.g., <code>"res://scenarios/chapter1.rgd"</code>).</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">load_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/my_story.rgd&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="play_from_labellabel_name-string"><code>play_from_label(label_name: String)</code></h4>
+<p>Starts or resumes script execution from a specific <code>label</code> within the currently loaded script. If the label is in a different <code>.rgd</code> file, <code>ScriptPlayer</code> will attempt a cross-file jump using the <code>LabelRegistry</code>.</p>
+<ul>
+<li><strong><code>label_name</code> (String)</strong>: The name of the <code>label</code> to jump to (e.g., <code>"start"</code>, <code>"chapter_2_intro"</code>).</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># After loading a script</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">play_from_label</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Or, as part of ArgodeSystem&#39;s public API</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">start_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/my_story.rgd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="advancing-the-script">Advancing the Script</h3>
+<h4 id="next"><code>next()</code></h4>
+<p>Advances the script to the next line of execution. This method is typically called by <code>ArgodeSystem.next_line()</code> in response to user input (e.g., a mouse click to advance dialogue).</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># In your input handler</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_input</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">event</span><span class="o">.</span><span class="n">is_action_pressed</span><span class="p">(</span><span class="s2">&quot;ui_accept&quot;</span><span class="p">):</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">next_line</span><span class="p">()</span><span class="w"> </span><span class="c1"># This calls ScriptPlayer.next() internally</span>
+</code></pre></div>
+<h3 id="script-state">Script State</h3>
+<h4 id="is_playing-bool"><code>is_playing() -&gt; bool</code></h4>
+<p>Returns <code>true</code> if the <code>ScriptPlayer</code> is currently executing an <code>.rgd</code> script, <code>false</code> otherwise.</p>
+<h2 id="flow-control">Flow Control</h2>
+<p>The <code>ScriptPlayer</code> handles various flow control commands defined in <code>.rgd</code> scripts, including <code>jump</code>, <code>call</code>, <code>return</code>, <code>if</code>/<code>else</code>, and <code>menu</code>.</p>
+<h3 id="on_choice_selectedchoice_index-int"><code>on_choice_selected(choice_index: int)</code></h3>
+<p>This method is called by the <code>UIManager</code> when a user makes a selection from a <code>menu</code> command. It directs the <code>ScriptPlayer</code> to the appropriate branch of the script based on the chosen option.</p>
+<ul>
+<li><strong><code>choice_index</code> (int)</strong>: The 0-based index of the selected choice.</li>
+</ul>
+<p><strong>Example (Internal Call):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># UIManager calls this after a choice is made</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">on_choice_selected</span><span class="p">(</span><span class="n">selected_index</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="external-callreturn-for-ui-integration">External Call/Return (for UI Integration)</h3>
+<p>These methods are primarily used by <code>AdvScreen</code> nodes or other custom Godot scenes that need to temporarily take control of the script flow and then return.</p>
+<h4 id="call_labellabel_name-string"><code>call_label(label_name: String)</code></h4>
+<p>Pushes the current script position onto a call stack and jumps to the specified <code>label</code>. This is similar to the <code>.rgd</code> <code>call</code> command but can be triggered from GDScript.</p>
+<ul>
+<li><strong><code>label_name</code> (String)</strong>: The name of the <code>label</code> to call.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># From an AdvScreen script</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">call_label</span><span class="p">(</span><span class="s2">&quot;game_over_scene&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="return_from_call"><code>return_from_call()</code></h4>
+<p>Pops the last position from the call stack and resumes script execution from that point. This is similar to the <code>.rgd</code> <code>return</code> command.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># From an AdvScreen script, after a modal screen is closed</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">return_from_call</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="signals">Signals</h2>
+<p>The <code>ScriptPlayer</code> emits signals to notify other parts of the system about its state changes or events.</p>
+<h3 id="script_finished"><code>script_finished</code></h3>
+<p>Emitted when the <code>ScriptPlayer</code> reaches the end of the currently loaded script.</p>
+<h3 id="custom_command_executedcommand_name-string-parameters-dictionary-line-string"><code>custom_command_executed(command_name: String, parameters: Dictionary, line: String)</code></h3>
+<p>Emitted when the <code>ScriptPlayer</code> encounters a command in an <code>.rgd</code> script that is not a built-in command. This signal is primarily used by the <code>CustomCommandHandler</code> to dispatch to your custom GDScript logic.</p>
+<ul>
+<li><strong><code>command_name</code> (String)</strong>: The name of the custom command.</li>
+<li><strong><code>parameters</code> (Dictionary)</strong>: A dictionary containing the parsed parameters of the custom command.</li>
+<li><strong><code>line</code> (String)</strong>: The full original line from the <code>.rgd</code> script.</li>
+</ul>
+<hr />
+<p><a class="md-button" href="../argode-system/">Learn About ArgodeSystem API →</a>
+<a class="md-button" href="../managers/">Learn About Managers API →</a></p>
 
 
 

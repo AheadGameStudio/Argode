@@ -488,6 +488,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    System Overview
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -499,6 +512,70 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-architecture-the-argodesystem-singleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Architecture: The ArgodeSystem Singleton
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#script-centric-workflow-with-rgd-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script-Centric Workflow with RGD Files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#predictive-asset-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Predictive Asset Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexible-ui-and-layer-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flexible UI and Layer System
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-experience" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Experience
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1381,59 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#core-architecture-the-argodesystem-singleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Architecture: The ArgodeSystem Singleton
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#script-centric-workflow-with-rgd-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Script-Centric Workflow with RGD Files
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#predictive-asset-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Predictive Asset Management
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#flexible-ui-and-layer-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Flexible UI and Layer System
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-experience" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Experience
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1452,43 @@
 
 
 <h1 id="system-overview">System Overview</h1>
-<p>This document is a work in progress.</p>
+<p>Argode is a powerful and flexible visual novel framework for the Godot Engine, designed to streamline the creation of interactive stories. It emphasizes extensibility, developer convenience, and a script-centric approach to asset management.</p>
+<h2 id="core-architecture-the-argodesystem-singleton">Core Architecture: The ArgodeSystem Singleton</h2>
+<p>At the heart of Argode is the <code>ArgodeSystem</code> singleton, the sole global node introduced into your Godot project. This design ensures minimal global namespace pollution and provides a clean, predictable structure for all framework components.</p>
+<p>All other core functionalities are managed as child nodes of <code>ArgodeSystem</code>, creating a clear hierarchy that simplifies debugging and integration. Key managers include:</p>
+<ul>
+<li><strong><code>ScriptPlayer</code></strong>: Responsible for parsing and executing <code>.rgd</code> script files, driving the narrative flow.</li>
+<li><strong><code>UIManager</code></strong>: Handles the display and management of user interface scenes.</li>
+<li>
+<p><strong><code>VariableManager</code></strong>: Manages all game variables, including complex data types like arrays and dictionaries.</p>
+</li>
+<li>
+<p><strong><code>CharacterManager</code></strong>: Oversees character definitions, expressions, and display.</p>
+</li>
+<li><strong><code>LayerManager</code></strong>: Provides a flexible system for mapping visual elements to Godot's CanvasLayers, allowing for custom scene layouts.</li>
+<li><strong><code>CustomCommandHandler</code></strong>: The gateway for Argode's powerful extensibility, forwarding unknown commands as signals for custom game logic.</li>
+<li><strong><code>LabelRegistry</code></strong>: Indexes and manages labels within <code>.rgd</code> scripts for navigation and flow control.</li>
+<li><strong><code>DefinitionLoader</code></strong>: Processes asset and character definitions declared within <code>.rgd</code> files.</li>
+</ul>
+<h2 id="script-centric-workflow-with-rgd-files">Script-Centric Workflow with RGD Files</h2>
+<p>Argode leverages its custom <code>.rgd</code> (Argode Script) file format for defining game logic, dialogue, and assets. This script-centric approach allows writers and developers to work primarily with plain text files, simplifying version control and batch operations.</p>
+<p>Key features of RGD files:</p>
+<ul>
+<li><strong>Narrative Flow</strong>: Define dialogue, choices, and scene transitions.</li>
+<li><strong>Asset Definitions</strong>: Declare characters, images, audio, and shaders directly within scripts.</li>
+<li><strong>Commands</strong>: Utilize a rich set of built-in commands for timing, UI manipulation, and variable management.</li>
+<li><strong>Extensibility</strong>: Easily integrate custom game logic through user-defined commands.</li>
+</ul>
+<p>For enhanced development experience, a dedicated <a href="https://github.com/AheadGameStudio/Argode-rgd-syntax-highlighter">VS Code extension</a> provides syntax highlighting and IntelliSense support for <code>.rgd</code> files.</p>
+<h2 id="predictive-asset-management">Predictive Asset Management</h2>
+<p>Argode incorporates an intelligent asset management system that analyzes your entire script structure at startup. By building a control flow graph, it performs reachability analysis to predict which assets will be needed, enabling smart preloading and optimizing memory usage. This ensures faster loading times and a smoother player experience without manual optimization.</p>
+<h2 id="flexible-ui-and-layer-system">Flexible UI and Layer System</h2>
+<p>The framework offers an advanced UI system built around <code>AdvScreen</code> nodes, allowing for complex, interactive user interfaces that seamlessly integrate with the script. Coupled with a flexible <code>LayerManager</code>, developers can define custom CanvasLayer roles, adapting Argode to existing Godot projects and unique visual requirements.</p>
+<h2 id="development-experience">Development Experience</h2>
+<p>Designed for rapid iteration, Argode supports hot-reloading of scripts and real-time inspection of game state. This focus on developer convenience, combined with robust error detection and IDE integration, significantly accelerates the visual novel development workflow.</p>
+<hr />
+<p><a class="md-button" href="../design-philosophy/">Learn About Design Philosophy →</a>
+<a class="md-button" href="../core-components/">View Core Components →</a></p>
 
 
 

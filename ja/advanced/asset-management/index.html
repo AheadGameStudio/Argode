@@ -381,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/basic-setup.ja.ja.md" class="md-nav__link">
+      <a href="../../getting-started/basic-setup/" class="md-nav__link">
         
   
   
@@ -972,6 +972,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    アセット管理
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -983,6 +996,52 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプト中心のアセット定義
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      予測的なアセットプリロード
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      アセットパスと解決
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1363,41 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプト中心のアセット定義
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      予測的なアセットプリロード
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      アセットパスと解決
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1416,51 @@
 
 
 <h1 id="_1">アセット管理</h1>
-<p>このドキュメントは現在作成中です。</p>
+<p>Argodeは、開発者のワークフローを簡素化しつつパフォーマンスを最適化するように設計された、堅牢でインテリジェントなゲームアセット管理システムを提供します。その核となる哲学は、スクリプト中心の定義と予測的なプリロードを中心に展開しています。</p>
+<h2 id="_2">スクリプト中心のアセット定義</h2>
+<p>エディタでの手動アセットインポートと設定を必要とすることが多い従来のゲーム開発ワークフローとは異なり、Argodeではゲームアセットのほとんどを<code>.rgd</code>スクリプトファイル内で直接定義できます。このアプローチにはいくつかの利点があります。</p>
+<ul>
+<li><strong>バージョン管理に優しい</strong>: すべてのアセット定義はプレーンテキストであるため、バージョン管理システムで簡単に追跡、比較、マージできます。</li>
+<li><strong>ライターに優しい</strong>: ライターは物語と並行してアセットを宣言できるため、異なるツール間を切り替える必要がありません。</li>
+<li><strong>一括操作</strong>: テキストの簡単な操作により、アセットの名前変更、再編成、複製が簡単になります。</li>
+<li><strong>自己文書化</strong>: アセット定義はスクリプト内のインラインドキュメントとして機能します。</li>
+</ul>
+<p><code>.rgd</code>ファイルで特定のアセット定義ステートメントを使用します。</p>
+<ul>
+<li><strong><code>character</code></strong>: 名前、表示名、色を持つキャラクターを定義します。
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>character alice &quot;Alice&quot; color=#ff69b4
+</code></pre></div></li>
+<li><strong><code>image</code></strong>: 通常、背景やキャラクターのスプライトである画像を定義し、スマートなパス解決を行います。
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>image bg_forest &quot;backgrounds/forest_day.jpg&quot;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>image alice_happy &quot;characters/alice/happy.png&quot;
+</code></pre></div></li>
+<li><strong><code>audio</code></strong>: 背景音楽（BGM）や効果音（SFX）のオーディオファイルを定義し、プリロードオプションも利用できます。
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>audio bgm_main &quot;music/main_theme.ogg&quot; preload=true
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>audio sfx_door &quot;sounds/door_open.wav&quot;
+</code></pre></div></li>
+<li><strong><code>shader</code></strong>: 視覚効果のためのカスタムシェーダーリソースを定義します。
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>shader screen_blur &quot;shaders/blur.gdshader&quot;
+</code></pre></div></li>
+<li><strong><code>ui_scene</code></strong>: <code>ui</code>コマンドで使用するUIシーン（<code>.tscn</code>ファイル）を定義します。
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>ui_scene main_menu &quot;ui/main_menu.tscn&quot;
+</code></pre></div></li>
+</ul>
+<p>これらの定義は、専用の<strong>定義マネージャー</strong>（例：<code>AudioDefinitionManager</code>、<code>ImageDefinitionManager</code>、<code>CharacterDefinitionManager</code>、<code>ShaderDefinitionManager</code>、<code>UISceneDefinitionManager</code>）によって処理され、アセットが正しく登録され、使用準備が整っていることを保証します。</p>
+<h2 id="_3">予測的なアセットプリロード</h2>
+<p>Argodeの最も強力な機能の1つは、インテリジェントで予測的なアセットプリロードシステムです。起動時に、Argodeは<code>.rgd</code>スクリプト構造全体を静的に分析し、包括的な制御フローグラフを構築します。</p>
+<p>このグラフにより、Argodeは次のことが可能になります。</p>
+<ul>
+<li><strong>到達可能性の分析</strong>: スクリプト内の任意の時点からどのアセットに到達可能かを判断します。</li>
+<li><strong>ニーズの予測</strong>: 物語の流れと潜在的なプレイヤーの選択に基づいて、次に必要となる可能性のあるアセットを予測します。</li>
+<li><strong>ロードの最適化</strong>: 必要になる直前にアセットを自動的にプリロードし、ロード画面を最小限に抑え、シームレスなプレイヤーエクスペリエンスを保証します。</li>
+<li><strong>メモリの管理</strong>: 到達不能になったアセットを効率的にアンロードし、メモリ使用量を最適化します。</li>
+</ul>
+<p>この自動最適化により、通常、アセットのロードやアンロードを手動で管理する必要がなくなり、ストーリーテリングに集中できます。</p>
+<h2 id="_4">アセットパスと解決</h2>
+<p>Argodeは、アセットパスにGodotのリソースパスシステム（例：<code>res://</code>）を使用します。アセットを定義する際には、プロジェクトの<code>res://</code>ルートからの相対パスを指定します。Argodeの定義マネージャーは、これらのリソースの解決とロードを処理します。</p>
+<hr />
+<p><a class="md-button" href="system-overview.md">システム概要について学ぶ →</a>
+<a class="md-button" href="core-components.md">コアコンポーネントを見る →</a></p>
 
 
 

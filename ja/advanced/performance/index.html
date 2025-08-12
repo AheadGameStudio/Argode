@@ -381,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/basic-setup.ja.ja.md" class="md-nav__link">
+      <a href="../../getting-started/basic-setup/" class="md-nav__link">
         
   
   
@@ -995,6 +995,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    パフォーマンス最適化
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1006,6 +1019,52 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      インテリジェントなデフォルト設定
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      微調整のためのパフォーマンス調整機能
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#godot" class="md-nav__link">
+    <span class="md-ellipsis">
+      一般的なGodot最適化のヒント
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1363,41 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      インテリジェントなデフォルト設定
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      微調整のためのパフォーマンス調整機能
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#godot" class="md-nav__link">
+    <span class="md-ellipsis">
+      一般的なGodot最適化のヒント
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1322,7 +1416,38 @@
 
 
 <h1 id="_1">パフォーマンス最適化</h1>
-<p>このドキュメントは現在作成中です。</p>
+<p>Argodeは、使いやすさと堅牢なパフォーマンスのバランスを取るように設計されており、ビジュアルノベルがさまざまなプラットフォームでスムーズに動作することを保証します。このフレームワークは、インテリジェントなデフォルト動作を通じてこれを実現し、必要に応じて高度な最適化のための「パフォーマンス調整機能」を提供します。</p>
+<h2 id="_2">インテリジェントなデフォルト設定</h2>
+<p>Argodeには、手動での介入を必要とせずにプロジェクトのパフォーマンスを自動的に最適化する、いくつかのスマートなデフォルト設定が組み込まれています。</p>
+<ul>
+<li><strong>予測的なアセットプリロード</strong>: <a href="../asset-management/">アセット管理</a>セクションで詳述されているように、Argodeはスクリプト分析に基づいてアセットをインテリジェントにプリロードし、ロード時間とメモリの急増を最小限に抑えます。</li>
+<li><strong>自動テクスチャ形式選択</strong>: フレームワークは、異なるプラットフォームに最適なテクスチャ形式を自動的に選択でき、VRAM使用量を削減し、レンダリング効率を向上させます。</li>
+<li><strong>インテリジェントなガベージコレクションタイミング</strong>: Argodeは、重要なゲームプレイ中のひっかかりを避けるために、適切なタイミング（例：シーン遷移中や待機中）でガベージコレクションを実行することを目指しています。</li>
+<li><strong>適応型品質設定</strong>: ターゲットプラットフォームとデバイスの機能に応じて、Argodeは一貫したフレームレートを維持するために特定の品質設定を調整できます。</li>
+<li><strong>非重要アセットの遅延ロード</strong>: すぐには必要とされないアセットは、必要になったときにのみロードされ、初期起動時間とメモリフットプリントを削減します。</li>
+</ul>
+<h2 id="_3">微調整のためのパフォーマンス調整機能</h2>
+<p>特定のパフォーマンス要件を持つプロジェクトや、高度に最適化されたエクスペリエンスをターゲットとするプロジェクトの場合、Argodeはきめ細かな制御を可能にするさまざまな「パフォーマンス調整機能」を公開しています。</p>
+<ul>
+<li><strong>手動メモリ管理コントロール</strong>: Argodeはメモリの多くを自動的に処理しますが、上級ユーザーは特定のアセットやシナリオに対してカスタムメモリ管理戦略を実装できます。</li>
+<li><strong>カスタムアセットロード戦略</strong>: 予測的なプリロードに加えて、独自のプロジェクトニーズに合わせてカスタムアセットのロードおよびアンロードルーチンを定義できます。</li>
+<li><strong>パフォーマンスプロファイリングフック</strong>: Argodeは、Godotの組み込みプロファイラーやその他のデバッグツールと統合するフックを提供し、パフォーマンスのボトルネックを特定できます。</li>
+<li><strong>プラットフォーム固有の最適化</strong>: このフレームワークは、プラットフォーム固有の調整を可能にするように構築されており、デスクトップ、モバイル、またはWebターゲットのパフォーマンスを調整できます。</li>
+</ul>
+<h2 id="godot">一般的なGodot最適化のヒント</h2>
+<p>Argodeは多くの最適化を内部的に処理しますが、一般的なGodotのベストプラクティスに従うことで、プロジェクトのパフォーマンスがさらに向上します。</p>
+<ul>
+<li><strong>シーン構造の最適化</strong>: シーンツリーを浅く保ち、過度なネストを避けます。</li>
+<li><strong>バッチ処理</strong>: 類似のオブジェクトを描画するためにGodotのバッチ処理機能を利用します。</li>
+<li><strong>テクスチャ圧縮</strong>: ターゲットプラットフォームに合わせてテクスチャが適切に圧縮されていることを確認します。</li>
+<li><strong>シェーダー最適化</strong>: 効率的なシェーダーを作成し、可能な限り複雑な計算を避けます。</li>
+<li><strong>物理最適化</strong>: ビジュアルノベルに物理演算が組み込まれている場合は、衝突形状と物理プロセスを最適化します。</li>
+<li><strong>プロファイリング</strong>: Godotの組み込みプロファイラーを定期的に使用して、パフォーマンスのボトルネックを特定し、対処します。</li>
+</ul>
+<p>Argodeの組み込み最適化と堅実なGodot開発プラクティスを組み合わせることで、ビジュアルノベルがプレイヤーにスムーズで応答性の高いエクスペリエンスを提供することを保証できます。</p>
+<hr />
+<p><a class="md-button" href="../asset-management/">アセット管理について学ぶ →</a>
+<a class="md-button" href="../debugging/">デバッグについて学ぶ →</a></p>
 
 
 

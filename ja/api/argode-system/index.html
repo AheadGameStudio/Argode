@@ -381,7 +381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../getting-started/basic-setup.ja.ja.md" class="md-nav__link">
+      <a href="../../getting-started/basic-setup/" class="md-nav__link">
         
   
   
@@ -1214,6 +1214,19 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    ArgodeSystem
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1225,6 +1238,193 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#argodesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgodeSystemへのアクセス
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      初期化
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="初期化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialize_gamelayer_map-dictionary-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      initialize_game(layer_map: Dictionary) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプト実行
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="スクリプト実行">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start_scriptscript_path-string-label_name-string-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      start_script(script_path: String, label_name: String = "start")
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next_line" class="md-nav__link">
+    <span class="md-ellipsis">
+      next_line()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_playing-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_playing() -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      カスタムコマンド管理
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="カスタムコマンド管理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_custom_command_handler-customcommandhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_custom_command_handler() -&gt; CustomCommandHandler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_custom_commandcustom_command-basecustomcommand-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_custom_command(custom_command: BaseCustomCommand) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_custom_commands-arraystring" class="md-nav__link">
+    <span class="md-ellipsis">
+      list_custom_commands() -&gt; Array[String]
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      シグナル
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="シグナル">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system_initialized" class="md-nav__link">
+    <span class="md-ellipsis">
+      system_initialized
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#system_errormessage-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      system_error(message: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition_loadedresults-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      definition_loaded(results: Dictionary)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1304,6 +1504,182 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#argodesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      ArgodeSystemへのアクセス
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      初期化
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="初期化">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#initialize_gamelayer_map-dictionary-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      initialize_game(layer_map: Dictionary) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      スクリプト実行
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="スクリプト実行">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#start_scriptscript_path-string-label_name-string-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      start_script(script_path: String, label_name: String = "start")
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#next_line" class="md-nav__link">
+    <span class="md-ellipsis">
+      next_line()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_playing-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      is_playing() -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      カスタムコマンド管理
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="カスタムコマンド管理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_custom_command_handler-customcommandhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_custom_command_handler() -&gt; CustomCommandHandler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_custom_commandcustom_command-basecustomcommand-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_custom_command(custom_command: BaseCustomCommand) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool" class="md-nav__link">
+    <span class="md-ellipsis">
+      register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_custom_commands-arraystring" class="md-nav__link">
+    <span class="md-ellipsis">
+      list_custom_commands() -&gt; Array[String]
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      シグナル
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="シグナル">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system_initialized" class="md-nav__link">
+    <span class="md-ellipsis">
+      system_initialized
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#system_errormessage-string" class="md-nav__link">
+    <span class="md-ellipsis">
+      system_error(message: String)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition_loadedresults-dictionary" class="md-nav__link">
+    <span class="md-ellipsis">
+      definition_loaded(results: Dictionary)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1321,8 +1697,85 @@
   
 
 
-<h1 id="argodesystem-api">ArgodeSystem API</h1>
-<p>このドキュメントは現在作成中です。</p>
+<h1 id="argodesystem-api">ArgodeSystem APIリファレンス</h1>
+<p><code>ArgodeSystem</code>はArgodeフレームワークの中心的なシングルトンであり、コア機能を提供し、他のすべてのマネージャーのオーケストレーターとして機能します。これは、ArgodeをGodotプロジェクトに統合するための主要なエントリポイントです。</p>
+<h2 id="argodesystem">ArgodeSystemへのアクセス</h2>
+<p><code>ArgodeSystem</code>はオートロードされたシングルトンであるため、Godotプロジェクト内の任意のスクリプトからグローバルにアクセスできます。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># ArgodeSystemへのアクセス</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1"># オートロードの名前を&quot;ArgodeSystem&quot;にした場合</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># または、プロジェクト設定でグローバルシングルトンとして設定した場合</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># var argode_system = ArgodeSystem</span>
+</code></pre></div>
+<h2 id="_1">初期化</h2>
+<p>Argodeの機能を使用する前に、システムを初期化する必要があります。これは通常、ゲームの開始時、通常はメインシーンのスクリプトから一度だけ行われます。</p>
+<h3 id="initialize_gamelayer_map-dictionary-bool"><code>initialize_game(layer_map: Dictionary) -&gt; bool</code></h3>
+<p>この関数は、Argodeフレームワークの包括的な初期化を実行します。視覚レイヤーを設定し、アセット定義を構築し、内部マネージャーを構成します。</p>
+<ul>
+<li><strong><code>layer_map</code> (Dictionary)</strong>: レイヤーロール名（例：<code>"background"</code>、<code>"character"</code>、<code>"ui"</code>、<code>"effects"</code>）とそれに対応するGodotの<code>CanvasLayer</code>ノードをマッピングする辞書です。これにより、Argodeをカスタムシーン構造と統合できます。</li>
+</ul>
+<p><strong>例:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># メインシーンの_ready()関数内</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">layer_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="s2">&quot;background&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Background</span><span class="p">,</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="s2">&quot;character&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Characters</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="s2">&quot;ui&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_UI</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="s2">&quot;effects&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Effects</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">initialize_game</span><span class="p">(</span><span class="n">layer_map</span><span class="p">):</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystemが正常に初期化されました！&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystemの初期化に失敗しました。&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="_2">スクリプト実行</h2>
+<p><code>ArgodeSystem</code>は、<code>.rgd</code>スクリプトの実行を制御するためのメソッドを提供します。</p>
+<h3 id="start_scriptscript_path-string-label_name-string-start"><code>start_script(script_path: String, label_name: String = "start")</code></h3>
+<p>指定されたラベルから<code>.rgd</code>スクリプトファイルをロードし、実行を開始します。</p>
+<ul>
+<li><strong><code>script_path</code> (String)</strong>: <code>.rgd</code>スクリプトファイルへの<code>res://</code>パス（例：<code>"res://scenarios/chapter1.rgd"</code>）。</li>
+<li><strong><code>label_name</code> (String)</strong>: （オプション）実行を開始するスクリプト内のラベル名。デフォルトは<code>"start"</code>です。</li>
+</ul>
+<p><strong>例:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">start_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/main_story.rgd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;prologue&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="next_line"><code>next_line()</code></h3>
+<p>スクリプトを次の行に進めます。これは通常、ダイアログや物語を進めるためのユーザー入力（例：マウスクリックやキープレス）に応答して呼び出されます。</p>
+<p><strong>例:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">func</span><span class="w"> </span><span class="n">_input</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">event</span><span class="o">.</span><span class="n">is_action_pressed</span><span class="p">(</span><span class="s2">&quot;ui_accept&quot;</span><span class="p">):</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">next_line</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="is_playing-bool"><code>is_playing() -&gt; bool</code></h3>
+<p><code>.rgd</code>スクリプトが現在再生中であれば<code>true</code>を、そうでなければ<code>false</code>を返します。</p>
+<h2 id="_3">カスタムコマンド管理</h2>
+<p><code>ArgodeSystem</code>は<code>CustomCommandHandler</code>と対話するためのAPIを提供し、カスタムGDScriptコマンドを登録および管理できます。</p>
+<h3 id="get_custom_command_handler-customcommandhandler"><code>get_custom_command_handler() -&gt; CustomCommandHandler</code></h3>
+<p><code>CustomCommandHandler</code>インスタンスを返し、高度な使用のためにそのメソッドに直接アクセスできます。</p>
+<h3 id="register_custom_commandcustom_command-basecustomcommand-bool"><code>register_custom_command(custom_command: BaseCustomCommand) -&gt; bool</code></h3>
+<p><code>BaseCustomCommand</code>のインスタンス（カスタムGDScriptコマンド）をフレームワークに登録します。</p>
+<ul>
+<li><strong><code>custom_command</code> (BaseCustomCommand)</strong>: <code>BaseCustomCommand</code>を継承するカスタムコマンドスクリプトのインスタンス。</li>
+</ul>
+<h3 id="register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool"><code>register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool</code></h3>
+<p>コマンド名を<code>Callable</code>（関数またはメソッド）に関連付けることで、カスタムコマンドを登録します。これは、GDScript関数を<code>.rgd</code>コマンドとして素早く公開する便利な方法です。</p>
+<ul>
+<li><strong><code>command_name</code> (String)</strong>: <code>.rgd</code>スクリプトに表示されるコマンドの名前（例：<code>"my_effect"</code>）。</li>
+<li><strong><code>callable</code> (Callable)</strong>: コマンドが検出されたときに実行される<code>Callable</code>（例：<code>my_node.my_function</code>）。</li>
+<li><strong><code>is_sync</code> (bool)</strong>: （オプション）<code>true</code>の場合、スクリプトは<code>Callable</code>が完了するまで待機してから続行します。デフォルトは<code>false</code>（非同期）です。</li>
+</ul>
+<h3 id="list_custom_commands-arraystring"><code>list_custom_commands() -&gt; Array[String]</code></h3>
+<p>現在登録されているすべてのカスタムコマンドの名前を含む文字列の配列を返します。デバッグや動的なコマンドリスト表示に役立ちます。</p>
+<h2 id="_4">シグナル</h2>
+<p><code>ArgodeSystem</code>は、カスタムロジックや監視のために接続できるいくつかのシグナルを発行します。</p>
+<h3 id="system_initialized"><code>system_initialized</code></h3>
+<p><code>initialize_game()</code>関数がすべての初期化ステップを正常に完了したときに発行されます。</p>
+<h3 id="system_errormessage-string"><code>system_error(message: String)</code></h3>
+<p>ArgodeSystemの初期化または操作中に致命的なエラーが発生したときに発行されます。<code>message</code>パラメータはエラーの詳細を提供します。</p>
+<h3 id="definition_loadedresults-dictionary"><code>definition_loaded(results: Dictionary)</code></h3>
+<p>すべての定義ファイル（例：<code>characters.rgd</code>、<code>assets.rgd</code>）がロードおよび処理された後に発行されます。<code>results</code>辞書には、ロードされた定義に関する情報が含まれています。</p>
+<hr />
+<p><a class="md-button" href="../script-player/">ScriptPlayer APIについて学ぶ →</a>
+<a class="md-button" href="../managers/">マネージャーAPIについて学ぶ →</a></p>
 
 
 
