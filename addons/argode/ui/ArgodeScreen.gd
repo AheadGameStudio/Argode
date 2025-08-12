@@ -3,6 +3,9 @@
 extends Control
 class_name ArgodeScreen
 
+# レイヤー自動展開システム
+const AutoLayerSetup = preload("res://addons/argode/managers/AutoLayerSetup.gd")
+
 # === シグナル ===
 signal screen_closed(return_value)
 signal screen_ready()
@@ -56,6 +59,11 @@ var handle_input: bool = true
 @export var default_script_path: String = ""
 ## スクリプト開始時のラベル名（通常は"start"）
 @export var start_label: String = "start"
+
+# === レイヤー自動展開設定 ===
+@export_group("Auto Layer Setup")
+## Argode標準レイヤー（Background/Character/UI）を自動作成するか
+@export var auto_create_layers: bool = true
 
 # === レイヤーNodePath設定（エディタで指定可能） ===
 @export_group("Layer Paths")
@@ -366,6 +374,13 @@ func _initialize_layer_mappings():
 	var parent_scene = get_tree().current_scene
 	if not parent_scene:
 		print("⚠️ Current scene not found for layer mapping")
+		return
+	
+	# 自動展開モードが有効な場合
+	if auto_create_layers:
+		print("🏗️ Auto-creating Argode standard layers...")
+		layer_mappings = AutoLayerSetup.setup_layer_hierarchy(parent_scene)
+		print("✅ Auto-created layers:", layer_mappings.keys())
 		return
 	
 	# BackgroundLayer
