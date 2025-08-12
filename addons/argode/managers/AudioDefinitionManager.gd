@@ -30,9 +30,9 @@ func _ready():
 
 func _compile_regex():
 	"""audio ステートメント解析用の正規表現をコンパイル"""
-	# audio town_bgm = "res://bgm/town.ogg"
+	# audio alias "path" 形式をパース
 	regex_audio_define = RegEx.new()
-	regex_audio_define.compile("^audio\\s+(?<alias>\\w+)\\s*=\\s*\"(?<path>[^\"]+)\"")
+	regex_audio_define.compile("^audio\\s+(?<alias>\\w+)\\s+\"(?<path>[^\"]+)\"")
 
 func scan_audio_files():
 	"""オーディオファイルをスキャンして自動定義作成"""
@@ -113,6 +113,19 @@ func parse_audio_statement(line: String) -> bool:
 	
 	print("🎵 Audio defined: ", alias, " -> ", path)
 	return true
+
+func _handle_audio_statement(line: String, file_path: String = "", line_number: int = 0):
+	"""
+	DefinitionLoaderから呼び出されるオーディオ定義処理メソッド
+	@param line: 処理する行
+	@param file_path: ファイルパス（デバッグ用）
+	@param line_number: 行番号（デバッグ用）
+	"""
+	var success = parse_audio_statement(line)
+	if success:
+		print("✅ Audio definition processed: ", line.strip_edges())
+	else:
+		print("⚠️ Failed to parse audio statement: ", line.strip_edges())
 
 func get_audio_path(alias: String) -> String:
 	"""オーディオエイリアス・名前からパスを取得（統合検索）"""
