@@ -36,6 +36,13 @@
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/argode-system/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/api/audio-manager/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/audio-manager/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/audio-manager/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/api/managers/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>
@@ -223,6 +230,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/argode-system/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/argode-system/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/api/audio-manager/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/audio-manager/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/audio-manager/"/>
     </url>
     <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/api/managers/</loc>

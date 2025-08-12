@@ -12,13 +12,13 @@
         <meta name="author" content="AheadGameStudio">
       
       
-        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/api/argode-system/">
+        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/api/audio-manager/">
       
       
-        <link rel="prev" href="../../examples/best-practices/">
+        <link rel="prev" href="../script-player/">
       
       
-        <link rel="next" href="../script-player/">
+        <link rel="next" href="../managers/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>ArgodeSystem - Argode Documentation</title>
+        <title>AudioManager - Argode Documentation</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#argodesystem-api-reference" class="md-skip">
+        <a href="#audiomanager-audio-control" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ArgodeSystem
+              AudioManager
             
           </span>
         </div>
@@ -1202,32 +1202,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    ArgodeSystem
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../argode-system/" class="md-nav__link">
         
   
   
@@ -1238,194 +1216,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#accessing-argodesystem" class="md-nav__link">
-    <span class="md-ellipsis">
-      Accessing ArgodeSystem
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#initialization" class="md-nav__link">
-    <span class="md-ellipsis">
-      Initialization
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Initialization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#initialize_gamelayer_map-dictionary-bool" class="md-nav__link">
-    <span class="md-ellipsis">
-      initialize_game(layer_map: Dictionary) -&gt; bool
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#script-execution" class="md-nav__link">
-    <span class="md-ellipsis">
-      Script Execution
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Script Execution">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#start_scriptscript_path-string-label_name-string-start" class="md-nav__link">
-    <span class="md-ellipsis">
-      start_script(script_path: String, label_name: String = "start")
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#next_line" class="md-nav__link">
-    <span class="md-ellipsis">
-      next_line()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#is_playing-bool" class="md-nav__link">
-    <span class="md-ellipsis">
-      is_playing() -&gt; bool
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#custom-command-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      Custom Command Management
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Custom Command Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#get_custom_command_handler-customcommandhandler" class="md-nav__link">
-    <span class="md-ellipsis">
-      get_custom_command_handler() -&gt; CustomCommandHandler
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#register_custom_commandcustom_command-basecustomcommand-bool" class="md-nav__link">
-    <span class="md-ellipsis">
-      register_custom_command(custom_command: BaseCustomCommand) -&gt; bool
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool" class="md-nav__link">
-    <span class="md-ellipsis">
-      register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#list_custom_commands-arraystring" class="md-nav__link">
-    <span class="md-ellipsis">
-      list_custom_commands() -&gt; Array[String]
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#signals" class="md-nav__link">
-    <span class="md-ellipsis">
-      Signals
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Signals">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#system_initialized" class="md-nav__link">
-    <span class="md-ellipsis">
-      system_initialized
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#system_errormessage-string" class="md-nav__link">
-    <span class="md-ellipsis">
-      system_error(message: String)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#definition_loadedresults-dictionary" class="md-nav__link">
-    <span class="md-ellipsis">
-      definition_loaded(results: Dictionary)
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1458,10 +1248,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../audio-manager/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    AudioManager
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1472,6 +1284,221 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accessing-audiomanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      Accessing AudioManager
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgm-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      BGM Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BGM Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#play_bgm" class="md-nav__link">
+    <span class="md-ellipsis">
+      play_bgm()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stop_bgm" class="md-nav__link">
+    <span class="md-ellipsis">
+      stop_bgm()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_bgm_volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_bgm_volume()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#se-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      SE Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SE Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#play_se" class="md-nav__link">
+    <span class="md-ellipsis">
+      play_se()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stop_se" class="md-nav__link">
+    <span class="md-ellipsis">
+      stop_se()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_se_volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_se_volume()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#master-volume-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Master Volume Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Master Volume Control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set_master_volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_master_volume()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      Signals
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#practical-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Practical Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Practical Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#menu-ui-audio-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Menu UI Audio Control
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#game-scene-bgm-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Game Scene BGM Control
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environmental-audio-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environmental Audio Control
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#important-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Topics
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1534,28 +1561,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#accessing-argodesystem" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Accessing ArgodeSystem
+      Overview
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#initialization" class="md-nav__link">
+  <a href="#accessing-audiomanager" class="md-nav__link">
     <span class="md-ellipsis">
-      Initialization
+      Accessing AudioManager
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Initialization">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgm-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      BGM Control
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BGM Control">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#initialize_gamelayer_map-dictionary-bool" class="md-nav__link">
+  <a href="#play_bgm" class="md-nav__link">
     <span class="md-ellipsis">
-      initialize_game(layer_map: Dictionary) -&gt; bool
+      play_bgm()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stop_bgm" class="md-nav__link">
+    <span class="md-ellipsis">
+      stop_bgm()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set_bgm_volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_bgm_volume()
     </span>
   </a>
   
@@ -1567,37 +1621,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#script-execution" class="md-nav__link">
+  <a href="#se-control" class="md-nav__link">
     <span class="md-ellipsis">
-      Script Execution
+      SE Control
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Script Execution">
+    <nav class="md-nav" aria-label="SE Control">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#start_scriptscript_path-string-label_name-string-start" class="md-nav__link">
+  <a href="#play_se" class="md-nav__link">
     <span class="md-ellipsis">
-      start_script(script_path: String, label_name: String = "start")
+      play_se()
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#next_line" class="md-nav__link">
+  <a href="#stop_se" class="md-nav__link">
     <span class="md-ellipsis">
-      next_line()
+      stop_se()
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#is_playing-bool" class="md-nav__link">
+  <a href="#set_se_volume" class="md-nav__link">
     <span class="md-ellipsis">
-      is_playing() -&gt; bool
+      set_se_volume()
     </span>
   </a>
   
@@ -1609,46 +1663,19 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-command-management" class="md-nav__link">
+  <a href="#master-volume-control" class="md-nav__link">
     <span class="md-ellipsis">
-      Custom Command Management
+      Master Volume Control
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Custom Command Management">
+    <nav class="md-nav" aria-label="Master Volume Control">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#get_custom_command_handler-customcommandhandler" class="md-nav__link">
+  <a href="#set_master_volume" class="md-nav__link">
     <span class="md-ellipsis">
-      get_custom_command_handler() -&gt; CustomCommandHandler
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#register_custom_commandcustom_command-basecustomcommand-bool" class="md-nav__link">
-    <span class="md-ellipsis">
-      register_custom_command(custom_command: BaseCustomCommand) -&gt; bool
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool" class="md-nav__link">
-    <span class="md-ellipsis">
-      register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#list_custom_commands-arraystring" class="md-nav__link">
-    <span class="md-ellipsis">
-      list_custom_commands() -&gt; Array[String]
+      set_master_volume()
     </span>
   </a>
   
@@ -1666,31 +1693,40 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Signals">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#practical-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Practical Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Practical Examples">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#system_initialized" class="md-nav__link">
+  <a href="#menu-ui-audio-control" class="md-nav__link">
     <span class="md-ellipsis">
-      system_initialized
+      Menu UI Audio Control
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#system_errormessage-string" class="md-nav__link">
+  <a href="#game-scene-bgm-control" class="md-nav__link">
     <span class="md-ellipsis">
-      system_error(message: String)
+      Game Scene BGM Control
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#definition_loadedresults-dictionary" class="md-nav__link">
+  <a href="#environmental-audio-control" class="md-nav__link">
     <span class="md-ellipsis">
-      definition_loaded(results: Dictionary)
+      Environmental Audio Control
     </span>
   </a>
   
@@ -1698,6 +1734,24 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#important-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important Notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-topics" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Topics
+    </span>
+  </a>
   
 </li>
       
@@ -1720,85 +1774,207 @@
   
 
 
-<h1 id="argodesystem-api-reference">ArgodeSystem API Reference</h1>
-<p>The <code>ArgodeSystem</code> is the central singleton of the Argode framework, providing the core functionalities and acting as the orchestrator for all other managers. It is the primary entry point for integrating Argode into your Godot project.</p>
-<h2 id="accessing-argodesystem">Accessing ArgodeSystem</h2>
-<p>Since <code>ArgodeSystem</code> is an autoloaded singleton, you can access it globally from any script in your Godot project:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Accessing ArgodeSystem</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1"># If you named your autoload &quot;ArgodeSystem&quot;</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Or, if you set it as a global singleton in Project Settings</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># var argode_system = ArgodeSystem</span>
+<h1 id="audiomanager-audio-control">AudioManager - Audio Control</h1>
+<p>AudioManager is responsible for controlling audio (BGM and SE) playback, stopping, and volume control in the Argode system.</p>
+<h2 id="overview">Overview</h2>
+<p>Using AudioManager, you can directly control audio files from GDScript. This provides programmatic audio control separate from the <code>audio</code> commands in scenario scripts.</p>
+<h2 id="accessing-audiomanager">Accessing AudioManager</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Access AudioManager through ArgodeSystem</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argode_system</span><span class="o">.</span><span class="n">AudioManager</span>
 </code></pre></div>
-<h2 id="initialization">Initialization</h2>
-<p>Before using Argode's features, you must initialize the system. This is typically done once at the start of your game, usually from your main scene's script.</p>
-<h3 id="initialize_gamelayer_map-dictionary-bool"><code>initialize_game(layer_map: Dictionary) -&gt; bool</code></h3>
-<p>This function performs the comprehensive initialization of the Argode framework. It sets up the visual layers, builds asset definitions, and configures the internal managers.</p>
-<ul>
-<li><strong><code>layer_map</code> (Dictionary)</strong>: A dictionary mapping layer role names (e.g., <code>"background"</code>, <code>"character"</code>, <code>"ui"</code>, <code>"effects"</code>) to their corresponding Godot <code>CanvasLayer</code> nodes. This allows Argode to integrate with your custom scene structure.</li>
-</ul>
-<p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># In your main scene&#39;s _ready() function</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">layer_map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="s2">&quot;background&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Background</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="s2">&quot;character&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Characters</span><span class="p">,</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="s2">&quot;ui&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_UI</span><span class="p">,</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="s2">&quot;effects&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CanvasLayer_Effects</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">initialize_game</span><span class="p">(</span><span class="n">layer_map</span><span class="p">):</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystem initialized successfully!&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ArgodeSystem initialization failed.&quot;</span><span class="p">)</span>
+<h2 id="bgm-control">BGM Control</h2>
+<h3 id="play_bgm">play_bgm()</h3>
+<p>Plays background music.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="n">audio_name</span><span class="p">,</span><span class="w"> </span><span class="n">loop</span><span class="p">,</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="n">fade_in_duration</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="script-execution">Script Execution</h2>
-<p><code>ArgodeSystem</code> provides methods to control the execution of your <code>.rgd</code> scripts.</p>
-<h3 id="start_scriptscript_path-string-label_name-string-start"><code>start_script(script_path: String, label_name: String = "start")</code></h3>
-<p>Loads and begins execution of an <code>.rgd</code> script file from a specified label.</p>
-<ul>
-<li><strong><code>script_path</code> (String)</strong>: The <code>res://</code> path to the <code>.rgd</code> script file (e.g., <code>"res://scenarios/chapter1.rgd"</code>).</li>
-<li><strong><code>label_name</code> (String)</strong>: (Optional) The name of the label within the script to start execution from. Defaults to <code>"start"</code>.</li>
-</ul>
-<p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">start_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/main_story.rgd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;prologue&quot;</span><span class="p">)</span>
+<p><strong>Parameters:</strong>
+- <code>audio_name</code> (String): Audio file name (defined in assets.rgd)
+- <code>loop</code> (bool): Whether to loop playback (default: true)
+- <code>volume</code> (float): Volume level (0.0-1.0, default: 1.0)
+- <code>fade_in_duration</code> (float): Fade-in duration in seconds (default: 0.0)</p>
+<p><strong>Examples:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Basic playback</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;yoru_no_zattou&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Play without loop at 80% volume</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;bgm_peaceful&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">false</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># Play with 3-second fade-in</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;bgm_dramatic&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="stop_bgm">stop_bgm()</h3>
+<p>Stops background music.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_bgm</span><span class="p">(</span><span class="n">fade_out_duration</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="next_line"><code>next_line()</code></h3>
-<p>Advances the script to the next line. This is typically called in response to user input (e.g., a mouse click or key press) to progress dialogue or narrative.</p>
-<p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">func</span><span class="w"> </span><span class="n">_input</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">event</span><span class="o">.</span><span class="n">is_action_pressed</span><span class="p">(</span><span class="s2">&quot;ui_accept&quot;</span><span class="p">):</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">next_line</span><span class="p">()</span>
+<p><strong>Parameters:</strong>
+- <code>fade_out_duration</code> (float): Fade-out duration in seconds (default: 0.0)</p>
+<p><strong>Examples:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Stop immediately</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_bgm</span><span class="p">()</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Stop with 2-second fade-out</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_bgm</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="set_bgm_volume">set_bgm_volume()</h3>
+<p>Adjusts BGM volume.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="is_playing-bool"><code>is_playing() -&gt; bool</code></h3>
-<p>Returns <code>true</code> if an <code>.rgd</code> script is currently being played, <code>false</code> otherwise.</p>
-<h2 id="custom-command-management">Custom Command Management</h2>
-<p><code>ArgodeSystem</code> provides an API to interact with the <code>CustomCommandHandler</code>, allowing you to register and manage your custom GDScript commands.</p>
-<h3 id="get_custom_command_handler-customcommandhandler"><code>get_custom_command_handler() -&gt; CustomCommandHandler</code></h3>
-<p>Returns the <code>CustomCommandHandler</code> instance, providing direct access to its methods for advanced usage.</p>
-<h3 id="register_custom_commandcustom_command-basecustomcommand-bool"><code>register_custom_command(custom_command: BaseCustomCommand) -&gt; bool</code></h3>
-<p>Registers an instance of a <code>BaseCustomCommand</code> (your custom GDScript command) with the framework.</p>
-<ul>
-<li><strong><code>custom_command</code> (BaseCustomCommand)</strong>: An instance of your custom command script that extends <code>BaseCustomCommand</code>.</li>
-</ul>
-<h3 id="register_command_by_callablecommand_name-string-callable-callable-is_sync-bool-false-bool"><code>register_command_by_callable(command_name: String, callable: Callable, is_sync: bool = false) -&gt; bool</code></h3>
-<p>Registers a custom command by associating a command name with a <code>Callable</code> (a function or method). This is a convenient way to quickly expose GDScript functions as <code>.rgd</code> commands.</p>
-<ul>
-<li><strong><code>command_name</code> (String)</strong>: The name of the command as it will appear in <code>.rgd</code> scripts (e.g., <code>"my_effect"</code>).</li>
-<li><strong><code>callable</code> (Callable)</strong>: The <code>Callable</code> (e.g., <code>my_node.my_function</code>) that will be executed when the command is encountered.</li>
-<li><strong><code>is_sync</code> (bool)</strong>: (Optional) If <code>true</code>, the script will wait for the <code>Callable</code> to complete before proceeding. Defaults to <code>false</code> (asynchronous).</li>
-</ul>
-<h3 id="list_custom_commands-arraystring"><code>list_custom_commands() -&gt; Array[String]</code></h3>
-<p>Returns an array of strings containing the names of all currently registered custom commands. Useful for debugging or dynamic command listing.</p>
+<p><strong>Parameters:</strong>
+- <code>volume</code> (float): Volume level (0.0-1.0)</p>
+<h2 id="se-control">SE Control</h2>
+<h3 id="play_se">play_se()</h3>
+<p>Plays sound effects.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="n">audio_name</span><span class="p">,</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="n">pitch</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+- <code>audio_name</code> (String): SE name (defined in assets.rgd)
+- <code>volume</code> (float): Volume level (0.0-1.0, default: 1.0)
+- <code>pitch</code> (float): Pitch multiplier (0.5-2.0, default: 1.0)</p>
+<p><strong>Examples:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Basic SE playback</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;keyword_ping&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Play at 80% volume</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;door_open&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># Play at 70% volume with 1.2x pitch</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;footsteps&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">,</span><span class="w"> </span><span class="mf">1.2</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="stop_se">stop_se()</h3>
+<p>Stops sound effects.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_se</span><span class="p">(</span><span class="n">audio_name</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+- <code>audio_name</code> (String): Name of SE to stop (empty string stops all SE)</p>
+<p><strong>Examples:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Stop specific SE</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_se</span><span class="p">(</span><span class="s2">&quot;keyword_ping&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Stop all SE</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_se</span><span class="p">()</span>
+</code></pre></div></p>
+<h3 id="set_se_volume">set_se_volume()</h3>
+<p>Adjusts SE volume.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_se_volume</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="master-volume-control">Master Volume Control</h2>
+<h3 id="set_master_volume">set_master_volume()</h3>
+<p>Adjusts overall volume.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_master_volume</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+- <code>volume</code> (float): Master volume (0.0-1.0)</p>
 <h2 id="signals">Signals</h2>
-<p><code>ArgodeSystem</code> emits several signals that you can connect to for custom logic or monitoring.</p>
-<h3 id="system_initialized"><code>system_initialized</code></h3>
-<p>Emitted when the <code>initialize_game()</code> function successfully completes all initialization steps.</p>
-<h3 id="system_errormessage-string"><code>system_error(message: String)</code></h3>
-<p>Emitted when a critical error occurs during ArgodeSystem's initialization or operation. The <code>message</code> parameter provides details about the error.</p>
-<h3 id="definition_loadedresults-dictionary"><code>definition_loaded(results: Dictionary)</code></h3>
-<p>Emitted after all definition files (e.g., <code>characters.rgd</code>, <code>assets.rgd</code>) have been loaded and processed. The <code>results</code> dictionary contains information about the loaded definitions.</p>
-<hr />
-<p><a class="md-button" href="../script-player/">Learn About ScriptPlayer API →</a>
-<a class="md-button" href="../managers/">Learn About Managers API →</a></p>
+<p>AudioManager provides the following signals:</p>
+<ul>
+<li><code>bgm_started(bgm_name: String)</code> - When BGM starts</li>
+<li><code>bgm_stopped()</code> - When BGM stops</li>
+<li><code>bgm_volume_changed(volume: float)</code> - When BGM volume changes</li>
+<li><code>se_played(se_name: String)</code> - When SE plays</li>
+<li><code>se_volume_changed(volume: float)</code> - When SE volume changes</li>
+</ul>
+<p><strong>Signal connection example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">bgm_started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_bgm_started</span><span class="p">)</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">bgm_stopped</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_bgm_stopped</span><span class="p">)</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">se_played</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_se_played</span><span class="p">)</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_bgm_started</span><span class="p">(</span><span class="n">bgm_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BGM started:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bgm_name</span><span class="p">)</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_bgm_stopped</span><span class="p">():</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BGM stopped&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_se_played</span><span class="p">(</span><span class="n">se_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SE played:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">se_name</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="practical-examples">Practical Examples</h2>
+<h3 id="menu-ui-audio-control">Menu UI Audio Control</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">Control</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argode_system</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_button_pressed</span><span class="p">():</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Play SE when button is pressed&quot;&quot;&quot;</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;keyword_ping&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_menu_opened</span><span class="p">():</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Adjust BGM when menu opens&quot;&quot;&quot;</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">    </span><span class="c1"># Temporarily lower current BGM volume</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;menu_open&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_menu_closed</span><span class="p">():</span>
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Restore BGM when menu closes&quot;&quot;&quot;</span>
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="w">    </span><span class="c1"># Restore BGM volume</span>
+<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;menu_close&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="game-scene-bgm-control">Game Scene BGM Control</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">Node</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="c1"># Play BGM when game starts</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;yoru_no_zattou&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_battle_started</span><span class="p">():</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Switch BGM when battle starts&quot;&quot;&quot;</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="c1"># Switch to battle BGM with 1.5s fade-in</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;bgm_tense&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.5</span><span class="p">)</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_battle_ended</span><span class="p">():</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Return BGM when battle ends&quot;&quot;&quot;</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">    </span><span class="c1"># Return to normal BGM with 2s fade-in</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;bgm_peaceful&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="environmental-audio-control">Environmental Audio Control</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">Node</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_rain_started</span><span class="p">():</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;When rain starts&quot;&quot;&quot;</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="c1"># Play rain loop SE</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;rain_loop&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6</span><span class="p">)</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">    </span><span class="c1"># Lower BGM volume for atmosphere</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_rain_stopped</span><span class="p">():</span>
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;When rain stops&quot;&quot;&quot;</span>
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>
+<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="w">    </span><span class="c1"># Stop rain sound</span>
+<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_se</span><span class="p">(</span><span class="s2">&quot;rain_loop&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>
+<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="w">    </span><span class="c1"># Restore BGM volume</span>
+<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="important-notes">Important Notes</h2>
+<ol>
+<li><strong>Audio File Definitions</strong>: Audio files must be pre-defined in <code>assets.rgd</code>.</li>
+<li><strong>Volume Range</strong>: Volume should be specified in the range 0.0-1.0.</li>
+<li><strong>SE Overlapping</strong>: Playing SE with the same name consecutively will stop the previous playback and start new playback.</li>
+<li><strong>Memory Management</strong>: SE players are automatically pooled and reused after use.</li>
+</ol>
+<h2 id="related-topics">Related Topics</h2>
+<ul>
+<li><a href="../script/audio-commands.md">Script Commands - audio</a> - Audio commands in scenario scripts</li>
+<li><a href="../getting-started/audio-setup.md">Audio Definitions</a> - How to define audio files</li>
+<li><a href="../managers/">Managers Overview</a> - About other managers</li>
+</ul>
 
 
 

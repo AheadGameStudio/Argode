@@ -12,13 +12,13 @@
         <meta name="author" content="AheadGameStudio">
       
       
-        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/ja/api/script-player/">
+        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/ja/api/audio-manager/">
       
       
-        <link rel="prev" href="../argode-system/">
+        <link rel="prev" href="../script-player/">
       
       
-        <link rel="next" href="../audio-manager/">
+        <link rel="next" href="../managers/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>ScriptPlayer - Argode ドキュメント</title>
+        <title>AudioManager - Argode ドキュメント</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#scriptplayer-api" class="md-skip">
+        <a href="#audiomanager-" class="md-skip">
           コンテンツにスキップ
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ScriptPlayer
+              AudioManager
             
           </span>
         </div>
@@ -1225,6 +1225,29 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../script-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ScriptPlayer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1242,7 +1265,7 @@
   
   
   <span class="md-ellipsis">
-    ScriptPlayer
+    AudioManager
     
   </span>
   
@@ -1255,7 +1278,7 @@
   
   
   <span class="md-ellipsis">
-    ScriptPlayer
+    AudioManager
     
   </span>
   
@@ -1280,91 +1303,55 @@
         <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
-      コア機能
+      概要
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="コア機能">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audiomanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      AudioManagerへのアクセス
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgm" class="md-nav__link">
+    <span class="md-ellipsis">
+      BGM制御
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BGM制御">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#play_bgm" class="md-nav__link">
     <span class="md-ellipsis">
-      スクリプトのロードと開始
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="スクリプトのロードと開始">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#load_scriptpath-string" class="md-nav__link">
-    <span class="md-ellipsis">
-      load_script(path: String)
+      play_bgm()
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#play_from_labellabel_name-string" class="md-nav__link">
+  <a href="#stop_bgm" class="md-nav__link">
     <span class="md-ellipsis">
-      play_from_label(label_name: String)
+      stop_bgm()
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#set_bgm_volume" class="md-nav__link">
     <span class="md-ellipsis">
-      スクリプトの進行
+      set_bgm_volume()
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="スクリプトの進行">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#next" class="md-nav__link">
-    <span class="md-ellipsis">
-      next()
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      スクリプトの状態
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="スクリプトの状態">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#is_playing-bool" class="md-nav__link">
-    <span class="md-ellipsis">
-      is_playing() -&gt; bool
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1374,47 +1361,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#se" class="md-nav__link">
     <span class="md-ellipsis">
-      フロー制御
+      SE制御
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="フロー制御">
+    <nav class="md-nav" aria-label="SE制御">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#on_choice_selectedchoice_index-int" class="md-nav__link">
+  <a href="#play_se" class="md-nav__link">
     <span class="md-ellipsis">
-      on_choice_selected(choice_index: int)
+      play_se()
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#ui" class="md-nav__link">
+  <a href="#stop_se" class="md-nav__link">
     <span class="md-ellipsis">
-      外部呼び出し/戻り（UI統合用）
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="外部呼び出し/戻り（UI統合用）">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#call_labellabel_name-string" class="md-nav__link">
-    <span class="md-ellipsis">
-      call_label(label_name: String)
+      stop_se()
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#return_from_call" class="md-nav__link">
+  <a href="#set_se_volume" class="md-nav__link">
     <span class="md-ellipsis">
-      return_from_call()
+      set_se_volume()
     </span>
   </a>
   
@@ -1422,6 +1399,76 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      マスター音量制御
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="マスター音量制御">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set_master_volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_master_volume()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      シグナル
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      実用例
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="実用例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      メニューUI での音声制御
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgm_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ゲームシーン での BGM制御
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      環境音の制御
+    </span>
+  </a>
   
 </li>
         
@@ -1433,33 +1480,18 @@
         <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
-      シグナル
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="シグナル">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#script_finished" class="md-nav__link">
-    <span class="md-ellipsis">
-      script_finished
+      注意事項
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#custom_command_executedcommand_name-string-parameters-dictionary-line-string" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
-      custom_command_executed(command_name: String, parameters: Dictionary, line: String)
+      関連項目
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1467,29 +1499,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../audio-manager/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    AudioManager
-    
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -1554,91 +1563,55 @@
         <li class="md-nav__item">
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
-      コア機能
+      概要
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="コア機能">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audiomanager" class="md-nav__link">
+    <span class="md-ellipsis">
+      AudioManagerへのアクセス
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bgm" class="md-nav__link">
+    <span class="md-ellipsis">
+      BGM制御
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BGM制御">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#play_bgm" class="md-nav__link">
     <span class="md-ellipsis">
-      スクリプトのロードと開始
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="スクリプトのロードと開始">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#load_scriptpath-string" class="md-nav__link">
-    <span class="md-ellipsis">
-      load_script(path: String)
+      play_bgm()
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#play_from_labellabel_name-string" class="md-nav__link">
+  <a href="#stop_bgm" class="md-nav__link">
     <span class="md-ellipsis">
-      play_from_label(label_name: String)
+      stop_bgm()
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#set_bgm_volume" class="md-nav__link">
     <span class="md-ellipsis">
-      スクリプトの進行
+      set_bgm_volume()
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="スクリプトの進行">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#next" class="md-nav__link">
-    <span class="md-ellipsis">
-      next()
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      スクリプトの状態
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="スクリプトの状態">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#is_playing-bool" class="md-nav__link">
-    <span class="md-ellipsis">
-      is_playing() -&gt; bool
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1648,47 +1621,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#se" class="md-nav__link">
     <span class="md-ellipsis">
-      フロー制御
+      SE制御
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="フロー制御">
+    <nav class="md-nav" aria-label="SE制御">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#on_choice_selectedchoice_index-int" class="md-nav__link">
+  <a href="#play_se" class="md-nav__link">
     <span class="md-ellipsis">
-      on_choice_selected(choice_index: int)
+      play_se()
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#ui" class="md-nav__link">
+  <a href="#stop_se" class="md-nav__link">
     <span class="md-ellipsis">
-      外部呼び出し/戻り（UI統合用）
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="外部呼び出し/戻り（UI統合用）">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#call_labellabel_name-string" class="md-nav__link">
-    <span class="md-ellipsis">
-      call_label(label_name: String)
+      stop_se()
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#return_from_call" class="md-nav__link">
+  <a href="#set_se_volume" class="md-nav__link">
     <span class="md-ellipsis">
-      return_from_call()
+      set_se_volume()
     </span>
   </a>
   
@@ -1696,6 +1659,76 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      マスター音量制御
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="マスター音量制御">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set_master_volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      set_master_volume()
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      シグナル
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      実用例
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="実用例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      メニューUI での音声制御
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bgm_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      ゲームシーン での BGM制御
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      環境音の制御
+    </span>
+  </a>
   
 </li>
         
@@ -1707,33 +1740,18 @@
         <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
-      シグナル
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="シグナル">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#script_finished" class="md-nav__link">
-    <span class="md-ellipsis">
-      script_finished
+      注意事項
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#custom_command_executedcommand_name-string-parameters-dictionary-line-string" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
-      custom_command_executed(command_name: String, parameters: Dictionary, line: String)
+      関連項目
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1756,89 +1774,207 @@
   
 
 
-<h1 id="scriptplayer-api">ScriptPlayer APIリファレンス</h1>
-<p><code>ScriptPlayer</code>は、<code>.rgd</code>スクリプトファイルを解釈および実行するコアコンポーネントです。物語の流れを管理し、コマンドを処理し、他のArgodeマネージャーとの相互作用を処理します。<code>ScriptPlayer</code>は<code>ArgodeSystem</code>の内部コンポーネントですが、その主要な機能は使いやすさのために<code>ArgodeSystem</code>の公開APIを通じて公開されています。</p>
-<h2 id="_1">コア機能</h2>
-<h3 id="_2">スクリプトのロードと開始</h3>
-<p><code>ScriptPlayer</code>は<code>.rgd</code>ファイルをロードし、指定されたポイントから実行を開始します。</p>
-<h4 id="load_scriptpath-string"><code>load_script(path: String)</code></h4>
-<p><code>.rgd</code>スクリプトファイルを<code>ScriptPlayer</code>にロードします。これにより、スクリプトは実行準備が整いますが、すぐに開始されるわけではありません。</p>
+<h1 id="audiomanager-">AudioManager - 音声制御</h1>
+<p>AudioManagerは、Argodeシステムにおけるオーディオ（BGM・SE）の再生、停止、音量制御を担当するマネージャーです。</p>
+<h2 id="_1">概要</h2>
+<p>AudioManagerを使用することで、GDScriptから直接音声ファイルの制御を行うことができます。シナリオスクリプトの<code>audio</code>コマンドとは別に、プログラム的な音声制御が可能です。</p>
+<h2 id="audiomanager">AudioManagerへのアクセス</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># ArgodeSystemを通じてAudioManagerにアクセス</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argode_system</span><span class="o">.</span><span class="n">AudioManager</span>
+</code></pre></div>
+<h2 id="bgm">BGM制御</h2>
+<h3 id="play_bgm">play_bgm()</h3>
+<p>BGMを再生します。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="n">audio_name</span><span class="p">,</span><span class="w"> </span><span class="n">loop</span><span class="p">,</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="n">fade_in_duration</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>パラメータ:</strong>
+- <code>audio_name</code> (String): 音声ファイル名（assets.rgdで定義された名前）
+- <code>loop</code> (bool): ループ再生するか（デフォルト: true）
+- <code>volume</code> (float): 音量（0.0-1.0、デフォルト: 1.0）
+- <code>fade_in_duration</code> (float): フェードイン時間（秒、デフォルト: 0.0）</p>
+<p><strong>例:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># 基本的な再生</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;yoru_no_zattou&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># ループなしで音量80%で再生</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;bgm_peaceful&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">false</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># 3秒のフェードインで再生</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;bgm_dramatic&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="stop_bgm">stop_bgm()</h3>
+<p>BGMを停止します。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_bgm</span><span class="p">(</span><span class="n">fade_out_duration</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>パラメータ:</strong>
+- <code>fade_out_duration</code> (float): フェードアウト時間（秒、デフォルト: 0.0）</p>
+<p><strong>例:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># 即座に停止</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_bgm</span><span class="p">()</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># 2秒のフェードアウトで停止</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_bgm</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="set_bgm_volume">set_bgm_volume()</h3>
+<p>BGMの音量を調整します。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>パラメータ:</strong>
+- <code>volume</code> (float): 音量（0.0-1.0）</p>
+<h2 id="se">SE制御</h2>
+<h3 id="play_se">play_se()</h3>
+<p>効果音（SE）を再生します。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="n">audio_name</span><span class="p">,</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="n">pitch</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>パラメータ:</strong>
+- <code>audio_name</code> (String): SE名（assets.rgdで定義された名前）
+- <code>volume</code> (float): 音量（0.0-1.0、デフォルト: 1.0）
+- <code>pitch</code> (float): ピッチ（0.5-2.0、デフォルト: 1.0）</p>
+<p><strong>例:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># 基本的なSE再生</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;keyword_ping&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># 音量80%で再生</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;door_open&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># 音量70%、ピッチ1.2倍で再生</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;footsteps&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">,</span><span class="w"> </span><span class="mf">1.2</span><span class="p">)</span>
+</code></pre></div></p>
+<h3 id="stop_se">stop_se()</h3>
+<p>SEを停止します。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_se</span><span class="p">(</span><span class="n">audio_name</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>パラメータ:</strong>
+- <code>audio_name</code> (String): 停止するSE名（空文字列の場合、全SEを停止）</p>
+<p><strong>例:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># 特定のSEを停止</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_se</span><span class="p">(</span><span class="s2">&quot;keyword_ping&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># 全てのSEを停止</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_se</span><span class="p">()</span>
+</code></pre></div></p>
+<h3 id="set_se_volume">set_se_volume()</h3>
+<p>SEの音量を調整します。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_se_volume</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="_2">マスター音量制御</h2>
+<h3 id="set_master_volume">set_master_volume()</h3>
+<p>全体音量を調整します。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_master_volume</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>パラメータ:</strong>
+- <code>volume</code> (float): マスター音量（0.0-1.0）</p>
+<h2 id="_3">シグナル</h2>
+<p>AudioManagerは以下のシグナルを提供します：</p>
 <ul>
-<li><strong><code>path</code> (String)</strong>: <code>.rgd</code>スクリプトファイルへの<code>res://</code>パス（例：<code>"res://scenarios/chapter1.rgd"</code>）。</li>
+<li><code>bgm_started(bgm_name: String)</code> - BGM開始時</li>
+<li><code>bgm_stopped()</code> - BGM停止時</li>
+<li><code>bgm_volume_changed(volume: float)</code> - BGM音量変更時</li>
+<li><code>se_played(se_name: String)</code> - SE再生時</li>
+<li><code>se_volume_changed(volume: float)</code> - SE音量変更時</li>
 </ul>
-<p><strong>例:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">load_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/my_story.rgd&quot;</span><span class="p">)</span>
+<p><strong>シグナルの接続例:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">bgm_started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_bgm_started</span><span class="p">)</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">bgm_stopped</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_bgm_stopped</span><span class="p">)</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">se_played</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_se_played</span><span class="p">)</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_bgm_started</span><span class="p">(</span><span class="n">bgm_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BGM開始:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bgm_name</span><span class="p">)</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_bgm_stopped</span><span class="p">():</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BGM停止&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_se_played</span><span class="p">(</span><span class="n">se_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SE再生:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">se_name</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="_4">実用例</h2>
+<h3 id="ui">メニューUI での音声制御</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">Control</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">argode_system</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argode_system</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_button_pressed</span><span class="p">():</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;ボタンが押された時のSE再生&quot;&quot;&quot;</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;keyword_ping&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_menu_opened</span><span class="p">():</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;メニューを開く時のBGM調整&quot;&quot;&quot;</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">    </span><span class="c1"># 現在のBGMを一時的に音量を下げる</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;menu_open&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_menu_closed</span><span class="p">():</span>
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;メニューを閉じる時のBGM復帰&quot;&quot;&quot;</span>
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="w">    </span><span class="c1"># BGM音量を元に戻す</span>
+<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;menu_close&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
 </code></pre></div>
-<h4 id="play_from_labellabel_name-string"><code>play_from_label(label_name: String)</code></h4>
-<p>現在ロードされているスクリプト内の特定の<code>label</code>からスクリプトの実行を開始または再開します。ラベルが別の<code>.rgd</code>ファイルにある場合、<code>ScriptPlayer</code>は<code>LabelRegistry</code>を使用してクロスファイルジャンプを試行します。</p>
+<h3 id="bgm_1">ゲームシーン での BGM制御</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">Node</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="c1"># ゲーム開始時にBGMを再生</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;yoru_no_zattou&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">)</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_battle_started</span><span class="p">():</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;戦闘開始時のBGM切り替え&quot;&quot;&quot;</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">    </span><span class="c1"># 戦闘BGMに切り替え（1.5秒のフェードイン）</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;bgm_tense&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.5</span><span class="p">)</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_battle_ended</span><span class="p">():</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;戦闘終了時のBGM復帰&quot;&quot;&quot;</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">    </span><span class="c1"># 通常BGMに戻す（2秒のフェードイン）</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_bgm</span><span class="p">(</span><span class="s2">&quot;bgm_peaceful&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="_5">環境音の制御</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">Node</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_rain_started</span><span class="p">():</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;雨が降り始めた時&quot;&quot;&quot;</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="c1"># 雨音SEをループ再生（AudioStreamから直接制御する場合）</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">play_se</span><span class="p">(</span><span class="s2">&quot;rain_loop&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6</span><span class="p">)</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">    </span><span class="c1"># BGM音量を下げて雰囲気を演出</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_rain_stopped</span><span class="p">():</span>
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;雨が止んだ時&quot;&quot;&quot;</span>
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">audio_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_node</span><span class="p">(</span><span class="s2">&quot;/root/ArgodeSystem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">AudioManager</span>
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>
+<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="w">    </span><span class="c1"># 雨音を停止</span>
+<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">stop_se</span><span class="p">(</span><span class="s2">&quot;rain_loop&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>
+<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="w">    </span><span class="c1"># BGM音量を元に戻す</span>
+<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="w">    </span><span class="n">audio_manager</span><span class="o">.</span><span class="n">set_bgm_volume</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="_6">注意事項</h2>
+<ol>
+<li><strong>音声ファイルの定義</strong>: 使用する音声ファイルは事前に<code>assets.rgd</code>で定義されている必要があります。</li>
+<li><strong>音量の範囲</strong>: 音量は0.0-1.0の範囲で指定してください。</li>
+<li><strong>SE の重複</strong>: 同名のSEを連続再生すると、前の再生が停止されて新しい再生が開始されます。</li>
+<li><strong>メモリ管理</strong>: SEは自動的にプール管理され、使用後は再利用されます。</li>
+</ol>
+<h2 id="_7">関連項目</h2>
 <ul>
-<li><strong><code>label_name</code> (String)</strong>: ジャンプする<code>label</code>の名前（例：<code>"start"</code>、<code>"chapter_2_intro"</code>）。</li>
+<li><a href="../script/audio-commands.md">Script Commands - audio</a> - シナリオスクリプトでの音声コマンド</li>
+<li><a href="../getting-started/audio-setup.md">Audio Definitions</a> - 音声ファイルの定義方法</li>
+<li><a href="../managers/">Managers Overview</a> - 他のマネージャーについて</li>
 </ul>
-<p><strong>例:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># スクリプトをロードした後</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">play_from_label</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># または、ArgodeSystemの公開APIの一部として</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">start_script</span><span class="p">(</span><span class="s2">&quot;res://scenarios/my_story.rgd&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;start&quot;</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="_3">スクリプトの進行</h3>
-<h4 id="next"><code>next()</code></h4>
-<p>スクリプトを次の行に進めます。このメソッドは通常、ユーザー入力（例：ダイアログを進めるためのマウスクリック）に応答して<code>ArgodeSystem.next_line()</code>によって呼び出されます。</p>
-<p><strong>例:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># 入力ハンドラー内</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_input</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">event</span><span class="o">.</span><span class="n">is_action_pressed</span><span class="p">(</span><span class="s2">&quot;ui_accept&quot;</span><span class="p">):</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">next_line</span><span class="p">()</span><span class="w"> </span><span class="c1"># これは内部的にScriptPlayer.next()を呼び出します</span>
-</code></pre></div>
-<h3 id="_4">スクリプトの状態</h3>
-<h4 id="is_playing-bool"><code>is_playing() -&gt; bool</code></h4>
-<p><code>ScriptPlayer</code>が現在<code>.rgd</code>スクリプトを実行中であれば<code>true</code>を、そうでなければ<code>false</code>を返します。</p>
-<h2 id="_5">フロー制御</h2>
-<p><code>ScriptPlayer</code>は、<code>jump</code>、<code>call</code>、<code>return</code>、<code>if</code>/<code>else</code>、<code>menu</code>など、<code>.rgd</code>スクリプトで定義されたさまざまなフロー制御コマンドを処理します。</p>
-<h3 id="on_choice_selectedchoice_index-int"><code>on_choice_selected(choice_index: int)</code></h3>
-<p>このメソッドは、ユーザーが<code>menu</code>コマンドから選択を行ったときに<code>UIManager</code>によって呼び出されます。選択されたオプションに基づいて、<code>ScriptPlayer</code>をスクリプトの適切なブランチに誘導します。</p>
-<ul>
-<li><strong><code>choice_index</code> (int)</strong>: 選択された選択肢の0ベースのインデックス。</li>
-</ul>
-<p><strong>例（内部呼び出し）:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># UIManagerは選択が行われた後にこれを呼び出します</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">on_choice_selected</span><span class="p">(</span><span class="n">selected_index</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="ui">外部呼び出し/戻り（UI統合用）</h3>
-<p>これらのメソッドは、一時的にスクリプトフローを制御し、その後戻る必要がある<code>AdvScreen</code>ノードまたはその他のカスタムGodotシーンによって主に使用されます。</p>
-<h4 id="call_labellabel_name-string"><code>call_label(label_name: String)</code></h4>
-<p>現在のスクリプト位置をコールスタックにプッシュし、指定された<code>label</code>にジャンプします。これは<code>.rgd</code>の<code>call</code>コマンドに似ていますが、GDScriptからトリガーできます。</p>
-<ul>
-<li><strong><code>label_name</code> (String)</strong>: 呼び出す<code>label</code>の名前。</li>
-</ul>
-<p><strong>例:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># AdvScreenスクリプトから</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">call_label</span><span class="p">(</span><span class="s2">&quot;game_over_scene&quot;</span><span class="p">)</span>
-</code></pre></div>
-<h4 id="return_from_call"><code>return_from_call()</code></h4>
-<p>コールスタックから最後の位置をポップし、その時点からスクリプトの実行を再開します。これは<code>.rgd</code>の<code>return</code>コマンドに似ています。</p>
-<p><strong>例:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># AdvScreenスクリプトから、モーダル画面が閉じられた後</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">Player</span><span class="o">.</span><span class="n">return_from_call</span><span class="p">()</span>
-</code></pre></div>
-<h2 id="_6">シグナル</h2>
-<p><code>ScriptPlayer</code>は、その状態の変化やイベントについてシステムの他の部分に通知するためにシグナルを発行します。</p>
-<h3 id="script_finished"><code>script_finished</code></h3>
-<p><code>ScriptPlayer</code>が現在ロードされているスクリプトの終わりに達したときに発行されます。</p>
-<h3 id="custom_command_executedcommand_name-string-parameters-dictionary-line-string"><code>custom_command_executed(command_name: String, parameters: Dictionary, line: String)</code></h3>
-<p><code>ScriptPlayer</code>が<code>.rgd</code>スクリプト内で組み込みコマンドではないコマンドを検出したときに発行されます。このシグナルは、主に<code>CustomCommandHandler</code>によってカスタムGDScriptロジックにディスパッチするために使用されます。</p>
-<ul>
-<li><strong><code>command_name</code> (String)</strong>: カスタムコマンドの名前。</li>
-<li>
-<p><strong><code>parameters</code> (Dictionary)</strong>: カスタムコマンドの解析されたパラメータを含む辞書。</p>
-</li>
-<li>
-<p><strong><code>line</code> (String)</strong>: <code>.rgd</code>スクリプトからの元の完全な行。</p>
-</li>
-</ul>
-<hr />
-<p><a class="md-button" href="../argode-system/">ArgodeSystem APIについて学ぶ →</a>
-<a class="md-button" href="../managers/">マネージャーAPIについて学ぶ →</a></p>
 
 
 
