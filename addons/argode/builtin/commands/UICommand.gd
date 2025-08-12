@@ -368,36 +368,40 @@ func _execute_hide(args: PackedStringArray, adv_system: Node) -> void:
 		return
 	
 	var scene_path = args[0]
-	var position = "center"
 	var transition = "none"
 	
-	# 引数解析
+	# 引数解析（transitionオプションのみサポート）
 	var i = 1
 	while i < args.size():
-		match args[i]:
-			"left", "right", "center":
-				position = args[i]
-			"with":
-				if i + 1 < args.size():
-					transition = args[i + 1]
-					i += 1
-		i += 1
+		if args[i] == "with" and i + 1 < args.size():
+			transition = args[i + 1]
+			i += 2
+		else:
+			i += 1
 	
-	print("🎯 [UICommand] Hide screen:", scene_path, "position:", position, "transition:", transition)
+	print("🎯 [UICommand] Hide screen:", scene_path, "transition:", transition)
 	
-	# アクティブシーンから該当するものを探す
-	var scene_key = scene_path + "_" + position
-	if scene_key not in active_ui_scenes:
-		push_warning("⚠️ ui hide: シーンが表示されていません: " + scene_key)
+	# アクティブシーンから該当するものを探す（scene_pathをそのままキーとして使用）
+	if scene_path not in active_ui_scenes:
+		print("⚠️ Scene not found in active scenes:", scene_path)
+		print("🔍 Currently active scenes:", active_ui_scenes.keys())
+		push_warning("⚠️ ui hide: シーンが表示されていません: " + scene_path)
 		return
 	
-	var scene_instance = active_ui_scenes[scene_key]
+	var scene_instance = active_ui_scenes[scene_path]
+	
+	if not scene_instance or not is_instance_valid(scene_instance):
+		print("⚠️ Scene instance invalid or null for:", scene_path)
+		push_warning("⚠️ UI scene instance invalid: " + scene_path)
+		active_ui_scenes.erase(scene_path)
+		return
 	
 	# LayerManagerを使って非表示
 	if adv_system.LayerManager and adv_system.LayerManager.has_method("hide_control_scene"):
 		var success = await adv_system.LayerManager.hide_control_scene(scene_instance, transition)
 		if success:
-			active_ui_scenes.erase(scene_key)
+			active_ui_scenes.erase(scene_path)
+			print("✅ UI scene hidden successfully:", scene_path)
 			log_command("UI scene hidden: " + scene_path)
 		else:
 			push_error("❌ Failed to hide UI scene: " + scene_path)
