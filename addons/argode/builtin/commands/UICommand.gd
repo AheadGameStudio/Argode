@@ -18,6 +18,9 @@ func _init():
 # 表示中のUIシーンを追跡するための辞書（シーンパス -> シーンインスタンス）
 var active_ui_scenes: Dictionary = {}
 
+# 隠されたUIシーンを追跡するための辞書（シーンパス -> シーンインスタンス）
+var hidden_ui_scenes: Dictionary = {}
+
 # === call_screen スタック管理 ===
 # call_screenで表示されたシーンのスタック（後入先出）
 var call_screen_stack: Array[String] = []
@@ -142,6 +145,35 @@ func _execute_show(args: PackedStringArray, adv_system: Node) -> void:
 			i += 1
 	
 	print("🎬 UI Command: Showing scene:", scene_path, "at", position, "with", transition)
+	
+	# 既に隠されているシーンがある場合の処理
+	if scene_path in hidden_ui_scenes:
+		var hidden_scene = hidden_ui_scenes[scene_path]
+		if hidden_scene and is_instance_valid(hidden_scene):
+			print("🔄 Re-showing previously hidden scene:", scene_path)
+			
+			# LayerManagerを使って再表示
+			if adv_system.LayerManager and adv_system.LayerManager.has_method("show_control_scene"):
+				var success = await adv_system.LayerManager.show_control_scene(hidden_scene, position, transition)
+				if success:
+					# hidden_ui_scenesからactive_ui_scenesに移動
+					hidden_ui_scenes.erase(scene_path)
+					active_ui_scenes[scene_path] = hidden_scene
+					print("✅ Hidden scene re-shown successfully:", scene_path)
+					log_command("UI show: re-shown hidden scene - " + scene_path)
+					emit_dynamic_signal("ui_scene_shown", [scene_path, position, transition], adv_system)
+					return
+				else:
+					push_error("❌ Failed to re-show hidden UI scene: " + scene_path)
+					return
+			else:
+				push_error("❌ LayerManager not available for re-showing scene")
+				return
+		else:
+			# 無効なインスタンスは削除
+			hidden_ui_scenes.erase(scene_path)
+			print("🧹 Cleaned up invalid hidden scene reference:", scene_path)
+	
 	log_command("UI show: " + scene_path + " at " + position + " with " + transition)
 	
 	# シーンを読み込み
@@ -245,18 +277,20 @@ func _free_all_ui_scenes(adv_system: Node) -> void:
 	"""全ての追跡中UIシーンを解放"""
 	print("🗑️ [UICommand] Freeing all UI scenes...")
 	
-	if active_ui_scenes.is_empty():
-		print("ℹ️ No active UI scenes to free")
+	var total_scenes = active_ui_scenes.size() + hidden_ui_scenes.size()
+	if total_scenes == 0:
+		print("ℹ️ No UI scenes to free")
 		log_command("UI free all: no scenes active")
 		return
 	
 	var freed_count = 0
-	var scene_paths = active_ui_scenes.keys()
 	
-	for scene_path in scene_paths:
+	# アクティブシーンを解放
+	var active_scene_paths = active_ui_scenes.keys()
+	for scene_path in active_scene_paths:
 		var scene_instance = active_ui_scenes[scene_path]
 		if scene_instance and is_instance_valid(scene_instance):
-			print("🗑️ Freeing UI scene:", scene_path)
+			print("🗑️ Freeing active UI scene:", scene_path)
 			
 			# call_screenの場合はシグナル接続を解除
 			if scene_path in call_screen_stack:
@@ -269,6 +303,20 @@ func _free_all_ui_scenes(adv_system: Node) -> void:
 		
 		# 追跡から削除
 		active_ui_scenes.erase(scene_path)
+	
+	# 隠されたシーンを解放
+	var hidden_scene_paths = hidden_ui_scenes.keys()
+	for scene_path in hidden_scene_paths:
+		var scene_instance = hidden_ui_scenes[scene_path]
+		if scene_instance and is_instance_valid(scene_instance):
+			print("🗑️ Freeing hidden UI scene:", scene_path)
+			scene_instance.queue_free()
+			freed_count += 1
+		else:
+			print("⚠️ Hidden scene instance invalid or null for:", scene_path)
+		
+		# 隠されたシーンリストから削除
+		hidden_ui_scenes.erase(scene_path)
 	
 	# call_screenスタックと結果もクリア
 	if not call_screen_stack.is_empty():
@@ -287,13 +335,23 @@ func _free_specific_ui_scene(scene_path: String, adv_system: Node) -> void:
 	"""特定のUIシーンを解放"""
 	print("🗑️ [UICommand] Freeing specific UI scene:", scene_path)
 	
-	if not scene_path in active_ui_scenes:
-		print("⚠️ Scene not found in active scenes:", scene_path)
+	var scene_instance = null
+	var found_in_active = false
+	var found_in_hidden = false
+	
+	# まずアクティブシーンから探す
+	if scene_path in active_ui_scenes:
+		scene_instance = active_ui_scenes[scene_path]
+		found_in_active = true
+	# 次に隠されたシーンから探す
+	elif scene_path in hidden_ui_scenes:
+		scene_instance = hidden_ui_scenes[scene_path]
+		found_in_hidden = true
+	else:
+		print("⚠️ Scene not found in active or hidden scenes:", scene_path)
 		push_warning("⚠️ UI scene not active: " + scene_path)
 		log_command("UI free: scene not active - " + scene_path)
 		return
-	
-	var scene_instance = active_ui_scenes[scene_path]
 	
 	if scene_instance and is_instance_valid(scene_instance):
 		print("🗑️ Freeing UI scene instance:", scene_instance.get_path())
@@ -313,26 +371,30 @@ func _free_specific_ui_scene(scene_path: String, adv_system: Node) -> void:
 		print("⚠️ Scene instance invalid or null")
 		push_warning("⚠️ UI scene instance invalid: " + scene_path)
 	
-	# 追跡から削除
-	active_ui_scenes.erase(scene_path)
+	# 両方のリストから削除
+	if found_in_active:
+		active_ui_scenes.erase(scene_path)
+	if found_in_hidden:
+		hidden_ui_scenes.erase(scene_path)
 	
 	# 結果もクリア
 	if scene_path in call_screen_results:
 		call_screen_results.erase(scene_path)
 		print("🗑️ Cleared call screen result")
 	
-	print("📝 Scene removed from tracking. Remaining scenes:", active_ui_scenes.size())
+	print("📝 Scene removed from tracking. Active:", active_ui_scenes.size(), "Hidden:", hidden_ui_scenes.size())
 	
 	log_command("UI free: " + scene_path)
 	emit_dynamic_signal("ui_scene_freed", [scene_path], adv_system)
 
 func _execute_list(_args: PackedStringArray, adv_system: Node) -> void:
 	"""アクティブなUIシーンをリスト表示"""
-	print("📋 [UICommand] Listing active UI scenes...")
+	print("📋 [UICommand] Listing UI scenes...")
+	
+	var total_scenes = active_ui_scenes.size() + hidden_ui_scenes.size()
 	
 	if active_ui_scenes.is_empty():
 		print("ℹ️ No active UI scenes")
-		log_command("UI list: no active scenes")
 	else:
 		print("📋 Active UI scenes (" + str(active_ui_scenes.size()) + "):")
 		var index = 1
@@ -343,6 +405,18 @@ func _execute_list(_args: PackedStringArray, adv_system: Node) -> void:
 			var scene_type = " [call_screen]" if is_call_screen else " [show]"
 			print("  ", index, ". ", scene_path, " (", status, ")", scene_type)
 			index += 1
+	
+	# 隠されたシーンの情報も表示
+	if not hidden_ui_scenes.is_empty():
+		print("👁️‍🗨️ Hidden UI scenes (" + str(hidden_ui_scenes.size()) + "):")
+		var index = 1
+		for scene_path in hidden_ui_scenes.keys():
+			var scene_instance = hidden_ui_scenes[scene_path]
+			var status = "valid" if (scene_instance and is_instance_valid(scene_instance)) else "invalid"
+			print("  ", index, ". ", scene_path, " (", status, ") [hidden]")
+			index += 1
+	else:
+		print("👁️‍🗨️ No hidden UI scenes")
 	
 	# call_screenスタックの情報も表示
 	if not call_screen_stack.is_empty():
@@ -360,9 +434,15 @@ func _execute_list(_args: PackedStringArray, adv_system: Node) -> void:
 		for scene_path in call_screen_results.keys():
 			print("  - ", scene_path, ": ", call_screen_results[scene_path])
 	
-	var total_scenes = active_ui_scenes.size()
+	var active_scenes = active_ui_scenes.size()
+	var hidden_scenes = hidden_ui_scenes.size()
 	var call_scenes = call_screen_stack.size()
-	log_command("UI list: " + str(total_scenes) + " active scenes (" + str(call_scenes) + " call_screens)")
+	
+	if total_scenes == 0:
+		log_command("UI list: no scenes")
+	else:
+		log_command("UI list: " + str(active_scenes) + " active, " + str(hidden_scenes) + " hidden (" + str(call_scenes) + " call_screens)")
+	
 	emit_dynamic_signal("ui_scenes_listed", [active_ui_scenes.keys(), call_screen_stack], adv_system)
 
 func _execute_hide(args: PackedStringArray, adv_system: Node) -> void:
@@ -406,8 +486,11 @@ func _execute_hide(args: PackedStringArray, adv_system: Node) -> void:
 	if adv_system.LayerManager and adv_system.LayerManager.has_method("hide_control_scene"):
 		var success = await adv_system.LayerManager.hide_control_scene(scene_instance, transition)
 		if success:
+			# active_ui_scenesから削除し、hidden_ui_scenesに移動
 			active_ui_scenes.erase(scene_path)
+			hidden_ui_scenes[scene_path] = scene_instance
 			print("✅ UI scene hidden successfully:", scene_path)
+			print("📝 Scene moved to hidden list. Hidden scenes:", hidden_ui_scenes.size())
 			log_command("UI scene hidden: " + scene_path)
 		else:
 			push_error("❌ Failed to hide UI scene: " + scene_path)
