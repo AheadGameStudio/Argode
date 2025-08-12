@@ -92,7 +92,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="Argode Documentation" class="md-header__button md-logo" aria-label="Argode Documentation" data-md-component="logo">
       
@@ -150,32 +152,6 @@
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
-    
-      <div class="md-header__option">
-  <div class="md-select">
-    
-    <button class="md-header__button md-icon" aria-label="Select language">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
-    </button>
-    <div class="md-select__inner">
-      <ul class="md-select__list">
-        
-          <li class="md-select__item">
-            <a href="./" hreflang="en" class="md-select__link">
-              English
-            </a>
-          </li>
-        
-          <li class="md-select__item">
-            <a href="../../ja/custom-commands/argode-ui-scene/" hreflang="ja" class="md-select__link">
-              日本語
-            </a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-</div>
     
     
       
@@ -242,194 +218,6 @@
       
         
           
-            
-<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
-  <div class="md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
-        
-  
-  
-    
-  
-  Home
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../getting-started/quick-start/" class="md-tabs__link">
-          
-  
-  
-  Getting Started
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../architecture/design-philosophy/" class="md-tabs__link">
-          
-  
-  
-  Architecture
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../script/rgd-syntax.md" class="md-tabs__link">
-          
-  
-  
-  Script Reference
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../overview/" class="md-tabs__link">
-          
-  
-  
-  Custom Commands
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../ui/advscreen.md" class="md-tabs__link">
-          
-  
-  
-  UI System
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../advanced/asset-management.md" class="md-tabs__link">
-          
-  
-  
-  Advanced Topics
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../examples/simple-vn.md" class="md-tabs__link">
-          
-  
-  
-  Examples
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../../api/argode-system.md" class="md-tabs__link">
-          
-  
-  
-  API Reference
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ul>
-  </div>
-</nav>
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -443,10 +231,8 @@
                     
 
 
-  
 
-
-<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="Argode Documentation" class="md-nav__button md-logo" aria-label="Argode Documentation" data-md-component="logo">
       
@@ -504,12 +290,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -518,7 +304,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -568,7 +354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/installation.md" class="md-nav__link">
+      <a href="../../getting-started/installation/" class="md-nav__link">
         
   
   
@@ -591,7 +377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/basic-setup.md" class="md-nav__link">
+      <a href="../../getting-started/basic-setup/" class="md-nav__link">
         
   
   
@@ -625,12 +411,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -639,7 +425,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   
@@ -689,7 +475,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview.md" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -712,7 +498,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/core-components.md" class="md-nav__link">
+      <a href="../../architecture/core-components/" class="md-nav__link">
         
   
   
@@ -746,12 +532,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -760,7 +546,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -787,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../script/rgd-syntax.md" class="md-nav__link">
+      <a href="../../script/rgd-syntax/" class="md-nav__link">
         
   
   
@@ -810,7 +596,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../script/commands.md" class="md-nav__link">
+      <a href="../../script/commands/" class="md-nav__link">
         
   
   
@@ -833,7 +619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../script/variables.md" class="md-nav__link">
+      <a href="../../script/variables/" class="md-nav__link">
         
   
   
@@ -856,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../script/definitions.md" class="md-nav__link">
+      <a href="../../script/definitions/" class="md-nav__link">
         
   
   
@@ -890,12 +676,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -904,7 +690,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -977,7 +763,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../creating.md" class="md-nav__link">
+      <a href="../creating/" class="md-nav__link">
         
   
   
@@ -1011,12 +797,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -1025,7 +811,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
             
   
   
@@ -1052,7 +838,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ui/advscreen.md" class="md-nav__link">
+      <a href="../../ui/advscreen/" class="md-nav__link">
         
   
   
@@ -1075,7 +861,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ui/themes.md" class="md-nav__link">
+      <a href="../../ui/themes/" class="md-nav__link">
         
   
   
@@ -1098,7 +884,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ui/custom.md" class="md-nav__link">
+      <a href="../../ui/custom/" class="md-nav__link">
         
   
   
@@ -1132,12 +918,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -1146,7 +932,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
             
   
   
@@ -1173,7 +959,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/asset-management.md" class="md-nav__link">
+      <a href="../../advanced/asset-management/" class="md-nav__link">
         
   
   
@@ -1196,7 +982,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/performance.md" class="md-nav__link">
+      <a href="../../advanced/performance/" class="md-nav__link">
         
   
   
@@ -1219,7 +1005,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/debugging.md" class="md-nav__link">
+      <a href="../../advanced/debugging/" class="md-nav__link">
         
   
   
@@ -1253,12 +1039,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -1267,7 +1053,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
             
   
   
@@ -1294,7 +1080,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/simple-vn.md" class="md-nav__link">
+      <a href="../../examples/simple-vn/" class="md-nav__link">
         
   
   
@@ -1317,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/custom-features.md" class="md-nav__link">
+      <a href="../../examples/custom-features/" class="md-nav__link">
         
   
   
@@ -1340,7 +1126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../examples/best-practices.md" class="md-nav__link">
+      <a href="../../examples/best-practices/" class="md-nav__link">
         
   
   
@@ -1374,12 +1160,12 @@
     
     
       
-      
+        
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
@@ -1388,7 +1174,7 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
             
   
   
@@ -1415,7 +1201,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/argode-system.md" class="md-nav__link">
+      <a href="../../api/argode-system/" class="md-nav__link">
         
   
   
@@ -1438,7 +1224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/script-player.md" class="md-nav__link">
+      <a href="../../api/script-player/" class="md-nav__link">
         
   
   
@@ -1461,7 +1247,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/managers.md" class="md-nav__link">
+      <a href="../../api/managers/" class="md-nav__link">
         
   
   
@@ -1803,7 +1589,7 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.tracking", "search.highlight", "search.suggest", "content.code.copy", "content.code.select", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.path", "navigation.top", "navigation.tracking", "search.highlight", "search.suggest", "content.code.copy", "content.code.select", "content.tabs.link"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.50899def.min.js"></script>

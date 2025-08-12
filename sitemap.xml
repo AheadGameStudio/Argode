@@ -8,11 +8,67 @@
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/advanced/asset-management/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/advanced/asset-management/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/advanced/asset-management/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/advanced/debugging/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/advanced/debugging/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/advanced/debugging/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/advanced/performance/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/advanced/performance/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/advanced/performance/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/api/argode-system/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/argode-system/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/argode-system/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/api/managers/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/managers/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/managers/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/api/script-player/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/script-player/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/script-player/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/architecture/core-components/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/architecture/core-components/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/architecture/core-components/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/architecture/design-philosophy/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/architecture/design-philosophy/"/>
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/architecture/design-philosophy/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/architecture/system-overview/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/architecture/system-overview/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/architecture/system-overview/"/>
     </url>
     <url>
         <loc>https://aheadgamestudio.github.io/Argode/custom-commands/argode-ui-scene/</loc>
@@ -29,11 +85,53 @@
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/custom-commands/built-in/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/custom-commands/creating/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/custom-commands/creating/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/custom-commands/creating/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/custom-commands/overview/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/custom-commands/overview/"/>
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/custom-commands/overview/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/examples/best-practices/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/examples/best-practices/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/examples/best-practices/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/examples/custom-features/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/examples/custom-features/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/examples/custom-features/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/examples/simple-vn/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/examples/simple-vn/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/examples/simple-vn/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/getting-started/basic-setup/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/getting-started/basic-setup/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/getting-started/basic-setup/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/getting-started/installation/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/getting-started/installation/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/getting-started/installation/"/>
     </url>
     <url>
         <loc>https://aheadgamestudio.github.io/Argode/getting-started/quick-start/</loc>
@@ -43,6 +141,55 @@
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/getting-started/quick-start/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/script/commands/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/script/commands/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/script/commands/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/script/definitions/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/script/definitions/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/script/definitions/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/script/rgd-syntax/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/script/rgd-syntax/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/script/rgd-syntax/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/script/variables/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/script/variables/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/script/variables/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ui/advscreen/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/ui/advscreen/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/ui/advscreen/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ui/custom/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/ui/custom/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/ui/custom/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ui/themes/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/ui/themes/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/ui/themes/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>
@@ -50,11 +197,67 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/advanced/asset-management/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/advanced/asset-management/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/advanced/asset-management/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/advanced/debugging/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/advanced/debugging/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/advanced/debugging/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/advanced/performance/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/advanced/performance/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/advanced/performance/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/api/argode-system/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/argode-system/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/argode-system/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/api/managers/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/managers/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/managers/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/api/script-player/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/api/script-player/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/api/script-player/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/architecture/core-components/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/architecture/core-components/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/architecture/core-components/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/architecture/design-philosophy/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/architecture/design-philosophy/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/architecture/design-philosophy/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/architecture/system-overview/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/architecture/system-overview/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/architecture/system-overview/"/>
     </url>
     <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/custom-commands/argode-ui-scene/</loc>
@@ -71,6 +274,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/custom-commands/built-in/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/custom-commands/creating/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/custom-commands/creating/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/custom-commands/creating/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/custom-commands/overview/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>
@@ -78,10 +288,94 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/custom-commands/overview/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/examples/best-practices/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/examples/best-practices/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/examples/best-practices/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/examples/custom-features/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/examples/custom-features/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/examples/custom-features/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/examples/simple-vn/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/examples/simple-vn/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/examples/simple-vn/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/getting-started/basic-setup/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/getting-started/basic-setup/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/getting-started/basic-setup/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/getting-started/installation/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/getting-started/installation/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/getting-started/installation/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/getting-started/quick-start/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/getting-started/quick-start/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/getting-started/quick-start/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/script/commands/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/script/commands/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/script/commands/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/script/definitions/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/script/definitions/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/script/definitions/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/script/rgd-syntax/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/script/rgd-syntax/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/script/rgd-syntax/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/script/variables/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/script/variables/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/script/variables/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/ui/advscreen/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/ui/advscreen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/ui/advscreen/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/ui/custom/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/ui/custom/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/ui/custom/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/ui/themes/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/ui/themes/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/ui/themes/"/>
     </url>
 </urlset>
