@@ -152,22 +152,27 @@ func _execute_show(args: PackedStringArray, adv_system: Node) -> void:
 		if hidden_scene and is_instance_valid(hidden_scene):
 			print("🔄 Re-showing previously hidden scene:", scene_path)
 			
-			# LayerManagerを使って再表示
-			if adv_system.LayerManager and adv_system.LayerManager.has_method("show_control_scene"):
-				var success = await adv_system.LayerManager.show_control_scene(hidden_scene, position, transition)
-				if success:
-					# hidden_ui_scenesからactive_ui_scenesに移動
-					hidden_ui_scenes.erase(scene_path)
-					active_ui_scenes[scene_path] = hidden_scene
-					print("✅ Hidden scene re-shown successfully:", scene_path)
-					log_command("UI show: re-shown hidden scene - " + scene_path)
-					emit_dynamic_signal("ui_scene_shown", [scene_path, position, transition], adv_system)
-					return
-				else:
-					push_error("❌ Failed to re-show hidden UI scene: " + scene_path)
-					return
+			# 隠されたシーンをUIレイヤーに再追加
+			if adv_system.LayerManager and adv_system.LayerManager.ui_layer:
+				adv_system.LayerManager.ui_layer.add_child(hidden_scene)
+				hidden_scene.visible = true
+				
+				# 位置設定
+				adv_system.LayerManager._set_control_scene_position(hidden_scene, position)
+				
+				# トランジション効果
+				if transition != "none":
+					await adv_system.LayerManager._execute_control_scene_transition(hidden_scene, transition, true)
+				
+				# hidden_ui_scenesからactive_ui_scenesに移動
+				hidden_ui_scenes.erase(scene_path)
+				active_ui_scenes[scene_path] = hidden_scene
+				print("✅ Hidden scene re-shown successfully:", scene_path)
+				log_command("UI show: re-shown hidden scene - " + scene_path)
+				emit_dynamic_signal("ui_scene_shown", [scene_path, position, transition], adv_system)
+				return
 			else:
-				push_error("❌ LayerManager not available for re-showing scene")
+				push_error("❌ LayerManager or UI layer not available for re-showing scene")
 				return
 		else:
 			# 無効なインスタンスは削除
@@ -484,7 +489,8 @@ func _execute_hide(args: PackedStringArray, adv_system: Node) -> void:
 	
 	# LayerManagerを使って非表示
 	if adv_system.LayerManager and adv_system.LayerManager.has_method("hide_control_scene"):
-		var success = await adv_system.LayerManager.hide_control_scene(scene_instance, transition)
+		# UICommandの場合は削除せずに非表示のみ（hidden_ui_scenesで管理するため）
+		var success = await adv_system.LayerManager.hide_control_scene(scene_instance, transition, false)
 		if success:
 			# active_ui_scenesから削除し、hidden_ui_scenesに移動
 			active_ui_scenes.erase(scene_path)
