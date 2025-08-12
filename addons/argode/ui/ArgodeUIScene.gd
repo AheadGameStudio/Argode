@@ -72,9 +72,13 @@ func _execute_script_command(command_name: String, parameters: Dictionary):
 			
 			print("🚀 [ArgodeUIScene] Executing jump to:", label)
 			if file.is_empty():
-				argode_system.Player.jump_to_label(label)
+				argode_system.Player.play_from_label(label)
 			else:
-				argode_system.Player.jump_to_label_in_file(label, file)
+				# ファイル跨ぎのジャンプはLabelRegistryを使用
+				if argode_system.LabelRegistry and argode_system.LabelRegistry.has_method("jump_to_label"):
+					argode_system.LabelRegistry.jump_to_label(label, argode_system.Player)
+				else:
+					push_error("❌ Cross-file jump not supported - LabelRegistry not available")
 		
 		"call":
 			var label = parameters.get("label", "")
@@ -87,7 +91,8 @@ func _execute_script_command(command_name: String, parameters: Dictionary):
 			if file.is_empty():
 				argode_system.Player.call_label(label)
 			else:
-				argode_system.Player.call_label_in_file(label, file)
+				# ファイル跨ぎのcallはまだ未サポート（必要に応じて実装）
+				push_error("❌ Cross-file call not yet supported")
 		
 		"return":
 			print("↩️ [ArgodeUIScene] Executing return")

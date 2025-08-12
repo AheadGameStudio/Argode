@@ -582,12 +582,12 @@ func _setup_scene_references(scene_instance: Node, adv_system: Node):
 		print("✅ [UICommand] Scene is ArgodeUIScene, setting up references")
 		
 		# ArgodeSystemの参照を直接設定
-		if scene_instance.has_property("argode_system"):
+		if "argode_system" in scene_instance:
 			scene_instance.argode_system = adv_system
 			print("✅ [UICommand] ArgodeSystem reference set")
 		
 		# AdvScreenの参照を設定
-		if scene_instance.has_property("adv_screen") and adv_system.UIManager:
+		if "adv_screen" in scene_instance and adv_system.UIManager:
 			scene_instance.adv_screen = adv_system.UIManager.current_screen
 			print("✅ [UICommand] AdvScreen reference set")
 		

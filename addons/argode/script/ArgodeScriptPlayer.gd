@@ -953,3 +953,15 @@ func _handle_return() -> bool:
 		print("🛑 No call to return from - stopping script execution")
 		is_playing = false
 		return true  # 実行を停止
+
+# === 公開API for ArgodeUIScene ===
+
+func call_label(label_name: String):
+	"""外部からラベルをcall（ArgodeUIScene用）"""
+	print("📞 [ArgodeScriptPlayer] External call to label:", label_name)
+	_handle_call(label_name)
+
+func return_from_call():
+	"""外部からreturn（ArgodeUIScene用）"""
+	print("↩️ [ArgodeScriptPlayer] External return from call")
+	_handle_return()
