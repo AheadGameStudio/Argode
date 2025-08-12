@@ -244,9 +244,10 @@ func _execute_show(args: PackedStringArray, adv_system: Node) -> void:
 		print("🔍 LayerManager ui_layer type:", type_string(typeof(adv_system.LayerManager.ui_layer)) if adv_system.LayerManager.ui_layer else "null")
 		print("🔍 LayerManager ui_layer valid:", adv_system.LayerManager.ui_layer != null)
 		
-		# もしui_layerがnullの場合、layer_infoを確認
+		# もしui_layerがnullの場合、動的に作成
 		if not adv_system.LayerManager.ui_layer:
-			print("❌ UI layer is null! Layer info:", adv_system.LayerManager.get_layer_info())
+			print("🚨 UI layer is null! Creating emergency UI layer...")
+			_create_emergency_ui_layer(adv_system)
 		
 		print("🔍 Calling show_control_scene with:", scene_instance, position, transition)
 		var success = await adv_system.LayerManager.show_control_scene(scene_instance, position, transition)
@@ -591,6 +592,11 @@ func _execute_call(args: PackedStringArray, adv_system: Node) -> void:
 	
 	# LayerManagerで表示
 	if adv_system.LayerManager:
+		# UIレイヤーの状態チェックと修復
+		if not adv_system.LayerManager.ui_layer:
+			print("🚨 UI layer is null! Creating emergency UI layer for call_screen...")
+			_create_emergency_ui_layer(adv_system)
+		
 		var success = await adv_system.LayerManager.show_control_scene(scene_instance, position, transition)
 		if success:
 			print("✅ Call screen displayed successfully")
@@ -827,3 +833,33 @@ func _resolve_ui_scene_path(scene_path: String, adv_system: Node) -> String:
 	
 	# 定義が見つからない場合、そのままパスとして扱う
 	return scene_path
+
+func _create_emergency_ui_layer(adv_system: Node) -> void:
+	"""緊急用のUIレイヤーを作成（LayerManagerが初期化されていない場合の対策）"""
+	print("🚨 Creating emergency UI layer...")
+	
+	# シーンツリーのルートを取得
+	var tree = adv_system.get_tree()
+	if not tree:
+		print("❌ Cannot get scene tree")
+		return
+	
+	var root = tree.current_scene
+	if not root:
+		print("❌ Cannot get current scene")
+		return
+	
+	# 緊急UIレイヤーを作成
+	var emergency_ui_layer = Control.new()
+	emergency_ui_layer.name = "EmergencyUILayer"
+	emergency_ui_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	emergency_ui_layer.z_index = 100  # 最前面に表示
+	
+	# ルートシーンに追加
+	root.add_child(emergency_ui_layer)
+	
+	# LayerManagerに設定
+	adv_system.LayerManager.ui_layer = emergency_ui_layer
+	
+	print("✅ Emergency UI layer created and assigned to LayerManager")
+	print("🔍 New UI layer path:", emergency_ui_layer.get_path())

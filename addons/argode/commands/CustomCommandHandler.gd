@@ -142,9 +142,22 @@ func emit_custom_signal(signal_name: String, args: Array = [], source_command: S
 	# 2. 登録された個別コールバックを実行
 	if signal_connections.has(signal_name):
 		var callbacks = signal_connections[signal_name]
-		for callback in callbacks:
+		print("   Found ", callbacks.size(), " callbacks for signal: ", signal_name)
+		for i in range(callbacks.size()):
+			var callback = callbacks[i]
+			print("   Executing callback ", i + 1, "/", callbacks.size(), ": ", callback)
 			if callback.is_valid():
-				callback.callv(args)
+				print("     Callback is valid, calling with args: ", args)
+				# callv()でエラーが出る可能性があるので、単一引数の場合は個別に処理
+				if args.size() == 1:
+					callback.call(args[0])
+				else:
+					callback.callv(args)
+				print("     Callback executed successfully")
+			else:
+				print("     ⚠️ Invalid callback, skipping")
+	else:
+		print("   No callbacks registered for signal: ", signal_name)
 
 func connect_to_dynamic_signal(signal_name: String, callback: Callable) -> bool:
 	"""動的シグナルに対してコールバックを登録"""

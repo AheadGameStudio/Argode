@@ -300,9 +300,42 @@ func _on_debug_ui_status():
         print("  - " + scene_path + type_str)
 ```
 
-## 🎯 UIコールバック機能
+## 🎯 UIコールバック機能（注意点あり）
+
+⚠️ **重要**: UIコールバック機能を使用するには、LayerManagerが適切に初期化されている必要があります。
 
 UICommandには、call_screenで表示されたUIシーンからの結果を受け取るコールバック機能があります。
+
+### 必要な前提条件
+
+UIコールバックが正常に動作するためには、以下の条件が満たされている必要があります：
+
+1. **LayerManagerの初期化**: `LayerManager.initialize_layers(bg_layer, char_layer, ui_layer)`が実行済み
+2. **シーン環境**: 適切なゲームシーンでの実行（headlessモードでは制限があります）
+3. **UIレイヤー**: ui_layerが正しく設定されている
+
+### 前提条件の確認方法
+
+```gdscript
+func check_ui_callback_requirements() -> bool:
+    """UIコールバック機能の前提条件を確認"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    if not argode_system:
+        print("❌ ArgodeSystem not found")
+        return false
+    
+    if not argode_system.LayerManager:
+        print("❌ LayerManager not found")
+        return false
+    
+    if not argode_system.LayerManager.ui_layer:
+        print("❌ UI layer not initialized")
+        print("💡 LayerManager.initialize_layers()を実行してください")
+        return false
+    
+    print("✅ UIコールバック機能の前提条件が満たされています")
+    return true
+```
 
 ### call_screenで使用可能なシグナル
 
@@ -532,6 +565,78 @@ func _on_tree_exiting():
     """シーンが破棄される前に結果未送信の場合は自動で閉じる"""
     if not _result_sent:
         close_without_result()
+```
+
+## 🔧 トラブルシューティング
+
+### UIコールバックが動作しない場合
+
+**症状**: `🎯 [ui] Emitted signal: ui_call_screen_closed`がログに出力されるが、コールバック関数が呼ばれない
+
+**原因と解決策**:
+
+1. **LayerManagerが未初期化**
+   ```gdscript
+   # 解決方法：LayerManagerを手動で初期化
+   func setup_layer_manager():
+       var argode_system = get_node("/root/ArgodeSystem")
+       var layer_manager = argode_system.LayerManager
+       
+       # UIレイヤーを作成して初期化
+       var ui_layer = Control.new()
+       ui_layer.name = "UILayer"
+       ui_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+       get_tree().current_scene.add_child(ui_layer)
+       
+       # LayerManagerに設定
+       layer_manager.initialize_layers(null, null, ui_layer)
+       print("✅ LayerManager initialized manually")
+   ```
+
+2. **コールバック関数が正しく接続されていない**
+   ```gdscript
+   # 確認方法
+   func verify_callback_connection():
+       var custom_handler = get_node("/root/ArgodeSystem").get_custom_command_handler()
+       var connections = custom_handler.signal_connections.get("ui_call_screen_closed", [])
+       print("接続されているコールバック数:", connections.size())
+       
+       if connections.size() == 0:
+           print("⚠️ コールバックが接続されていません")
+           # 再接続を試行
+           custom_handler.connect_to_dynamic_signal("ui_call_screen_closed", _on_ui_closed)
+   ```
+
+3. **UIシーンでシグナルが発行されていない**
+   ```gdscript
+   # UIシーン側で確認
+   func _on_close_button_pressed():
+       print("🔍 Closing call_screen with signal...")
+       if has_signal("close_screen"):
+           close_screen.emit()
+           print("✅ close_screen signal emitted")
+       else:
+           print("❌ close_screen signal not found")
+   ```
+
+### デバッグ用のログ確認
+
+```gdscript
+func enable_ui_callback_debug():
+    """UIコールバックのデバッグ情報を有効化"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    
+    # 動的シグナルの汎用デバッグ接続
+    if not custom_handler.dynamic_signal_emitted.is_connected(_debug_signal_emission):
+        custom_handler.dynamic_signal_emitted.connect(_debug_signal_emission)
+        print("✅ Dynamic signal debug enabled")
+
+func _debug_signal_emission(signal_name: String, args: Array, source_command: String):
+    """すべての動的シグナル発行をログ出力"""
+    print("📡 [DEBUG] Signal:", signal_name)
+    print("  Args:", args)
+    print("  Source:", source_command)
 ```
 
 ## 🎵 AudioManagerとの組み合わせ

@@ -285,9 +285,42 @@ func _on_debug_ui_status():
         print("  - " + scene_path + type_str)
 ```
 
-## 🎯 UI Callback System
+## 🎯 UI Callback System (Important Notes)
+
+⚠️ **Important**: To use UI callback functionality, LayerManager must be properly initialized.
 
 UICommand provides a comprehensive callback system for receiving results from UI scenes displayed with call_screen.
+
+### Prerequisites
+
+For UI callbacks to work properly, the following conditions must be met:
+
+1. **LayerManager Initialization**: `LayerManager.initialize_layers(bg_layer, char_layer, ui_layer)` must be executed
+2. **Scene Environment**: Execution within a proper game scene (headless mode has limitations)  
+3. **UI Layer**: ui_layer must be correctly configured
+
+### Prerequisites Verification
+
+```gdscript
+func check_ui_callback_requirements() -> bool:
+    """Check prerequisites for UI callback functionality"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    if not argode_system:
+        print("❌ ArgodeSystem not found")
+        return false
+    
+    if not argode_system.LayerManager:
+        print("❌ LayerManager not found")
+        return false
+    
+    if not argode_system.LayerManager.ui_layer:
+        print("❌ UI layer not initialized")
+        print("💡 Please execute LayerManager.initialize_layers()")
+        return false
+    
+    print("✅ UI callback prerequisites are satisfied")
+    return true
+```
 
 ### Available Signals in call_screen
 
@@ -451,6 +484,78 @@ func _on_tree_exiting():
     """Auto-close if result not sent before scene destruction"""
     if not _result_sent:
         close_without_result()
+```
+
+## 🔧 Troubleshooting
+
+### UI Callbacks Not Working
+
+**Symptom**: `🎯 [ui] Emitted signal: ui_call_screen_closed` appears in logs but callback functions are not called
+
+**Causes and Solutions**:
+
+1. **LayerManager Not Initialized**
+   ```gdscript
+   # Solution: Initialize LayerManager manually
+   func setup_layer_manager():
+       var argode_system = get_node("/root/ArgodeSystem")
+       var layer_manager = argode_system.LayerManager
+       
+       # Create and initialize UI layer
+       var ui_layer = Control.new()
+       ui_layer.name = "UILayer"
+       ui_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+       get_tree().current_scene.add_child(ui_layer)
+       
+       # Set to LayerManager
+       layer_manager.initialize_layers(null, null, ui_layer)
+       print("✅ LayerManager initialized manually")
+   ```
+
+2. **Callback Functions Not Properly Connected**
+   ```gdscript
+   # Verification method
+   func verify_callback_connection():
+       var custom_handler = get_node("/root/ArgodeSystem").get_custom_command_handler()
+       var connections = custom_handler.signal_connections.get("ui_call_screen_closed", [])
+       print("Connected callbacks:", connections.size())
+       
+       if connections.size() == 0:
+           print("⚠️ No callbacks connected")
+           # Retry connection
+           custom_handler.connect_to_dynamic_signal("ui_call_screen_closed", _on_ui_closed)
+   ```
+
+3. **UI Scene Not Emitting Signals**
+   ```gdscript
+   # Verify on UI scene side
+   func _on_close_button_pressed():
+       print("🔍 Closing call_screen with signal...")
+       if has_signal("close_screen"):
+           close_screen.emit()
+           print("✅ close_screen signal emitted")
+       else:
+           print("❌ close_screen signal not found")
+   ```
+
+### Debug Logging
+
+```gdscript
+func enable_ui_callback_debug():
+    """Enable debug logging for UI callbacks"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    
+    # Generic debug connection for dynamic signals
+    if not custom_handler.dynamic_signal_emitted.is_connected(_debug_signal_emission):
+        custom_handler.dynamic_signal_emitted.connect(_debug_signal_emission)
+        print("✅ Dynamic signal debug enabled")
+
+func _debug_signal_emission(signal_name: String, args: Array, source_command: String):
+    """Log all dynamic signal emissions"""
+    print("📡 [DEBUG] Signal:", signal_name)
+    print("  Args:", args)
+    print("  Source:", source_command)
 ```
 
 ## 🎵 Combining with AudioManager
