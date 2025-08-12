@@ -54,6 +54,97 @@ func get_variable(var_name: String) -> Variant:
 		push_warning("⚠️ Undefined variable: " + var_name)
 		return null
 
+func get_nested_variable(path: String, separator: String = ".") -> Variant:
+	"""ネストした変数の値を取得 (例: "player.stats.level")"""
+	var keys = path.split(separator)
+	var current = global_vars
+	
+	for key in keys:
+		if current is Dictionary and current.has(key):
+			current = current[key]
+		else:
+			push_warning("⚠️ Undefined nested variable: " + path)
+			return null
+	
+	return current
+
+func set_nested_variable(path: String, value: Variant, separator: String = "."):
+	"""ネストした変数に値を設定 (例: "player.stats.level", 10)"""
+	var keys = path.split(separator)
+	var current = global_vars
+	
+	# 最後のキーを除いて辞書を作成/取得
+	for i in range(keys.size() - 1):
+		var key = keys[i]
+		if not current.has(key) or not (current[key] is Dictionary):
+			current[key] = {}
+		current = current[key]
+	
+	# 最後のキーに値を設定
+	var final_key = keys[-1]
+	current[final_key] = value
+	print("📊 Nested var set: ", path, " = ", value, " (", typeof(value), ")")
+
+func get_flag(flag_name: String) -> bool:
+	"""フラグの状態を取得（フラグ専用メソッド）"""
+	var flags = global_vars.get("_flags", {})
+	return flags.get(flag_name, false)
+
+func set_flag(flag_name: String, value: bool):
+	"""フラグを設定（フラグ専用メソッド）"""
+	if not global_vars.has("_flags"):
+		global_vars["_flags"] = {}
+	global_vars["_flags"][flag_name] = value
+	print("🏷️ Flag set: ", flag_name, " = ", value)
+
+func toggle_flag(flag_name: String) -> bool:
+	"""フラグを切り替えて新しい値を返す"""
+	var new_value = not get_flag(flag_name)
+	set_flag(flag_name, new_value)
+	return new_value
+
+func set_dictionary(var_name: String, dict_literal: String):
+	"""辞書リテラル文字列から辞書を設定"""
+	var parsed_dict = _parse_dictionary_literal(dict_literal)
+	if parsed_dict != null:
+		set_variable_direct(var_name, parsed_dict)
+		print("📚 Dictionary set: ", var_name, " = ", parsed_dict)
+	else:
+		push_error("Failed to parse dictionary literal: " + dict_literal)
+
+func set_array(var_name: String, array_literal: String):
+	"""配列リテラル文字列から配列を設定"""
+	var parsed_array = _parse_array_literal(array_literal)
+	if parsed_array != null:
+		set_variable_direct(var_name, parsed_array)
+		print("📋 Array set: ", var_name, " = ", parsed_array)
+	else:
+		push_error("Failed to parse array literal: " + array_literal)
+
+func create_variable_group(group_name: String, initial_data: Dictionary = {}):
+	"""変数グループを作成"""
+	global_vars[group_name] = initial_data
+	print("📦 Variable group created: ", group_name, " with ", initial_data.size(), " items")
+
+func get_variable_group(group_name: String) -> Dictionary:
+	"""変数グループを取得"""
+	if global_vars.has(group_name) and global_vars[group_name] is Dictionary:
+		return global_vars[group_name]
+	else:
+		push_warning("⚠️ Variable group not found: " + group_name)
+		return {}
+
+func add_to_variable_group(group_name: String, key: String, value: Variant):
+	"""変数グループに項目を追加"""
+	if not global_vars.has(group_name):
+		global_vars[group_name] = {}
+	elif not (global_vars[group_name] is Dictionary):
+		push_warning("⚠️ " + group_name + " is not a dictionary group")
+		return
+	
+	global_vars[group_name][key] = value
+	print("📦 Added to group ", group_name, ": ", key, " = ", value)
+
 func evaluate_condition(expression_str: String) -> bool:
 	var expression = Expression.new()
 	var error = expression.parse(expression_str, _get_available_variable_names())
@@ -71,25 +162,34 @@ func evaluate_condition(expression_str: String) -> bool:
 func expand_variables(text: String) -> String:
 	var result = text
 	
-	# v2新構文: [variable] 形式の変数展開をサポート
+	# v2新構文: [variable] または [group.key] 形式の変数展開をサポート
 	var regex_v2 = RegEx.new()
 	regex_v2.compile("\\[([^\\]]+)\\]")
 	var matches_v2 = regex_v2.search_all(text)
 	
 	for match in matches_v2:
-		var var_name = match.get_string(1)
-		if global_vars.has(var_name):
-			var value = str(global_vars[var_name])
-			result = result.replace("[" + var_name + "]", value)
-			print("🔄 Variable expanded: [", var_name, "] -> ", value)
+		var var_path = match.get_string(1)
+		var value = null
+		
+		# ドット記法の場合はネスト変数として取得
+		if "." in var_path:
+			value = get_nested_variable(var_path)
 		else:
-			push_warning("⚠️ Undefined variable in text: " + var_name)
+			# 通常の変数として取得
+			value = global_vars.get(var_path, null)
+		
+		if value != null:
+			var value_str = str(value)
+			result = result.replace("[" + var_path + "]", value_str)
+			print("🔄 Variable expanded: [", var_path, "] -> ", value_str)
+		else:
+			push_warning("⚠️ Undefined variable in text: " + var_path)
 	
 	# v2設計: {} 形式はインラインタグ専用のため、変数展開では処理しない
 	# v1互換が必要な場合は、明示的に enable_legacy_variable_syntax フラグで制御
 	
 	# 注意: v2では {} はインラインタグ（{shake}, {color=red}等）に使用
-	# 変数展開は [] 形式のみ（[variable_name]）をサポート
+	# 変数展開は [] 形式のみ（[variable_name] または [group.key]）をサポート
 	
 	return result
 
@@ -118,8 +218,16 @@ func handle_set_from_definition(line: String, file_path: String, line_number: in
 		print("   ❌ Invalid set statement at ", file_path, ":", line_number)
 
 func _parse_expression(expression: String) -> Variant:
-	"""式を解析してGodot値に変換"""
+	"""式を解析してGodot値に変換（辞書・配列サポート追加）"""
 	expression = expression.strip_edges()
+	
+	# 辞書リテラル {"key": "value", "key2": 123}
+	if expression.begins_with("{") and expression.ends_with("}"):
+		return _parse_dictionary_literal(expression)
+	
+	# 配列リテラル ["item1", "item2", 123]
+	if expression.begins_with("[") and expression.ends_with("]"):
+		return _parse_array_literal(expression)
 	
 	# 文字列リテラル
 	if expression.begins_with('"') and expression.ends_with('"'):
@@ -141,3 +249,49 @@ func _parse_expression(expression: String) -> Variant:
 	
 	# その他は文字列として処理
 	return expression
+
+func _parse_dictionary_literal(dict_str: String) -> Dictionary:
+	"""辞書リテラルをパース"""
+	var result = {}
+	
+	# {} の中身を取得
+	var content = dict_str.substr(1, dict_str.length() - 2).strip_edges()
+	if content.is_empty():
+		return result
+	
+	# カンマで分割（簡易実装）
+	var pairs = content.split(",")
+	
+	for pair in pairs:
+		var kv = pair.split(":", false, 1)  # 最大2つに分割
+		if kv.size() == 2:
+			var key = kv[0].strip_edges()
+			var value_str = kv[1].strip_edges()
+			
+			# キーの引用符を除去
+			if key.begins_with('"') and key.ends_with('"'):
+				key = key.substr(1, key.length() - 2)
+			
+			# 値を再帰的にパース
+			var value = _parse_expression(value_str)
+			result[key] = value
+	
+	return result
+
+func _parse_array_literal(array_str: String) -> Array:
+	"""配列リテラルをパース"""
+	var result = []
+	
+	# [] の中身を取得
+	var content = array_str.substr(1, array_str.length() - 2).strip_edges()
+	if content.is_empty():
+		return result
+	
+	# カンマで分割
+	var items = content.split(",")
+	
+	for item in items:
+		var value = _parse_expression(item.strip_edges())
+		result.append(value)
+	
+	return result

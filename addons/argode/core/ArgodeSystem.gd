@@ -141,6 +141,7 @@ func _auto_discover_and_register_commands() -> int:
 	"""カスタムコマンドを自動発見・登録する"""
 	var registered_count = 0
 	var search_directories = [
+		"res://addons/argode/builtin/commands/",  # Argode組み込みコマンド（最優先）
 		"res://custom/commands/",
 		"res://addons/*/commands/",  # 他のアドオンからのコマンド
 		"res://project_commands/",   # プロジェクト専用コマンドディレクトリ

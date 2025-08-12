@@ -1,6 +1,7 @@
 # WaitCommand.gd
 # wait コマンド実装 - 指定時間待機する同期コマンド
-class_name WaitCommand
+@tool
+class_name BuiltinWaitCommand
 extends BaseCustomCommand
 
 func _init():

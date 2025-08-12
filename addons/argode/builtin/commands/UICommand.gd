@@ -1,6 +1,7 @@
 # UICommand.gd
 # Controlベースのシーンを表示・制御するためのカスタムコマンド
-class_name UICommand
+@tool
+class_name BuiltinUICommand
 extends BaseCustomCommand
 
 func _init():

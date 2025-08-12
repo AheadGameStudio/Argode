@@ -194,3 +194,79 @@ func is_flag_set(flag_name: String) -> bool:
 func set_flag(flag_name: String, value: bool = true):
 	"""フラグを設定"""
 	set_variable(flag_name, value)
+
+# === 辞書型変数のヘルパーメソッド ===
+
+func get_nested_variable(path: String) -> Variant:
+	"""ネストした変数の値を取得（例: "player.level" or "flags.story.chapter1"）"""
+	if argode_system and argode_system.Variables:
+		return argode_system.Variables.get_nested_variable(path)
+	return null
+
+func set_nested_variable(path: String, value: Variant):
+	"""ネストした変数を設定（例: "player.level = 5"）"""
+	if argode_system and argode_system.Variables:
+		argode_system.Variables.set_nested_variable(path, value)
+
+func get_flag(flag_name: String) -> bool:
+	"""フラグの値を取得（boolean型として）"""
+	if argode_system and argode_system.Variables:
+		return argode_system.Variables.get_flag(flag_name)
+	return false
+
+func set_flag_in_group(group: String, flag_name: String, value: bool = true):
+	"""グループ内のフラグを設定（例: set_flag_in_group("story", "chapter1_complete", true)）"""
+	set_nested_variable(group + "." + flag_name, value)
+
+func toggle_flag(flag_name: String):
+	"""フラグの状態を切り替える"""
+	if argode_system and argode_system.Variables:
+		argode_system.Variables.toggle_flag(flag_name)
+
+func create_variable_group(group_name: String, initial_data: Dictionary = {}):
+	"""変数グループを作成"""
+	if argode_system and argode_system.Variables:
+		argode_system.Variables.create_variable_group(group_name, initial_data)
+
+func add_to_variable_group(group_name: String, key: String, value: Variant):
+	"""変数グループに要素を追加"""
+	if argode_system and argode_system.Variables:
+		argode_system.Variables.add_to_variable_group(group_name, key, value)
+
+func get_variable_group(group_name: String) -> Dictionary:
+	"""変数グループ全体を取得"""
+	if argode_system and argode_system.Variables:
+		return argode_system.Variables.get_variable_group(group_name)
+	return {}
+
+# === 便利メソッド（辞書型対応版） ===
+
+func setup_story_flags():
+	"""ストーリーフラグを初期化"""
+	create_variable_group("story", {
+		"prologue_complete": false,
+		"chapter1_complete": false,
+		"chapter2_complete": false,
+		"ending_seen": false
+	})
+
+func setup_character_status():
+	"""キャラクターステータスを初期化"""
+	create_variable_group("characters", {})
+	
+	# 各キャラクターの初期設定
+	add_to_variable_group("characters", "player", {
+		"name": "プレイヤー",
+		"level": 1,
+		"friendship": {}
+	})
+
+func get_character_friendship(character_name: String) -> int:
+	"""キャラクターとの好感度を取得"""
+	var friendship = get_nested_variable("characters.player.friendship." + character_name)
+	return friendship if friendship != null else 0
+
+func modify_character_friendship(character_name: String, amount: int):
+	"""キャラクターとの好感度を変更"""
+	var current = get_character_friendship(character_name)
+	set_nested_variable("characters.player.friendship." + character_name, current + amount)
