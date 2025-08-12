@@ -395,20 +395,23 @@ func _set_control_scene_position(scene_node: Control, position: String):
 	"""Controlシーンの位置を設定"""
 	match position:
 		"left":
+			# 全画面表示（左寄せの意味ではなく、全画面での表示位置指定）
 			scene_node.anchor_left = 0.0
-			scene_node.anchor_right = 0.4
-			scene_node.anchor_top = 0.1
-			scene_node.anchor_bottom = 0.9
-		"right":
-			scene_node.anchor_left = 0.6
 			scene_node.anchor_right = 1.0
-			scene_node.anchor_top = 0.1
-			scene_node.anchor_bottom = 0.9
+			scene_node.anchor_top = 0.0
+			scene_node.anchor_bottom = 1.0
+		"right":
+			# 全画面表示（右寄せの意味ではなく、全画面での表示位置指定）
+			scene_node.anchor_left = 0.0
+			scene_node.anchor_right = 1.0
+			scene_node.anchor_top = 0.0
+			scene_node.anchor_bottom = 1.0
 		"center", _:
-			scene_node.anchor_left = 0.2
-			scene_node.anchor_right = 0.8
-			scene_node.anchor_top = 0.1
-			scene_node.anchor_bottom = 0.9
+			# 全画面表示
+			scene_node.anchor_left = 0.0
+			scene_node.anchor_right = 1.0
+			scene_node.anchor_top = 0.0
+			scene_node.anchor_bottom = 1.0
 	
 	# アンカーに基づいて実際の位置を設定
 	scene_node.offset_left = 0
