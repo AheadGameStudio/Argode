@@ -1,246 +1,162 @@
 # Custom Commands Overview
 
-One of Argode's most powerful features is its **unlimited extensibility** through custom commands. Any command not recognized by the built-in script parser is automatically forwarded as a signal, allowing you to implement game-specific functionality seamlessly.
+One of Argode's most powerful features is its extensibility through custom commands. By creating simple script files, you can add new game-specific logic, integrate with other Godot systems, and expand the engine's capabilities to fit your project's unique needs.
 
-## 🎯 How Custom Commands Work
+Argode uses an **object-oriented, class-based** approach for custom commands. Each command is its own `.gd` file that extends the `BaseCustomCommand` class. This makes your commands modular, reusable, and easy to manage.
 
-When Argode encounters an unknown command in your script, it follows this process:
+## 🚀 Command Auto-Discovery
+
+The best part of the new command system is **auto-discovery**. You no longer need to manually connect signals or register your commands. Simply place your command's `.gd` file in the `res://custom/commands/` directory, and Argode will automatically detect and register it when the game starts.
 
 ```mermaid
 graph TD
-    A[Parse Script Line] --> B{Built-in Command?}
-    B -->|Yes| C[Execute Built-in]
-    B -->|No| D[Extract Command & Parameters]
-    D --> E[Emit custom_command_executed Signal]
-    E --> F[Your Handler Receives Signal]
-    F --> G[Execute Custom Logic]
-    G --> H[Continue Script]
+    A[Game Starts] --> B[ArgodeSystem Initializes]
+    B --> C{Scans `custom/commands/`}
+    C --> D[Finds YourCommand.gd]
+    D --> E{Registers "your_command"}
+    E --> F[Ready to use in scripts!]
+
+    style C fill:#e1f5fe
+    style E fill:#c8e6c9
+```
+
+## 🛠️ Creating a Custom Command
+
+Let's create a simple `hello_world` command that prints a message to the console.
+
+**Step 1: Create the File**
+
+Create a new file named `HelloWorldCommand.gd` inside the `res://custom/commands/` directory.
+
+**Step 2: Write the Code**
+
+Open the file and add the following code:
+
+```gdscript
+# res://custom/commands/HelloWorldCommand.gd
+@tool
+class_name HelloWorldCommand
+extends BaseCustomCommand
+
+# Called when the command is first registered.
+func _init():
+    # The name used in your .rgd scripts.
+    command_name = "hello_world"
     
-    style E fill:#e1f5fe
-    style F fill:#f3e5f5
-```
-
-## 📝 Basic Example
-
-Let's create a custom screen shake effect:
-
-### In Your Script (story.rgd)
-```rgd
-label earthquake_scene:
-    narrator "The ground begins to shake!"
-    screen_shake intensity=8.0 duration=2.0
-    narrator "That was intense!"
-```
-
-### In Your Code (Main.gd)
-```gdscript
-extends Control
-
-func _ready():
-    # Connect to the custom command signal
-    ArgodeSystem.ScriptPlayer.custom_command_executed.connect(_handle_custom_command)
-
-func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
-    match command_name:
-        "screen_shake":
-            var intensity = parameters.get("intensity", 5.0)
-            var duration = parameters.get("duration", 1.0)
-            _shake_screen(intensity, duration)
-
-func _shake_screen(intensity: float, duration: float):
-    var tween = create_tween()
-    var original_position = global_position
+    # A brief description for documentation or tools.
+    description = "Prints a greeting to the console."
     
-    for i in range(int(duration * 60)):  # 60 FPS
-        var offset = Vector2(
-            randf_range(-intensity, intensity),
-            randf_range(-intensity, intensity)
-        )
-        tween.tween_to(global_position + offset, 1.0/60.0)
+    # Help text for how to use the command.
+    help_text = "hello_world [name=string]"
+
+# Called when the command is executed in a script.
+func execute(parameters: Dictionary, adv_system: Node) -> void:
+    # Get a parameter named "name", with a default value of "World".
+    var target_name = parameters.get("name", "World")
     
-    tween.tween_to(original_position, 0.1)
+    # Print the message.
+    print("Hello, " + target_name + "!")
+    
+    # Log to the in-game console for debugging.
+    log_command("Printed greeting to " + target_name)
 ```
 
-## 🔧 Parameter Parsing
+**Step 3: Use it in Your Script**
 
-Argode automatically parses parameters in multiple formats:
+Now you can use your new command in any `.rgd` file:
 
-### Key-Value Parameters
 ```rgd
-particle_effect type="explosion" x=100 y=200 scale=1.5
-```
-```gdscript
-# parameters["type"] = "explosion"
-# parameters["x"] = 100
-# parameters["y"] = 200  
-# parameters["scale"] = 1.5
-```
+label start:
+    # Prints "Hello, World!"
+    hello_world
 
-### Positional Parameters
-```rgd
-fade_to_color red 2.0 ease_in
-```
-```gdscript
-# parameters["arg0"] = "red"
-# parameters["arg1"] = 2.0
-# parameters["arg2"] = "ease_in"
-# parameters["_count"] = 3
+    # Prints "Hello, Yuko!"
+    hello_world name="Yuko"
 ```
 
-### Mixed Parameters
-```rgd
-spawn_enemy goblin attack=15 x=300 magical=true
-```
-```gdscript
-# parameters["arg0"] = "goblin"
-# parameters["attack"] = 15
-# parameters["x"] = 300
-# parameters["magical"] = true
-```
+That's it! Argode handles the rest.
 
-## 🎮 Built-in Custom Commands
+## ⚙️ The `BaseCustomCommand` Class
 
-Argode includes several pre-built custom commands that demonstrate best practices:
+Your custom command classes inherit from `BaseCustomCommand` and can override several properties and methods:
 
-### Window Effects
-```rgd
-window shake intensity=5.0 duration=0.5
-window fullscreen toggle
-window resize 1280 720
-```
+- `command_name` (string): **Required.** The name of the command used in scripts.
+- `description` (string): A short description of what the command does.
+- `help_text` (string): A longer text explaining the syntax and parameters.
+- `execute(parameters: Dictionary, adv_system: Node)`: **Required.** The main logic of your command.
+- `is_synchronous() -> bool`: Override this to control script flow (see below).
+- `execute_internal_async(parameters: Dictionary, adv_system: Node)`: The async version of your logic.
 
-### Screen Effects  
-```rgd
-screen_tint color=#ff0000 intensity=0.3 duration=1.0
-screen_flash color=#ffffff duration=0.1
-screen_blur intensity=2.0 duration=0.5
-```
+## ⚡ Synchronous vs. Asynchronous Commands
 
-### Advanced Effects
-```rgd
-particle_effect explosion x=400 y=300
-camera_shake intensity=3.0 duration=1.5 
-layer_tint background color=#0066cc intensity=0.5
-```
-
-[View All Built-in Commands →](built-in.md){ .md-button }
-
-## ⚡ Synchronous vs Asynchronous Commands
-
-Commands can be either **synchronous** (block script execution) or **asynchronous** (run in parallel):
+Commands can either be **asynchronous** (the script continues immediately) or **synchronous** (the script waits for the command to finish).
 
 ### Asynchronous (Default)
-```gdscript
-func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
-    match command_name:
-        "play_sound":
-            # Script continues immediately
-            audio_player.play_sound(parameters.get("file"))
-```
+
+By default, commands are asynchronous. The `execute` method is called, and the script player moves to the next line right away. This is suitable for actions that shouldn't block the game flow, like playing a sound effect.
 
 ### Synchronous
+
+To make a command synchronous, you need to do two things:
+
+1.  Override `is_synchronous()` to return `true`.
+2.  Put your logic inside `execute_internal_async(params, adv_system)`.
+
+The `wait` command is a perfect example:
+
 ```gdscript
-func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
-    match command_name:
-        "wait":
-            # Script waits for completion
-            var duration = parameters.get("duration", 1.0)
-            await get_tree().create_timer(duration).timeout
-            ArgodeSystem.CustomCommandHandler.synchronous_command_completed.emit()
+# A simplified look at the built-in WaitCommand.gd
+@tool
+class_name BuiltinWaitCommand
+extends BaseCustomCommand
+
+func _init():
+    command_name = "wait"
+
+# 1. Tell Argode this command should block the script.
+func is_synchronous() -> bool:
+    return true
+
+# 2. Put the waiting logic in the async version of execute.
+func execute_internal_async(params: Dictionary, adv_system: Node) -> void:
+    var duration = params.get("duration", 1.0)
+    
+    # The 'await' keyword pauses this function, and because
+    # is_synchronous() is true, it also pauses the script player.
+    await adv_system.get_tree().create_timer(duration).timeout
+    
+    # Once the timer is done, the script will resume.
 ```
 
-## 🎨 Advanced Use Cases
+## 📥 Handling Parameters
 
-### Game Mechanics Integration
+The `execute` method receives a `parameters` dictionary containing all the arguments passed from the script.
+
+**Script:**
 ```rgd
-# RPG-style commands
-add_item "Magic Sword" quantity=1
-gain_experience 250
-level_up_check
-
-# Inventory management
-show_inventory category="weapons"
-equip_item "Magic Sword"
+my_command "first_arg" 123 an_option="some_value"
 ```
 
-### Visual Effects
-```rgd
-# Complex animations
-animate_character alice slide_in from=left duration=0.8 easing=bounce
-morph_background from=day to=night duration=3.0
-create_weather rain intensity=0.7
+**`parameters` Dictionary:**
+```gdscript
+{
+  "_raw": "first_arg 123 an_option=some_value", # The raw string
+  "arg0": "first_arg",
+  "arg1": 123,
+  "an_option": "some_value"
+}
 ```
-
-### Custom UI
-```rgd
-# Mini-games and interactive elements
-start_minigame "puzzle_box" difficulty=3
-show_map location="forest" interactive=true
-display_stats character="alice" style="detailed"
-```
+You can use the `.get(key, default_value)` method on the dictionary to safely access parameters.
 
 ## 📚 Best Practices
 
-### 1. Consistent Naming
-Use clear, descriptive command names:
-```rgd
-✅ screen_shake intensity=5.0
-✅ play_music "battle_theme" volume=0.8
-❌ shake 5
-❌ music battle_theme  
-```
-
-### 2. Parameter Validation
-Always validate parameters in your handlers:
-```gdscript
-func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
-    match command_name:
-        "screen_shake":
-            var intensity = clamp(parameters.get("intensity", 5.0), 0.1, 50.0)
-            var duration = clamp(parameters.get("duration", 1.0), 0.1, 10.0)
-            _shake_screen(intensity, duration)
-```
-
-### 3. Error Handling
-Provide meaningful error messages:
-```gdscript
-func _handle_play_sound(parameters: Dictionary):
-    var file = parameters.get("file", "")
-    if file.is_empty():
-        push_error("play_sound command requires 'file' parameter")
-        return
-        
-    if not FileAccess.file_exists("res://audio/" + file):
-        push_error("Audio file not found: " + file)
-        return
-        
-    audio_player.stream = load("res://audio/" + file)
-    audio_player.play()
-```
-
-### 4. Documentation
-Document your custom commands:
-```gdscript
-## Shakes the screen with specified intensity and duration
-## Parameters:
-##   intensity (float): Shake strength (0.1 - 50.0, default: 5.0)  
-##   duration (float): Shake duration in seconds (0.1 - 10.0, default: 1.0)
-## Example: screen_shake intensity=3.0 duration=0.8
-func _handle_screen_shake(parameters: Dictionary):
-    # Implementation...
-```
-
-## 🚀 Next Steps
-
-Ready to create your own custom commands?
-
-- **[Built-in Commands Reference](built-in.md)**: See all available commands
-- **[Creating Custom Commands](creating.md)**: Step-by-step implementation guide  
-- **[Advanced Patterns](../examples/custom-features.md)**: Complex command examples
+- **One Command, One File:** Keep each command in its own file for better organization.
+- **Clear Naming:** Use descriptive names for your commands and parameters.
+- **Use `log_command()`:** Call `log_command("My message")` inside `execute` to print debug information to the in-game console.
+- **Fail Gracefully:** Check for required parameters and use `log_error()` or `log_warning()` to report issues without crashing.
 
 ---
 
-The custom command system makes Argode infinitely extensible—from simple effects to complex game mechanics, anything is possible!
+With this powerful system, you can extend Argode to do almost anything you can imagine.
 
-[View Built-in Commands →](built-in.md){ .md-button .md-button--primary }
-[Create Your Own →](creating.md){ .md-button }
+[View Built-in Commands →](built-in.md){ .md-button }

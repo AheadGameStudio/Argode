@@ -1,246 +1,162 @@
 # カスタムコマンド概要
 
-Argodeの最も強力な機能の一つは、カスタムコマンドによる**無限の拡張性**です。組み込みスクリプトパーサーが認識しないコマンドは、自動的にシグナルとして転送され、ゲーム固有の機能をシームレスに実装できます。
+Argodeの最も強力な機能の一つが、カスタムコマンドによる拡張性です。簡単なスクリプトファイルを作成するだけで、ゲーム固有の新しいロジックを追加したり、他のGodotシステムと連携したり、プロジェクト独自のニーズに合わせてエンジンの能力を拡張したりすることができます。
 
-## 🎯 カスタムコマンドの仕組み
+Argodeは、カスタムコマンドに対して **オブジェクト指向のクラスベース** のアプローチを採用しています。各コマンドは、`BaseCustomCommand`クラスを継承した独自の`.gd`ファイルです。これにより、コマンドはモジュール化され、再利用可能で、管理が容易になります。
 
-Argodeがスクリプト内で未知のコマンドに遭遇すると、以下のプロセスを実行します：
+## 🚀 コマンドの自動発見
+
+新しいコマンドシステムの最大の特徴は **自動発見機能** です。もはやシグナルを手動で接続したり、コマンドを登録したりする必要はありません。コマンドの`.gd`ファイルを`res://custom/commands/`ディレクトリに配置するだけで、ゲーム開始時にArgodeが自動的にそれを検出して登録します。
 
 ```mermaid
 graph TD
-    A[スクリプト行を解析] --> B{組み込みコマンド?}
-    B -->|はい| C[組み込み実行]
-    B -->|いいえ| D[コマンド・パラメータを抽出]
-    D --> E[custom_command_executedシグナルを発行]
-    E --> F[あなたのハンドラーがシグナルを受信]
-    F --> G[カスタムロジックを実行]
-    G --> H[スクリプト継続]
+    A[ゲーム開始] --> B[ArgodeSystemの初期化]
+    B --> C{`custom/commands/`をスキャン}
+    C --> D[YourCommand.gdを発見]
+    D --> E{"your_command"を登録}
+    E --> F[スクリプトで使用可能に！]
+
+    style C fill:#e1f5fe
+    style E fill:#c8e6c9
+```
+
+## 🛠️ カスタムコマンドの作成
+
+コンソールにメッセージを出力する簡単な`hello_world`コマンドを作成してみましょう。
+
+**ステップ1: ファイルの作成**
+
+`res://custom/commands/`ディレクトリ内に`HelloWorldCommand.gd`という名前で新しいファイルを作成します。
+
+**ステップ2: コードの記述**
+
+ファイルを開き、以下のコードを追加します:
+
+```gdscript
+# res://custom/commands/HelloWorldCommand.gd
+@tool
+class_name HelloWorldCommand
+extends BaseCustomCommand
+
+# コマンドが最初に登録されるときに呼び出される
+func _init():
+    # .rgdスクリプトで使われる名前
+    command_name = "hello_world"
     
-    style E fill:#e1f5fe
-    style F fill:#f3e5f5
-```
-
-## 📝 基本例
-
-画面揺れエフェクトのカスタムコマンドを作成してみましょう：
-
-### スクリプト内 (story.rgd)
-```rgd
-label earthquake_scene:
-    narrator "地面が揺れ始める！"
-    screen_shake intensity=8.0 duration=2.0
-    narrator "すごい揺れだった！"
-```
-
-### コード内 (Main.gd)
-```gdscript
-extends Control
-
-func _ready():
-    # カスタムコマンドシグナルに接続
-    ArgodeSystem.ScriptPlayer.custom_command_executed.connect(_handle_custom_command)
-
-func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
-    match command_name:
-        "screen_shake":
-            var intensity = parameters.get("intensity", 5.0)
-            var duration = parameters.get("duration", 1.0)
-            _shake_screen(intensity, duration)
-
-func _shake_screen(intensity: float, duration: float):
-    var tween = create_tween()
-    var original_position = global_position
+    # ドキュメントやツール用の簡単な説明
+    description = "コンソールに挨拶を出力します。"
     
-    for i in range(int(duration * 60)):  # 60 FPS
-        var offset = Vector2(
-            randf_range(-intensity, intensity),
-            randf_range(-intensity, intensity)
-        )
-        tween.tween_to(global_position + offset, 1.0/60.0)
+    # コマンドの使い方に関するヘルプテキスト
+    help_text = "hello_world [name=string]"
+
+# スクリプトでコマンドが実行されたときに呼び出される
+func execute(parameters: Dictionary, adv_system: Node) -> void:
+    # "name"という名前のパラメータを取得し、デフォルト値として"World"を設定
+    var target_name = parameters.get("name", "World")
     
-    tween.tween_to(original_position, 0.1)
+    # メッセージを出力
+    print("Hello, " + target_name + "!")
+    
+    # デバッグ用にゲーム内コンソールにログを記録
+    log_command("Printed greeting to " + target_name)
 ```
 
-## 🔧 パラメータ解析
+**ステップ3: スクリプトで使用する**
 
-Argodeは複数の形式でパラメータを自動解析します：
+これで、任意の`.rgd`ファイルで新しいコマンドを使用できます:
 
-### キー・値パラメータ
 ```rgd
-particle_effect type="explosion" x=100 y=200 scale=1.5
-```
-```gdscript
-# parameters["type"] = "explosion"
-# parameters["x"] = 100
-# parameters["y"] = 200  
-# parameters["scale"] = 1.5
-```
+label start:
+    # "Hello, World!"と出力される
+    hello_world
 
-### 位置パラメータ
-```rgd
-fade_to_color red 2.0 ease_in
-```
-```gdscript
-# parameters["arg0"] = "red"
-# parameters["arg1"] = 2.0
-# parameters["arg2"] = "ease_in"
-# parameters["_count"] = 3
+    # "Hello, Yuko!"と出力される
+    hello_world name="Yuko"
 ```
 
-### 混合パラメータ
-```rgd
-spawn_enemy goblin attack=15 x=300 magical=true
-```
-```gdscript
-# parameters["arg0"] = "goblin"
-# parameters["attack"] = 15
-# parameters["x"] = 300
-# parameters["magical"] = true
-```
+以上です！残りの処理はArgodeが自動的に行います。
 
-## 🎮 組み込みカスタムコマンド
+## ⚙️ `BaseCustomCommand`クラス
 
-Argodeは、ベストプラクティスを示す事前構築されたカスタムコマンドを含んでいます：
+カスタムコマンドクラスは`BaseCustomCommand`を継承し、いくつかのプロパティとメソッドをオーバーライドできます:
 
-### ウィンドウエフェクト
-```rgd
-window shake intensity=5.0 duration=0.5
-window fullscreen toggle
-window resize 1280 720
-```
+- `command_name` (string): **必須。** スクリプトで使用されるコマンド名。
+- `description` (string): コマンドが何をするかの短い説明。
+- `help_text` (string): 構文とパラメータを説明する長いテキスト。
+- `execute(parameters: Dictionary, adv_system: Node)`: **必須。** コマンドの主要なロジック。
+- `is_synchronous() -> bool`: スクリプトのフローを制御するためにこれをオーバーライドします（下記参照）。
+- `execute_internal_async(parameters: Dictionary, adv_system: Node)`: ロジックの非同期バージョン。
 
-### スクリーンエフェクト  
-```rgd
-screen_tint color=#ff0000 intensity=0.3 duration=1.0
-screen_flash color=#ffffff duration=0.1
-screen_blur intensity=2.0 duration=0.5
-```
+## ⚡ 同期コマンドと非同期コマンド
 
-### 高度なエフェクト
-```rgd
-particle_effect explosion x=400 y=300
-camera_shake intensity=3.0 duration=1.5 
-layer_tint background color=#0066cc intensity=0.5
-```
-
-[すべての組み込みコマンドを見る →](built-in.ja.md){ .md-button }
-
-## ⚡ 同期 vs 非同期コマンド
-
-コマンドは**同期**（スクリプト実行をブロック）または**非同期**（並行実行）のどちらでも可能です：
+コマンドには **非同期**（スクリプトは即座に続行）と **同期**（コマンドが終了するまでスクリプトを待機）の2種類があります。
 
 ### 非同期（デフォルト）
-```gdscript
-func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
-    match command_name:
-        "play_sound":
-            # スクリプトは即座に継続
-            audio_player.play_sound(parameters.get("file"))
-```
+
+デフォルトでは、コマンドは非同期です。`execute`メソッドが呼び出され、スクリプトプレイヤーはすぐに次の行に進みます。これは、効果音の再生など、ゲームの流れを妨げるべきでないアクションに適しています。
 
 ### 同期
+
+コマンドを同期的にするには、次の2つのことを行う必要があります:
+
+1.  `is_synchronous()`をオーバーライドして`true`を返すようにする。
+2.  ロジックを`execute_internal_async(params, adv_system)`内に記述する。
+
+`wait`コマンドが完璧な例です:
+
 ```gdscript
-func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
-    match command_name:
-        "wait":
-            # スクリプトは完了まで待機
-            var duration = parameters.get("duration", 1.0)
-            await get_tree().create_timer(duration).timeout
-            ArgodeSystem.CustomCommandHandler.synchronous_command_completed.emit()
+# ビルトインのWaitCommand.gdを簡略化したもの
+@tool
+class_name BuiltinWaitCommand
+extends BaseCustomCommand
+
+func _init():
+    command_name = "wait"
+
+# 1. このコマンドがスクリプトをブロックすることをArgodeに伝える
+func is_synchronous() -> bool:
+    return true
+
+# 2. 待機ロジックをexecuteの非同期版に記述する
+func execute_internal_async(params: Dictionary, adv_system: Node) -> void:
+    var duration = params.get("duration", 1.0)
+    
+    # 'await'キーワードがこの関数を一時停止させ、
+    # is_synchronous()がtrueであるため、スクリプトプレイヤーも一時停止させる
+    await adv_system.get_tree().create_timer(duration).timeout
+    
+    # タイマーが終了すると、スクリプトは再開される
 ```
 
-## 🎨 高度な使用例
+## 📥 パラメータの処理
 
-### ゲームメカニクス統合
+`execute`メソッドは、スクリプトから渡されたすべての引数を含む`parameters`ディクショナリを受け取ります。
+
+**スクリプト:**
 ```rgd
-# RPG風コマンド
-add_item "Magic Sword" quantity=1
-gain_experience 250
-level_up_check
-
-# インベントリ管理
-show_inventory category="weapons"
-equip_item "Magic Sword"
+my_command "first_arg" 123 an_option="some_value"
 ```
 
-### ビジュアルエフェクト
-```rgd
-# 複雑なアニメーション
-animate_character alice slide_in from=left duration=0.8 easing=bounce
-morph_background from=day to=night duration=3.0
-create_weather rain intensity=0.7
+**`parameters`ディクショナリ:**
+```gdscript
+{
+  "_raw": "first_arg 123 an_option=some_value", # 生の文字列
+  "arg0": "first_arg",
+  "arg1": 123,
+  "an_option": "some_value"
+}
 ```
-
-### カスタムUI
-```rgd
-# ミニゲームとインタラクティブ要素
-start_minigame "puzzle_box" difficulty=3
-show_map location="forest" interactive=true
-display_stats character="alice" style="detailed"
-```
+ディクショナリの`.get(key, default_value)`メソッドを使用すると、パラメータに安全にアクセスできます。
 
 ## 📚 ベストプラクティス
 
-### 1. 一貫した命名
-明確で説明的なコマンド名を使用：
-```rgd
-✅ screen_shake intensity=5.0
-✅ play_music "battle_theme" volume=0.8
-❌ shake 5
-❌ music battle_theme  
-```
-
-### 2. パラメータ検証
-ハンドラーで常にパラメータを検証：
-```gdscript
-func _handle_custom_command(command_name: String, parameters: Dictionary, line: String):
-    match command_name:
-        "screen_shake":
-            var intensity = clamp(parameters.get("intensity", 5.0), 0.1, 50.0)
-            var duration = clamp(parameters.get("duration", 1.0), 0.1, 10.0)
-            _shake_screen(intensity, duration)
-```
-
-### 3. エラーハンドリング
-意味のあるエラーメッセージを提供：
-```gdscript
-func _handle_play_sound(parameters: Dictionary):
-    var file = parameters.get("file", "")
-    if file.is_empty():
-        push_error("play_soundコマンドには'file'パラメータが必要です")
-        return
-        
-    if not FileAccess.file_exists("res://audio/" + file):
-        push_error("オーディオファイルが見つかりません: " + file)
-        return
-        
-    audio_player.stream = load("res://audio/" + file)
-    audio_player.play()
-```
-
-### 4. ドキュメント化
-カスタムコマンドを文書化：
-```gdscript
-## 指定された強度と継続時間で画面を揺らす
-## パラメータ:
-##   intensity (float): 揺れの強さ (0.1 - 50.0, デフォルト: 5.0)  
-##   duration (float): 揺れの継続時間(秒) (0.1 - 10.0, デフォルト: 1.0)
-## 例: screen_shake intensity=3.0 duration=0.8
-func _handle_screen_shake(parameters: Dictionary):
-    # 実装...
-```
-
-## 🚀 次のステップ
-
-独自のカスタムコマンドを作成する準備はできましたか？
-
-- **[組み込みコマンドリファレンス](built-in.ja.md)**: 利用可能なすべてのコマンドを確認
-- **[カスタムコマンド作成](creating.ja.md)**: ステップバイステップ実装ガイド  
-- **[高度なパターン](../examples/custom-features.ja.md)**: 複雑なコマンド例
+- **1コマンド1ファイル:** 整理しやすくするために、各コマンドを独自のファイルに保持します。
+- **明確な命名:** コマンドとパラメータには、説明的な名前を使用します。
+- **`log_command()`の使用:** `execute`内で`log_command("My message")`を呼び出して、デバッグ情報をゲーム内コンソールに出力します。
+- **優雅な失敗:** 必要なパラメータをチェックし、`log_error()`または`log_warning()`を使用して、クラッシュさせずに問題を報告します。
 
 ---
 
-カスタムコマンドシステムによりArgodeは無限に拡張可能です—シンプルなエフェクトから複雑なゲームメカニクスまで、何でも可能です！
+この強力なシステムを使えば、想像できるほとんどすべてのことを実現するためにArgodeを拡張できます。
 
-[組み込みコマンドを見る →](built-in.ja.md){ .md-button .md-button--primary }
-[独自コマンドを作る →](creating.ja.md){ .md-button }
+[ビルトインコマンド一覧 →](built-in.md){ .md-button }
