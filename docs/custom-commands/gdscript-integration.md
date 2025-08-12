@@ -285,6 +285,174 @@ func _on_debug_ui_status():
         print("  - " + scene_path + type_str)
 ```
 
+## 🎯 UI Callback System
+
+UICommand provides a comprehensive callback system for receiving results from UI scenes displayed with call_screen.
+
+### Available Signals in call_screen
+
+UI scenes displayed with call_screen can define the following signals:
+
+```gdscript
+# UI Scene side (e.g., choice_menu.gd)
+extends Control
+class_name ChoiceMenu
+
+# Signal to return results
+signal screen_result(result: Variant)
+# Signal to close itself  
+signal close_screen()
+
+func _ready():
+    # Button setup etc.
+    $YesButton.pressed.connect(_on_yes_pressed)
+    $NoButton.pressed.connect(_on_no_pressed)
+    $CancelButton.pressed.connect(_on_cancel_pressed)
+
+func _on_yes_pressed():
+    # Return choice result and auto-close
+    screen_result.emit("yes")
+
+func _on_no_pressed():
+    # Return choice result and auto-close
+    screen_result.emit("no")
+
+func _on_cancel_pressed():
+    # Close without result
+    close_screen.emit()
+```
+
+### Receiving UI Callbacks
+
+#### 1. Using Dynamic Signals (Recommended)
+
+```gdscript
+func setup_ui_callbacks():
+    """Setup UI callbacks"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    
+    # Connect to UI-related signals
+    custom_handler.connect_to_dynamic_signal("ui_call_screen_result", _on_ui_call_screen_result)
+    custom_handler.connect_to_dynamic_signal("ui_call_screen_shown", _on_ui_call_screen_shown)
+    custom_handler.connect_to_dynamic_signal("ui_call_screen_closed", _on_ui_call_screen_closed)
+
+func _on_ui_call_screen_result(args: Array):
+    """Handle results from call_screen"""
+    var scene_path = args[0] as String
+    var result = args[1]
+    
+    print("UI Callback Result:", scene_path, "->", result)
+    
+    # Handle results by scene
+    match scene_path:
+        "res://ui/choice_menu.tscn":
+            _handle_choice_result(result)
+        "res://ui/save_dialog.tscn":
+            _handle_save_result(result)
+        _:
+            print("Unhandled UI result:", scene_path, result)
+
+func _on_ui_call_screen_shown(args: Array):
+    """Handle call_screen display"""
+    var scene_path = args[0] as String
+    var position = args[1] as String
+    var transition = args[2] as String
+    print("UI displayed:", scene_path)
+
+func _on_ui_call_screen_closed(args: Array):
+    """Handle call_screen closure"""
+    var scene_path = args[0] as String
+    print("UI closed:", scene_path)
+
+func _handle_choice_result(result: Variant):
+    """Handle choice menu results"""
+    match result:
+        "yes":
+            print("Player selected 'Yes'")
+            continue_yes_path()
+        "no":
+            print("Player selected 'No'")
+            continue_no_path()
+        _:
+            print("Unknown choice:", result)
+```
+
+#### 2. Direct Access from call_screen_results
+
+```gdscript
+func show_choice_and_get_result() -> Variant:
+    """Display choice menu and get result"""
+    var scene_path = "res://ui/choice_menu.tscn"
+    
+    # Display menu (await for completion)
+    await call_ui_scene(scene_path)
+    
+    # Get result
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if ui_command and scene_path in ui_command.call_screen_results:
+        var result = ui_command.call_screen_results[scene_path]
+        print("Retrieved result:", result)
+        return result
+    else:
+        print("No result")
+        return null
+
+# Usage example
+func _on_show_choice_button_pressed():
+    var choice_result = await show_choice_and_get_result()
+    
+    if choice_result == "yes":
+        print("Yes was selected")
+    elif choice_result == "no":
+        print("No was selected")
+    else:
+        print("Cancel or no result")
+```
+
+### Available Dynamic Signals
+
+Major signals emitted by UICommand:
+
+- `ui_call_screen_shown` - When call_screen is displayed
+- `ui_call_screen_closed` - When call_screen is closed  
+- `ui_call_screen_result` - When result is returned from call_screen
+- `ui_scene_shown` - When UI scene is displayed (including show)
+- `ui_scene_freed` - When UI scene is freed
+
+### UI Scene Best Practices
+
+```gdscript
+# Generic call_screen base class
+extends Control
+class_name BaseCallScreen
+
+signal screen_result(result: Variant)
+signal close_screen()
+
+var _result_sent: bool = false
+
+func send_result(result: Variant):
+    """Send result (prevent duplicate sending)"""
+    if not _result_sent:
+        _result_sent = true
+        screen_result.emit(result)
+
+func close_without_result():
+    """Close without result"""
+    if not _result_sent:
+        _result_sent = true
+        close_screen.emit()
+
+func _on_tree_exiting():
+    """Auto-close if result not sent before scene destruction"""
+    if not _result_sent:
+        close_without_result()
+```
+
 ## 🎵 Combining with AudioManager
 
 ```gdscript

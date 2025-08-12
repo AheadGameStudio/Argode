@@ -300,6 +300,240 @@ func _on_debug_ui_status():
         print("  - " + scene_path + type_str)
 ```
 
+## 🎯 UIコールバック機能
+
+UICommandには、call_screenで表示されたUIシーンからの結果を受け取るコールバック機能があります。
+
+### call_screenで使用可能なシグナル
+
+call_screenで表示されるUIシーンは、以下のシグナルを定義できます：
+
+```gdscript
+# UIシーン側（例：choice_menu.gd）
+extends Control
+class_name ChoiceMenu
+
+# 結果を返すシグナル
+signal screen_result(result: Variant)
+# 自分自身を閉じるシグナル  
+signal close_screen()
+
+func _ready():
+    # ボタンの設定など
+    $YesButton.pressed.connect(_on_yes_pressed)
+    $NoButton.pressed.connect(_on_no_pressed)
+    $CancelButton.pressed.connect(_on_cancel_pressed)
+
+func _on_yes_pressed():
+    # 選択結果を返して自動的に閉じる
+    screen_result.emit("yes")
+
+func _on_no_pressed():
+    # 選択結果を返して自動的に閉じる
+    screen_result.emit("no")
+
+func _on_cancel_pressed():
+    # 結果なしで閉じる
+    close_screen.emit()
+```
+
+### UIコールバックを受け取る方法
+
+#### 1. 動的シグナルを使用（推奨）
+
+```gdscript
+func setup_ui_callbacks():
+    """UIコールバックのセットアップ"""
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    
+    # UI関連のシグナルに接続
+    custom_handler.connect_to_dynamic_signal("ui_call_screen_result", _on_ui_call_screen_result)
+    custom_handler.connect_to_dynamic_signal("ui_call_screen_shown", _on_ui_call_screen_shown)
+    custom_handler.connect_to_dynamic_signal("ui_call_screen_closed", _on_ui_call_screen_closed)
+
+func _on_ui_call_screen_result(args: Array):
+    """call_screenから結果が返ってきた時の処理"""
+    var scene_path = args[0] as String
+    var result = args[1]
+    
+    print("UIコールバック結果:", scene_path, "->", result)
+    
+    # シーンごとの結果処理
+    match scene_path:
+        "res://ui/choice_menu.tscn":
+            _handle_choice_result(result)
+        "res://ui/save_dialog.tscn":
+            _handle_save_result(result)
+        _:
+            print("未処理のUI結果:", scene_path, result)
+
+func _on_ui_call_screen_shown(args: Array):
+    """call_screenが表示された時の処理"""
+    var scene_path = args[0] as String
+    var position = args[1] as String
+    var transition = args[2] as String
+    print("UIが表示されました:", scene_path)
+
+func _on_ui_call_screen_closed(args: Array):
+    """call_screenが閉じられた時の処理"""
+    var scene_path = args[0] as String
+    print("UIが閉じられました:", scene_path)
+
+func _handle_choice_result(result: Variant):
+    """選択メニューの結果処理"""
+    match result:
+        "yes":
+            print("プレイヤーは「はい」を選択しました")
+            continue_yes_path()
+        "no":
+            print("プレイヤーは「いいえ」を選択しました")
+            continue_no_path()
+        _:
+            print("不明な選択:", result)
+```
+
+#### 2. call_screen_resultsから直接取得
+
+```gdscript
+func show_choice_and_get_result() -> Variant:
+    """選択メニューを表示して結果を取得"""
+    var scene_path = "res://ui/choice_menu.tscn"
+    
+    # メニューを表示（awaitで終了を待機）
+    await call_ui_scene(scene_path)
+    
+    # 結果を取得
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    var ui_command = custom_handler.registered_commands.get("ui")
+    
+    if ui_command and scene_path in ui_command.call_screen_results:
+        var result = ui_command.call_screen_results[scene_path]
+        print("取得された結果:", result)
+        return result
+    else:
+        print("結果なし")
+        return null
+
+# 使用例
+func _on_show_choice_button_pressed():
+    var choice_result = await show_choice_and_get_result()
+    
+    if choice_result == "yes":
+        print("はいが選択されました")
+    elif choice_result == "no":
+        print("いいえが選択されました")
+    else:
+        print("キャンセルまたは結果なし")
+```
+
+### 高度なUIコールバック例
+
+```gdscript
+# PlayerChoiceManager.gd - プレイヤー選択管理クラス
+extends Node
+class_name PlayerChoiceManager
+
+var pending_choices: Dictionary = {}
+var choice_callbacks: Dictionary = {}
+
+func _ready():
+    setup_ui_callbacks()
+
+func setup_ui_callbacks():
+    var argode_system = get_node("/root/ArgodeSystem")
+    var custom_handler = argode_system.get_custom_command_handler()
+    custom_handler.connect_to_dynamic_signal("ui_call_screen_result", _on_ui_result)
+
+func show_choice_with_callback(scene_path: String, callback: Callable, options: Dictionary = {}):
+    """コールバック付きで選択画面を表示"""
+    # コールバックを保存
+    choice_callbacks[scene_path] = callback
+    
+    # 選択肢の設定を保存
+    pending_choices[scene_path] = options
+    
+    # UI表示
+    await call_ui_scene(scene_path)
+
+func _on_ui_result(args: Array):
+    var scene_path = args[0] as String
+    var result = args[1]
+    
+    # 保存されたコールバックを実行
+    if scene_path in choice_callbacks:
+        var callback = choice_callbacks[scene_path] as Callable
+        callback.call(result, pending_choices.get(scene_path, {}))
+        
+        # クリーンアップ
+        choice_callbacks.erase(scene_path)
+        pending_choices.erase(scene_path)
+
+# 使用例
+func _on_battle_start():
+    """戦闘開始時の選択"""
+    show_choice_with_callback(
+        "res://ui/battle_choice.tscn",
+        _on_battle_choice_made,
+        {"enemy": "スライム", "player_hp": 100}
+    )
+
+func _on_battle_choice_made(choice: String, context: Dictionary):
+    """戦闘選択の結果処理"""
+    var enemy = context.get("enemy", "unknown")
+    match choice:
+        "attack":
+            print(enemy + "を攻撃します")
+            execute_attack()
+        "defend":
+            print("防御します")
+            execute_defend()
+        "escape":
+            print("逃げます")
+            execute_escape()
+```
+
+### 利用可能な動的シグナル
+
+UICommandから発行される主要なシグナル：
+
+- `ui_call_screen_shown` - call_screenが表示された時
+- `ui_call_screen_closed` - call_screenが閉じられた時
+- `ui_call_screen_result` - call_screenから結果が返った時
+- `ui_scene_shown` - UIシーンが表示された時（show含む）
+- `ui_scene_freed` - UIシーンが解放された時
+
+### UIシーン側のベストプラクティス
+
+```gdscript
+# 汎用的なcall_screen基底クラス
+extends Control
+class_name BaseCallScreen
+
+signal screen_result(result: Variant)
+signal close_screen()
+
+var _result_sent: bool = false
+
+func send_result(result: Variant):
+    """結果を送信（重複送信防止）"""
+    if not _result_sent:
+        _result_sent = true
+        screen_result.emit(result)
+
+func close_without_result():
+    """結果なしで閉じる"""
+    if not _result_sent:
+        _result_sent = true
+        close_screen.emit()
+
+func _on_tree_exiting():
+    """シーンが破棄される前に結果未送信の場合は自動で閉じる"""
+    if not _result_sent:
+        close_without_result()
+```
+
 ## 🎵 AudioManagerとの組み合わせ
 
 ```gdscript
