@@ -24,7 +24,7 @@
 - **セーブ・ロードシステム**: 完全なゲームステート管理
 
 ### 🎨 **高度な機能**
-- **カスタムコマンド**: シグナルベースアーキテクチャによる無限の拡張性
+- **カスタムコマンド**: 強力なクラスベースシステムによる無限の拡張性
 - **定義システム**: アセットと変数の一元管理
 - **レイヤーアーキテクチャ**: ロールベース割り当てによる柔軟なシーン構造
 - **UIフレームワーク**: 複雑なインターフェースのためのプロフェッショナルなAdvScreenシステム
@@ -43,17 +43,16 @@
 
 ```gdscript
 # 1. ArgodeSystemをオートロードに追加
-# 2. 最初のスクリプトファイルを作成
+# 2. 最初のスクリプトファイルを作成 (例: scenarios/main.rgd)
 
-label start:
-    narrator "Argodeへようこそ！"
-    "これがあなたの最初のビジュアルノベルシーンです。"
-    
-    menu:
-        "ストーリーを続ける":
-            jump next_scene
-        "Argodeについてもっと知る":
-            jump tutorial
+# メインのGodotシーンのスクリプト内 (例: Main.gd):
+extends Control
+
+func _ready():
+    if ArgodeSystem:
+        ArgodeSystem.start_script("res://scenarios/main.rgd", "start")
+    else:
+        print("ArgodeSystemが見つかりません！オートロードに設定されているか確認してください。")
 ```
 
 [今すぐ始める →](getting-started/quick-start.ja.md){ .md-button .md-button--primary }

@@ -7,29 +7,9 @@
 - **Godot Engine 4.0+** ([こちらからダウンロード](https://godotengine.org/))
 - **Godotプロジェクトの基本的な知識**
 
-## ステップ 1: Argodeのインストール
 
-### オプション A: AssetLibから（推奨）
-1. Godot Engineを開く
-2. **AssetLib** タブに移動
-3. **"Argode"** を検索
-4. **ダウンロード** して **インストール** をクリック
 
-### オプション B: 手動インストール
-1. [GitHub](https://github.com/AheadGameStudio/Argode)から最新リリースをダウンロード
-2. `addons/argode/` フォルダをプロジェクトの `addons/` ディレクトリに展開
-3. **プロジェクト設定 → プラグイン** でプラグインを有効化
 
-## ステップ 2: オートロードの設定
-
-1. **プロジェクト設定** を開く（`Project → Project Settings`）
-2. **オートロード** タブに移動
-3. **ArgodeSystem** を追加：
-   - **パス**: `res://addons/argode/core/ArgodeSystem.gd`
-   - **ノード名**: `ArgodeSystem`
-   - **有効** にチェック
-
-![オートロード設定](../images/autoload-setup.png)
 
 ## ステップ 3: 最初のスクリプトを作成
 
@@ -95,16 +75,12 @@ extends Control
 func _ready():
     # Argodeを初期化してスクリプトを読み込み
     if ArgodeSystem:
-        ArgodeSystem.load_and_play_script("res://scenarios/story.rgd", "start")
+        ArgodeSystem.start_script("res://scenarios/story.rgd", "start")
     else:
         print("ArgodeSystemが見つかりません！オートロードに設定されているか確認してください。")
 ```
 
-## ステップ 5: メインシーンとして設定
 
-1. **プロジェクト設定** に移動
-2. **メインシーン** を作成した `Main.tscn` に設定
-3. **F5** を押してビジュアルノベルを実行！
 
 ## 完成したもの
 
@@ -139,5 +115,7 @@ func _ready():
 
 **トラブル？** [トラブルシューティングガイド](../advanced/debugging.ja.md)をチェックするか、Discordコミュニティに参加してください！
 
-[インストール詳細へ続く →](installation.ja.md){ .md-button }
-[スクリプトリファレンスを見る →](../script/rgd-syntax.ja.md){ .md-button }
+詳細なセットアップ手順については、以下を参照してください：
+
+[インストールガイド →](installation.ja.md){ .md-button }
+[基本セットアップガイド →](basic-setup.ja.md){ .md-button }

@@ -7,29 +7,9 @@ Get up and running with Argode in just a few minutes! This guide will help you c
 - **Godot Engine 4.0+** ([Download here](https://godotengine.org/))
 - **Basic familiarity** with Godot projects
 
-## Step 1: Install Argode
 
-### Option A: From AssetLib (Recommended)
-1. Open Godot Engine
-2. Go to **AssetLib** tab
-3. Search for **"Argode"**
-4. Click **Download** and **Install**
 
-### Option B: Manual Installation
-1. Download the latest release from [GitHub](https://github.com/AheadGameStudio/Argode)
-2. Extract the `addons/argode/` folder to your project's `addons/` directory
-3. Enable the plugin in **Project Settings → Plugins**
 
-## Step 2: Setup Autoload
-
-1. Open **Project Settings** (`Project → Project Settings`)
-2. Go to **Autoload** tab
-3. Add **ArgodeSystem**:
-   - **Path**: `res://addons/argode/core/ArgodeSystem.gd`
-   - **Node Name**: `ArgodeSystem`
-   - Check **Enable**
-
-![Autoload Setup](../images/autoload-setup.png)
 
 ## Step 3: Create Your First Script
 
@@ -95,16 +75,12 @@ extends Control
 func _ready():
     # Initialize Argode and load the script
     if ArgodeSystem:
-        ArgodeSystem.load_and_play_script("res://scenarios/story.rgd", "start")
+        ArgodeSystem.start_script("res://scenarios/story.rgd", "start")
     else:
         print("ArgodeSystem not found! Make sure it's in autoload.")
 ```
 
-## Step 5: Set as Main Scene
 
-1. Go to **Project Settings**
-2. Set **Main Scene** to your `Main.tscn`
-3. Press **F5** to run your visual novel!
 
 ## What You Just Created
 
@@ -139,5 +115,7 @@ Ready to dive deeper? Explore these topics:
 
 **Having trouble?** Check the [Troubleshooting Guide](../advanced/debugging.md) or join our Discord community!
 
-[Continue to Installation Details →](installation.md){ .md-button }
-[View Script Reference →](../script/rgd-syntax.md){ .md-button }
+For detailed setup instructions, refer to:
+
+[Installation Guide →](installation.md){ .md-button }
+[Basic Setup Guide →](basic-setup.md){ .md-button }

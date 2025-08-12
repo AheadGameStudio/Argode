@@ -26,7 +26,6 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.tabs
     - navigation.sections
     - navigation.expand
     - navigation.path
@@ -48,7 +47,7 @@ plugins:
       docs_structure: suffix
       fallback_to_default: true
       reconfigure_search: true
-      reconfigure_material: true
+      reconfigure_material: false
       languages:
         - locale: en
           default: true
@@ -61,6 +60,41 @@ plugins:
           site_name: "Argode ドキュメント"
           theme:
             language: ja
+          nav:
+            - ホーム: index.ja.md
+            - はじめに:
+              - クイックスタート: getting-started/quick-start.ja.md
+              - インストール: getting-started/installation.ja.md
+              - 基本設定: getting-started/basic-setup.ja.ja.md
+            - アーキテクチャ:
+              - 設計思想: architecture/design-philosophy.ja.md
+              - システム概要: architecture/system-overview.ja.md
+              - コアコンポーネント: architecture/core-components.ja.md
+            - スクリプトリファレンス:
+              - RGD構文: script/rgd-syntax.ja.md
+              - コマンド: script/commands.ja.md
+              - 変数と式: script/variables.ja.md
+              - 定義: script/definitions.ja.md
+            - カスタムコマンド:
+              - 概要: custom-commands/overview.ja.md
+              - ビルトインコマンド: custom-commands/built-in.ja.md
+              - コマンド作成: custom-commands/creating.ja.md
+            - UIシステム:
+              - AdvScreen: ui/advscreen.ja.md
+              - テーマ: ui/themes.ja.md
+              - カスタムUI: ui/custom.ja.md
+            - 高度なトピック:
+              - アセット管理: advanced/asset-management.ja.md
+              - パフォーマンス最適化: advanced/performance.ja.md
+              - デバッグ: advanced/debugging.ja.md
+            - 例:
+              - シンプルなVN: examples/simple-vn.ja.md
+              - カスタム機能: examples/custom-features.ja.md
+              - ベストプラクティス: examples/best-practices.ja.md
+            - APIリファレンス:
+              - ArgodeSystem: api/argode-system.ja.md
+              - ScriptPlayer: api/script-player.ja.md
+              - マネージャー: api/managers.ja.md
 
 markdown_extensions:
   - pymdownx.highlight:

@@ -24,7 +24,7 @@
 - **Save/Load System**: Complete game state management
 
 ### 🎨 **Advanced Features**
-- **Custom Commands**: Unlimited extensibility through signal-based architecture
+- **Custom Commands**: Unlimited extensibility through a powerful class-based system
 - **Definition System**: Centralized asset and variable management
 - **Layer Architecture**: Flexible scene structure with role-based assignment
 - **UI Framework**: Professional AdvScreen system for complex interfaces
@@ -43,17 +43,16 @@ Get started with Argode in just a few minutes:
 
 ```gdscript
 # 1. Add ArgodeSystem to your autoload
-# 2. Create your first script file
+# 2. Create your first script file (e.g., scenarios/main.rgd)
 
-label start:
-    narrator "Welcome to Argode!"
-    "This is your first visual novel scene."
-    
-    menu:
-        "Continue the story":
-            jump next_scene
-        "Learn more about Argode":
-            jump tutorial
+# In your main Godot scene's script (e.g., Main.gd):
+extends Control
+
+func _ready():
+    if ArgodeSystem:
+        ArgodeSystem.start_script("res://scenarios/main.rgd", "start")
+    else:
+        print("ArgodeSystem not found! Make sure it's in autoload.")
 ```
 
 [Get Started Now →](getting-started/quick-start.md){ .md-button .md-button--primary }
