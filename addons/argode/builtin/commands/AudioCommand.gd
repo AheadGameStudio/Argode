@@ -18,6 +18,10 @@ func execute(params: Dictionary, adv_system: Node) -> void:
 	var raw_params = params.get("_raw", "")
 	var args = _parse_raw_params(raw_params)
 	
+	# "audio" コマンド名自体を除去
+	if args.size() > 0 and args[0].to_lower() == "audio":
+		args = args.slice(1)
+	
 	if args.size() < 2:
 		push_error("❌ audio command: 使用法: audio <bgm|se> <play|stop|volume> [options]")
 		return
@@ -27,7 +31,7 @@ func execute(params: Dictionary, adv_system: Node) -> void:
 	
 	log_command("Audio command: " + subcommand + " " + action)
 	
-	if not adv_system.has_property("AudioManager") or not adv_system.AudioManager:
+	if not adv_system.get("AudioManager") or not adv_system.AudioManager:
 		push_error("❌ AudioManager not available")
 		return
 	
