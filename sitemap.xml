@@ -99,6 +99,13 @@
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/custom-commands/creating/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/custom-commands/gdscript-integration/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/custom-commands/gdscript-integration/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/custom-commands/gdscript-integration/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/custom-commands/overview/</loc>
         <lastmod>2025-08-12</lastmod>
         <changefreq>daily</changefreq>
@@ -299,6 +306,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/custom-commands/creating/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/custom-commands/creating/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/custom-commands/gdscript-integration/</loc>
+        <lastmod>2025-08-12</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/custom-commands/gdscript-integration/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/custom-commands/gdscript-integration/"/>
     </url>
     <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/custom-commands/overview/</loc>
