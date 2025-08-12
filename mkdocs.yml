@@ -94,6 +94,7 @@ plugins:
             - APIリファレンス:
               - ArgodeSystem: api/argode-system.ja.md
               - ScriptPlayer: api/script-player.ja.md
+              - AudioManager: api/audio-manager.ja.md
               - マネージャー: api/managers.ja.md
 
 markdown_extensions:
@@ -155,6 +156,7 @@ nav:
   - API Reference:
     - ArgodeSystem: api/argode-system.md
     - ScriptPlayer: api/script-player.md
+    - AudioManager: api/audio-manager.md
     - Managers: api/managers.md
 
 extra:
