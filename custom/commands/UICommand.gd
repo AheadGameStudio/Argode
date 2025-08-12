@@ -187,6 +187,9 @@ func _execute_show(args: PackedStringArray, adv_system: Node) -> void:
 	
 	print("✅ Scene validation passed")
 	
+	# ArgodeUISceneの場合は参照を設定
+	_setup_scene_references(scene_instance, adv_system)
+	
 	# LayerManagerで表示
 	print("🔍 Checking LayerManager...")
 	if adv_system.LayerManager:
@@ -476,6 +479,9 @@ func _execute_call(args: PackedStringArray, adv_system: Node) -> void:
 	
 	print("✅ Call screen validation passed")
 	
+	# ArgodeUISceneの場合は参照を設定
+	_setup_scene_references(scene_instance, adv_system)
+	
 	# LayerManagerで表示
 	if adv_system.LayerManager:
 		var success = await adv_system.LayerManager.show_control_scene(scene_instance, position, transition)
@@ -566,6 +572,42 @@ func _close_call_screen(scene_path: String, adv_system: Node) -> void:
 	
 	log_command("UI close: " + scene_path)
 	emit_dynamic_signal("ui_call_screen_closed", [scene_path], adv_system)
+
+func _setup_scene_references(scene_instance: Node, adv_system: Node):
+	"""シーンにArgodeSystemやAdvScreenの参照を設定"""
+	print("🔗 [UICommand] Setting up scene references...")
+	
+	# ArgodeUISceneを継承している場合
+	if scene_instance.has_method("_setup_argode_references"):
+		print("✅ [UICommand] Scene is ArgodeUIScene, setting up references")
+		
+		# ArgodeSystemの参照を直接設定
+		if scene_instance.has_property("argode_system"):
+			scene_instance.argode_system = adv_system
+			print("✅ [UICommand] ArgodeSystem reference set")
+		
+		# AdvScreenの参照を設定
+		if scene_instance.has_property("adv_screen") and adv_system.UIManager:
+			scene_instance.adv_screen = adv_system.UIManager.current_screen
+			print("✅ [UICommand] AdvScreen reference set")
+		
+		# カスタムシグナルに接続
+		if scene_instance.has_signal("argode_command_requested"):
+			scene_instance.argode_command_requested.connect(_on_scene_command_requested.bind(adv_system))
+			print("✅ [UICommand] Connected to argode_command_requested signal")
+	else:
+		print("ℹ️ [UICommand] Scene is not ArgodeUIScene")
+
+func _on_scene_command_requested(cmd_name: String, parameters: Dictionary, adv_system: Node):
+	"""シーンからのコマンド要求を処理"""
+	print("🎯 [UICommand] Scene requested command:", cmd_name, "with params:", parameters)
+	
+	# カスタムコマンドハンドラーに転送
+	if adv_system.CustomCommandHandler:
+		adv_system.Player.custom_command_executed.emit(cmd_name, parameters, "")
+		print("📡 [UICommand] Command forwarded to CustomCommandHandler")
+	else:
+		print("❌ [UICommand] CustomCommandHandler not available")
 
 func _connect_call_screen_signals(scene_instance: Node, scene_path: String, adv_system: Node) -> void:
 	"""call_screenのシグナル接続を行う"""
