@@ -359,7 +359,14 @@ func _free_specific_ui_scene(scene_path: String, adv_system: Node) -> void:
 		return
 	
 	if scene_instance and is_instance_valid(scene_instance):
-		print("🗑️ Freeing UI scene instance:", scene_instance.get_path())
+		# 安全にシーン情報を表示（ツリーにない場合はパスではなく名前を使用）
+		var scene_info = scene_path
+		if scene_instance.is_inside_tree():
+			scene_info = str(scene_instance.get_path())
+		elif scene_instance.name:
+			scene_info = scene_instance.name
+		
+		print("🗑️ Freeing UI scene instance:", scene_info)
 		
 		# call_screenの場合はシグナル接続を解除
 		if scene_path in call_screen_stack:
@@ -766,14 +773,21 @@ func _disconnect_call_screen_signals(scene_instance: Node) -> void:
 	"""call_screenのシグナル接続を解除"""
 	print("🔗 [UICommand] Disconnecting call screen signals")
 	
+	# シーンが有効でない場合は処理をスキップ
+	if not scene_instance or not is_instance_valid(scene_instance):
+		print("⚠️ [UICommand] Scene instance invalid, skipping signal disconnection")
+		return
+	
 	# 接続されているシグナルを安全に切断
 	if scene_instance.has_signal("screen_result"):
 		if scene_instance.screen_result.is_connected(_on_call_screen_result):
 			scene_instance.screen_result.disconnect(_on_call_screen_result)
+			print("🔗 [UICommand] Disconnected screen_result signal")
 	
 	if scene_instance.has_signal("close_screen"):
 		if scene_instance.close_screen.is_connected(_on_call_screen_close):
 			scene_instance.close_screen.disconnect(_on_call_screen_close)
+			print("🔗 [UICommand] Disconnected close_screen signal")
 
 func _on_call_screen_result(result: Variant, scene_path: String, adv_system: Node) -> void:
 	"""call_screenから結果が返ってきた時の処理"""
