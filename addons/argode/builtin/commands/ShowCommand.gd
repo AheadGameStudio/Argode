@@ -1,26 +1,35 @@
 # ShowCommand.gd
-# キャラクター立ち絵表示コマンド
-class_name ShowCommand
+# show コマンド実装 - Ren'Pyスタイルのキャラクター立ち絵表示
+@tool
+class_name BuiltinShowCommand
 extends BaseCustomCommand
 
 func _init():
 	command_name = "show"
 	description = "Show character sprites"
-	help_text = """show <character_id> [at <position>] [with <transition>]
+	help_text = """show <character> [expression] [at <position>] [with <transition>]
 
 Examples:
-- show aya_normal
-- show aya_happy at left
-- show akane_normal at right with fadein
-- show aya_sad at center with movein_left
+- show aya normal
+- show aya happy at left
+- show akane normal at right with fadein
+- show aya sad at center with movein_left
 
-Positions: left, center, right
+Ren'Py Style:
+- show aya normal        # aya_normal.png
+- show aya happy         # aya_happy.png
+
+Legacy Style (compatible):
+- show aya_normal        # same as above
+
+Positions: left, center, right, far_left, far_right
 Transitions: fadein, movein_left, movein_right, none (default)"""
 
 	# パラメータ定義
-	set_parameter_info("character_id", "string", true, "", "Character ID to show (e.g., aya_normal)")
-	set_parameter_info("position", "string", false, "center", "Position on screen (left, center, right)")
-	set_parameter_info("transition", "string", false, "none", "Transition effect (fadein, movein_left, movein_right)")
+	set_parameter_info("character", "string", true, "", "Character name (e.g., aya)")
+	set_parameter_info("expression", "string", false, "normal", "Character expression (e.g., normal, happy, sad)")
+	set_parameter_info("position", "string", false, "center", "Position on screen")
+	set_parameter_info("transition", "string", false, "none", "Transition effect")
 
 func execute(params: Dictionary, adv_system: Node) -> void:
 	# Ren'Pyスタイル構文解析: "show character [expression] [at position] [with transition]"
@@ -35,8 +44,12 @@ func execute(params: Dictionary, adv_system: Node) -> void:
 	if raw_params.is_empty():
 		# Dictionary形式の場合のフォールバック
 		var legacy_character_id = get_param_value(params, "character_id", -1, "")
+		if legacy_character_id.is_empty():
+			legacy_character_id = get_param_value(params, "character", -1, "")
+		
 		position = get_param_value(params, "position", -1, "center") 
 		transition = get_param_value(params, "transition", -1, "none")
+		expression = get_param_value(params, "expression", -1, "normal")
 		
 		# legacy_character_idを分解
 		if legacy_character_id.contains("_"):
