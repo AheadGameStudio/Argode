@@ -1,0 +1,63 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches:
+      - docs  # docs ブランチへのプッシュでトリガー
+      - documentation  # documentation ブランチも追加
+  workflow_dispatch:  # 手動実行も可能
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同時実行を防ぐ（複数のデプロイが重複しないように）
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout documentation branch
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}  # 現在のブランチを動的に取得
+        
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Build documentation
+      run: |
+        mkdocs build --clean
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './site'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

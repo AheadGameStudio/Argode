@@ -1,0 +1,43 @@
+/* Language switcher styles */
+.language-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.language-switcher select {
+  background: var(--md-default-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.2rem;
+  color: var(--md-default-fg-color);
+  font-size: 0.8rem;
+  padding: 0.2rem 1.5rem 0.2rem 0.5rem;
+  appearance: none;
+  cursor: pointer;
+}
+
+.language-switcher::after {
+  content: "▼";
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 0.6rem;
+}
+
+/* Japanese language improvements */
+[data-md-color-scheme="default"] {
+  --md-text-font: "Noto Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-text-font: "Noto Sans", "Noto Sans JP", -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+}
+
+/* Improve code block rendering for Japanese */
+.highlight code {
+  font-family: "Fira Code", "Monaco", "Menlo", "Ubuntu Mono", monospace;
+}
+
+/* Add Material Icons import */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');

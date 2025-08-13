@@ -1,0 +1,180 @@
+site_name: Argode Documentation
+site_description: A powerful visual novel framework for Godot Engine
+site_author: AheadGameStudio
+site_url: https://aheadgamestudio.github.io/Argode/
+
+repo_url: https://github.com/AheadGameStudio/Argode
+repo_name: AheadGameStudio/Argode
+
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+  language: en
+
+plugins:
+  - search:
+      lang:
+        - en
+        - ja
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_search: true
+      reconfigure_material: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+          site_name: "Argode Documentation"
+        - locale: ja
+          name: 日本語  
+          build: true
+          site_name: "Argode ドキュメント"
+          nav_translations:
+            ホーム: Home
+            はじめに: Getting Started
+            クイックスタート: Quick Start
+            インストール: Installation
+            基本設定: Basic Setup
+            アーキテクチャ: Architecture
+            設計思想: Design Philosophy
+            システム概要: System Overview
+            コアコンポーネント: Core Components
+            スクリプトリファレンス: Script Reference
+            RGD構文: RGD Syntax
+            コマンド: Commands
+            変数と式: Variables & Expressions
+            定義: Definitions
+            カスタムコマンド: Custom Commands
+            概要: Overview
+            ビルトインコマンド: Built-in Commands
+            コマンド作成: Creating Commands
+            GDScript連携: GDScript Integration
+            セーブ・ロードシステム: Save & Load System
+            ゲーム設定: Game Settings
+            一時スクリーンショット: Temporary Screenshots
+            実例: Examples
+            UIシステム: UI System
+            テーマ: Themes
+            カスタムUI: Custom UI
+            高度なトピック: Advanced Topics
+            アセット管理: Asset Management
+            パフォーマンス最適化: Performance Optimization
+            デバッグ: Debugging
+            例: Examples
+            シンプルなVN: Simple VN
+            カスタム機能: Custom Features
+            ベストプラクティス: Best Practices
+            APIリファレンス: API Reference
+            マネージャー: Managers
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables
+  - footnotes
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: getting-started/quick-start.md
+    - Installation: getting-started/installation.md
+    - Basic Setup: getting-started/basic-setup.md
+  - Architecture:
+    - Design Philosophy: architecture/design-philosophy.md
+    - System Overview: architecture/system-overview.md
+    - Core Components: architecture/core-components.md
+  - Script Reference:
+    - RGD Syntax: script/rgd-syntax.md
+    - Commands: script/commands.md
+    - Variables & Expressions: script/variables.md
+    - Definitions: script/definitions.md
+  - Custom Commands:
+    - Overview: custom-commands/overview.md
+    - Built-in Commands: custom-commands/built-in.md
+    - Creating Commands: custom-commands/creating.md
+    - GDScript Integration: custom-commands/gdscript-integration.md
+  - Save & Load System:
+    - Overview: save-load/index.md
+    - Game Settings: save-load/settings.md
+    - Temporary Screenshots: save-load/temporary-screenshots.md
+    - Examples: save-load/examples.md
+  - UI System:
+    - AdvScreen: ui/advscreen.md
+    - Themes: ui/themes.md
+    - Custom UI: ui/custom.md
+  - Advanced Topics:
+    - Asset Management: advanced/asset-management.md
+    - Performance Optimization: advanced/performance.md
+    - Debugging: advanced/debugging.md
+  - Examples:
+    - Simple VN: examples/simple-vn.md
+    - Custom Features: examples/custom-features.md
+    - Best Practices: examples/best-practices.md
+  - API Reference:
+    - ArgodeSystem: api/argode-system.md
+    - ScriptPlayer: api/script-player.md
+    - AudioManager: api/audio-manager.md
+    - Managers: api/managers.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/AheadGameStudio/Argode
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/your-discord
+  version:
+    provider: mike
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
