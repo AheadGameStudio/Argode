@@ -43,8 +43,13 @@ var variable_manager = argode_system.VariableManager
 
 **主な責任:**
 *   キャラクター定義の登録と取得。
+*   **`CharacterDefinitionManager`と連携し、詳細なキャラクターデータと表情を管理します（v2機能）。**
 *   指定された表情と位置でキャラクターを表示および非表示にする。
 *   キャラクター固有の視覚効果の管理。
+
+**重要な注意事項:**
+*   **`show_scene`の非推奨化:** `CharacterManager`内の`show_scene`メソッドは非推奨となりました。画面にキャラクターを表示するには、`LayerManager`の機能を使用することが推奨されます。これにより、視覚レイヤーをより柔軟かつ堅牢に制御できます。
+*   **レガシースクリプトの互換性:** 以前のスクリプトとの互換性のために、Argodeは以前の`CharacterManager`メソッドに対するフォールバックメカニズムを提供しています。しかし、キャラクター表示には最新の`LayerManager`機能を使用するようにスクリプトを更新することを強く推奨します。
 
 ### `LayerManager`
 

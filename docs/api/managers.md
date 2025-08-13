@@ -43,8 +43,13 @@ The `CharacterManager` is dedicated to managing characters within your visual no
 
 **Key Responsibilities:**
 *   Registering and retrieving character definitions.
-*   Displaying and hiding characters with specified expressions and positions.
+*   **Integrates with `CharacterDefinitionManager` to manage detailed character data and expressions (v2 feature).**
+*   Displaying and hiding characters with characters with specified expressions and positions.
 *   Managing character-specific visual effects.
+
+**Important Notes:**
+*   **`show_scene` Deprecation:** The `show_scene` method within `CharacterManager` is deprecated. For displaying characters on screen, it is now recommended to use the `LayerManager`'s functionalities, which provide more flexible and robust control over visual layers.
+*   **Legacy Script Compatibility:** For compatibility with older scripts, Argode provides a fallback mechanism for previous `CharacterManager` methods. However, it is highly recommended to update your scripts to use the latest `LayerManager` functionalities for character display.
 
 ### `LayerManager`
 
