@@ -463,3 +463,11 @@ func _collect_ui_children(node: Node, result: Array):
 	
 	for child in node.get_children():
 		_collect_ui_children(child, result)
+
+func set_main_screen(screen: Node):
+	"""メインのArgodeScreenを設定する"""
+	if screen and (screen.has_method("show_message") or screen.get_script() and screen.get_script().has_method("show_message")):
+		current_screen = screen
+		print("🖥️ Main screen set: ", screen.name)
+	else:
+		print("⚠️ Invalid screen provided to set_main_screen")

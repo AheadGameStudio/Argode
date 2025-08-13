@@ -1,0 +1,21 @@
+# test_show.rgd
+# ShowCommand Ren'Pyスタイルテスト
+
+label start:
+    narrator "Ren'Pyスタイルテスト開始"
+    
+    # Ren'Pyスタイル: キャラクター名と表情を分離
+    show aya normal at left
+    narrator "ayaのnormal表情を表示"
+    
+    show aya happy at center  
+    narrator "ayaのhappy表情を表示"
+    
+    show akane normal at right
+    narrator "akaneのnormal表情を表示"
+    
+    show akane smile at right
+    narrator "akaneのsmile表情を表示"
+    
+    narrator "Ren'Pyスタイルテスト完了"
+    return

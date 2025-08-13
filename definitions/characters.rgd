@@ -1,7 +1,11 @@
 # characters.rgd
 # キャラクター定義ファイル - プロジェクト共通のキャラクター情報
 
-# メインキャラクター
+# メインキャラクター - ベース定義（Ren'Pyスタイル）
+character aya "綾音" color=#ff6699 voice="aya"
+character akane "茜" color=#cc6600 voice="akane"
+
+# 従来のキャラクター（互換性維持）
 character narrator "ナレーター" color=#ffffff
 character yuko "由子" color=#ff88aa  
 character takeshi "武" color=#88aaff

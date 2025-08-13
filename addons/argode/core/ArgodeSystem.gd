@@ -50,6 +50,9 @@ func _ready():
 	
 	# LabelRegistryの初期化は定義読み込み後に実行
 	_initialize_label_registry()
+	
+	# ゲーム初期化を完了
+	initialize_game({})
 
 func _create_managers():
 	"""既存のManagerインスタンスを子ノードとして作成・統合"""
@@ -376,6 +379,10 @@ func _setup_manager_references():
 	CharacterManager.variable_manager = VariableManager
 	CharacterManager.character_defs = CharDefs  # v2新機能
 	CharacterManager.layer_manager = LayerManager  # v2新機能
+	
+	# CharacterDefinitionManagerにCharacterManagerの参照を設定
+	CharDefs.character_manager = CharacterManager  # v2新機能
+	CharDefs.variable_manager = VariableManager  # v2新機能：VariableManagerにも同期
 	
 	# UIManagerに他のマネージャーへの参照を設定
 	UIManager.script_player = Player

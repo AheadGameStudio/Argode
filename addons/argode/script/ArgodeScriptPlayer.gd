@@ -83,7 +83,8 @@ func _compile_regex():
 	
 	regex_show = RegEx.new()
 	# show character_id [expression] [at position] [with transition]
-	regex_show.compile("^\\s*show\\s+(?<target>\\w+)(?:\\s+(?<param1>\\w+))?(?:\\s+at\\s+(?<position>\\w+))?(?:\\s+with\\s+(?<transition>\\w+))?")
+	# 修正版: param1が"at"や"with"でない場合のみ捕獲
+	regex_show.compile("^\\s*show\\s+(?<target>\\w+)(?:\\s+(?<param1>(?!at\\s|with\\s)\\w+))?(?:\\s+at\\s+(?<position>\\w+))?(?:\\s+with\\s+(?<transition>\\w+))?")
 	
 	regex_scene = RegEx.new()
 	regex_scene.compile("^\\s*scene\\s+(?<scene_name>[\\w\\s]+?)(?:\\s+with\\s+(?<transition>\\w+))?$")
@@ -342,18 +343,37 @@ func _parse_and_execute(line: String) -> bool:
 			position = "center"
 		if transition.is_empty():
 			transition = "none"
-		if expression.is_empty():
-			expression = "normal"
+		
+		# char_idから実際のchar_nameとexpressionを分離
+		var char_name = ""
+		var actual_expression = ""
+		
+		if char_id.contains("_"):
+			var parts = char_id.split("_", false, 1)  # 最大2つの部分に分割
+			char_name = parts[0]
+			if parts.size() > 1:
+				actual_expression = parts[1]
+			else:
+				actual_expression = "normal"
+		else:
+			char_name = char_id
+			actual_expression = "normal"
+		
+		# param1で指定された表情があればそれを使用、なければchar_idから取得した表情を使用
+		if not expression.is_empty():
+			actual_expression = expression
+		
+		print("🎭 Show command parsed: char_id='", char_id, "' -> char_name='", char_name, "', expression='", actual_expression, "', position='", position, "'")
 		
 		# v2: LayerManagerを使用したキャラクター表示
 		if layer_manager:
-			var success = layer_manager.show_character(char_id, expression, position, transition)
+			var success = layer_manager.show_character(char_name, actual_expression, position, transition)
 			if not success:
 				push_warning("⚠️ Failed to show character:", char_id)
 		else:
 			# フォールバック: 旧CharacterManager方式
 			if character_manager:
-				await character_manager.show_character(char_id, expression, position, transition)
+				await character_manager.show_character(char_name, actual_expression, position, transition)
 		
 		# Only wait for transition if it's not "none"
 		return (transition != "none")

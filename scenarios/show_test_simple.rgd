@@ -1,0 +1,10 @@
+# show_test_simple.rgd
+# ShowCommandの単純テスト
+
+label start:
+    narrator "ShowCommand単純テスト開始"
+    
+    show aya_normal at left
+    
+    narrator "ShowCommand実行完了"
+    return

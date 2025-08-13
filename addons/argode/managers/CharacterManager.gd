@@ -2,6 +2,7 @@ extends Node
 
 # v2: CharacterLayerベースの実装に移行
 var character_sprites: Dictionary = {}
+var character_registry: Dictionary = {} # キャラクター登録情報
 
 # v2: ArgodeSystem統合により、直接参照に変更
 var transition_player  # TransitionPlayer
@@ -12,8 +13,26 @@ var layer_manager  # LayerManager - v2新機能
 func _ready():
 	print("👤 CharacterManager initialized (v2)")
 	# v2: 参照はArgodeSystemの_setup_manager_references()で設定される
-	
-	# v2: LayerManagerのCharacterLayerを使用するため、独自コンテナ作成不要
+
+# キャラクター定義登録（CharacterDefinitionManagerからの呼び出し用）
+func register_character(char_id: String, definition: Dictionary):
+	"""キャラクターを登録"""
+	character_registry[char_id] = definition
+	print("✅ Character registered: ", char_id, " -> ", definition)
+
+func is_character_defined(char_id: String) -> bool:
+	"""キャラクターが定義されているかチェック"""
+	return char_id in character_registry
+
+func get_character_definition(char_id: String) -> Dictionary:
+	"""キャラクター定義を取得"""
+	return character_registry.get(char_id, {})
+
+func list_characters() -> Array[String]:
+	"""登録されているキャラクター一覧を取得"""
+	var chars: Array[String] = []
+	chars.append_array(character_registry.keys())
+	return chars
 
 func _ensure_character_container():
 	"""v2: 廃止 - LayerManagerのCharacterLayerを使用します"""

@@ -10,6 +10,10 @@ signal definition_error(message: String)
 # === 定義ストレージ ===
 var character_definitions: Dictionary = {}
 
+# === マネージャー参照 ===
+var character_manager  # CharacterManager - ArgodeSystemから設定される
+var variable_manager   # VariableManager - ArgodeSystemから設定される
+
 # === 正規表現パターン ===
 var regex_character_define: RegEx  # character y = Character(...) 形式
 var regex_character_shorthand: RegEx  # character y "name" attr=value 短縮形式
@@ -53,6 +57,17 @@ func parse_character_statement(line: String) -> bool:
 		
 		character_definitions[char_id] = definition
 		character_defined.emit(char_id, definition)
+		
+		# CharacterManagerに登録
+		if character_manager:
+			character_manager.register_character(char_id, definition)
+		
+		# VariableManagerにもキャラクター定義を同期
+		if variable_manager:
+			# リソースパスを生成（実際のキャラクターリソースがある場合の処理）
+			var resource_path = "res://definitions/characters/" + char_id + ".tres"
+			variable_manager.set_character_def(char_id, resource_path)
+		
 		print("👤 Character defined (shorthand): ", char_id, " -> ", definition)
 		return true
 	
@@ -69,6 +84,17 @@ func parse_character_statement(line: String) -> bool:
 		
 		character_definitions[char_id] = definition
 		character_defined.emit(char_id, definition)
+		
+		# CharacterManagerに登録
+		if character_manager:
+			character_manager.register_character(char_id, definition)
+		
+		# VariableManagerにもキャラクター定義を同期
+		if variable_manager:
+			# リソースパスを生成（実際のキャラクターリソースがある場合の処理）
+			var resource_path = "res://definitions/characters/" + char_id + ".tres"
+			variable_manager.set_character_def(char_id, resource_path)
+		
 		print("👤 Character defined (full): ", char_id, " -> ", definition)
 		return true
 	
@@ -202,6 +228,13 @@ func _parse_shorthand_value(value_str: String) -> Variant:
 	
 	# その他は文字列として扱う
 	return value_str
+
+func _handle_character_statement(line: String, file_path: String, line_number: int):
+	"""
+	DefinitionLoaderから呼び出されるキャラクター定義処理エントリーポイント
+	"""
+	if not parse_character_statement(line):
+		print("❌ Failed to process character definition: ", line, " at ", file_path, ":", line_number)
 
 func clear_definitions():
 	"""全定義をクリア"""

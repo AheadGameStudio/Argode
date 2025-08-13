@@ -192,10 +192,20 @@ func show_character(char_name: String, expression: String, position: String, tra
 		push_error("❌ ArgodeSystem.CharDefs not found")
 		return false
 	
+	# まず基本名で探す
 	var char_data = adv_system.CharDefs.get_character_definition(char_name)
+	
+	# 基本名で見つからない場合は、char_name_expressionで探す
 	if not char_data:
-		push_error("❌ Character not defined:", char_name)
-		return false
+		var combined_id = char_name + "_" + expression
+		char_data = adv_system.CharDefs.get_character_definition(combined_id)
+		if char_data:
+			print("🎭 Found character with combined ID: ", combined_id)
+		else:
+			push_error("❌ Character not defined:", char_name, " (tried both '", char_name, "' and '", combined_id, "')")
+			return false
+	else:
+		print("🎭 Found character with base name: ", char_name)
 	
 	# キャラクターノードを作成
 	var char_node = _create_character_node(char_name, char_data, expression, position)
@@ -645,3 +655,4 @@ func blur_layer(layer_name: String, amount: float = 2.0, duration: float = 0.0) 
 	}
 	
 	return apply_layer_shader(layer_name, "blur", params, duration)
+

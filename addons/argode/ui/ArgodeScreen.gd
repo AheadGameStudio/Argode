@@ -381,6 +381,7 @@ func _initialize_layer_mappings():
 		print("🏗️ Auto-creating Argode standard layers...")
 		layer_mappings = AutoLayerSetup.setup_layer_hierarchy(parent_scene)
 		print("✅ Auto-created layers:", layer_mappings.keys())
+		_initialize_layer_manager()
 		return
 	
 	# BackgroundLayer
@@ -403,6 +404,9 @@ func _initialize_layer_mappings():
 		print("   🎯 Using self as UI layer: ", self.get_path())
 	
 	print("📱 AdvScreen: Layer mappings initialized:", layer_mappings)
+	
+	# LayerManagerを初期化
+	_initialize_layer_manager()
 
 func _get_layer_from_path_or_fallback(node_path: NodePath, fallback_name: String, parent_scene: Node) -> Node:
 	"""レイヤーをNodePathまたは自動発見で取得"""
@@ -645,6 +649,33 @@ func debug_info() -> Dictionary:
 # === v2新機能: メッセージウィンドウ表示制御 ===
 # 注意: v2.1でUIManagerがCanvasLayerレベル制御に変更されたため、
 # 個別UI要素制御は不要になりました。UIManager.visible で全体制御されます。
+
+func _initialize_layer_manager():
+	"""LayerManagerをレイヤーマッピングで初期化"""
+	var adv_system = get_node("/root/ArgodeSystem")
+	if not adv_system:
+		print("⚠️ ArgodeSystem not found for LayerManager initialization")
+		return
+	
+	var layer_manager = adv_system.get("LayerManager")
+	if not layer_manager:
+		print("⚠️ LayerManager not found in ArgodeSystem")
+		return
+	
+	# レイヤーを取得
+	var bg_layer = layer_mappings.get("background")
+	var char_layer = layer_mappings.get("character") 
+	var ui_layer = layer_mappings.get("ui")
+	
+	if bg_layer and char_layer and ui_layer:
+		layer_manager.initialize_layers(bg_layer, char_layer, ui_layer)
+		print("✅ LayerManager initialized with layers:", layer_mappings.keys())
+	else:
+		print("⚠️ Missing layers for LayerManager initialization:", {
+			"background": bg_layer != null,
+			"character": char_layer != null,
+			"ui": ui_layer != null
+		})
 
 func set_message_window_visible(visible: bool):
 	"""メッセージウィンドウの表示/非表示を制御（レガシー互換用）"""

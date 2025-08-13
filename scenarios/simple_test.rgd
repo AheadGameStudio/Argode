@@ -1,7 +1,7 @@
 # simple_test.rgd
 # 自動辞書作成テスト
 
-label start:
+label simple_test_start:
     "自動辞書作成テストを開始します"
     
     "{}記法での変数展開："

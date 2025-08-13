@@ -1,7 +1,7 @@
 # set_dot_notation_test.rgd
 # ドット記法でのsetコマンドテスト
 
-label start:
+label set_dot_notation_test_start:
     "ドット記法での変数設定テストを開始します。"
     
     # まず辞書を作成

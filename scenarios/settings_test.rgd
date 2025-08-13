@@ -3,7 +3,7 @@
 
 character narrator "システム" color=#00ff00
 
-label start:
+label settings_test_start:
     narrator "設定システムのテストを開始します。"
     
     narrator "現在の設定を表示します..."
