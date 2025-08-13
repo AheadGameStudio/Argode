@@ -1,23 +1,27 @@
 # variables.rgd
 # 初期変数定義ファイル - ゲーム開始時の変数設定
 
-# プレイヤー情報 (辞書形式推奨)
-set_dict player {
-    "name": "プレイヤー",
-    "gender": "male",
-    "age": 17
-}
+# 辞書を事前定義せずに、直接個別キーを設定
+set player.name = "HERO"
+set player.gender = "male"
+set player.age = 17
+set player.level = 1
+
+# ネストした辞書も自動作成
+set player.stats.hp = 100
+set player.stats.mp = 50
+set player.stats.strength = 10
 
 # または個別設定も可能
 set player_name = "プレイヤー"
 set player_gender = "male" 
 set player_age = 17
 
-# ❌ 以下の定義方法はできません
+# ✅ 新機能：辞書の個別キー設定も可能（ドット記法）
 # set player.name = "プレイヤー"
 # set player.gender = "male"
 # set player.age = 17
-# 辞書.個別キーの形式は読み取り専用です
+# 辞書作成後に個別キーを更新可能
 
 # ゲーム進行フラグ
 set_dict progress {

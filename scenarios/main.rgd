@@ -6,7 +6,8 @@ character narrator "システム" color=#00ff00
 
 label start:
 
-    narrator "Ren' Gd v2アーキテクチャへようこそ！"
+    narrator "Argode v2アーキテクチャへようこそ！"
+    "プレイヤー名: {player.name}"
 
 label main_menu:
     narrator "実行したいシナリオを選択してください。"
@@ -15,6 +16,14 @@ label main_menu:
         "メインデモ（基本機能テスト）":
             call main_demo_start
             narrator "メインデモが完了しました。"
+            jump after_test_completion
+        "自動辞書作成テスト (NEW!)":
+            call simple_test_start
+            narrator "自動辞書作成テストが完了しました。"
+            jump after_test_completion
+        "ドット記法setコマンドテスト (NEW!)":
+            call set_dot_notation_test_start
+            narrator "ドット記法テストが完了しました。"
             jump after_test_completion
         "カスタムコマンドテスト":
             call custom_command_test_start
