@@ -1,0 +1,50 @@
+# settings_test.rgd
+# 設定システムのテストシナリオ
+
+character narrator "システム" color=#00ff00
+
+label start:
+    narrator "設定システムのテストを開始します。"
+    
+    narrator "現在の設定を表示します..."
+    settings print
+    
+    narrator "音量設定をテストします。"
+    settings get audio master_volume
+    settings set audio master_volume 0.8
+    settings get audio master_volume
+    
+    narrator "テキスト速度をテストします。"
+    settings get text text_speed
+    settings set text text_speed 1.5
+    settings get text text_speed
+    
+    narrator "フルスクリーン設定をテストします。"
+    settings get display fullscreen
+    settings set display fullscreen true
+    settings get display fullscreen
+    
+    narrator "設定を保存します..."
+    settings save
+    
+    narrator "設定テストが完了しました！"
+    narrator "変更された設定は自動的にファイルに保存されています。"
+    
+    menu:
+        "設定をデフォルトに戻す":
+            jump reset_test
+        "テスト終了":
+            jump end
+
+label reset_test:
+    narrator "全ての設定をデフォルトに戻します..."
+    settings reset
+    
+    narrator "リセット後の設定:"
+    settings print
+    
+    narrator "設定がデフォルトに戻りました。"
+    jump end
+
+label end:
+    narrator "設定システムテスト終了。"

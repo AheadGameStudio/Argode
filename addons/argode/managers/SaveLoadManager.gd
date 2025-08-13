@@ -8,6 +8,10 @@ signal game_saved(slot: int)
 signal game_loaded(slot: int)
 signal save_failed(slot: int, error: String)
 signal load_failed(slot: int, error: String)
+signal settings_saved()
+signal settings_loaded()
+signal settings_save_failed(error: String)
+signal settings_load_failed(error: String)
 
 # === セーブデータ構造 ===
 const SAVE_VERSION = "2.0"
@@ -15,6 +19,55 @@ const SAVE_EXTENSION = ".save"
 const SAVE_FOLDER = "user://saves/"
 const AUTO_SAVE_SLOT = 0  # スロット0をオートセーブ専用に
 var max_save_slots = 10   # デフォルト10スロット（設定可能）
+
+# === 設定ファイル ===
+const SETTINGS_FILE = "user://argode_settings.cfg"
+const SETTINGS_VERSION = "1.0"
+
+# === デフォルト設定値 ===
+var default_settings = {
+	"audio": {
+		"master_volume": 1.0,
+		"bgm_volume": 0.8,
+		"se_volume": 0.9,
+		"voice_volume": 1.0,
+		"mute_audio": false
+	},
+	"display": {
+		"fullscreen": false,
+		"window_size": Vector2i(1280, 720),
+		"vsync": true,
+		"show_fps": false
+	},
+	"text": {
+		"text_speed": 1.0,
+		"auto_play_speed": 2.0,
+		"skip_read_text": true,
+		"skip_unread_text": false,
+		"text_size_scale": 1.0
+	},
+	"ui": {
+		"show_text_window": true,
+		"ui_scale": 1.0,
+		"message_alpha": 0.8,
+		"quick_menu_enabled": true
+	},
+	"accessibility": {
+		"high_contrast": false,
+		"color_blind_mode": "none",  # "none", "protanopia", "deuteranopia", "tritanopia"
+		"screen_reader": false,
+		"subtitle_enabled": true
+	},
+	"system": {
+		"language": "ja",  # "ja", "en"
+		"auto_save_interval": 300.0,  # 5分間隔でオートセーブ
+		"confirm_quit": true,
+		"confirm_overwrite": true
+	}
+}
+
+# === 現在の設定 ===
+var current_settings: Dictionary = {}
 
 # === 暗号化設定 ===
 const ENABLE_ENCRYPTION = true
@@ -42,6 +95,8 @@ func _ready():
 	print("🔐 Encryption: " + ("Enabled" if ENABLE_ENCRYPTION else "Disabled"))
 	_ensure_save_directory()
 	_load_save_info_cache()
+	_initialize_settings()
+	print("⚙️ SaveLoadManager: Settings system initialized")
 
 func initialize(adv_system: Node):
 	"""ArgodeSystemからの参照を設定"""
@@ -684,3 +739,201 @@ func get_available_user_slots() -> Array:
 	for slot in range(1, max_save_slots):  # スロット1から開始（0はオートセーブ）
 		slots.append(slot)
 	return slots
+
+# ===============================
+# === 設定システム (Settings) ===
+# ===============================
+
+func _initialize_settings():
+	"""設定システムの初期化"""
+	current_settings = default_settings.duplicate(true)
+	load_settings()  # 保存された設定があれば読み込み
+
+# === 設定の保存・読み込み ===
+
+func save_settings() -> bool:
+	"""現在の設定をファイルに保存"""
+	print("⚙️ SaveLoadManager: Saving settings to file...")
+	
+	var config = ConfigFile.new()
+	
+	# バージョン情報を保存
+	config.set_value("meta", "version", SETTINGS_VERSION)
+	config.set_value("meta", "save_time", Time.get_unix_time_from_system())
+	config.set_value("meta", "save_date", Time.get_datetime_string_from_system())
+	
+	# 各設定カテゴリを保存
+	for category in current_settings:
+		for key in current_settings[category]:
+			config.set_value(category, key, current_settings[category][key])
+	
+	# ファイルに保存
+	var error = config.save(SETTINGS_FILE)
+	if error != OK:
+		push_error("❌ SaveLoadManager: Failed to save settings: " + error_string(error))
+		settings_save_failed.emit("Failed to save settings file")
+		return false
+	
+	print("✅ SaveLoadManager: Settings saved successfully")
+	settings_saved.emit()
+	return true
+
+func load_settings() -> bool:
+	"""設定ファイルから設定を読み込み"""
+	if not FileAccess.file_exists(SETTINGS_FILE):
+		print("⚙️ SaveLoadManager: Settings file not found, using defaults")
+		return true  # デフォルト設定を使用するので成功扱い
+	
+	print("⚙️ SaveLoadManager: Loading settings from file...")
+	
+	var config = ConfigFile.new()
+	var error = config.load(SETTINGS_FILE)
+	if error != OK:
+		push_error("❌ SaveLoadManager: Failed to load settings: " + error_string(error))
+		settings_load_failed.emit("Failed to load settings file")
+		return false
+	
+	# バージョンチェック
+	var file_version = config.get_value("meta", "version", "")
+	if file_version != SETTINGS_VERSION:
+		print("⚠️ SaveLoadManager: Settings version mismatch (file: " + str(file_version) + ", expected: " + SETTINGS_VERSION + ")")
+		# バージョン違いの場合はデフォルトに戻すか、マイグレーション処理を行う
+	
+	# 設定値を読み込み（デフォルト値をフォールバックとして使用）
+	for category in default_settings:
+		for key in default_settings[category]:
+			var value = config.get_value(category, key, default_settings[category][key])
+			current_settings[category][key] = value
+	
+	print("✅ SaveLoadManager: Settings loaded successfully")
+	settings_loaded.emit()
+	return true
+
+func reset_settings_to_default():
+	"""設定をデフォルト値にリセット"""
+	print("⚙️ SaveLoadManager: Resetting settings to default...")
+	current_settings = default_settings.duplicate(true)
+	save_settings()
+
+# === 設定値のアクセサ ===
+
+func get_setting(category: String, key: String, default_value = null):
+	"""設定値を取得"""
+	if not current_settings.has(category):
+		return default_value
+	if not current_settings[category].has(key):
+		return default_value
+	return current_settings[category][key]
+
+func set_setting(category: String, key: String, value) -> bool:
+	"""設定値を変更"""
+	if not current_settings.has(category):
+		current_settings[category] = {}
+	
+	current_settings[category][key] = value
+	return true
+
+func apply_setting(category: String, key: String, value) -> bool:
+	"""設定値を変更して即座に保存"""
+	if set_setting(category, key, value):
+		return save_settings()
+	return false
+
+# === 音声設定の便利メソッド ===
+
+func get_master_volume() -> float:
+	return get_setting("audio", "master_volume", 1.0)
+
+func set_master_volume(volume: float) -> bool:
+	volume = clampf(volume, 0.0, 1.0)
+	return apply_setting("audio", "master_volume", volume)
+
+func get_bgm_volume() -> float:
+	return get_setting("audio", "bgm_volume", 0.8)
+
+func set_bgm_volume(volume: float) -> bool:
+	volume = clampf(volume, 0.0, 1.0)
+	return apply_setting("audio", "bgm_volume", volume)
+
+func get_se_volume() -> float:
+	return get_setting("audio", "se_volume", 0.9)
+
+func set_se_volume(volume: float) -> bool:
+	volume = clampf(volume, 0.0, 1.0)
+	return apply_setting("audio", "se_volume", volume)
+
+# === テキスト設定の便利メソッド ===
+
+func get_text_speed() -> float:
+	return get_setting("text", "text_speed", 1.0)
+
+func set_text_speed(speed: float) -> bool:
+	speed = clampf(speed, 0.1, 5.0)
+	return apply_setting("text", "text_speed", speed)
+
+func get_auto_play_speed() -> float:
+	return get_setting("text", "auto_play_speed", 2.0)
+
+func set_auto_play_speed(speed: float) -> bool:
+	speed = clampf(speed, 0.5, 10.0)
+	return apply_setting("text", "auto_play_speed", speed)
+
+# === 表示設定の便利メソッド ===
+
+func is_fullscreen() -> bool:
+	return get_setting("display", "fullscreen", false)
+
+func set_fullscreen(enabled: bool) -> bool:
+	if apply_setting("display", "fullscreen", enabled):
+		# 即座にフルスクリーン設定を適用
+		if enabled:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+		else:
+			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+		return true
+	return false
+
+func get_window_size() -> Vector2i:
+	return get_setting("display", "window_size", Vector2i(1280, 720))
+
+func set_window_size(size: Vector2i) -> bool:
+	if apply_setting("display", "window_size", size):
+		# 即座にウィンドウサイズを適用（フルスクリーンでない場合のみ）
+		if not is_fullscreen():
+			DisplayServer.window_set_size(size)
+		return true
+	return false
+
+# === 設定のエクスポート・インポート ===
+
+func export_settings() -> Dictionary:
+	"""設定を辞書形式でエクスポート（バックアップ用）"""
+	return current_settings.duplicate(true)
+
+func import_settings(settings_data: Dictionary) -> bool:
+	"""設定を辞書から読み込み（復元用）"""
+	if not settings_data or settings_data.is_empty():
+		return false
+	
+	# 基本的なバリデーション
+	for category in settings_data:
+		if category in default_settings:
+			for key in settings_data[category]:
+				if key in default_settings[category]:
+					current_settings[category][key] = settings_data[category][key]
+	
+	return save_settings()
+
+# === デバッグ・ユーティリティ ===
+
+func print_current_settings():
+	"""現在の設定をコンソールに出力（デバッグ用）"""
+	print("=== Current Settings ===")
+	for category in current_settings:
+		print("📁 " + category + ":")
+		for key in current_settings[category]:
+			print("  • " + key + ": " + str(current_settings[category][key]))
+
+func get_settings_file_path() -> String:
+	"""設定ファイルのパスを取得"""
+	return SETTINGS_FILE
