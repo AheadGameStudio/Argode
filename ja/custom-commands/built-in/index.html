@@ -903,6 +903,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#set" class="md-nav__link">
+    <span class="md-ellipsis">
+      set
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#set_array" class="md-nav__link">
     <span class="md-ellipsis">
       set_array
@@ -1751,6 +1760,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#set" class="md-nav__link">
+    <span class="md-ellipsis">
+      set
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#set_array" class="md-nav__link">
     <span class="md-ellipsis">
       set_array
@@ -1874,36 +1892,74 @@
 </code></pre></div></p>
 <hr />
 <h2 id="_4">📦 変数管理</h2>
-<p>これらのコマンドを使用すると、配列や辞書などの複雑なデータ型をスクリプトから直接作成および変更できます。これらは<code>VariableManager</code>と連携して動作します。</p>
+<p>これらのコマンドを使用すると、変数と配列や辞書などの複雑なデータ型をスクリプトから直接作成および変更できます。これらは<code>VariableManager</code>と連携して動作します。</p>
+<h3 id="set"><code>set</code></h3>
+<p>変数に値を割り当てます。基本的な変数代入と、自動辞書作成機能付きの辞書キー代入のための<strong>ドット記法</strong>の両方をサポートします。</p>
+<p><strong>基本構文</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>set &lt;variable_name&gt; = &lt;value&gt;
+</code></pre></div></p>
+<p><strong>ドット記法構文</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>set &lt;dict_name&gt;.&lt;key&gt; = &lt;value&gt;
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>set &lt;dict_name&gt;.&lt;nested_key&gt;.&lt;sub_key&gt; = &lt;value&gt;
+</code></pre></div></p>
+<p><strong>パラメータ</strong>
+- <code>&lt;variable_name&gt;</code> (string): 設定する変数の名前。
+- <code>&lt;dict_name&gt;.&lt;key&gt;</code> (string): ドット記法を使用した辞書キーのパス。
+- <code>&lt;value&gt;</code>: 代入する値（文字列、数値、ブール値を自動検出）。</p>
+<p><strong>例</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a># 基本的な変数代入
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>set player_name = &quot;ヒーロー&quot;
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>set player_level = 1
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>set game_started = true
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a># 辞書のドット記法（新機能！）
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>set player.name = &quot;ヒーロー&quot;
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>set player.level = 1
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>set player.stats.hp = 100
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>set player.stats.mp = 50
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a># 自動ネスト辞書作成
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>set character.inventory.weapons.sword = &quot;鋼の剣&quot;
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>set character.inventory.items.potions = 5
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a># 値へのアクセス
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>narrator &quot;ようこそ、{player.name}！あなたのHP: {player.stats.hp}&quot;
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>narrator &quot;武器: {character.inventory.weapons.sword}&quot;
+</code></pre></div></p>
+<p><strong>利点</strong>
+- <strong>事前定義不要</strong>: 辞書が自動的に作成される
+- <strong>直感的な構文</strong>: 辞書キーを代入する自然な方法
+- <strong>後方互換性</strong>: 既存の<code>set_dict</code>コマンドと併用可能
+- <strong>型検出</strong>: 文字列、数値、ブール値を自動検出</p>
 <h3 id="set_array"><code>set_array</code></h3>
 <p>新しい配列で変数を作成または上書きします。配列はGodotライクな配列リテラル形式を使用して定義されます。</p>
 <p><strong>構文</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>set_array &lt;variable_name&gt; [value1, value2, &quot;string_value&quot;, ...]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>set_array &lt;variable_name&gt; [value1, value2, &quot;string_value&quot;, ...]
 </code></pre></div></p>
 <p><strong>パラメータ</strong>
 - <code>&lt;variable_name&gt;</code> (string): 設定する変数の名前（例: <code>inventory</code>, <code>quest_flags</code>）。
 - 2番目の引数は、配列を表す<code>[]</code>で囲まれた文字列リテラルでなければなりません。</p>
 <p><strong>例</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a># プレイヤーのインベントリを初期化
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>set_array inventory [&quot;sword&quot;, &quot;shield&quot;, &quot;potion&quot;]
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a># 標準の変数構文を使用してアクセス可能
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>narrator &quot;あなたは{inventory[0]}を持っています。&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a># プレイヤーのインベントリを初期化
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>set_array inventory [&quot;sword&quot;, &quot;shield&quot;, &quot;potion&quot;]
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a># 標準の変数構文を使用してアクセス可能
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>narrator &quot;あなたは{inventory[0]}を持っています。&quot;
 </code></pre></div></p>
 <h3 id="set_dict"><code>set_dict</code></h3>
 <p>新しい辞書で変数を作成または上書きします。辞書はGodotライクな辞書リテラル形式を使用して定義されます。</p>
 <p><strong>構文</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>set_dict &lt;variable_name&gt; {key1: value1, &quot;key2&quot;: &quot;string_value&quot;, ...}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>set_dict &lt;variable_name&gt; {key1: value1, &quot;key2&quot;: &quot;string_value&quot;, ...}
 </code></pre></div></p>
 <p><strong>パラメータ</strong>
 - <code>&lt;variable_name&gt;</code> (string): 設定する変数の名前（例: <code>player_stats</code>, <code>item_properties</code>）。
 - 2番目の引数は、辞書を表す<code>{}</code>で囲まれた文字列リテラルでなければなりません。</p>
 <p><strong>例</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a># キャラクターのステータスを定義
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>set_dict player_stats {&quot;name&quot;: &quot;Yuko&quot;, &quot;level&quot;: 5, &quot;hp&quot;: 100, &quot;mp&quot;: 50}
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a># ステータスにアクセス
-<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>narrator &quot;キャラクター: {player_stats.name}, レベル: {player_stats.level}&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a># キャラクターのステータスを定義
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>set_dict player_stats {&quot;name&quot;: &quot;Yuko&quot;, &quot;level&quot;: 5, &quot;hp&quot;: 100, &quot;mp&quot;: 50}
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a># ステータスにアクセス
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>narrator &quot;キャラクター: {player_stats.name}, レベル: {player_stats.level}&quot;
 </code></pre></div></p>
 
 

@@ -903,6 +903,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#set" class="md-nav__link">
+    <span class="md-ellipsis">
+      set
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#set_array" class="md-nav__link">
     <span class="md-ellipsis">
       set_array
@@ -1751,6 +1760,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#set" class="md-nav__link">
+    <span class="md-ellipsis">
+      set
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#set_array" class="md-nav__link">
     <span class="md-ellipsis">
       set_array
@@ -1874,36 +1892,74 @@
 </code></pre></div></p>
 <hr />
 <h2 id="variable-management">📦 Variable Management</h2>
-<p>These commands allow you to create and modify complex data types like arrays and dictionaries directly from your scripts. They work with the <code>VariableManager</code>.</p>
+<p>These commands allow you to create and modify variables and complex data types like arrays and dictionaries directly from your scripts. They work with the <code>VariableManager</code>.</p>
+<h3 id="set"><code>set</code></h3>
+<p>Assigns a value to a variable. Supports both basic variable assignment and <strong>dot notation</strong> for dictionary key assignment with automatic dictionary creation.</p>
+<p><strong>Basic Syntax</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>set &lt;variable_name&gt; = &lt;value&gt;
+</code></pre></div></p>
+<p><strong>Dot Notation Syntax</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>set &lt;dict_name&gt;.&lt;key&gt; = &lt;value&gt;
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>set &lt;dict_name&gt;.&lt;nested_key&gt;.&lt;sub_key&gt; = &lt;value&gt;
+</code></pre></div></p>
+<p><strong>Parameters</strong>
+- <code>&lt;variable_name&gt;</code> (string): The name of the variable to set.
+- <code>&lt;dict_name&gt;.&lt;key&gt;</code> (string): Dictionary key path using dot notation.
+- <code>&lt;value&gt;</code>: The value to assign (auto-detects string, number, or boolean).</p>
+<p><strong>Examples</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a># Basic variable assignment
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>set player_name = &quot;Hero&quot;
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>set player_level = 1
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>set game_started = true
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a># Dot notation for dictionaries (NEW!)
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>set player.name = &quot;Hero&quot;
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>set player.level = 1
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>set player.stats.hp = 100
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>set player.stats.mp = 50
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a># Automatic nested dictionary creation
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>set character.inventory.weapons.sword = &quot;Steel Sword&quot;
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>set character.inventory.items.potions = 5
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a># Access the values
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>narrator &quot;Welcome, {player.name}! Your HP: {player.stats.hp}&quot;
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>narrator &quot;Weapon: {character.inventory.weapons.sword}&quot;
+</code></pre></div></p>
+<p><strong>Benefits</strong>
+- <strong>No pre-definition required</strong>: Dictionaries are created automatically
+- <strong>Intuitive syntax</strong>: Natural way to assign dictionary keys
+- <strong>Backward compatible</strong>: Works alongside existing <code>set_dict</code> commands
+- <strong>Type detection</strong>: Automatically detects strings, numbers, and booleans</p>
 <h3 id="set_array"><code>set_array</code></h3>
 <p>Creates or overwrites a variable with a new array. The array is defined using a Godot-like array literal format.</p>
 <p><strong>Syntax</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>set_array &lt;variable_name&gt; [value1, value2, &quot;string_value&quot;, ...]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>set_array &lt;variable_name&gt; [value1, value2, &quot;string_value&quot;, ...]
 </code></pre></div></p>
 <p><strong>Parameters</strong>
 - <code>&lt;variable_name&gt;</code> (string): The name of the variable to set (e.g., <code>inventory</code>, <code>quest_flags</code>).
 - The second argument must be a string literal enclosed in <code>[]</code> representing the array.</p>
 <p><strong>Example</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a># Initialize an inventory for the player
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>set_array inventory [&quot;sword&quot;, &quot;shield&quot;, &quot;potion&quot;]
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a># You can then access it using standard variable syntax
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>narrator &quot;You have a {inventory[0]}.&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a># Initialize an inventory for the player
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>set_array inventory [&quot;sword&quot;, &quot;shield&quot;, &quot;potion&quot;]
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a># You can then access it using standard variable syntax
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>narrator &quot;You have a {inventory[0]}.&quot;
 </code></pre></div></p>
 <h3 id="set_dict"><code>set_dict</code></h3>
 <p>Creates or overwrites a variable with a new dictionary. The dictionary is defined using a Godot-like dictionary literal format.</p>
 <p><strong>Syntax</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>set_dict &lt;variable_name&gt; {key1: value1, &quot;key2&quot;: &quot;string_value&quot;, ...}
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>set_dict &lt;variable_name&gt; {key1: value1, &quot;key2&quot;: &quot;string_value&quot;, ...}
 </code></pre></div></p>
 <p><strong>Parameters</strong>
 - <code>&lt;variable_name&gt;</code> (string): The name of the variable to set (e.g., <code>player_stats</code>, <code>item_properties</code>).
 - The second argument must be a string literal enclosed in <code>{}</code> representing the dictionary.</p>
 <p><strong>Example</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a># Define stats for a character
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>set_dict player_stats {&quot;name&quot;: &quot;Yuko&quot;, &quot;level&quot;: 5, &quot;hp&quot;: 100, &quot;mp&quot;: 50}
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a># Access the stats
-<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>narrator &quot;Character: {player_stats.name}, Level: {player_stats.level}&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a># Define stats for a character
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>set_dict player_stats {&quot;name&quot;: &quot;Yuko&quot;, &quot;level&quot;: 5, &quot;hp&quot;: 100, &quot;mp&quot;: 50}
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a># Access the stats
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>narrator &quot;Character: {player_stats.name}, Level: {player_stats.level}&quot;
 </code></pre></div></p>
 
 

@@ -760,7 +760,7 @@
           <li class="md-nav__item">
   <a href="#set_dict" class="md-nav__link">
     <span class="md-ellipsis">
-      辞書（set_dict）
+      辞書（set_dictとドット記法）
     </span>
   </a>
   
@@ -1747,7 +1747,7 @@
           <li class="md-nav__item">
   <a href="#set_dict" class="md-nav__link">
     <span class="md-ellipsis">
-      辞書（set_dict）
+      辞書（set_dictとドット記法）
     </span>
   </a>
   
@@ -1833,19 +1833,33 @@
 <h2 id="_2">基本的な変数の使用法</h2>
 <p>変数は<code>set</code>コマンドを使用して宣言および値を割り当てます。</p>
 <h3 id="set"><code>set</code>コマンド</h3>
-<p><code>set</code>コマンドは変数に値を割り当てます。変数が存在しない場合は作成されます。</p>
-<p><strong>構文:</strong>
+<p><code>set</code>コマンドは変数に値を割り当てます。変数が存在しない場合は作成されます。<code>set</code>コマンドは辞書のキー代入のための<strong>ドット記法</strong>もサポートしており、ネストしたデータ構造の操作がより簡単になります。</p>
+<p><strong>基本構文:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>set &lt;変数名&gt; = &lt;値&gt;
 </code></pre></div></p>
+<p><strong>ドット記法構文:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>set &lt;辞書名&gt;.&lt;キー&gt; = &lt;値&gt;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>set &lt;辞書名&gt;.&lt;ネストキー&gt;.&lt;サブキー&gt; = &lt;値&gt;
+</code></pre></div></p>
 <p><strong>例:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a># 異なるデータ型を設定
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>set player_name = &quot;アリス&quot;
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>set player_level = 1
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>set game_progress = 0.5
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>set tutorial_completed = true
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a># 変数は更新可能
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>set player_level = player_level + 1
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># 異なるデータ型を設定
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>set player_name = &quot;アリス&quot;
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>set player_level = 1
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>set game_progress = 0.5
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>set tutorial_completed = true
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a># 変数は更新可能
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>set player_level = player_level + 1
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a># 辞書キーのドット記法（新機能！）
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>set player.name = &quot;アリス&quot;
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>set player.level = 1
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>set player.stats.hp = 100
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>set player.stats.mp = 50
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a># 自動辞書作成 - 辞書の事前定義は不要
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>set character.info.age = 25
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>set character.info.gender = &quot;female&quot;
 </code></pre></div>
 <h3 id="_3">サポートされるデータ型</h3>
 <p>Argodeの変数は一般的なデータ型をサポートしています。</p>
@@ -1858,43 +1872,71 @@
 <h2 id="_4">変数へのアクセス</h2>
 <p>変数はダイアログ内およびコマンドのパラメータとしてアクセスできます。</p>
 <h3 id="_5">ダイアログ内</h3>
-<p>ダイアログ内に変数の値を直接表示するには、変数名を中括弧<code>{}</code>で囲みます。</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>narrator &quot;ようこそ、{player_name}！あなたはレベル{player_level}です。&quot;
+<p>ダイアログ内に変数の値を直接表示するには、変数名を中括弧<code>{}</code>または角括弧<code>[]</code>で囲みます。どちらの記法もサポートされています。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>narrator &quot;ようこそ、{player_name}！あなたはレベル{player_level}です。&quot;
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>narrator &quot;ようこそ、[player_name]！あなたはレベル[player_level]です。&quot;
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a># ドット記法での辞書値へのアクセス
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>narrator &quot;こんにちは、{player.name}！あなたのHPは{player.stats.hp}です。&quot;
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a># 配列アクセスもサポート
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>narrator &quot;あなたの最初のアイテムは{inventory[0]}です。&quot;
 </code></pre></div>
 <h3 id="_6">コマンド内</h3>
 <p>変数はコマンドパラメータの値として使用できます。変数の現在の値が代入されます。</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>set target_x = 500
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>show character_name at x={target_x} y=200
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>set target_x = 500
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>show character_name at x={target_x} y=200
 </code></pre></div>
 <h2 id="_7">複雑なデータ型: 配列と辞書</h2>
 <p>Argodeは、専用のコマンドを使用して、より複雑なデータ構造である配列と辞書もサポートしています。</p>
 <h3 id="set_array">配列（<code>set_array</code>）</h3>
 <p>配列は順序付けられた値のコレクションです。<code>set_array</code>コマンドを使用して配列変数を作成または更新します。</p>
 <p><strong>構文:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>set_array &lt;変数名&gt; [値1, 値2, ...]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>set_array &lt;変数名&gt; [値1, 値2, ...]
 </code></pre></div></p>
 <p><strong>例:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>set_array inventory [&quot;剣&quot;, &quot;盾&quot;, &quot;ポーション&quot;]
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>narrator &quot;あなたの最初のアイテムは{inventory[0]}です。&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>set_array inventory [&quot;剣&quot;, &quot;盾&quot;, &quot;ポーション&quot;]
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>narrator &quot;あなたの最初のアイテムは{inventory[0]}です。&quot;
 </code></pre></div>
-<h3 id="set_dict">辞書（<code>set_dict</code>）</h3>
-<p>辞書（またはマップ/ハッシュテーブル）は、キーと値のペアのコレクションです。<code>set_dict</code>コマンドを使用して辞書変数を作成または更新します。</p>
-<p><strong>構文:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>set_dict &lt;変数名&gt; {キー1: 値1, キー2: 値2, ...}
+<h3 id="set_dict">辞書（<code>set_dict</code>とドット記法）</h3>
+<p>辞書（またはマップ/ハッシュテーブル）は、キーと値のペアのコレクションです。従来の<code>set_dict</code>コマンドまたは<code>set</code>コマンドでのより直感的なドット記法を使用して辞書を作成できます。</p>
+<p><strong>従来の構文:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>set_dict &lt;変数名&gt; {キー1: 値1, キー2: 値2, ...}
+</code></pre></div></p>
+<p><strong>ドット記法構文（推奨）:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>set &lt;辞書名&gt;.&lt;キー&gt; = &lt;値&gt;
 </code></pre></div></p>
 <p><strong>例:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>set_dict player_stats {&quot;name&quot;: &quot;ヒーロー&quot;, &quot;hp&quot;: 100, &quot;mp&quot;: 50}
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>narrator &quot;{player_stats.name}はHP{player_stats.hp}です。&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a># 従来の方法（まだサポート）
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>set_dict player_stats {&quot;name&quot;: &quot;ヒーロー&quot;, &quot;hp&quot;: 100, &quot;mp&quot;: 50}
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a># 新しいドット記法（推奨）
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>set player.name = &quot;ヒーロー&quot;
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>set player.hp = 100
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>set player.mp = 50
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a># 自動ネスト辞書作成
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>set player.stats.strength = 15
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>set player.stats.agility = 12
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>set player.inventory.weapons.sword = &quot;鋼の剣&quot;
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>narrator &quot;{player.name}はHP{player.hp}です。&quot;
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>narrator &quot;武器: {player.inventory.weapons.sword}&quot;
 </code></pre></div>
+<p><strong>ドット記法の利点:</strong>
+- <strong>事前定義不要</strong>: 辞書とネスト構造が自動的に作成される
+- <strong>直感的な構文</strong>: 個々の辞書キーを代入するより自然な方法
+- <strong>後方互換性</strong>: 既存の<code>set_dict</code>コマンドは引き続き動作
+- <strong>柔軟なネスト</strong>: 任意レベルのネスト辞書をサポート</p>
 <h2 id="_8">条件ロジック</h2>
 <p><code>if</code>、<code>elif</code>、<code>else</code>ステートメントを使用して、変数の値に基づいてストーリーの流れを制御できます。</p>
 <h3 id="ifelifelse"><code>if</code>、<code>elif</code>、<code>else</code></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>if player_level &gt;= 10:
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    narrator &quot;あなたはベテランの冒険者です！&quot;
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>elif player_level &gt;= 5:
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    narrator &quot;順調に進んでいますね。&quot;
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>else:
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    narrator &quot;あなたはまだ旅を始めたばかりです。&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>if player_level &gt;= 10:
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    narrator &quot;あなたはベテランの冒険者です！&quot;
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>elif player_level &gt;= 5:
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    narrator &quot;順調に進んでいますね。&quot;
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>else:
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    narrator &quot;あなたはまだ旅を始めたばかりです。&quot;
 </code></pre></div>
 <h3 id="_9">比較演算子</h3>
 <ul>
@@ -1911,8 +1953,8 @@
 <li><code>or</code></li>
 <li><code>not</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>if player_level &gt;= 5 and has_sword:
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    narrator &quot;次の挑戦の準備ができています。&quot;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>if player_level &gt;= 5 and has_sword:
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    narrator &quot;次の挑戦の準備ができています。&quot;
 </code></pre></div>
 <h2 id="_11">ベストプラクティス</h2>
 <ul>
