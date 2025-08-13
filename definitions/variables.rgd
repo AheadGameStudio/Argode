@@ -13,11 +13,11 @@ set player_name = "プレイヤー"
 set player_gender = "male" 
 set player_age = 17
 
-# ❌ 以下の定義方法はできません
+# ✅ 新機能：辞書の個別キー設定も可能（ドット記法）
 # set player.name = "プレイヤー"
 # set player.gender = "male"
 # set player.age = 17
-# 辞書.個別キーの形式は読み取り専用です
+# 辞書作成後に個別キーを更新可能
 
 # ゲーム進行フラグ
 set_dict progress {

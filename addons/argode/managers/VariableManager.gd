@@ -197,23 +197,30 @@ func _get_available_variable_names() -> PackedStringArray:
 	return PackedStringArray(global_vars.keys())
 
 func handle_set_from_definition(line: String, file_path: String, line_number: int):
-	"""定義ファイルからのset文を処理"""
+	"""定義ファイルからのset文を処理（ドット記法サポート追加）"""
 	print("📊 Processing variable definition: ", line.strip_edges())
 	
-	# 既存の_handle_set_statementを利用
+	# ドット記法を含む拡張set文の正規表現
 	var set_regex = RegEx.new()
-	set_regex.compile("^set\\s+(\\w+)\\s*=\\s*(.+)")
+	set_regex.compile("^set\\s+([\\w\\.]+)\\s*=\\s*(.+)")
 	
 	var match_result = set_regex.search(line)
 	if match_result:
-		var var_name = match_result.get_string(1)
+		var var_path = match_result.get_string(1)
 		var expression = match_result.get_string(2).strip_edges()
 		
-		# 値を解析・設定
+		# 値を解析
 		var value = _parse_expression(expression)
-		set_variable_direct(var_name, value)  # 直接値設定メソッドを使用
 		
-		print("   ✅ Set variable: ", var_name, " = ", value, " (", typeof(value), ")")
+		# ドット記法かどうかを判定
+		if "." in var_path:
+			# ネストした変数として設定
+			set_nested_variable(var_path, value)
+			print("   ✅ Set nested variable: ", var_path, " = ", value, " (", typeof(value), ")")
+		else:
+			# 通常の変数として設定
+			set_variable_direct(var_path, value)
+			print("   ✅ Set variable: ", var_path, " = ", value, " (", typeof(value), ")")
 	else:
 		print("   ❌ Invalid set statement at ", file_path, ":", line_number)
 

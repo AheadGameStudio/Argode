@@ -4,6 +4,14 @@
 
 ## 含まれるコマンド
 
+### SetCommand.gd
+- **コマンド名**: `set`
+- **説明**: 変数に値を設定（ドット記法サポート）
+- **使用例**: 
+  - `set player_name = "主人公"`
+  - `set player.level = 5` (辞書の個別キー設定)
+  - `set settings.audio.bgm = 0.8` (ネストした辞書)
+
 ### SetArrayCommand.gd
 - **コマンド名**: `set_array`  
 - **説明**: 配列リテラルから変数に配列を設定
