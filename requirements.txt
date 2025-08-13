@@ -1,0 +1,13 @@
+# MkDocs and themes
+mkdocs>=1.5.0
+mkdocs-material>=9.0.0
+
+# Plugins
+mkdocs-i18n>=0.4.6
+
+# Extensions
+pymdown-extensions>=10.0.0
+
+# Additional dependencies
+Pillow>=8.0.0
+markdown>=3.4.0

@@ -29,8 +29,8 @@ $RECYCLE.BIN/
 # Development Files (Exclude from Distribution)
 # Documentation Source (Managed in 'docs' branch, deployed via GitHub Actions)
 docs/
-mkdocs.yml
-requirements.txt
+# mkdocs.yml  # Allow MkDocs config for potential main branch builds
+# requirements.txt  # Allow requirements for CI/CD
 
 # Test & Development Scenarios
 scenarios/tests/
