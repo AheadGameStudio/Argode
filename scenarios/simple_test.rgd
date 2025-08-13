@@ -4,9 +4,23 @@
 label start:
     "定義ファイルからの変数読み取りテスト"
     
+    "[]記法での変数展開："
     "プレイヤー名: [player.name]"
     "プレイヤー性別: [player.gender]"  
     "プレイヤー年齢: [player.age]"
+    
+    "{}記法での変数展開（ドキュメント準拠）："
+    "プレイヤー名: {player.name}"
+    "プレイヤー性別: {player.gender}"
+    "プレイヤー年齢: {player.age}"
+    
+    "配列テスト用のアイテム作成..."
+    set_array inventory ["sword", "shield", "potion", "key"]
+    
+    "配列アクセステスト："
+    "最初のアイテム: {inventory[0]}"
+    "2番目のアイテム: {inventory[1]}"
+    "3番目のアイテム: {inventory[2]}"
     
     "個別変数も表示："
     "プレイヤー名(個別): [player_name]"

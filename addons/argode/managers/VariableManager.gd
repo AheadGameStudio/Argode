@@ -185,13 +185,75 @@ func expand_variables(text: String) -> String:
 		else:
 			push_warning("⚠️ Undefined variable in text: " + var_path)
 	
-	# v2設計: {} 形式はインラインタグ専用のため、変数展開では処理しない
-	# v1互換が必要な場合は、明示的に enable_legacy_variable_syntax フラグで制御
+	# v2拡張: {} 形式の変数展開もサポート（配列アクセス等との互換性のため）
+	var regex_curly = RegEx.new()
+	regex_curly.compile("\\{([^\\}]+)\\}")
+	var matches_curly = regex_curly.search_all(result)
 	
-	# 注意: v2では {} はインラインタグ（{shake}, {color=red}等）に使用
-	# 変数展開は [] 形式のみ（[variable_name] または [group.key]）をサポート
+	for match in matches_curly:
+		var var_expression = match.get_string(1)
+		var value = null
+		
+		# 配列アクセス（例: inventory[0]）を処理
+		if "[" in var_expression and "]" in var_expression:
+			value = _evaluate_array_access(var_expression)
+		# ドット記法（例: player.name）を処理
+		elif "." in var_expression:
+			value = get_nested_variable(var_expression)
+		# 通常の変数を処理
+		else:
+			value = global_vars.get(var_expression, null)
+		
+		if value != null:
+			var value_str = str(value)
+			result = result.replace("{" + var_expression + "}", value_str)
+			print("🔄 Variable expanded: {", var_expression, "} -> ", value_str)
+		else:
+			push_warning("⚠️ Undefined variable in text: " + var_expression)
 	
 	return result
+
+func _evaluate_array_access(expression: String) -> Variant:
+	"""配列アクセス式を評価（例: inventory[0], data.items[1]）"""
+	var bracket_start = expression.find("[")
+	var bracket_end = expression.find("]")
+	
+	if bracket_start == -1 or bracket_end == -1:
+		push_warning("⚠️ Invalid array access syntax: " + expression)
+		return null
+	
+	var var_name = expression.substr(0, bracket_start)
+	var index_str = expression.substr(bracket_start + 1, bracket_end - bracket_start - 1)
+	
+	# インデックスを数値に変換
+	var index = -1
+	if index_str.is_valid_int():
+		index = index_str.to_int()
+	else:
+		push_warning("⚠️ Non-integer array index: " + index_str)
+		return null
+	
+	# 変数を取得
+	var array_value = null
+	if "." in var_name:
+		array_value = get_nested_variable(var_name)
+	else:
+		array_value = global_vars.get(var_name, null)
+	
+	# 配列の有効性をチェック
+	if array_value == null:
+		push_warning("⚠️ Undefined array variable: " + var_name)
+		return null
+	
+	if not (array_value is Array):
+		push_warning("⚠️ Variable is not an array: " + var_name)
+		return null
+	
+	if index < 0 or index >= array_value.size():
+		push_warning("⚠️ Array index out of bounds: " + str(index) + " for array size " + str(array_value.size()))
+		return null
+	
+	return array_value[index]
 
 func _get_available_variable_names() -> PackedStringArray:
 	return PackedStringArray(global_vars.keys())

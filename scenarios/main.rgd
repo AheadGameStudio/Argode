@@ -7,7 +7,7 @@ character narrator "システム" color=#00ff00
 label start:
 
     narrator "Argode v2アーキテクチャへようこそ！"
-    "プレイヤー名: [player.name]"
+    "プレイヤー名: {player.name}"
 
 label main_menu:
     narrator "実行したいシナリオを選択してください。"
