@@ -15,7 +15,7 @@ var character_layer: Control = null
 var ui_layer: Control = null
 
 # === 背景管理 ===
-var current_background: TextureRect = null
+var current_background: Control = null
 var background_cache: Dictionary = {}
 
 # === キャラクター管理 ===
@@ -127,7 +127,7 @@ func _create_background_node(bg_path: String) -> TextureRect:
 	
 	return bg_node
 
-func _set_background_immediately(new_bg: TextureRect):
+func _set_background_immediately(new_bg: Control):
 	"""背景を即座に変更"""
 	if current_background:
 		current_background.queue_free()
@@ -135,7 +135,16 @@ func _set_background_immediately(new_bg: TextureRect):
 	background_layer.add_child(new_bg)
 	current_background = new_bg
 
-func _execute_background_transition(new_bg: TextureRect, transition: String):
+func _clear_background():
+	"""背景をクリア（透明にする）"""
+	if current_background:
+		print("🔄 LayerManager: Clearing background")
+		current_background.queue_free()
+		current_background = null
+	else:
+		print("ℹ️ LayerManager: No background to clear")
+
+func _execute_background_transition(new_bg: Control, transition: String):
 	"""背景トランジションを実行"""
 	# シンプルなフェード効果を実装
 	if transition == "fade" or transition == "dissolve":
