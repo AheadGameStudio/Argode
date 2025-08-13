@@ -17,9 +17,9 @@ label main_menu:
             call main_demo_start
             narrator "メインデモが完了しました。"
             jump after_test_completion
-        "変数読み取りテスト (NEW!)":
+        "自動辞書作成テスト (NEW!)":
             call simple_test_start
-            narrator "変数読み取りテストが完了しました。"
+            narrator "自動辞書作成テストが完了しました。"
             jump after_test_completion
         "ドット記法setコマンドテスト (NEW!)":
             call set_dot_notation_test_start

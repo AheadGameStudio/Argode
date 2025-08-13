@@ -1,18 +1,29 @@
 # simple_test.rgd
-# 定義ファイルの変数読み取りテスト
+# 自動辞書作成テスト
 
 label start:
-    "定義ファイルからの変数読み取りテスト"
+    "自動辞書作成テストを開始します"
     
-    "[]記法での変数展開："
-    "プレイヤー名: [player.name]"
-    "プレイヤー性別: [player.gender]"  
-    "プレイヤー年齢: [player.age]"
-    
-    "{}記法での変数展開（ドキュメント準拠）："
+    "{}記法での変数展開："
     "プレイヤー名: {player.name}"
     "プレイヤー性別: {player.gender}"
     "プレイヤー年齢: {player.age}"
+    "プレイヤーレベル: {player.level}"
+    
+    "ネストした辞書（自動作成済み）："
+    "HP: {player.stats.hp}"
+    "MP: {player.stats.mp}"
+    "筋力: {player.stats.strength}"
+    
+    "実行時にさらに追加してみます..."
+    set player.stats.intelligence = 8
+    set player.equipment.weapon = "Iron Sword"
+    set player.equipment.armor = "Leather Armor"
+    
+    "追加された値："
+    "知力: {player.stats.intelligence}"
+    "武器: {player.equipment.weapon}"
+    "防具: {player.equipment.armor}"
     
     "配列テスト用のアイテム作成..."
     set_array inventory ["sword", "shield", "potion", "key"]
@@ -20,15 +31,9 @@ label start:
     "配列アクセステスト："
     "最初のアイテム: {inventory[0]}"
     "2番目のアイテム: {inventory[1]}"
-    "3番目のアイテム: {inventory[2]}"
-    
-    "個別変数も表示："
-    "プレイヤー名(個別): [player_name]"
-    "プレイヤー性別(個別): [player_gender]"
-    "プレイヤー年齢(個別): [player_age]"
     
     "進行状況:"
-    "ゲーム開始: [progress.game_started]"
-    "プロローグ完了: [progress.prologue_completed]"
+    "ゲーム開始: {progress.game_started}"
+    "プロローグ完了: {progress.prologue_completed}"
     
-    "テスト完了！"
+    "テスト完了！自動辞書作成は便利です！"
