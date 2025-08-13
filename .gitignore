@@ -75,7 +75,7 @@ USAGE_GUIDE.md
 .claude/
 
 # GitHub Actions (Managed in docs branch only)
-.github/
+# .github/
 
 # Asset Import Files
 *.import

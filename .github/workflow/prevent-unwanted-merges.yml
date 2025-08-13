@@ -1,0 +1,23 @@
+    name: Prevent Unwanted Merges
+    on:
+      pull_request:
+        branches:
+          - main
+          - documentation
+    jobs:
+      check_merge_source:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Check for unwanted merge from documentation to main
+            if: github.base_ref == 'main' && github.head_ref == 'documentation'
+            run: |
+              echo "::error::Merging 'documentation' into 'main' is not allowed."
+              exit 1
+       - name: Check for unwanted merge from main to documentation
+         if: github.base_ref == 'documentation' && github.head_ref == 'main'
+         run: |
+           echo "::error::Merging 'main' into 'documentation' is not allowed."
+           exit 1
+
+       - name: Allow other merges
+         run: echo "Merge is allowed."
