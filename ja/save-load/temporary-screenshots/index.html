@@ -12,13 +12,13 @@
         <meta name="author" content="AheadGameStudio">
       
       
-        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/ja/ui/advscreen/">
+        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/ja/save-load/temporary-screenshots/">
       
       
-        <link rel="prev" href="../../save-load/examples/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="../themes/">
+        <link rel="next" href="../examples/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>AdvScreen - Argode ドキュメント</title>
+        <title>一時スクリーンショット - Argode ドキュメント</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#advscreen" class="md-skip">
+        <a href="#_1" class="md-skip">
           コンテンツにスキップ
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              AdvScreen
+              一時スクリーンショット
             
           </span>
         </div>
@@ -817,8 +817,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -829,13 +831,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
@@ -851,7 +851,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             セーブ・ロードシステム
@@ -865,7 +865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../save-load/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -885,10 +885,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../save-load/temporary-screenshots/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    一時スクリーンショット
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -899,6 +921,236 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目次">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目次
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      概要
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用パターン
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="使用パターン">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      基本的な使用方法
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      プログラムによる使用
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      自動撮影ヘルパー
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      技術詳細
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="技術詳細">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      保存とライフサイクル
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      動作ロジック
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      クリーンアップイベント
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      API リファレンス
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API リファレンス">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      コアメソッド
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      設定定数
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      ベストプラクティス
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ベストプラクティス">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      撮影するタイミング
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      撮影すべきではないもの
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      セーブシステムとの統合
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      トラブルシューティング
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="トラブルシューティング">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      よくある問題
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      デバッグ情報
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      関連項目
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -911,7 +1163,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../save-load/examples/" class="md-nav__link">
+      <a href="../examples/" class="md-nav__link">
         
   
   
@@ -938,8 +1190,6 @@
       
   
   
-    
-  
   
   
     
@@ -952,11 +1202,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
           <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
@@ -972,7 +1224,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             UIシステム
@@ -983,32 +1235,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    AdvScreen
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../ui/advscreen/" class="md-nav__link">
         
   
   
@@ -1019,95 +1249,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="目次">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      目次
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      コアコンポーネント
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      カスタマイズ
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#rgd" class="md-nav__link">
-    <span class="md-ellipsis">
-      RGDスクリプトとの相互作用
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="RGDスクリプトとの相互作用">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
-    <span class="md-ellipsis">
-      ダイアログの表示
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      選択肢の提示
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ui" class="md-nav__link">
-    <span class="md-ellipsis">
-      uiコマンドとの統合
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      主要機能
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1120,7 +1261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../themes/" class="md-nav__link">
+      <a href="../../ui/themes/" class="md-nav__link">
         
   
   
@@ -1143,7 +1284,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../custom/" class="md-nav__link">
+      <a href="../../ui/custom/" class="md-nav__link">
         
   
   
@@ -1579,55 +1720,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      コアコンポーネント
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
-      カスタマイズ
+      概要
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#rgd" class="md-nav__link">
-    <span class="md-ellipsis">
-      RGDスクリプトとの相互作用
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="RGDスクリプトとの相互作用">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
-      ダイアログの表示
+      使用パターン
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="使用パターン">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
-      選択肢の提示
+      基本的な使用方法
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#ui" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
-      uiコマンドとの統合
+      プログラムによる使用
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      自動撮影ヘルパー
     </span>
   </a>
   
@@ -1639,9 +1771,159 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
+  <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
-      主要機能
+      技術詳細
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="技術詳細">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      保存とライフサイクル
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      動作ロジック
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      クリーンアップイベント
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      API リファレンス
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API リファレンス">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      コアメソッド
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      設定定数
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      ベストプラクティス
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ベストプラクティス">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      撮影するタイミング
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      撮影すべきではないもの
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      セーブシステムとの統合
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      トラブルシューティング
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="トラブルシューティング">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      よくある問題
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      デバッグ情報
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      関連項目
     </span>
   </a>
   
@@ -1666,52 +1948,156 @@
   
 
 
-<h1 id="advscreen">AdvScreenシステム</h1>
-<p>AdvScreenは、ビジュアルノベルでダイアログ、選択肢、その他のインタラクティブな要素を表示するためのArgodeの強力で柔軟なシステムです。これは主要なメッセージウィンドウおよびUIコンテナとして機能し、豊富なカスタマイズとRGDスクリプトとのシームレスな統合のために設計されています。</p>
-<h2 id="_1">コアコンポーネント</h2>
-<p>AdvScreenは<code>UIManager</code>によって管理され、そのライフサイクル、コンテンツ表示、およびArgodeSystemとの相互作用を処理します。ゲームの美学に合わせて外観と動作を変更できるように、高度にカスタマイズ可能に設計されています。</p>
-<h2 id="_2">カスタマイズ</h2>
-<p>AdvScreenの外観は、Godotのテーマシステムを通じて広範囲にカスタマイズできます。カスタムスタイル、フォント、色を定義して、ゲーム独自のルックアンドフィールを作成できます。</p>
-<p>外観のカスタマイズの詳細については、<a href="../themes/">テーマガイド</a>を参照してください。</p>
-<p>完全にカスタムのUI要素を作成したり、複雑なGodotシーンを統合したりする必要がある場合は、<a href="../custom/">カスタムUIガイド</a>を参照してください。</p>
-<h2 id="rgd">RGDスクリプトとの相互作用</h2>
-<p>AdvScreenは、RGDスクリプトコマンドに基づいてダイアログを自動的に表示し、選択肢を提示します。</p>
-<h3 id="_3">ダイアログの表示</h3>
-<p>スクリプトがダイアログ行に遭遇すると、AdvScreenはキャラクター名（指定されている場合）とそのダイアログテキストを表示します。</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>character alice &quot;アリス&quot;
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>alice &quot;こんにちは、プレイヤー！&quot;
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>narrator &quot;これはナレーションです。&quot;
+<h1 id="_1">一時スクリーンショット</h1>
+<p>一時スクリーンショット機能は、UI要素が表示される前にクリーンなゲームシーンを撮影することで、セーブサムネイルがメニューやダイアログではなく実際のゲームプレイ内容を表示することを保証します。</p>
+<h2 id="_2">概要</h2>
+<p>プレイヤーがセーブメニューを開くとき、現在の画面にはセーブサムネイルに表示されるべきではないUI要素が含まれています。一時スクリーンショットシステムは以下によってこの問題を解決します：</p>
+<ol>
+<li><strong>事前撮影</strong>: UIが表示される前にスクリーンショットを撮影</li>
+<li><strong>一時保存</strong>: スクリーンショットを一時的にメモリに保持</li>
+<li><strong>優先使用</strong>: 利用可能な場合、セーブ時に一時スクリーンショットを使用</li>
+<li><strong>自動クリーンアップ</strong>: 使用後に一時スクリーンショットを自動削除</li>
+</ol>
+<h2 id="_3">使用パターン</h2>
+<h3 id="_4">基本的な使用方法</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># シナリオスクリプト内で
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>scene classroom
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>show yuko happy center
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>yuko &quot;なんて美しい日でしょう！&quot;
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a># メニューを開く前にクリーンなスクリーンショットを撮影
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>capture
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a># UI操作は保存されるスクリーンショットに影響しません
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>ui save_menu show
 </code></pre></div>
-<h3 id="_4">選択肢の提示</h3>
-<p>RGDスクリプトの<code>menu</code>コマンドは、AdvScreenがプレイヤーに選択肢のリストを表示するようにトリガーします。スクリプトは選択が行われるまで一時停止します。</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>menu:
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    &quot;オプションA&quot;:
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>        narrator &quot;あなたはAを選びました。&quot;
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    &quot;オプションB&quot;:
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        narrator &quot;あなたはBを選びました。&quot;
+<h3 id="_5">プログラムによる使用</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># UIを表示する前に</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">func</span><span class="w"> </span><span class="n">show_pause_menu</span><span class="p">():</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="c1"># 現在のゲーム状態を撮影</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">capture_temp_screenshot</span><span class="p">()</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="c1"># UIを表示 - これは撮影されません</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="n">pause_menu</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># セーブ時にクリーンなスクリーンショットを使用</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">func</span><span class="w"> </span><span class="n">save_to_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w">  </span><span class="c1"># 利用可能であれば一時スクショを使用</span>
 </code></pre></div>
-<h3 id="ui"><code>ui</code>コマンドとの統合</h3>
-<p><code>ui</code>コマンドは、AdvScreen自体を表示または非表示にしたり、その上に他のカスタムUIシーンを表示したりするために使用できます。</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># AdvScreen（メッセージウィンドウ）を非表示にする
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>ui hide advscreen
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a># AdvScreenを表示する
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>ui show advscreen
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a># AdvScreenの上にカスタムメニューを表示する
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>ui call &quot;res://ui/my_custom_menu.tscn&quot;
+<h3 id="_6">自動撮影ヘルパー</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># UIシステム用の組み込みヘルパー</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">func</span><span class="w"> </span><span class="n">show_menu_with_capture</span><span class="p">(</span><span class="n">menu_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">save_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="n">save_manager</span><span class="o">.</span><span class="n">auto_capture_before_ui</span><span class="p">(</span><span class="n">menu_name</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="c1"># メニューUIを表示</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="n">show_menu</span><span class="p">(</span><span class="n">menu_name</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="_5">主要機能</h2>
+<h2 id="_7">技術詳細</h2>
+<h3 id="_8">保存とライフサイクル</h3>
 <ul>
-<li><strong>テキストアニメーション:</strong> 動的なダイアログ表示のための様々なテキストアニメーション効果をサポートします。</li>
-<li><strong>名前ボックス:</strong> 話しているキャラクターの名前を表示するための専用領域。</li>
-<li><strong>ダイアログ履歴:</strong> プレイヤーは過去のダイアログ行をレビューできます。</li>
-<li><strong>オートフォワード:</strong> 設定された遅延後にダイアログを自動的に進めます。</li>
-<li><strong>クリックで続行:</strong> ダイアログを進めるためにプレイヤーの入力が必要です。</li>
+<li><strong>メモリのみ</strong>: スクリーンショットはRAMに保存、ディスクには保存されません</li>
+<li><strong>Base64形式</strong>: 圧縮されたJPEGがBase64文字列としてエンコード</li>
+<li><strong>固定サイズ</strong>: サムネイルは200x150ピクセルにリサイズ</li>
+<li><strong>自動期限切れ</strong>: 使用されない場合、5分後にスクリーンショットが期限切れ</li>
 </ul>
-<hr />
-<p>AdvScreenは、Argodeビジュアルノベルで魅力的で視覚的に魅力的なダイアログ体験を作成するための強力なツールです。</p>
+<h3 id="_9">動作ロジック</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># セーブ時に、システムは以下をチェックします：</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_get_screenshot_for_save</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">has_valid_temp_screenshot</span><span class="p">():</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">temp_screenshot_data</span><span class="w">  </span><span class="c1"># 一時スクリーンショットを使用</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">capture_current_screen</span><span class="p">()</span><span class="w">  </span><span class="c1"># リアルタイム撮影にフォールバック</span>
+</code></pre></div>
+<h3 id="_10">クリーンアップイベント</h3>
+<p>一時スクリーンショットは以下の場合に自動的にクリアされます：</p>
+<ul>
+<li><strong>セーブ完了</strong>: 任意のスロットへの正常なセーブ後</li>
+<li><strong>ロード完了</strong>: 任意のスロットからのロード後</li>
+<li><strong>期限切れ</strong>: 5分間の非活動後</li>
+<li><strong>手動クリア</strong>: コードで明示的にクリアされた時</li>
+</ul>
+<h2 id="api">API リファレンス</h2>
+<h3 id="_11">コアメソッド</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># SaveLoadManagerメソッド</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">capture_temp_screenshot</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w">              </span><span class="c1"># 一時スクリーンショットを撮影</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">has_temp_screenshot</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w">                  </span><span class="c1"># 有効な一時スクショの存在チェック</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">get_temp_screenshot_age</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="w">             </span><span class="c1"># 経過時間を秒で取得</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">auto_capture_before_ui</span><span class="p">(</span><span class="n">ui_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w">  </span><span class="c1"># UI操作用ヘルパー</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># ArgodeSystemラッパーメソッド</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">capture_temp_screenshot</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">has_temp_screenshot</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">clear_temp_screenshot</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="_12">設定定数</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># SaveLoadManager.gd内</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">const</span><span class="w"> </span><span class="n">ENABLE_SCREENSHOTS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="w">        </span><span class="c1"># スクリーンショット機能の有効/無効</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_WIDTH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="w">          </span><span class="c1"># サムネイル幅（ピクセル）</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_HEIGHT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">150</span><span class="w">         </span><span class="c1"># サムネイル高さ（ピクセル）</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_QUALITY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.7</span><span class="w">        </span><span class="c1"># JPEG品質（0.0-1.0）</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">const</span><span class="w"> </span><span class="n">TEMP_SCREENSHOT_LIFETIME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">300.0</span><span class="w">  </span><span class="c1"># 期限切れ時間（秒）（5分）</span>
+</code></pre></div>
+<h2 id="_13">ベストプラクティス</h2>
+<h3 id="_14">撮影するタイミング</h3>
+<p><strong>良いタイミング:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a># 選択肢の前に
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>narrator &quot;あなたの道を選んでください...&quot;
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>capture
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>choice &quot;左に行く&quot; go_left
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>choice &quot;右に行く&quot; go_right
+</code></pre></div></p>
+<p><strong>メニューアクセス前:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">func</span><span class="w"> </span><span class="n">on_menu_key_pressed</span><span class="p">():</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">capture_temp_screenshot</span><span class="p">()</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="n">show_game_menu</span><span class="p">()</span>
+</code></pre></div></p>
+<h3 id="_15">撮影すべきではないもの</h3>
+<p><strong>以下の間は撮影を避けてください:</strong>
+- ローディング画面
+- トランジション効果
+- テキストボックスやダイアログ（クリーンな背景が欲しい場合）
+- その他のUI要素</p>
+<h3 id="_16">セーブシステムとの統合</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># セーブメニュー統合の例</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">class</span><span class="w"> </span><span class="n">SaveMenu</span><span class="p">:</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">        </span><span class="c1"># このメニューを表示する前に撮影は既に完了</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">        </span><span class="n">populate_save_slots</span><span class="p">()</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="k">func</span><span class="w"> </span><span class="n">save_to_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">):</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">        </span><span class="k">var</span><span class="w"> </span><span class="n">save_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">save_name_input</span><span class="o">.</span><span class="n">text</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">        </span><span class="c1"># メニューを開く前に撮影された一時スクリーンショットを使用</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="n">save_name</span><span class="p">)</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">        </span><span class="c1"># 一時スクリーンショットはセーブ後に自動的にクリア</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">        </span><span class="n">close_menu</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="_17">トラブルシューティング</h2>
+<h3 id="_18">よくある問題</h3>
+<p><strong>スクリーンショットが撮影されない:</strong>
+- <code>ENABLE_SCREENSHOTS</code> が true かチェック
+- ビューポートアクセス権限を確認
+- capture コマンドが正常に実行されたか確認</p>
+<p><strong>スクリーンショットにUIが写る:</strong>
+- UIを表示する前に <code>capture</code> が呼ばれているか確認
+- タイミングをチェック - 撮影中にUIが表示されている可能性</p>
+<p><strong>スクリーンショットが期限切れになる:</strong>
+- デフォルト寿命は5分間
+- 実際にセーブする時により近いタイミングで撮影
+- タイミングを確認するため <code>get_temp_screenshot_age()</code> をチェック</p>
+<h3 id="_19">デバッグ情報</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">var</span><span class="w"> </span><span class="n">save_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;一時スクショあり: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">save_manager</span><span class="o">.</span><span class="n">has_temp_screenshot</span><span class="p">())</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;スクショ経過時間: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">save_manager</span><span class="o">.</span><span class="n">get_temp_screenshot_age</span><span class="p">(),</span><span class="w"> </span><span class="s2">&quot; 秒&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;スクショ機能有効: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">save_manager</span><span class="o">.</span><span class="n">is_screenshot_enabled</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="_20">関連項目</h2>
+<ul>
+<li><a href="../">セーブ・ロードシステム</a></li>
+<li><a href="../ui/index.ja.md">UI統合</a></li>
+<li><a href="../getting-started/best-practices.ja.md">ベストプラクティス</a></li>
+</ul>
 
 
 

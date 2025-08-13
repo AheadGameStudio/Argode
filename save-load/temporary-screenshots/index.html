@@ -12,13 +12,13 @@
         <meta name="author" content="AheadGameStudio">
       
       
-        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/architecture/design-philosophy/">
+        <link rel="canonical" href="https://aheadgamestudio.github.io/Argode/save-load/temporary-screenshots/">
       
       
-        <link rel="prev" href="../../getting-started/basic-setup/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="../system-overview/">
+        <link rel="next" href="../examples/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Design Philosophy - Argode Documentation</title>
+        <title>Temporary Screenshots - Argode Documentation</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#design-philosophy" class="md-skip">
+        <a href="#temporary-screenshots" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Design Philosophy
+              Temporary Screenshots
             
           </span>
         </div>
@@ -408,8 +408,6 @@
       
   
   
-    
-  
   
   
     
@@ -422,11 +420,13 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -442,7 +442,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Architecture
@@ -453,32 +453,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Design Philosophy
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../architecture/design-philosophy/" class="md-nav__link">
         
   
   
@@ -489,275 +467,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#single-autoload-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      🏗️ Single Autoload Architecture
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#script-centric-asset-definition" class="md-nav__link">
-    <span class="md-ellipsis">
-      📝 Script-Centric Asset Definition
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="📝 Script-Centric Asset Definition">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#definition-statements" class="md-nav__link">
-    <span class="md-ellipsis">
-      Definition Statements
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benefits" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benefits
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ultimate-extensibility-framework" class="md-nav__link">
-    <span class="md-ellipsis">
-      🎯 Ultimate Extensibility Framework
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎯 Ultimate Extensibility Framework">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
-    <span class="md-ellipsis">
-      How It Works
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example Implementation
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#predictive-asset-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      🧠 Predictive Asset Management
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🧠 Predictive Asset Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#static-analysis" class="md-nav__link">
-    <span class="md-ellipsis">
-      Static Analysis
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benefits_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benefits
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#flexible-layer-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      🎨 Flexible Layer Architecture
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎨 Flexible Layer Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#role-based-assignment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Role-Based Assignment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#adaptability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Adaptability
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#advanced-ui-framework" class="md-nav__link">
-    <span class="md-ellipsis">
-      🖥️ Advanced UI Framework
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🖥️ Advanced UI Framework">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#screen-capabilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Screen Capabilities
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Features
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#hot-reloading-development-experience" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔄 Hot Reloading &amp; Development Experience
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🔄 Hot Reloading &amp; Development Experience">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#development-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Development Features
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ide-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      IDE Integration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-philosophy" class="md-nav__link">
-    <span class="md-ellipsis">
-      🎪 Performance Philosophy
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎪 Performance Philosophy">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#smart-defaults" class="md-nav__link">
-    <span class="md-ellipsis">
-      Smart Defaults
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#performance-knobs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Performance Knobs
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -770,7 +479,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -793,7 +502,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../core-components/" class="md-nav__link">
+      <a href="../../architecture/core-components/" class="md-nav__link">
         
   
   
@@ -1108,8 +817,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -1120,13 +831,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
@@ -1142,7 +851,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Save & Load System
@@ -1156,7 +865,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../save-load/" class="md-nav__link">
+      <a href="../" class="md-nav__link">
         
   
   
@@ -1176,10 +885,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../save-load/temporary-screenshots/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Temporary Screenshots
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1190,6 +921,236 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#programmatic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Programmatic Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-capture-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      Auto-capture Helper
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technical-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Technical Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#storage-and-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      Storage and Lifecycle
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behavior-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Behavior Logic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanup-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cleanup Events
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration Constants
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#when-to-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Capture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-not-to-capture" class="md-nav__link">
+    <span class="md-ellipsis">
+      What NOT to Capture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-save-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Save Systems
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debug Information
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1202,7 +1163,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../save-load/examples/" class="md-nav__link">
+      <a href="../examples/" class="md-nav__link">
         
   
   
@@ -1759,37 +1720,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#single-autoload-architecture" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
-      🏗️ Single Autoload Architecture
+      Overview
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#script-centric-asset-definition" class="md-nav__link">
+  <a href="#usage-patterns" class="md-nav__link">
     <span class="md-ellipsis">
-      📝 Script-Centric Asset Definition
+      Usage Patterns
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="📝 Script-Centric Asset Definition">
+    <nav class="md-nav" aria-label="Usage Patterns">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#definition-statements" class="md-nav__link">
+  <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      Definition Statements
+      Basic Usage
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#benefits" class="md-nav__link">
+  <a href="#programmatic-usage" class="md-nav__link">
     <span class="md-ellipsis">
-      Benefits
+      Programmatic Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-capture-helper" class="md-nav__link">
+    <span class="md-ellipsis">
+      Auto-capture Helper
     </span>
   </a>
   
@@ -1801,28 +1771,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ultimate-extensibility-framework" class="md-nav__link">
+  <a href="#technical-details" class="md-nav__link">
     <span class="md-ellipsis">
-      🎯 Ultimate Extensibility Framework
+      Technical Details
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎯 Ultimate Extensibility Framework">
+    <nav class="md-nav" aria-label="Technical Details">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
+  <a href="#storage-and-lifecycle" class="md-nav__link">
     <span class="md-ellipsis">
-      How It Works
+      Storage and Lifecycle
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example-implementation" class="md-nav__link">
+  <a href="#behavior-logic" class="md-nav__link">
     <span class="md-ellipsis">
-      Example Implementation
+      Behavior Logic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleanup-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cleanup Events
     </span>
   </a>
   
@@ -1834,37 +1813,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#predictive-asset-management" class="md-nav__link">
+  <a href="#api-reference" class="md-nav__link">
     <span class="md-ellipsis">
-      🧠 Predictive Asset Management
+      API Reference
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🧠 Predictive Asset Management">
+    <nav class="md-nav" aria-label="API Reference">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#static-analysis" class="md-nav__link">
+  <a href="#core-methods" class="md-nav__link">
     <span class="md-ellipsis">
-      Static Analysis
+      Core Methods
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#benefits_1" class="md-nav__link">
+  <a href="#configuration-constants" class="md-nav__link">
     <span class="md-ellipsis">
-      Benefits
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#example" class="md-nav__link">
-    <span class="md-ellipsis">
-      Example
+      Configuration Constants
     </span>
   </a>
   
@@ -1876,28 +1846,37 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#flexible-layer-architecture" class="md-nav__link">
+  <a href="#best-practices" class="md-nav__link">
     <span class="md-ellipsis">
-      🎨 Flexible Layer Architecture
+      Best Practices
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🎨 Flexible Layer Architecture">
+    <nav class="md-nav" aria-label="Best Practices">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#role-based-assignment" class="md-nav__link">
+  <a href="#when-to-capture" class="md-nav__link">
     <span class="md-ellipsis">
-      Role-Based Assignment
+      When to Capture
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#adaptability" class="md-nav__link">
+  <a href="#what-not-to-capture" class="md-nav__link">
     <span class="md-ellipsis">
-      Adaptability
+      What NOT to Capture
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-save-systems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Integration with Save Systems
     </span>
   </a>
   
@@ -1909,28 +1888,28 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-ui-framework" class="md-nav__link">
+  <a href="#troubleshooting" class="md-nav__link">
     <span class="md-ellipsis">
-      🖥️ Advanced UI Framework
+      Troubleshooting
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="🖥️ Advanced UI Framework">
+    <nav class="md-nav" aria-label="Troubleshooting">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#screen-capabilities" class="md-nav__link">
+  <a href="#common-issues" class="md-nav__link">
     <span class="md-ellipsis">
-      Screen Capabilities
+      Common Issues
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#debug-information" class="md-nav__link">
     <span class="md-ellipsis">
-      Features
+      Debug Information
     </span>
   </a>
   
@@ -1942,68 +1921,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#hot-reloading-development-experience" class="md-nav__link">
+  <a href="#see-also" class="md-nav__link">
     <span class="md-ellipsis">
-      🔄 Hot Reloading &amp; Development Experience
+      See Also
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="🔄 Hot Reloading &amp; Development Experience">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#development-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      Development Features
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ide-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      IDE Integration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#performance-philosophy" class="md-nav__link">
-    <span class="md-ellipsis">
-      🎪 Performance Philosophy
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎪 Performance Philosophy">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#smart-defaults" class="md-nav__link">
-    <span class="md-ellipsis">
-      Smart Defaults
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#performance-knobs" class="md-nav__link">
-    <span class="md-ellipsis">
-      Performance Knobs
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2026,207 +1948,156 @@
   
 
 
-<h1 id="design-philosophy">Design Philosophy</h1>
-<p>Argode is built on a foundation of <strong>extensibility</strong>, <strong>flexibility</strong>, and <strong>developer convenience</strong>. This page outlines the core design principles that shape every aspect of the framework.</p>
-<h2 id="single-autoload-architecture">🏗️ Single Autoload Architecture</h2>
-<div class="admonition success">
-<p class="admonition-title">Clean Integration</p>
-<p>Argode introduces <strong>only one singleton</strong> to your Godot project: <code>ArgodeSystem</code>. All other managers are organized as child nodes, ensuring minimal global namespace pollution and clean project integration.</p>
-</div>
-<pre class="mermaid"><code>graph TD
-    A[ArgodeSystem] --&gt; B[CharacterManager]
-    A --&gt; C[UIManager] 
-    A --&gt; D[VariableManager]
-    A --&gt; E[LayerManager]
-    A --&gt; F[ScriptPlayer]
-    A --&gt; G[LabelRegistry]
-    A --&gt; H[CustomCommandHandler]
-
-    style A fill:#e1f5fe
-    style B fill:#f3e5f5
-    style C fill:#f3e5f5
-    style D fill:#f3e5f5
-    style E fill:#f3e5f5
-    style F fill:#f3e5f5
-    style G fill:#f3e5f5
-    style H fill:#f3e5f5</code></pre>
-<p>This approach provides:</p>
-<ul>
-<li><strong>Predictable structure</strong>: All components are easily discoverable</li>
-<li><strong>No conflicts</strong>: Won't interfere with your existing autoloads</li>
-<li><strong>Easy debugging</strong>: Clear hierarchy for troubleshooting</li>
-<li><strong>Simple setup</strong>: Add one autoload and you're ready to go</li>
-</ul>
-<h2 id="script-centric-asset-definition">📝 Script-Centric Asset Definition</h2>
-<p>Following visual novel framework best practices, <strong>almost everything is defined in script files</strong>. Writers can work with plain text files, reducing the need for complex editor workflows.</p>
-<h3 id="definition-statements">Definition Statements</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># Characters with expressions and colors
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>character alice &quot;Alice&quot; color=#ff69b4
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>character bob &quot;Bob&quot; color=#4169e1
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a># Images with smart path resolution  
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>image bg_forest &quot;backgrounds/forest_day.jpg&quot;
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>image alice_happy &quot;characters/alice/happy.png&quot;
+<h1 id="temporary-screenshots">Temporary Screenshots</h1>
+<p>The temporary screenshot feature allows capturing clean game scenes before UI elements appear, ensuring save thumbnails show actual gameplay content rather than menus or dialogs.</p>
+<h2 id="overview">Overview</h2>
+<p>When players open save menus, the current screen contains UI elements that shouldn't appear in save thumbnails. The temporary screenshot system solves this by:</p>
+<ol>
+<li><strong>Pre-capture</strong>: Taking screenshots before UI appears</li>
+<li><strong>Temporary Storage</strong>: Keeping screenshots in memory temporarily  </li>
+<li><strong>Priority Usage</strong>: Using temporary screenshots for saves when available</li>
+<li><strong>Auto-cleanup</strong>: Automatically clearing temporary screenshots after use</li>
+</ol>
+<h2 id="usage-patterns">Usage Patterns</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># In your scenario script
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>scene classroom
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>show yuko happy center
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>yuko &quot;What a beautiful day!&quot;
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a># Capture clean screenshot before opening menu
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>capture
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a># Audio with preloading options
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>audio bgm_main &quot;music/main_theme.ogg&quot; preload=true
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>audio sfx_door &quot;sounds/door_open.wav&quot;
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a># Custom shaders for effects
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>shader screen_blur &quot;shaders/blur.gdshader&quot;
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a># UI operations won&#39;t affect the saved screenshot
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>ui save_menu show
 </code></pre></div>
-<h3 id="benefits">Benefits</h3>
-<ul>
-<li><strong>Writer-friendly</strong>: No need to navigate complex UI hierarchies</li>
-<li><strong>Version control</strong>: All definitions are in trackable text files</li>
-<li><strong>Batch operations</strong>: Easy to rename, reorganize, or duplicate assets</li>
-<li><strong>Documentation</strong>: Definitions serve as inline documentation</li>
-</ul>
-<h2 id="ultimate-extensibility-framework">🎯 Ultimate Extensibility Framework</h2>
-<p>The heart of Argode's power lies in its <strong>signal-based extensibility system</strong>. Unknown commands and tags are automatically forwarded as signals, allowing unlimited customization.</p>
-<h3 id="how-it-works">How It Works</h3>
-<pre class="mermaid"><code>sequenceDiagram
-    participant S as Script Player
-    participant C as Custom Command Handler  
-    participant Y as Your Code
-
-    S-&gt;&gt;S: Parse "particle_effect explosion"
-    S-&gt;&gt;S: Not a built-in command
-    S-&gt;&gt;C: Emit custom_command_executed signal
-    C-&gt;&gt;Y: Forward to registered handlers
-    Y-&gt;&gt;Y: Execute custom logic
-    Y-&gt;&gt;C: Signal completion (if needed)
-    C-&gt;&gt;S: Continue script execution</code></pre>
-<h3 id="example-implementation">Example Implementation</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># In your game code</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">ScriptPlayer</span><span class="o">.</span><span class="n">custom_command_executed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_handle_custom_command</span><span class="p">)</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">func</span><span class="w"> </span><span class="n">_handle_custom_command</span><span class="p">(</span><span class="n">command_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">,</span><span class="w"> </span><span class="n">parameters</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">Dictionary</span><span class="p">,</span><span class="w"> </span><span class="n">line</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="k">match</span><span class="w"> </span><span class="n">command_name</span><span class="p">:</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">        </span><span class="s2">&quot;particle_effect&quot;</span><span class="p">:</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">            </span><span class="k">var</span><span class="w"> </span><span class="n">effect_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;arg0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">            </span><span class="n">spawn_particle_effect</span><span class="p">(</span><span class="n">effect_name</span><span class="p">)</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="s2">&quot;screen_shake&quot;</span><span class="p">:</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">            </span><span class="k">var</span><span class="w"> </span><span class="n">intensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;intensity&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0</span><span class="p">)</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">            </span><span class="k">var</span><span class="w"> </span><span class="n">duration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">)</span><span class="w"> </span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">            </span><span class="n">shake_screen</span><span class="p">(</span><span class="n">intensity</span><span class="p">,</span><span class="w"> </span><span class="n">duration</span><span class="p">)</span>
+<h3 id="programmatic-usage">Programmatic Usage</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Before showing UI</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">func</span><span class="w"> </span><span class="n">show_pause_menu</span><span class="p">():</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="c1"># Capture current game state</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">capture_temp_screenshot</span><span class="p">()</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="c1"># Now show UI - won&#39;t be captured</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="n">pause_menu</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># Save will use the clean screenshot</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">func</span><span class="w"> </span><span class="n">save_to_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w">  </span><span class="c1"># Uses temp screenshot if available</span>
 </code></pre></div>
-<p>This enables:</p>
-<ul>
-<li><strong>Unlimited commands</strong>: Add any effect or feature you can imagine</li>
-<li><strong>Game-specific logic</strong>: Integrate with your unique mechanics</li>
-<li><strong>Third-party plugins</strong>: Community can create command libraries</li>
-<li><strong>Future-proof</strong>: New features won't break existing scripts</li>
-</ul>
-<h2 id="predictive-asset-management">🧠 Predictive Asset Management</h2>
-<p>Argode analyzes your entire script structure at startup to build a <strong>control flow graph</strong>, enabling intelligent asset preloading.</p>
-<h3 id="static-analysis">Static Analysis</h3>
-<pre class="mermaid"><code>graph LR
-    A[Script Analysis] --&gt; B[Control Flow Graph]
-    B --&gt; C[Reachability Analysis]
-    C --&gt; D[Smart Preloading]
-    D --&gt; E[Memory Optimization]
-
-    style A fill:#e8f5e8
-    style E fill:#ffe8e8</code></pre>
-<h3 id="benefits_1">Benefits</h3>
-<ul>
-<li><strong>Faster loading</strong>: Assets appear instantly when needed</li>
-<li><strong>Memory efficiency</strong>: Only necessary assets are kept in memory  </li>
-<li><strong>Automatic optimization</strong>: No manual preload management required</li>
-<li><strong>Branch prediction</strong>: Anticipates likely player choices</li>
-</ul>
-<h3 id="example">Example</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>label forest_scene:
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    scene bg_forest with fade      # ← Will preload forest background
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    show alice happy at center     # ← Will preload alice_happy image
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    alice &quot;Let&#39;s explore!&quot;
+<h3 id="auto-capture-helper">Auto-capture Helper</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Built-in helper for UI systems</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">func</span><span class="w"> </span><span class="n">show_menu_with_capture</span><span class="p">(</span><span class="n">menu_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">save_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="n">save_manager</span><span class="o">.</span><span class="n">auto_capture_before_ui</span><span class="p">(</span><span class="n">menu_name</span><span class="p">)</span>
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    menu:
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        &quot;Go deeper into forest&quot;:   # ← Preloads deeper_forest assets
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>            jump deeper_forest     
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>        &quot;Return to village&quot;:       # ← Preloads village assets
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>            jump village_entrance
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="c1"># Show your menu UI</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="n">show_menu</span><span class="p">(</span><span class="n">menu_name</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="flexible-layer-architecture">🎨 Flexible Layer Architecture</h2>
-<p>Argode doesn't impose a specific scene structure. Instead, you define <strong>role mappings</strong> that tell the system which CanvasLayers serve which purposes.</p>
-<h3 id="role-based-assignment">Role-Based Assignment</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># In your main scene setup</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">LayerManager</span><span class="o">.</span><span class="n">setup_layer_roles</span><span class="p">({</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="s2">&quot;background&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">BackgroundLayer</span><span class="p">,</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="s2">&quot;characters&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">CharacterLayer</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="s2">&quot;ui&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">UILayer</span><span class="p">,</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="s2">&quot;effects&quot;</span><span class="p">:</span><span class="w"> </span><span class="o">$</span><span class="n">EffectsLayer</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">})</span>
-</code></pre></div>
-<h3 id="adaptability">Adaptability</h3>
-<p>This design supports:</p>
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="storage-and-lifecycle">Storage and Lifecycle</h3>
 <ul>
-<li><strong>Existing projects</strong>: Integrate with your current scene structure</li>
-<li><strong>Custom layouts</strong>: Use as many or as few layers as needed</li>
-<li><strong>Complex hierarchies</strong>: Support for nested UI and effect layers</li>
-<li><strong>Platform optimization</strong>: Different layer strategies for mobile/desktop</li>
+<li><strong>Memory Only</strong>: Screenshots stored in RAM, not on disk</li>
+<li><strong>Base64 Format</strong>: Compressed JPEG encoded as Base64 string</li>
+<li><strong>Fixed Size</strong>: Thumbnails resized to 200x150 pixels</li>
+<li><strong>Automatic Expiry</strong>: Screenshots expire after 5 minutes if unused</li>
 </ul>
-<h2 id="advanced-ui-framework">🖥️ Advanced UI Framework</h2>
-<p>The <code>AdvScreen</code> system provides a robust foundation for complex user interfaces that can interact seamlessly with the script system.</p>
-<h3 id="screen-capabilities">Screen Capabilities</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">extends</span><span class="w"> </span><span class="n">AdvScreen</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="c1"># Direct script manipulation from UI</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="n">call_script_label</span><span class="p">(</span><span class="s2">&quot;character_info&quot;</span><span class="p">)</span><span class="w"> </span>
+<h3 id="behavior-logic">Behavior Logic</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># When saving, the system checks:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">func</span><span class="w"> </span><span class="n">_get_screenshot_for_save</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">has_valid_temp_screenshot</span><span class="p">():</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">temp_screenshot_data</span><span class="w">  </span><span class="c1"># Use temporary screenshot</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">capture_current_screen</span><span class="p">()</span><span class="w">  </span><span class="c1"># Fallback to real-time capture</span>
+</code></pre></div>
+<h3 id="cleanup-events">Cleanup Events</h3>
+<p>Temporary screenshots are automatically cleared when:</p>
+<ul>
+<li><strong>Save Completed</strong>: After successfully saving to any slot</li>
+<li><strong>Load Completed</strong>: After loading from any slot  </li>
+<li><strong>Expired</strong>: After 5 minutes of inactivity</li>
+<li><strong>Manual Clear</strong>: When explicitly cleared via code</li>
+</ul>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="core-methods">Core Methods</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># SaveLoadManager methods</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">capture_temp_screenshot</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w">              </span><span class="c1"># Capture temporary screenshot</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">has_temp_screenshot</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w">                  </span><span class="c1"># Check if valid temp screenshot exists</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">get_temp_screenshot_age</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">float</span><span class="w">             </span><span class="c1"># Get age in seconds</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">auto_capture_before_ui</span><span class="p">(</span><span class="n">ui_name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span><span class="w">  </span><span class="c1"># Helper for UI operations</span>
 <a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="c1"># Set variables that affect story</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="n">set_story_variable</span><span class="p">(</span><span class="s2">&quot;viewed_profile&quot;</span><span class="p">,</span><span class="w"> </span><span class="bp">true</span><span class="p">)</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="c1"># Stack screens for complex workflows</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="n">call_screen</span><span class="p">(</span><span class="s2">&quot;inventory_detail&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;item_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;magic_sword&quot;</span><span class="p">})</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># ArgodeSystem wrapper methods  </span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">capture_temp_screenshot</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">has_temp_screenshot</span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="nb nb-Type">bool</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">clear_temp_screenshot</span><span class="p">()</span>
 </code></pre></div>
-<h3 id="features">Features</h3>
+<h3 id="configuration-constants">Configuration Constants</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># In SaveLoadManager.gd</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">const</span><span class="w"> </span><span class="n">ENABLE_SCREENSHOTS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="w">        </span><span class="c1"># Enable/disable screenshot feature</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_WIDTH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="w">          </span><span class="c1"># Thumbnail width in pixels  </span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_HEIGHT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">150</span><span class="w">         </span><span class="c1"># Thumbnail height in pixels</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_QUALITY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.7</span><span class="w">        </span><span class="c1"># JPEG quality (0.0-1.0)</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">const</span><span class="w"> </span><span class="n">TEMP_SCREENSHOT_LIFETIME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">300.0</span><span class="w">  </span><span class="c1"># Expiry time in seconds (5 minutes)</span>
+</code></pre></div>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="when-to-capture">When to Capture</h3>
+<p><strong>Good Times:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a># Before dialogue choices
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>narrator &quot;Choose your path...&quot;
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>capture
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>choice &quot;Go left&quot; go_left
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>choice &quot;Go right&quot; go_right
+</code></pre></div></p>
+<p><strong>Before menu access:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">func</span><span class="w"> </span><span class="n">on_menu_key_pressed</span><span class="p">():</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">capture_temp_screenshot</span><span class="p">()</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="n">show_game_menu</span><span class="p">()</span>
+</code></pre></div></p>
+<h3 id="what-not-to-capture">What NOT to Capture</h3>
+<p><strong>Avoid capturing during:</strong>
+- Loading screens
+- Transition effects
+- Text boxes or dialogues (if you want clean backgrounds)
+- Other UI elements</p>
+<h3 id="integration-with-save-systems">Integration with Save Systems</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Example save menu integration</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">class</span><span class="w"> </span><span class="n">SaveMenu</span><span class="p">:</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="k">func</span><span class="w"> </span><span class="n">_ready</span><span class="p">():</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">        </span><span class="c1"># Capture was already done before showing this menu</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">        </span><span class="n">populate_save_slots</span><span class="p">()</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="k">func</span><span class="w"> </span><span class="n">save_to_slot</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">):</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">        </span><span class="k">var</span><span class="w"> </span><span class="n">save_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">save_name_input</span><span class="o">.</span><span class="n">text</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">        </span><span class="c1"># This will use the temporary screenshot captured before menu opened</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">        </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="n">save_name</span><span class="p">)</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">        </span><span class="c1"># Temp screenshot is automatically cleared after save</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">        </span><span class="n">close_menu</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<p><strong>No screenshot captured:</strong>
+- Check if <code>ENABLE_SCREENSHOTS</code> is true
+- Ensure viewport access permissions
+- Verify the capture command ran successfully</p>
+<p><strong>Screenshots showing UI:</strong>
+- Make sure <code>capture</code> is called BEFORE showing UI
+- Check timing - UI might be showing during capture</p>
+<p><strong>Screenshots expiring:</strong>
+- Default lifetime is 5 minutes
+- Capture closer to when you'll actually save
+- Check <code>get_temp_screenshot_age()</code> for timing</p>
+<h3 id="debug-information">Debug Information</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">var</span><span class="w"> </span><span class="n">save_manager</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Has temp screenshot: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">save_manager</span><span class="o">.</span><span class="n">has_temp_screenshot</span><span class="p">())</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Screenshot age: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">save_manager</span><span class="o">.</span><span class="n">get_temp_screenshot_age</span><span class="p">(),</span><span class="w"> </span><span class="s2">&quot; seconds&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Screenshot enabled: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">save_manager</span><span class="o">.</span><span class="n">is_screenshot_enabled</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="see-also">See Also</h2>
 <ul>
-<li><strong>Script integration</strong>: UI can trigger story events</li>
-<li><strong>Screen stacking</strong>: Modal dialogs and nested interfaces  </li>
-<li><strong>Data passing</strong>: Rich parameter system between screens</li>
-<li><strong>Responsive design</strong>: Automatic layout adaptation</li>
+<li><a href="../">Save &amp; Load System</a></li>
+<li><a href="../ui/index.md">UI Integration</a></li>
+<li><a href="../getting-started/best-practices.md">Best Practices</a></li>
 </ul>
-<h2 id="hot-reloading-development-experience">🔄 Hot Reloading &amp; Development Experience</h2>
-<p>Argode is designed with <strong>rapid iteration</strong> in mind, supporting live updates during development.</p>
-<h3 id="development-features">Development Features</h3>
-<ul>
-<li><strong>Script hot reloading</strong>: Changes appear instantly without restart</li>
-<li><strong>Label registry updates</strong>: New scenes detected automatically  </li>
-<li><strong>Variable inspection</strong>: Real-time debugging of story state</li>
-<li><strong>Command validation</strong>: Immediate feedback on syntax errors</li>
-</ul>
-<h3 id="ide-integration">IDE Integration</h3>
-<ul>
-<li><strong>VS Code extension</strong>: Full syntax highlighting for <code>.rgd</code> files</li>
-<li><strong>IntelliSense support</strong>: Auto-completion for commands and variables</li>
-<li><strong>Error detection</strong>: Real-time validation of script syntax</li>
-<li><strong>Project templates</strong>: Quick setup for new visual novels</li>
-</ul>
-<h2 id="performance-philosophy">🎪 Performance Philosophy</h2>
-<p>Argode balances <strong>ease of use</strong> with <strong>performance optimization</strong> through intelligent defaults and optional fine-tuning.</p>
-<h3 id="smart-defaults">Smart Defaults</h3>
-<ul>
-<li>Automatic texture format selection</li>
-<li>Intelligent garbage collection timing</li>
-<li>Adaptive quality settings based on platform</li>
-<li>Lazy loading of non-critical assets</li>
-</ul>
-<h3 id="performance-knobs">Performance Knobs</h3>
-<p>For projects that need it, Argode exposes:</p>
-<ul>
-<li>Manual memory management controls</li>
-<li>Custom asset loading strategies  </li>
-<li>Performance profiling hooks</li>
-<li>Platform-specific optimizations</li>
-</ul>
-<hr />
-<p>This design philosophy ensures that Argode grows with your project—from simple visual novels to complex interactive experiences with custom mechanics and advanced UI systems.</p>
-<p><a class="md-button" href="../system-overview/">Learn About System Overview →</a>
-<a class="md-button" href="../core-components/">View Core Components →</a></p>
 
 
 

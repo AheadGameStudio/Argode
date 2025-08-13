@@ -18,7 +18,7 @@
         <link rel="prev" href="../custom-commands/gdscript-integration/">
       
       
-        <link rel="next" href="examples/">
+        <link rel="next" href="temporary-screenshots/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -924,6 +924,48 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#screenshot-thumbnails" class="md-nav__link">
+    <span class="md-ellipsis">
+      Screenshot Thumbnails
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Screenshot Thumbnails">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#temporary-screenshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      Temporary Screenshots
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-screenshot-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic Screenshot Handling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screenshot-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Screenshot Settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
       Basic Usage
@@ -1117,6 +1159,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#working-with-screenshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with Screenshots
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-save-data" class="md-nav__link">
     <span class="md-ellipsis">
       Custom Save Data
@@ -1153,6 +1204,15 @@
   <a href="#auto-save-integration" class="md-nav__link">
     <span class="md-ellipsis">
       Auto-Save Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screenshot-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Screenshot Best Practices
     </span>
   </a>
   
@@ -1218,6 +1278,29 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="temporary-screenshots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Temporary Screenshots
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -1796,6 +1879,48 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#screenshot-thumbnails" class="md-nav__link">
+    <span class="md-ellipsis">
+      Screenshot Thumbnails
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Screenshot Thumbnails">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#temporary-screenshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      Temporary Screenshots
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-screenshot-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic Screenshot Handling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screenshot-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Screenshot Settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
       Basic Usage
@@ -1989,6 +2114,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#working-with-screenshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      Working with Screenshots
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#custom-save-data" class="md-nav__link">
     <span class="md-ellipsis">
       Custom Save Data
@@ -2025,6 +2159,15 @@
   <a href="#auto-save-integration" class="md-nav__link">
     <span class="md-ellipsis">
       Auto-Save Integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screenshot-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Screenshot Best Practices
     </span>
   </a>
   
@@ -2106,83 +2249,123 @@
 
 
 <h1 id="save-load-system">Save &amp; Load System</h1>
-<p>The Argode system provides a comprehensive save/load functionality similar to Ren'Py, allowing players to save their game progress and restore it later with full state preservation.</p>
+<p>The Argode system provides a comprehensive save/load functionality with advanced features like screenshot thumbnails and flexible slot management, allowing players to save their game progress and restore it later with full state preservation.</p>
 <h2 id="overview">Overview</h2>
 <p>The save/load system preserves:
 - <strong>Game Variables</strong>: All variable states and values
 - <strong>Character States</strong>: Character positions, expressions, and visibility
 - <strong>Background States</strong>: Current background scenes and layers
 - <strong>Audio States</strong>: Current BGM, volume settings
-- <strong>Script Progress</strong>: Current script position and call stack</p>
+- <strong>Script Progress</strong>: Current script position and call stack
+- <strong>Screenshot Thumbnails</strong>: Visual preview of saved game states (Base64 encoded)</p>
+<h2 id="screenshot-thumbnails">Screenshot Thumbnails</h2>
+<p>The system automatically captures screenshots to provide visual previews of save states.</p>
+<h3 id="temporary-screenshots">Temporary Screenshots</h3>
+<p>To avoid UI elements in save thumbnails, use the temporary screenshot feature:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># Capture current game scene before opening menus
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>capture
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a># Open menu/UI (won&#39;t be captured)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>ui pause_menu show
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a># Save with clean screenshot
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>save 1 &quot;Chapter Complete&quot;
+</code></pre></div>
+<h3 id="automatic-screenshot-handling">Automatic Screenshot Handling</h3>
+<ul>
+<li><strong>Temporary Priority</strong>: Uses temporary screenshot if available</li>
+<li><strong>Real-time Fallback</strong>: Captures current screen if no temporary screenshot</li>
+<li><strong>Auto-cleanup</strong>: Temporary screenshots are automatically cleared after save/load</li>
+<li><strong>Expiration</strong>: Temporary screenshots expire after 5 minutes</li>
+</ul>
+<h3 id="screenshot-settings">Screenshot Settings</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># In SaveLoadManager.gd</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">const</span><span class="w"> </span><span class="n">ENABLE_SCREENSHOTS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="w">        </span><span class="c1"># Enable/disable screenshots</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_WIDTH</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="w">          </span><span class="c1"># Thumbnail width</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_HEIGHT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">150</span><span class="w">         </span><span class="c1"># Thumbnail height  </span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">const</span><span class="w"> </span><span class="n">SCREENSHOT_QUALITY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.7</span><span class="w">        </span><span class="c1"># JPEG quality (0.0-1.0)</span>
+</code></pre></div>
 <h2 id="basic-usage">Basic Usage</h2>
 <h3 id="built-in-commands">Built-in Commands</h3>
 <p>Use these commands directly in your <code>.rgd</code> script files:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a># Save to slot 0
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>save 0
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a># Save to slot 1 with custom name
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>save 1 &quot;Before Boss Battle&quot;
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a># Load from slot 0
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>load 0
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a># Load from slot 1
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>load 1
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># Capture temporary screenshot (before opening menus)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>capture
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a># Save to slot 1 (slot 0 is reserved for auto-save)
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>save 1
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a># Save to slot 2 with custom name
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>save 2 &quot;Before Boss Battle&quot;
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a># Load from auto-save slot
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>load 0
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a># Load from manual save slot
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>load 1
 </code></pre></div>
 <h3 id="save-slots">Save Slots</h3>
 <ul>
-<li><strong>10 Save Slots</strong>: Slots 0-9 available</li>
-<li><strong>Auto Save</strong>: Slot 9 is reserved for auto-save functionality</li>
-<li><strong>Slot Management</strong>: Each slot stores complete game state</li>
+<li><strong>Configurable Slots</strong>: Default 10 slots (1 auto-save + 9 manual saves)</li>
+<li><strong>Auto Save</strong>: Slot 0 is reserved for auto-save functionality</li>
+<li><strong>Manual Saves</strong>: Slots 1+ for user saves</li>
+<li><strong>Slot Management</strong>: Each slot stores complete game state with screenshot thumbnail</li>
 </ul>
 <h2 id="programmatic-api">Programmatic API</h2>
 <h3 id="argodesystem-methods">ArgodeSystem Methods</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Save game to specified slot</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="n">slot_number</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Save Name&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Load game from specified slot</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">load_game</span><span class="p">(</span><span class="n">slot_number</span><span class="p">)</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Get save information</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="k">var</span><span class="w"> </span><span class="n">save_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">get_save_info</span><span class="p">(</span><span class="n">slot_number</span><span class="p">)</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># Auto-save functionality</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">auto_save</span><span class="p">()</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">load_auto_save</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Save game to specified slot</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="n">slot_number</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Save Name&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Load game from specified slot</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">load_game</span><span class="p">(</span><span class="n">slot_number</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Get save information (includes screenshot data)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="k">var</span><span class="w"> </span><span class="n">save_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">get_save_info</span><span class="p">(</span><span class="n">slot_number</span><span class="p">)</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># Auto-save functionality</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">auto_save</span><span class="p">()</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">load_auto_save</span><span class="p">()</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="c1"># Temporary screenshot management</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="k">var</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">capture_temp_screenshot</span><span class="p">()</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="k">var</span><span class="w"> </span><span class="n">has_screenshot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">has_temp_screenshot</span><span class="p">()</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">clear_temp_screenshot</span><span class="p">()</span>
 </code></pre></div>
 <h3 id="save-information-structure">Save Information Structure</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="s2">&quot;save_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Player Save&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="s2">&quot;save_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-13T14:30:15&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="s2">&quot;save_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1692800215</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="s2">&quot;script_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;res://scenarios/main.rgd&quot;</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="s2">&quot;line_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="s2">&quot;save_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Player Save&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="s2">&quot;save_date&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-13T14:30:15&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="s2">&quot;save_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1692800215</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="s2">&quot;script_file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;res://scenarios/main.rgd&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="s2">&quot;line_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="s2">&quot;has_screenshot&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">true</span><span class="p">,</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="s2">&quot;screenshot&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...&quot;</span><span class="w">  </span><span class="c1"># Base64 image data</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="p">}</span>
 </code></pre></div>
 <h2 id="file-storage">File Storage</h2>
 <h3 id="save-location">Save Location</h3>
 <p><strong>Windows:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>%APPDATA%\Godot\app_userdata\[ProjectName]\saves\
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>%APPDATA%\Godot\app_userdata\[ProjectName]\saves\
 </code></pre></div></p>
 <p><strong>macOS:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>~/Library/Application Support/Godot/app_userdata/[ProjectName]/saves/
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>~/Library/Application Support/Godot/app_userdata/[ProjectName]/saves/
 </code></pre></div></p>
 <p><strong>Linux:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>~/.local/share/godot/app_userdata/[ProjectName]/saves/
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>~/.local/share/godot/app_userdata/[ProjectName]/saves/
 </code></pre></div></p>
 <h3 id="file-structure">File Structure</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>saves/
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── slot_0.save    # Save slot 0
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>├── slot_1.save    # Save slot 1
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>├── ...
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>└── slot_9.save    # Auto-save slot
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>saves/
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>├── slot_0.save    # Auto-save slot  
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>├── slot_1.save    # Manual save slot 1
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>├── slot_2.save    # Manual save slot 2
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>├── ...
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>└── slot_9.save    # Manual save slot 9
 </code></pre></div>
 <h2 id="security-encryption">Security &amp; Encryption</h2>
 <h3 id="encryption-settings">Encryption Settings</h3>
 <p>The system supports file encryption for save data protection:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># In SaveLoadManager.gd</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">const</span><span class="w"> </span><span class="n">ENABLE_ENCRYPTION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="w">                    </span><span class="c1"># Enable/disable encryption</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">const</span><span class="w"> </span><span class="n">ENCRYPTION_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;your_encryption_key&quot;</span><span class="w">     </span><span class="c1"># Encryption key</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># In SaveLoadManager.gd</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">const</span><span class="w"> </span><span class="n">ENABLE_ENCRYPTION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="bp">true</span><span class="w">                    </span><span class="c1"># Enable/disable encryption</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">const</span><span class="w"> </span><span class="n">ENCRYPTION_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;your_encryption_key&quot;</span><span class="w">     </span><span class="c1"># Encryption key</span>
 </code></pre></div>
 <h3 id="encryption-features">Encryption Features</h3>
 <ul>
@@ -2192,95 +2375,122 @@
 </ul>
 <h3 id="production-recommendations">Production Recommendations</h3>
 <p>For production builds, consider:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Use environment variables</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">var</span><span class="w"> </span><span class="n">encryption_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OS</span><span class="o">.</span><span class="n">get_environment</span><span class="p">(</span><span class="s2">&quot;GAME_SAVE_KEY&quot;</span><span class="p">)</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1"># Generate user-specific keys</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="k">var</span><span class="w"> </span><span class="n">user_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OS</span><span class="o">.</span><span class="n">get_unique_id</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;salt_string&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Use environment variables</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">var</span><span class="w"> </span><span class="n">encryption_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OS</span><span class="o">.</span><span class="n">get_environment</span><span class="p">(</span><span class="s2">&quot;GAME_SAVE_KEY&quot;</span><span class="p">)</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Generate user-specific keys</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="k">var</span><span class="w"> </span><span class="n">user_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OS</span><span class="o">.</span><span class="n">get_unique_id</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s2">&quot;salt_string&quot;</span>
 </code></pre></div>
 <h2 id="error-handling">Error Handling</h2>
 <h3 id="common-error-cases">Common Error Cases</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Check save result</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;My Save&quot;</span><span class="p">):</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Save failed!&quot;</span><span class="p">)</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1"># Check load result  </span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">load_game</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Load failed - file not found or corrupted&quot;</span><span class="p">)</span>
-<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
-<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="c1"># Validate slot number</span>
-<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="k">if</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">10</span><span class="p">:</span>
-<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid slot number&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Check save result</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;My Save&quot;</span><span class="p">):</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Save failed!&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="c1"># Check load result  </span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="k">if</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">load_game</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Load failed - file not found or corrupted&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="c1"># Validate slot number</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="k">if</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">10</span><span class="p">:</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid slot number&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="error-signals">Error Signals</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Connect to save/load signals</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">save_failed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_save_failed</span><span class="p">)</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">load_failed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_load_failed</span><span class="p">)</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_save_failed</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Save failed for slot &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">)</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_load_failed</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Load failed for slot &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Connect to save/load signals</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">save_failed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_save_failed</span><span class="p">)</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">load_failed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_load_failed</span><span class="p">)</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_save_failed</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Save failed for slot &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">)</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="k">func</span><span class="w"> </span><span class="n">_on_load_failed</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Load failed for slot &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">error</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="advanced-features">Advanced Features</h2>
 <h3 id="save-data-structure">Save Data Structure</h3>
 <p>The save file contains:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="nt">&quot;slot&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="nt">&quot;save_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Player Save&quot;</span><span class="p">,</span>
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="nt">&quot;save_date_string&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-13T14:30:15&quot;</span><span class="p">,</span>
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="nt">&quot;save_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1692800215</span><span class="p">,</span>
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">        </span><span class="nt">&quot;player_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hero&quot;</span><span class="p">,</span>
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">        </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
-<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">        </span><span class="nt">&quot;gold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span>
-<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">    </span><span class="p">},</span>
-<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">    </span><span class="nt">&quot;characters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">    </span><span class="nt">&quot;background&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">    </span><span class="nt">&quot;audio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">        </span><span class="nt">&quot;volume_settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">            </span><span class="nt">&quot;master_volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
-<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">            </span><span class="nt">&quot;bgm_volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span>
-<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">            </span><span class="nt">&quot;se_volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span>
-<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">        </span><span class="p">}</span>
-<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">    </span><span class="p">},</span>
-<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">    </span><span class="nt">&quot;current_script_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;res://scenarios/main.rgd&quot;</span><span class="p">,</span>
-<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">    </span><span class="nt">&quot;current_line_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
-<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">    </span><span class="nt">&quot;call_stack&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
-<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">{</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="nt">&quot;slot&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="nt">&quot;save_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Player Save&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="nt">&quot;save_date_string&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-08-13T14:30:15&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="nt">&quot;save_time&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1692800215</span><span class="p">,</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="nt">&quot;screenshot&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">    </span><span class="nt">&quot;variables&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">        </span><span class="nt">&quot;player_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hero&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">        </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">        </span><span class="nt">&quot;gold&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">    </span><span class="nt">&quot;characters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">    </span><span class="nt">&quot;background&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">    </span><span class="nt">&quot;audio&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="w">        </span><span class="nt">&quot;volume_settings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">            </span><span class="nt">&quot;master_volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="w">            </span><span class="nt">&quot;bgm_volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8</span><span class="p">,</span>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="w">            </span><span class="nt">&quot;se_volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span>
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="w">        </span><span class="p">}</span>
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a><span class="w">    </span><span class="nt">&quot;current_script_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;res://scenarios/main.rgd&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="w">    </span><span class="nt">&quot;current_line_index&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span>
+<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a><span class="w">    </span><span class="nt">&quot;call_stack&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="working-with-screenshots">Working with Screenshots</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Get screenshot from save data</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="k">var</span><span class="w"> </span><span class="n">save_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">get_save_info</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="k">if</span><span class="w"> </span><span class="n">save_info</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="s2">&quot;screenshot&quot;</span><span class="p">):</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="k">var</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">create_image_texture_from_screenshot</span><span class="p">(</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">        </span><span class="n">save_info</span><span class="p">[</span><span class="s2">&quot;screenshot&quot;</span><span class="p">]</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="p">)</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="c1"># Use texture in UI</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="n">save_thumbnail</span><span class="o">.</span><span class="n">texture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">texture</span>
 </code></pre></div>
 <h3 id="custom-save-data">Custom Save Data</h3>
 <p>Extend the save system with custom data:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># In your custom script</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">func</span><span class="w"> </span><span class="n">add_custom_save_data</span><span class="p">(</span><span class="n">save_data</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">Dictionary</span><span class="p">):</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="n">save_data</span><span class="p">[</span><span class="s2">&quot;custom_data&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">        </span><span class="s2">&quot;achievements&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">unlocked_achievements</span><span class="p">,</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">        </span><span class="s2">&quot;statistics&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">game_statistics</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># In your custom script</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">func</span><span class="w"> </span><span class="n">add_custom_save_data</span><span class="p">(</span><span class="n">save_data</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">Dictionary</span><span class="p">):</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">    </span><span class="n">save_data</span><span class="p">[</span><span class="s2">&quot;custom_data&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">        </span><span class="s2">&quot;achievements&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">unlocked_achievements</span><span class="p">,</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">        </span><span class="s2">&quot;statistics&quot;</span><span class="p">:</span><span class="w"> </span><span class="n">game_statistics</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">    </span><span class="p">}</span>
 </code></pre></div>
 <h2 id="best-practices">Best Practices</h2>
 <h3 id="save-naming">Save Naming</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Use descriptive save names</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Chapter 1 Complete&quot;</span><span class="p">)</span>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Before Final Boss&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Use descriptive save names</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Chapter 1 Complete&quot;</span><span class="p">)</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Before Final Boss&quot;</span><span class="p">)</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="c1"># Auto-save doesn&#39;t need naming</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">auto_save</span><span class="p">()</span>
 </code></pre></div>
 <h3 id="auto-save-integration">Auto-Save Integration</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Auto-save at key moments</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="k">func</span><span class="w"> </span><span class="n">on_chapter_complete</span><span class="p">():</span>
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">auto_save</span><span class="p">()</span>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="k">func</span><span class="w"> </span><span class="n">on_important_choice</span><span class="p">():</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">auto_save</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Auto-save at key moments</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">func</span><span class="w"> </span><span class="n">on_chapter_complete</span><span class="p">():</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">auto_save</span><span class="p">()</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="k">func</span><span class="w"> </span><span class="n">on_important_choice</span><span class="p">():</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">auto_save</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="screenshot-best-practices">Screenshot Best Practices</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Capture clean screenshots before UI operations</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">func</span><span class="w"> </span><span class="n">open_save_menu</span><span class="p">():</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">    </span><span class="c1"># Capture current game state first</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">capture_temp_screenshot</span><span class="p">()</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">    </span><span class="c1"># Then show menu UI</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">    </span><span class="n">show_save_menu</span><span class="p">()</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="k">func</span><span class="w"> </span><span class="n">save_game_with_clean_thumbnail</span><span class="p">(</span><span class="n">slot</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">int</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="nb nb-Type">String</span><span class="p">):</span>
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">    </span><span class="c1"># Screenshot was already captured before menu opened</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">save_game</span><span class="p">(</span><span class="n">slot</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="save-validation">Save Validation</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Check if save exists before loading</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">var</span><span class="w"> </span><span class="n">save_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">get_save_info</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="k">if</span><span class="w"> </span><span class="n">save_info</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No save data in slot &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="p">)</span>
-<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">load_game</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Check if save exists before loading</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="k">var</span><span class="w"> </span><span class="n">save_info</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">get_save_info</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="k">if</span><span class="w"> </span><span class="n">save_info</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No save data in slot &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="p">)</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">    </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">load_game</span><span class="p">(</span><span class="n">slot</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="common-issues">Common Issues</h3>
@@ -2307,10 +2517,10 @@
 <li>Use async operations for UI</li>
 </ol>
 <h3 id="debug-information">Debug Information</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Get save system status</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Encryption enabled: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">is_encryption_enabled</span><span class="p">())</span>
-<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Save directory: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">get_save_directory</span><span class="p">())</span>
-<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All saves: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">get_all_save_info</span><span class="p">())</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Get save system status</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Encryption enabled: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">is_encryption_enabled</span><span class="p">())</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Save directory: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">get_save_directory</span><span class="p">())</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All saves: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ArgodeSystem</span><span class="o">.</span><span class="n">SaveLoadManager</span><span class="o">.</span><span class="n">get_all_save_info</span><span class="p">())</span>
 </code></pre></div>
 <h2 id="see-also">See Also</h2>
 <ul>

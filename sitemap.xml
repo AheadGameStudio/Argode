@@ -169,6 +169,13 @@
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/save-load/examples/"/>
     </url>
     <url>
+        <loc>https://aheadgamestudio.github.io/Argode/save-load/temporary-screenshots/</loc>
+        <lastmod>2025-08-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/save-load/temporary-screenshots/"/>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/save-load/temporary-screenshots/"/>
+    </url>
+    <url>
         <loc>https://aheadgamestudio.github.io/Argode/script/commands/</loc>
         <lastmod>2025-08-13</lastmod>
         <changefreq>daily</changefreq>
@@ -390,6 +397,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/save-load/examples/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/save-load/examples/"/>
+    </url>
+    <url>
+        <loc>https://aheadgamestudio.github.io/Argode/ja/save-load/temporary-screenshots/</loc>
+        <lastmod>2025-08-13</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://aheadgamestudio.github.io/Argode/ja/save-load/temporary-screenshots/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://aheadgamestudio.github.io/Argode/save-load/temporary-screenshots/"/>
     </url>
     <url>
         <loc>https://aheadgamestudio.github.io/Argode/ja/script/commands/</loc>
