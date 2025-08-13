@@ -1,13 +1,6 @@
 # variables.rgd
 # 初期変数定義ファイル - ゲーム開始時の変数設定
 
-# プレイヤー情報 - 辞書の自動作成テスト
-# set_dict player {
-#     "name": "プレイヤー",
-#     "gender": "male",
-#     "age": 17
-# }
-
 # 辞書を事前定義せずに、直接個別キーを設定
 set player.name = "HERO"
 set player.gender = "male"
