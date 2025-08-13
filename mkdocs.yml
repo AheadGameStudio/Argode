@@ -80,6 +80,9 @@ plugins:
               - ビルトインコマンド: custom-commands/built-in.ja.md
               - コマンド作成: custom-commands/creating.ja.md
               - GDScript連携: custom-commands/gdscript-integration.ja.md
+            - セーブ・ロードシステム:
+              - 概要: save-load/index.ja.md
+              - 実例: save-load/examples.ja.md
             - UIシステム:
               - AdvScreen: ui/advscreen.ja.md
               - テーマ: ui/themes.ja.md
@@ -143,6 +146,9 @@ nav:
     - Built-in Commands: custom-commands/built-in.md
     - Creating Commands: custom-commands/creating.md
     - GDScript Integration: custom-commands/gdscript-integration.md
+  - Save & Load System:
+    - Overview: save-load/index.md
+    - Examples: save-load/examples.md
   - UI System:
     - AdvScreen: ui/advscreen.md
     - Themes: ui/themes.md
