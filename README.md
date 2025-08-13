@@ -49,7 +49,7 @@ A powerful and flexible visual novel framework for Godot Engine, designed to mak
 
 3. **Run the demo**:
    - Press F5 or click the play button
-   - Select `scenes/ui/base_ui.tscn` as the main scene when prompted
+   - Select the main scene when prompted (or create a new scene for your game)
 
 ### Basic Usage
 
@@ -92,11 +92,12 @@ A powerful and flexible visual novel framework for Godot Engine, designed to mak
 - **日本語**: [完全なドキュメント](https://aheadgamestudio.github.io/Argode/ja/)
 
 ### Key Topics
-- [Getting Started](docs/getting-started/quick-start.md)
-- [RGD Script Reference](docs/script/rgd-syntax.md)
-- [Save & Load System](docs/save-load/index.md)
-- [Custom Commands](docs/custom-commands/overview.md)
-- [API Reference](docs/api/argode-system.md)
+Visit our online documentation for detailed guides:
+- [Getting Started](https://aheadgamestudio.github.io/Argode/getting-started/quick-start/)
+- [RGD Script Reference](https://aheadgamestudio.github.io/Argode/script/rgd-syntax/)
+- [Save & Load System](https://aheadgamestudio.github.io/Argode/save-load/index/)
+- [Custom Commands](https://aheadgamestudio.github.io/Argode/custom-commands/overview/)
+- [API Reference](https://aheadgamestudio.github.io/Argode/api/argode-system/)
 
 ## 🎮 Core Commands
 
