@@ -8,6 +8,9 @@ set_dict player {
     "age": 17
 }
 
+# 辞書作成後に個別キーを更新
+set player.name = "HERO"
+
 # または個別設定も可能
 set player_name = "プレイヤー"
 set player_gender = "male" 

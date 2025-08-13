@@ -1,0 +1,20 @@
+# simple_test.rgd
+# 定義ファイルの変数読み取りテスト
+
+label start:
+    "定義ファイルからの変数読み取りテスト"
+    
+    "プレイヤー名: [player.name]"
+    "プレイヤー性別: [player.gender]"  
+    "プレイヤー年齢: [player.age]"
+    
+    "個別変数も表示："
+    "プレイヤー名(個別): [player_name]"
+    "プレイヤー性別(個別): [player_gender]"
+    "プレイヤー年齢(個別): [player_age]"
+    
+    "進行状況:"
+    "ゲーム開始: [progress.game_started]"
+    "プロローグ完了: [progress.prologue_completed]"
+    
+    "テスト完了！"
