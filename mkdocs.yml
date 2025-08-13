@@ -36,7 +36,7 @@ theme:
     - content.code.copy
     - content.code.select
     - content.tabs.link
-  language: en
+  
 
 plugins:
   - search:
@@ -59,42 +59,41 @@ plugins:
           build: true
           site_name: "Argode ドキュメント"
           nav_translations:
-            ホーム: Home
-            はじめに: Getting Started
-            クイックスタート: Quick Start
-            インストール: Installation
-            基本設定: Basic Setup
-            アーキテクチャ: Architecture
-            設計思想: Design Philosophy
-            システム概要: System Overview
-            コアコンポーネント: Core Components
-            スクリプトリファレンス: Script Reference
-            RGD構文: RGD Syntax
-            コマンド: Commands
-            変数と式: Variables & Expressions
-            定義: Definitions
-            カスタムコマンド: Custom Commands
-            概要: Overview
-            ビルトインコマンド: Built-in Commands
-            コマンド作成: Creating Commands
-            GDScript連携: GDScript Integration
-            セーブ・ロードシステム: Save & Load System
-            ゲーム設定: Game Settings
-            一時スクリーンショット: Temporary Screenshots
-            実例: Examples
-            UIシステム: UI System
-            テーマ: Themes
-            カスタムUI: Custom UI
-            高度なトピック: Advanced Topics
-            アセット管理: Asset Management
-            パフォーマンス最適化: Performance Optimization
-            デバッグ: Debugging
-            例: Examples
-            シンプルなVN: Simple VN
-            カスタム機能: Custom Features
-            ベストプラクティス: Best Practices
-            APIリファレンス: API Reference
-            マネージャー: Managers
+            Home: ホーム
+            Getting Started: はじめに
+            Quick Start: クイックスタート
+            Installation: インストール
+            Basic Setup: 基本設定
+            Architecture: アーキテクチャ
+            Design Philosophy: 設計思想
+            System Overview: システム概要
+            Core Components: コアコンポーネント
+            Script Reference: スクリプトリファレンス
+            RGD Syntax: RGD構文
+            Commands: コマンド
+            Variables & Expressions: 変数と式
+            Definitions: 定義
+            Custom Commands: カスタムコマンド
+            Overview: 概要
+            Built-in Commands: ビルトインコマンド
+            Creating Commands: コマンド作成
+            GDScript Integration: GDScript連携
+            Save & Load System: セーブ・ロードシステム
+            Game Settings: ゲーム設定
+            Temporary Screenshots: 一時スクリーンショット
+            Examples: 実例
+            UI System: UIシステム
+            Themes: テーマ
+            Custom UI: カスタムUI
+            Advanced Topics: 高度なトピック
+            Asset Management: アセット管理
+            Performance Optimization: パフォーマンス最適化
+            Debugging: デバッグ
+            Simple VN: シンプルなVN
+            Custom Features: カスタム機能
+            Best Practices: ベストプラクティス
+            API Reference: APIリファレンス
+            Managers: マネージャー
 
 markdown_extensions:
   - pymdownx.highlight:
