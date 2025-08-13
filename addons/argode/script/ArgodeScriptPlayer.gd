@@ -394,20 +394,35 @@ func _parse_and_execute(line: String) -> bool:
 		
 		# v2: LayerManagerを使用した背景変更
 		if layer_manager:
-			var bg_path = ""
+			var success = false
 			
-			# まずImageDefinitionManagerから画像定義を取得を試行
-			var adv_system = get_node("/root/ArgodeSystem")
-			if adv_system and adv_system.ImageDefs:
-				bg_path = adv_system.ImageDefs.get_image_path(scene_name)
-				print("🔍 ImageDefs lookup for '", scene_name, "': ", bg_path)
+			# 特別ケース: "black" - 純黒背景
+			if scene_name.to_lower() == "black":
+				print("⚫ [scene] Setting black background")
+				success = _set_black_background_builtin(layer_manager, transition)
+			# 特別ケース: "clear" - 背景を完全にクリア（透明化）
+			elif scene_name.to_lower() == "clear":
+				print("🔍 [scene] Clearing background (making transparent)")
+				success = _clear_background_builtin(layer_manager, transition)
+			else:
+				# 通常の背景変更
+				var bg_path = ""
+				
+				# まずImageDefinitionManagerから画像定義を取得を試行
+				var adv_system = get_node("/root/ArgodeSystem")
+				if adv_system and adv_system.ImageDefs:
+					bg_path = adv_system.ImageDefs.get_image_path(scene_name)
+					print("🔍 ImageDefs lookup for '", scene_name, "': ", bg_path)
+				
+				# 定義が見つからない場合はデフォルトパス構築
+				if bg_path.is_empty():
+					bg_path = "res://assets/images/backgrounds/" + scene_name + ".jpg"
+					print("🔍 Using default path construction: ", bg_path)
+				
+				success = layer_manager.change_background(bg_path, transition)
 			
-			# 定義が見つからない場合はデフォルトパス構築
-			if bg_path.is_empty():
-				bg_path = "res://assets/images/backgrounds/" + scene_name + ".jpg"
-				print("🔍 Using default path construction: ", bg_path)
-			
-			var success = layer_manager.change_background(bg_path, transition)
+			if not success:
+				push_warning("⚠️ Failed to change background to:", scene_name)
 			if not success:
 				push_warning("⚠️ Failed to change background to:", scene_name)
 		else:
@@ -953,6 +968,66 @@ func _handle_return() -> bool:
 		print("🛑 No call to return from - stopping script execution")
 		is_playing = false
 		return true  # 実行を停止
+
+# === Scene command helper methods ===
+
+func _set_black_background_builtin(layer_manager, transition: String) -> bool:
+	"""純黒の背景を設定"""
+	if not layer_manager.background_layer:
+		push_error("❌ [scene] Background layer not initialized")
+		return false
+	
+	# 純黒のColorRectを作成
+	var black_bg = ColorRect.new()
+	black_bg.color = Color.BLACK
+	black_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	
+	# 現在の背景をクリア
+	if layer_manager.current_background:
+		layer_manager.current_background.queue_free()
+	
+	# 黒背景を追加
+	layer_manager.background_layer.add_child(black_bg)
+	layer_manager.current_background = black_bg
+	
+	# トランジション処理
+	if transition != "none":
+		black_bg.modulate.a = 0.0
+		var tween = create_tween()
+		tween.tween_property(black_bg, "modulate:a", 1.0, 0.5)
+	
+	layer_manager.background_changed.emit("black")
+	return true
+
+func _clear_background_builtin(layer_manager, transition: String) -> bool:
+	"""背景を完全にクリア（透明化）してArgodeSystemを透過させる"""
+	if not layer_manager.background_layer:
+		push_error("❌ [scene] Background layer not initialized")
+		return false
+	
+	# 現在の背景をクリア
+	if layer_manager.current_background:
+		if transition != "none":
+			# フェードアウト後に削除
+			var current_bg = layer_manager.current_background
+			var tween = create_tween()
+			tween.tween_property(current_bg, "modulate:a", 0.0, 0.5)
+			tween.tween_callback(current_bg.queue_free)
+		else:
+			layer_manager.current_background.queue_free()
+		
+		layer_manager.current_background = null
+	
+	# 背景レイヤー自体を透明化（完全に透過）
+	if transition != "none":
+		var tween = create_tween()
+		tween.tween_property(layer_manager.background_layer, "modulate:a", 0.0, 0.5)
+	else:
+		layer_manager.background_layer.modulate.a = 0.0
+	
+	print("🔍 [scene] Background cleared - ArgodeSystem is now transparent")
+	layer_manager.background_changed.emit("clear")
+	return true
 
 # === 公開API for ArgodeUIScene ===
 

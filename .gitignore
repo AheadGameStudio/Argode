@@ -11,7 +11,7 @@ export_presets.cfg
 .mono/
 data_*/
 mono_crash.*.json
-
+test
 # OS Generated Files
 # Windows
 Thumbs.db

@@ -1,8 +1,7 @@
 extends Node
 
-@export var character_container: Node2D
+# v2: CharacterLayerベースの実装に移行
 var character_sprites: Dictionary = {}
-# v2: 古い背景処理は完全廃止 - LayerManagerを使用してください
 
 # v2: ArgodeSystem統合により、直接参照に変更
 var transition_player  # TransitionPlayer
@@ -14,108 +13,31 @@ func _ready():
 	print("👤 CharacterManager initialized (v2)")
 	# v2: 参照はArgodeSystemの_setup_manager_references()で設定される
 	
-	# Create character container if not assigned
-	if not character_container:
-		character_container = Node2D.new()
-		character_container.name = "CharacterContainer"
-		# Add to main scene - we'll find the main scene node
-		var main_scene = get_tree().current_scene
-		if main_scene:
-			main_scene.add_child(character_container)
-			# Position container at screen center
-			var viewport = get_viewport()
-			if viewport:
-				var screen_size = viewport.get_visible_rect().size
-				character_container.position = Vector2(screen_size.x / 2, screen_size.y * 0.7)
-				print("📦 Created character container at: ", character_container.position)
-			print("📦 Created character container in main scene")
-	
-	# v2: 古い背景処理は完全廃止済み - LayerManagerを使用
+	# v2: LayerManagerのCharacterLayerを使用するため、独自コンテナ作成不要
+
+func _ensure_character_container():
+	"""v2: 廃止 - LayerManagerのCharacterLayerを使用します"""
+	print("⚠️ _ensure_character_container is deprecated. Use LayerManager.character_layer instead.")
 
 func show_character(char_id: String, expression: String, position: String, transition: String):
 	print("🧍‍♀️ Showing: ", char_id, " (", expression, ") at ", position, " with ", transition)
 	
-	# v2: CharacterDefinitionManagerから定義を取得を試行
-	var char_data = null
-	var display_name = char_id  # デフォルト表示名
-	
-	if character_defs and character_defs.has_character(char_id):
-		# v2新式定義を使用
-		var definition = character_defs.get_character_definition(char_id)
-		display_name = definition.get("display_name", char_id)
-		char_data = definition
-		print("✅ v2 Character data loaded for: ", char_id, " -> ", display_name)
-	elif variable_manager and variable_manager.character_defs.has(char_id):
-		# v1互換のdefine文を使用
-		char_data = variable_manager.get_character_data(char_id)
-		if char_data and char_data.has("display_name"):
-			display_name = char_data.display_name
-		print("✅ v1 Character data loaded for: ", char_id, " -> ", display_name)
-	else:
-		# どちらの定義もない場合
-		print("❌ Character data not found for: ", char_id)
-		var v1_chars = variable_manager.character_defs.keys() if variable_manager else []
-		var v2_chars = character_defs.get_all_character_ids() if character_defs else []
-		print("❌ Available v1 characters: ", v1_chars)
-		print("❌ Available v2 characters: ", v2_chars)
+	# v2: LayerManagerに処理を委譲
+	if not layer_manager:
+		push_error("❌ LayerManager not available")
 		return
 	
-	# Create or get existing sprite
-	var sprite_key = char_id
-	var sprite: Sprite2D
-	
-	if character_sprites.has(sprite_key):
-		sprite = character_sprites[sprite_key]
-	else:
-		sprite = Sprite2D.new()
-		sprite.name = char_id + "_sprite"
-		character_container.add_child(sprite)
-		character_sprites[sprite_key] = sprite
-		print("🆕 Created new sprite for: ", char_id)
-	
-	# Set position (relative to character container)
-	match position:
-		"left":
-			sprite.position = Vector2(-300, 0)
-		"center":
-			sprite.position = Vector2(0, 0)
-		"right":
-			sprite.position = Vector2(300, 0)
-		_:
-			sprite.position = Vector2(0, 0)
-	
-	print("📍 Sprite positioned at: ", sprite.position, " (container at: ", character_container.position, ")")
-	
-	# Load image (placeholder for now)
-	_load_character_image(sprite, char_id, expression)
-	
-	# Show with transition
-	if transition != "none" and transition_player:
-		sprite.visible = true
-		await transition_player.play(sprite, transition)
-	else:
-		sprite.visible = true
-	
-	print("✅ Character displayed: ", char_id, " with transition: ", transition)
+	await layer_manager.show_character(char_id, expression, position, transition)
 
 func hide_character(char_id: String, transition: String):
 	print("👻 Hiding: ", char_id, " with ", transition)
 	
-	var sprite_key = char_id
-	if character_sprites.has(sprite_key):
-		var sprite = character_sprites[sprite_key]
-		
-		# Hide with transition
-		if transition != "none" and transition_player:
-			# Play transition in reverse (hide)
-			await transition_player.play(sprite, transition, 0.5, true)
-			sprite.visible = false
-		else:
-			sprite.visible = false
-		
-		print("✅ Character hidden: ", char_id, " with transition: ", transition)
-	else:
-		print("⚠️ Character not found to hide: ", char_id)
+	# v2: LayerManagerに処理を委譲
+	if not layer_manager:
+		push_error("❌ LayerManager not available")
+		return
+	
+	await layer_manager.hide_character(char_id, transition)
 
 # v2: 古い背景処理は完全廃止 - LayerManagerを使用してください
 
@@ -130,46 +52,10 @@ func show_scene(scene_name: String, transition: String = ""):
 	print("❌ No LayerManager available for background handling")
 
 func _load_character_image(sprite: Sprite2D, char_id: String, expression: String):
-	# Try to load character image
-	# Format: res://assets/images/characters/{char_id}_{expression}.png
-	var image_path = "res://assets/images/characters/" + char_id + "_" + expression + ".png"
-	
-	var texture = load(image_path)
-	if texture:
-		sprite.texture = texture
-		print("🖼️ Loaded image: ", image_path)
-	else:
-		# Create a colored rectangle as placeholder
-		var placeholder = _create_placeholder_texture(char_id)
-		sprite.texture = placeholder
-		print("🎨 Using placeholder for: ", char_id)
+	"""v2: 廃止 - LayerManagerが画像処理を担当します"""
+	print("⚠️ _load_character_image is deprecated. LayerManager handles character images.")
 
 func _create_placeholder_texture(char_id: String) -> ImageTexture:
-	var image = Image.create(200, 300, false, Image.FORMAT_RGB8)
-	
-	# Different colors for different characters
-	var color: Color
-	match char_id:
-		"y":
-			color = Color.MAGENTA
-		"s":
-			color = Color.CYAN
-		_:
-			color = Color.WHITE
-	
-	# Fill with character color
-	image.fill(color)
-	
-	# Add a border to make it more visible
-	var border_color = Color.BLACK
-	for x in range(image.get_width()):
-		image.set_pixel(x, 0, border_color)
-		image.set_pixel(x, image.get_height() - 1, border_color)
-	
-	for y in range(image.get_height()):
-		image.set_pixel(0, y, border_color)
-		image.set_pixel(image.get_width() - 1, y, border_color)
-	
-	var texture = ImageTexture.new()
-	texture.set_image(image)
-	return texture
+	"""v2: 廃止 - LayerManagerが画像処理を担当します"""
+	print("⚠️ _create_placeholder_texture is deprecated. LayerManager handles character images.")
+	return ImageTexture.new()
