@@ -1,35 +1,58 @@
 # variables.rgd
 # 初期変数定義ファイル - ゲーム開始時の変数設定
 
-# プレイヤー情報
+# プレイヤー情報 (辞書形式推奨)
+set_dict player {
+    "name": "プレイヤー",
+    "gender": "male",
+    "age": 17
+}
+
+# または個別設定も可能
 set player_name = "プレイヤー"
-set player_gender = "male"
+set player_gender = "male" 
 set player_age = 17
 
-# ゲーム進行フラグ
-set game_started = false
-set prologue_completed = false
-set chapter1_unlocked = false
-set chapter2_unlocked = false
+# ❌ 以下の定義方法はできません
+# set player.name = "プレイヤー"
+# set player.gender = "male"
+# set player.age = 17
+# 辞書.個別キーの形式は読み取り専用です
 
-# キャラクター好感度
-set yuko_affection = 0
-set takeshi_friendship = 0
-set sensei_respect = 0
+# ゲーム進行フラグ
+set_dict progress {
+    "game_started": false,
+    "prologue_completed": false,
+    "chapter1_unlocked": false,
+    "chapter2_unlocked": false
+}
+
+# キャラクター関係値
+set_dict relationships {
+    "yuko_affection": 0,
+    "takeshi_friendship": 0,
+    "sensei_respect": 0
+}
 
 # ゲーム設定
-set text_speed = 1.0
-set auto_play_speed = 2.0
-set master_volume = 1.0
-set bgm_volume = 0.8
-set se_volume = 0.9
+set_dict settings {
+    "text_speed": 1.0,
+    "auto_play_speed": 2.0,
+    "master_volume": 1.0,
+    "bgm_volume": 0.8,
+    "se_volume": 0.9
+}
 
 # システムフラグ
-set first_launch = true
-set tutorial_completed = false
-set debug_mode = false
+set_dict system {
+    "first_launch": true,
+    "tutorial_completed": false,
+    "debug_mode": false
+}
 
 # 統計情報
-set play_time_seconds = 0
-set choices_made = 0
-set scenes_viewed = 0
+set_dict stats {
+    "play_time_seconds": 0,
+    "choices_made": 0,
+    "scenes_viewed": 0
+}
