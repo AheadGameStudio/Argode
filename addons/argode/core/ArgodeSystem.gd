@@ -14,7 +14,7 @@ signal definition_loaded(results: Dictionary)
 # === 各Managerへのパブリックな参照 ===
 var Player  # ArgodeScriptPlayer
 var AssetManager  # 未実装 (v2新機能)
-var SaveLoadManager  # 未実装 (Ren'Py機能)
+var SaveLoadManager  # SaveLoadManager (v2新機能)
 var LabelRegistry  # LabelRegistry
 var ImageDefs  # ImageDefinitionManager
 var CharDefs  # CharacterDefinitionManager  
@@ -130,9 +130,19 @@ func _create_managers():
 	CustomCommandHandler.name = "CustomCommandHandler"
 	add_child(CustomCommandHandler)
 	
+	# v2新機能: SaveLoadManager
+	var save_load_manager_script = preload("res://addons/argode/managers/SaveLoadManager.gd")
+	SaveLoadManager = save_load_manager_script.new()
+	SaveLoadManager.name = "SaveLoadManager"
+	add_child(SaveLoadManager)
+	
 	# 🚀 CustomCommandHandlerを即座に初期化
 	print("🔧 Initializing CustomCommandHandler during manager creation...")
 	CustomCommandHandler.initialize(self)
+	
+	# 🚀 SaveLoadManagerを初期化
+	print("💾 Initializing SaveLoadManager during manager creation...")
+	SaveLoadManager.initialize(self)
 	
 	# 組み込みコマンドの自動登録
 	_register_builtin_commands()
@@ -526,3 +536,58 @@ func _initialize_label_registry():
 		var scan_dirs: Array[String] = ["res://scenarios/", "res://definitions/"]
 		LabelRegistry.scan_directories = scan_dirs
 		print("🏷️ LabelRegistry scan directories updated: ", scan_dirs)
+
+# === セーブ・ロード機能 ===
+
+func save_game(slot: int, save_name: String = "") -> bool:
+	"""ゲームをセーブ"""
+	if not SaveLoadManager:
+		push_error("❌ SaveLoadManager not initialized")
+		return false
+	
+	var actual_manager = SaveLoadManager
+	return actual_manager.save_game(slot, save_name)
+
+func load_game(slot: int) -> bool:
+	"""ゲームをロード"""
+	if not SaveLoadManager:
+		push_error("❌ SaveLoadManager not initialized")
+		return false
+	
+	return SaveLoadManager.load_game(slot)
+
+func get_save_info(slot: int) -> Dictionary:
+	"""セーブスロット情報を取得"""
+	if not SaveLoadManager:
+		return {}
+	
+	return SaveLoadManager.get_save_info(slot)
+
+func get_all_save_info() -> Dictionary:
+	"""すべてのセーブスロット情報を取得"""
+	if not SaveLoadManager:
+		return {}
+	
+	return SaveLoadManager.get_all_save_info()
+
+func delete_save(slot: int) -> bool:
+	"""セーブデータを削除"""
+	if not SaveLoadManager:
+		return false
+	
+	return SaveLoadManager.delete_save(slot)
+
+func auto_save() -> bool:
+	"""オートセーブ"""
+	if not SaveLoadManager:
+		return false
+	
+	return SaveLoadManager.auto_save()
+
+func has_auto_save() -> bool:
+	"""オートセーブが存在するか"""
+	if not SaveLoadManager:
+		return false
+	
+	var auto_save_info = SaveLoadManager.get_save_info(SaveLoadManager.MAX_SAVE_SLOTS - 1)
+	return not auto_save_info.is_empty()

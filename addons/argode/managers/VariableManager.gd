@@ -295,3 +295,7 @@ func _parse_array_literal(array_str: String) -> Array:
 		result.append(value)
 	
 	return result
+
+func get_all_variables() -> Dictionary:
+	"""すべての変数を取得（セーブ・ロード用）"""
+	return global_vars.duplicate()
