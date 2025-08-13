@@ -1,0 +1,21 @@
+# test_wait_command.rgd
+# Waitコマンドのテスト
+
+define character narrator name:"ナレーター" color:#ffffff
+
+label wait_test_start
+
+narrator "Waitコマンドのテストを開始します"
+
+narrator "1秒待機します..."
+@wait 1.0
+
+narrator "待機完了！次は2秒待機します..."
+@wait duration=2.0
+
+narrator "2秒待機完了！次は位置引数で3秒待機します..."
+@wait 3.0
+
+narrator "すべてのテストが完了しました"
+
+return

@@ -24,17 +24,29 @@ image takeshi_surprised "res://assets/images/characters/takeshi/surprised.png"
 image ui_textbox "res://assets/images/ui/textbox.png"
 image ui_choice_button "res://assets/images/ui/choice_button.png"
 
+# UI Scene Definitions - TSCNファイルの定義
+ui_scene main_menu "res://ui/main_menu.tscn"
+ui_scene settings_screen "res://ui/settings/settings_screen.tscn"
+ui_scene pause_menu "res://ui/pause_menu.tscn"
+ui_scene save_load_screen "res://ui/save_load/save_load_screen.tscn"
+ui_scene inventory_screen "res://ui/inventory/inventory_screen.tscn"
+ui_scene character_status "res://ui/character_status/character_status_screen.tscn"
+ui_scene gallery_screen "res://ui/gallery/gallery_screen.tscn"
+ui_scene title_screen "res://screens/title/Title.tscn"
+
 # BGM
 audio bgm_daily "res://assets/audios/bgm/daily_life.ogg"
 audio bgm_dramatic "res://assets/audios/bgm/dramatic_scene.ogg"
 audio bgm_peaceful "res://assets/audios/bgm/peaceful.ogg"
 audio bgm_tense "res://assets/audios/bgm/tense_moment.ogg"
+audio yoru_no_zattou "res://assets/common/audios/bgm/yoru_no_zattou.ogg"
 
 # SE (Sound Effects)
 audio se_door_open "res://assets/audios/se/door_open.ogg"
 audio se_footsteps "res://assets/audios/se/footsteps.ogg"
 audio se_bell "res://assets/audios/se/school_bell.ogg"
 audio se_page_turn "res://assets/audios/se/page_turn.ogg"
+audio keyword_ping "res://assets/common/audios/se/keyword_ping.ogg"
 
 # シェーダー効果
 shader blur_effect "res://addons/argode/shaders/blur.gdshader"

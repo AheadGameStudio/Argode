@@ -1,0 +1,51 @@
+# 辞書型変数機能を使ったUIテストシナリオ
+
+log "=== 辞書型変数機能テスト開始 ==="
+
+# UIシーンを表示してテスト
+ui show dictionary_test_scene.tscn
+
+log "辞書型変数テストUIが表示されました"
+log "ボタンを使って機能をテストしてください"
+log ""
+log "利用可能な機能:"
+log "- レベルアップボタン: プレイヤーレベルと経験値を増加"
+log "- 好感度アップボタン: キャラクターとの好感度を上昇"
+log "- 辞書機能テストボタン: 複雑な辞書構造のテスト"
+log "- 閉じるボタン: UIを閉じる"
+
+wait_input
+
+log "UIテストが完了しました"
+log ""
+
+# 辞書リテラル解析のテスト
+log "=== 辞書リテラル解析テスト ==="
+
+# 基本的な辞書
+set_dict test_dict {"name": "テスト", "value": 100}
+log "辞書設定完了: {test_dict.name} = {test_dict.value}"
+
+# ネストした辞書
+set_dict nested_dict {"level1": {"level2": {"level3": "深いネスト"}}}
+log "ネスト辞書: {nested_dict.level1.level2.level3}"
+
+# 配列を含む辞書
+set_dict mixed_dict {"items": ["item1", "item2", "item3"], "count": 3}
+log "混合辞書 - アイテム数: {mixed_dict.count}"
+log "最初のアイテム: {mixed_dict.items[0]}"
+
+# 条件分岐での使用
+if {test_dict.value} > 50
+    log "値が50より大きいです: {test_dict.value}"
+end
+
+# フラグとしての使用
+set_dict game_flags {"tutorial_done": true, "first_battle": false}
+if {game_flags.tutorial_done}
+    log "チュートリアルは完了しています"
+else
+    log "チュートリアルは未完了です"
+end
+
+log "=== すべてのテストが完了しました ==="

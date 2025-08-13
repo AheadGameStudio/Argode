@@ -1,0 +1,83 @@
+[gd_scene load_steps=3 format=3 uid="uid://b5g8xp1x7v8qw"]
+
+[ext_resource type="Script" path="res://ui/test_ui_scene.gd" id="1_qj4k7"]
+[ext_resource type="Theme" uid="uid://dcqxwq5wlpj6s" path="res://assets/themes/theme.tres" id="2_wf8xh"]
+
+[node name="TestUIScene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_qj4k7")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.8)
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+theme = ExtResource("2_wf8xh")
+
+[node name="Title" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "UI統合テスト"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="JumpButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "メインメニューへジャンプ"
+
+[node name="CallButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "サンプルシーンを呼び出し"
+
+[node name="MessageButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "メッセージ表示"
+
+[node name="ChoicesButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "選択肢表示"
+
+[node name="VariableButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "変数操作テスト"
+
+[node name="HSeparator2" type="HSeparator" parent="Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="CloseButton" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "閉じる"
+
+[connection signal="pressed" from="Panel/VBoxContainer/JumpButton" to="." method="_on_jump_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/CallButton" to="." method="_on_call_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/MessageButton" to="." method="_on_message_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/ChoicesButton" to="." method="_on_choices_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/VariableButton" to="." method="_on_variable_button_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/CloseButton" to="." method="_on_close_button_pressed"]
