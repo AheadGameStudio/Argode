@@ -1,6 +1,6 @@
 # セーブ・ロードシステム
 
-Argodeシステムは、Ren'Pyに似た包括的なセーブ・ロード機能を提供し、プレイヤーがゲームの進行状況を保存し、後で完全な状態で復元できるようにします。
+Argodeシステムは、スクリーンショットサムネイルや柔軟なスロット管理などの高度な機能を備えた包括的なセーブ・ロード機能を提供し、プレイヤーがゲームの進行状況を保存し、後で完全な状態で復元できるようにします。
 
 ## 概要
 
@@ -10,6 +10,43 @@ Argodeシステムは、Ren'Pyに似た包括的なセーブ・ロード機能�
 - **背景状態**: 現在の背景シーンとレイヤー
 - **オーディオ状態**: 現在のBGM、音量設定
 - **スクリプト進行状況**: 現在のスクリプト位置とコールスタック
+- **スクリーンショットサムネイル**: セーブ状態の視覚プレビュー（Base64エンコード）
+
+## スクリーンショットサムネイル
+
+システムは自動的にスクリーンショットを撮影して、セーブ状態の視覚プレビューを提供します。
+
+### 一時スクリーンショット
+
+セーブサムネイルにUI要素が含まれないよう、一時スクリーンショット機能を使用してください：
+
+```rgd
+# メニューを開く前に現在のゲームシーンを撮影
+capture
+
+# メニューやUIを表示（これは撮影されません）
+ui pause_menu show
+
+# クリーンなスクリーンショットでセーブ
+save 1 "チャプター完了"
+```
+
+### 自動スクリーンショット処理
+
+- **一時スクショ優先**: 利用可能な場合は一時スクリーンショットを使用
+- **リアルタイム代替**: 一時スクリーンショットがない場合は現在の画面を撮影
+- **自動クリーンアップ**: セーブ・ロード後に一時スクリーンショットが自動削除
+- **有効期限**: 一時スクリーンショットは5分後に期限切れ
+
+### スクリーンショット設定
+
+```gdscript
+# SaveLoadManager.gd内
+const ENABLE_SCREENSHOTS = true        # スクリーンショット有効/無効
+const SCREENSHOT_WIDTH = 200          # サムネイル幅
+const SCREENSHOT_HEIGHT = 150         # サムネイル高さ
+const SCREENSHOT_QUALITY = 0.7        # JPEG品質（0.0-1.0）
+```
 
 ## 基本的な使用方法
 
@@ -17,25 +54,29 @@ Argodeシステムは、Ren'Pyに似た包括的なセーブ・ロード機能�
 
 `.rgd` スクリプトファイル内で直接これらのコマンドを使用できます：
 
-```renpy
-# スロット0にセーブ
-save 0
+```argode
+# 一時スクリーンショットを撮影（メニューを開く前に）
+capture
 
-# スロット1にカスタム名でセーブ
-save 1 "ボス戦前"
+# スロット1にセーブ（スロット0はオートセーブ専用）
+save 1
 
-# スロット0からロード
+# スロット2にカスタム名でセーブ
+save 2 "ボス戦前"
+
+# オートセーブスロットからロード
 load 0
 
-# スロット1からロード
+# 手動セーブスロットからロード
 load 1
 ```
 
 ### セーブスロット
 
-- **10個のセーブスロット**: スロット0-9が利用可能
-- **オートセーブ**: スロット9はオートセーブ機能専用
-- **スロット管理**: 各スロットは完全なゲーム状態を保存
+- **設定可能なスロット**: デフォルト10スロット（オートセーブ1 + 手動セーブ9）
+- **オートセーブ**: スロット0がオートセーブ機能専用
+- **手動セーブ**: スロット1以降がユーザーセーブ用
+- **スロット管理**: 各スロットはスクリーンショットサムネイル付きで完全なゲーム状態を保存
 
 ## プログラムAPI
 
@@ -48,12 +89,17 @@ var success = ArgodeSystem.save_game(slot_number, "セーブ名")
 # 指定スロットからゲームをロード
 var success = ArgodeSystem.load_game(slot_number)
 
-# セーブ情報を取得
+# セーブ情報を取得（スクリーンショットデータ含む）
 var save_info = ArgodeSystem.get_save_info(slot_number)
 
 # オートセーブ機能
 var success = ArgodeSystem.SaveLoadManager.auto_save()
 var success = ArgodeSystem.SaveLoadManager.load_auto_save()
+
+# 一時スクリーンショット管理
+var success = ArgodeSystem.capture_temp_screenshot()
+var has_screenshot = ArgodeSystem.has_temp_screenshot()
+ArgodeSystem.clear_temp_screenshot()
 ```
 
 ### セーブ情報構造
@@ -64,7 +110,9 @@ var success = ArgodeSystem.SaveLoadManager.load_auto_save()
     "save_date": "2025-08-13T14:30:15",
     "save_time": 1692800215,
     "script_file": "res://scenarios/main.rgd",
-    "line_number": 42
+    "line_number": 42,
+    "has_screenshot": true,
+    "screenshot": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ..."  # Base64画像データ
 }
 ```
 
@@ -91,10 +139,11 @@ var success = ArgodeSystem.SaveLoadManager.load_auto_save()
 
 ```
 saves/
-├── slot_0.save    # セーブスロット0
-├── slot_1.save    # セーブスロット1
+├── slot_0.save    # オートセーブスロット
+├── slot_1.save    # 手動セーブスロット1
+├── slot_2.save    # 手動セーブスロット2
 ├── ...
-└── slot_9.save    # オートセーブスロット
+└── slot_9.save    # 手動セーブスロット9
 ```
 
 ## セキュリティと暗号化
@@ -168,10 +217,11 @@ func _on_load_failed(slot: int, error: String):
 ```json
 {
     "version": "2.0",
-    "slot": 0,
+    "slot": 1,
     "save_name": "プレイヤーセーブ",
     "save_date_string": "2025-08-13T14:30:15",
     "save_time": 1692800215,
+    "screenshot": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...",
     "variables": {
         "player_name": "主人公",
         "level": 5,
@@ -190,6 +240,19 @@ func _on_load_failed(slot: int, error: String):
     "current_line_index": 42,
     "call_stack": []
 }
+```
+
+### スクリーンショットの操作
+
+```gdscript
+# セーブデータからスクリーンショットを取得
+var save_info = ArgodeSystem.get_save_info(slot)
+if save_info.has("screenshot"):
+    var texture = ArgodeSystem.SaveLoadManager.create_image_texture_from_screenshot(
+        save_info["screenshot"]
+    )
+    # UIでテクスチャを使用
+    save_thumbnail.texture = texture
 ```
 
 ### カスタムセーブデータ
@@ -211,8 +274,11 @@ func add_custom_save_data(save_data: Dictionary):
 
 ```gdscript
 # 分かりやすいセーブ名を使用
-ArgodeSystem.save_game(0, "第1章クリア")
-ArgodeSystem.save_game(1, "最終ボス戦前")
+ArgodeSystem.save_game(1, "第1章クリア")
+ArgodeSystem.save_game(2, "最終ボス戦前")
+
+# オートセーブは命名不要
+ArgodeSystem.SaveLoadManager.auto_save()
 ```
 
 ### オートセーブ統合
@@ -224,6 +290,22 @@ func on_chapter_complete():
 
 func on_important_choice():
     ArgodeSystem.SaveLoadManager.auto_save()
+```
+
+### スクリーンショットのベストプラクティス
+
+```gdscript
+# UI操作前にクリーンなスクリーンショットを撮影
+func open_save_menu():
+    # 最初に現在のゲーム状態を撮影
+    ArgodeSystem.capture_temp_screenshot()
+    
+    # その後メニューUIを表示
+    show_save_menu()
+
+func save_game_with_clean_thumbnail(slot: int, name: String):
+    # スクリーンショットはメニューを開く前に既に撮影済み
+    ArgodeSystem.save_game(slot, name)
 ```
 
 ### セーブ検証

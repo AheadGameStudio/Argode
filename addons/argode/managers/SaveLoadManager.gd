@@ -13,17 +13,29 @@ signal load_failed(slot: int, error: String)
 const SAVE_VERSION = "2.0"
 const SAVE_EXTENSION = ".save"
 const SAVE_FOLDER = "user://saves/"
-const MAX_SAVE_SLOTS = 10
+const AUTO_SAVE_SLOT = 0  # スロット0をオートセーブ専用に
+var max_save_slots = 10   # デフォルト10スロット（設定可能）
 
 # === 暗号化設定 ===
 const ENABLE_ENCRYPTION = true
 const ENCRYPTION_KEY = "argode_save_key_2024"  # 本番では環境変数や設定ファイルから取得推奨
+
+# === スクリーンショット設定 ===
+const ENABLE_SCREENSHOTS = true
+const SCREENSHOT_WIDTH = 200
+const SCREENSHOT_HEIGHT = 150
+const SCREENSHOT_QUALITY = 0.7  # JPEG品質 (0.0-1.0)
 
 # === マネージャー参照 ===
 var argode_system: Node = null
 
 # === セーブデータ情報キャッシュ ===
 var save_info_cache: Dictionary = {}
+
+# === 一時スクリーンショット機能 ===
+var temp_screenshot_data: String = ""  # Base64エンコードされた一時スクリーンショット
+var temp_screenshot_timestamp: float = 0.0  # 撮影タイムスタンプ
+const TEMP_SCREENSHOT_LIFETIME = 300.0  # 一時スクショの有効期限（5分）
 
 func _ready():
 	print("💾 SaveLoadManager: Initializing save/load system...")
@@ -48,7 +60,7 @@ func _ensure_save_directory():
 
 func save_game(slot: int, save_name: String = "") -> bool:
 	"""ゲーム状態をセーブ"""
-	if slot < 0 or slot >= MAX_SAVE_SLOTS:
+	if slot < 0 or slot >= max_save_slots:
 		push_error("❌ SaveLoadManager: Invalid save slot: " + str(slot))
 		save_failed.emit(slot, "Invalid slot number")
 		return false
@@ -57,11 +69,27 @@ func save_game(slot: int, save_name: String = "") -> bool:
 	
 	# セーブデータを収集
 	var save_data = _collect_game_state()
-	save_data["save_name"] = save_name if save_name != "" else ("Save " + str(slot + 1))
+	
+	# セーブ名の設定（オートセーブかユーザーセーブかで分ける）
+	if slot == AUTO_SAVE_SLOT:
+		save_data["save_name"] = "Auto Save"
+	else:
+		save_data["save_name"] = save_name if save_name != "" else ("Save " + str(slot))
+	
 	save_data["save_time"] = Time.get_unix_time_from_system()
 	save_data["save_date_string"] = Time.get_datetime_string_from_system()
 	save_data["version"] = SAVE_VERSION
 	save_data["slot"] = slot
+	
+	# スクリーンショットを撮影
+	if ENABLE_SCREENSHOTS:
+		var screenshot_b64 = _get_screenshot_for_save()
+		if screenshot_b64 != "":
+			save_data["screenshot"] = screenshot_b64
+			print("📷 SaveLoadManager: Screenshot added to save data")
+	
+	# 一時スクリーンショットをクリア（セーブ後は不要）
+	_clear_temp_screenshot()
 	
 	# ファイルに書き込み
 	var file_path = SAVE_FOLDER + "slot_" + str(slot) + SAVE_EXTENSION
@@ -89,10 +117,12 @@ func save_game(slot: int, save_name: String = "") -> bool:
 		"save_date": save_data["save_date_string"],
 		"save_time": save_data["save_time"],
 		"script_file": save_data.get("current_script_path", ""),
-		"line_number": save_data.get("current_line_index", 0)
+		"line_number": save_data.get("current_line_index", 0),
+		"has_screenshot": save_data.has("screenshot")
 	}
 	
-	print("✅ SaveLoadManager: Game saved successfully to slot " + str(slot))
+	var save_type = "Auto-save" if slot == AUTO_SAVE_SLOT else "Manual save"
+	print("✅ SaveLoadManager: " + save_type + " completed successfully to slot " + str(slot))
 	game_saved.emit(slot)
 	return true
 
@@ -199,7 +229,7 @@ func _collect_audio_state() -> Dictionary:
 
 func load_game(slot: int) -> bool:
 	"""ゲーム状態をロード"""
-	if slot < 0 or slot >= MAX_SAVE_SLOTS:
+	if slot < 0 or slot >= max_save_slots:
 		push_error("❌ SaveLoadManager: Invalid load slot: " + str(slot))
 		load_failed.emit(slot, "Invalid slot number")
 		return false
@@ -281,6 +311,9 @@ func _restore_game_state(save_data: Dictionary):
 	# スクリプト状態を復元（最後に実行）
 	if "current_script_path" in save_data:
 		_restore_script_state(save_data)
+	
+	# ロード後も一時スクリーンショットをクリア
+	_clear_temp_screenshot()
 
 func _restore_character_state(char_data: Dictionary):
 	"""キャラクター状態を復元"""
@@ -423,12 +456,17 @@ func get_save_info(slot: int) -> Dictionary:
 		return {}
 	
 	var info = {
-		"save_name": save_data.get("save_name", "Save " + str(slot + 1)),
+		"save_name": save_data.get("save_name", "Save " + str(slot)),
 		"save_date": save_data.get("save_date_string", "Unknown"),
 		"save_time": save_data.get("save_time", 0),
 		"script_file": save_data.get("current_script_path", ""),
-		"line_number": save_data.get("current_line_index", 0)
+		"line_number": save_data.get("current_line_index", 0),
+		"has_screenshot": save_data.has("screenshot")
 	}
+	
+	# スクリーンショットのBase64データも含める（UIで使用可能）
+	if save_data.has("screenshot"):
+		info["screenshot"] = save_data["screenshot"]
 	
 	save_info_cache[slot] = info
 	return info
@@ -436,7 +474,7 @@ func get_save_info(slot: int) -> Dictionary:
 func get_all_save_info() -> Dictionary:
 	"""すべてのセーブスロット情報を取得"""
 	var all_info = {}
-	for slot in range(MAX_SAVE_SLOTS):
+	for slot in range(max_save_slots):
 		var info = get_save_info(slot)
 		if not info.is_empty():
 			all_info[slot] = info
@@ -458,7 +496,7 @@ func delete_save(slot: int) -> bool:
 func _load_save_info_cache():
 	"""起動時にセーブ情報キャッシュを読み込み"""
 	save_info_cache.clear()
-	for slot in range(MAX_SAVE_SLOTS):
+	for slot in range(max_save_slots):
 		get_save_info(slot)  # 副作用でキャッシュに格納される
 	
 	print("💾 SaveLoadManager: Loaded save info cache for " + str(save_info_cache.size()) + " slots")
@@ -466,12 +504,130 @@ func _load_save_info_cache():
 # === オートセーブ機能 ===
 
 func auto_save() -> bool:
-	"""オートセーブを実行（専用スロット使用）"""
-	return save_game(MAX_SAVE_SLOTS - 1, "Auto Save")
+	"""オートセーブを実行（スロット0使用）"""
+	return save_game(AUTO_SAVE_SLOT, "Auto Save")
 
 func load_auto_save() -> bool:
 	"""オートセーブをロード"""
-	return load_game(MAX_SAVE_SLOTS - 1)
+	return load_game(AUTO_SAVE_SLOT)
+
+# === スロット設定 ===
+
+func set_max_save_slots(new_max: int):
+	"""最大セーブスロット数を設定（1以上、オートセーブ除く）"""
+	if new_max >= 1:
+		max_save_slots = new_max + 1  # オートセーブ分を追加
+		print("💾 SaveLoadManager: Max save slots set to " + str(new_max) + " (+ 1 auto-save)")
+
+func get_user_save_slots() -> int:
+	"""ユーザーが使用できるセーブスロット数を取得（オートセーブ除く）"""
+	return max(max_save_slots - 1, 0)
+
+func is_auto_save_slot(slot: int) -> bool:
+	"""指定されたスロットがオートセーブ専用かどうか"""
+	return slot == AUTO_SAVE_SLOT
+
+# === スクリーンショット機能 ===
+
+func capture_temp_screenshot() -> bool:
+	"""一時的なスクリーンショットを撮影（メニューを開く前などに呼び出し）"""
+	if not ENABLE_SCREENSHOTS:
+		print("📷 SaveLoadManager: Screenshot feature is disabled")
+		return false
+	
+	var screenshot_data = _capture_screenshot()
+	if screenshot_data != "":
+		temp_screenshot_data = screenshot_data
+		temp_screenshot_timestamp = Time.get_unix_time_from_system()
+		print("📷 SaveLoadManager: Temporary screenshot captured (valid for " + str(TEMP_SCREENSHOT_LIFETIME) + " seconds)")
+		return true
+	else:
+		print("⚠️ SaveLoadManager: Failed to capture temporary screenshot")
+		return false
+
+func _clear_temp_screenshot():
+	"""一時スクリーンショットをクリア"""
+	if temp_screenshot_data != "":
+		print("🗑️ SaveLoadManager: Cleared temporary screenshot")
+		temp_screenshot_data = ""
+		temp_screenshot_timestamp = 0.0
+
+func _is_temp_screenshot_valid() -> bool:
+	"""一時スクリーンショットが有効かどうかチェック"""
+	if temp_screenshot_data == "":
+		return false
+	
+	var current_time = Time.get_unix_time_from_system()
+	var age = current_time - temp_screenshot_timestamp
+	
+	if age > TEMP_SCREENSHOT_LIFETIME:
+		print("⏰ SaveLoadManager: Temporary screenshot expired (age: " + str(age) + "s)")
+		_clear_temp_screenshot()
+		return false
+	
+	return true
+
+func _get_screenshot_for_save() -> String:
+	"""セーブ用のスクリーンショットを取得（一時スクショ優先、なければリアルタイム撮影）"""
+	if not ENABLE_SCREENSHOTS:
+		return ""
+	
+	# 一時スクリーンショットが有効ならそれを使用
+	if _is_temp_screenshot_valid():
+		print("📷 SaveLoadManager: Using temporary screenshot for save")
+		return temp_screenshot_data
+	
+	# 一時スクリーンショットがない場合はリアルタイム撮影
+	print("📷 SaveLoadManager: Capturing real-time screenshot for save")
+	return _capture_screenshot()
+
+func has_temp_screenshot() -> bool:
+	"""有効な一時スクリーンショットが存在するかチェック"""
+	return _is_temp_screenshot_valid()
+
+func get_temp_screenshot_age() -> float:
+	"""一時スクリーンショットの経過時間を取得（デバッグ用）"""
+	if temp_screenshot_data == "":
+		return -1.0
+	
+	var current_time = Time.get_unix_time_from_system()
+	return current_time - temp_screenshot_timestamp
+
+func auto_capture_before_ui(ui_name: String = "menu") -> bool:
+	"""UI表示前に自動的に一時スクリーンショットを撮影"""
+	print("📷 SaveLoadManager: Auto-capturing screenshot before showing " + ui_name)
+	return capture_temp_screenshot()
+
+func _capture_screenshot() -> String:
+	"""現在の画面をスクリーンショット撮影してBase64で返す"""
+	if not ENABLE_SCREENSHOTS:
+		return ""
+	
+	# メインビューポートから画像を取得
+	var viewport = get_viewport()
+	if not viewport:
+		push_warning("⚠️ SaveLoadManager: Cannot access viewport for screenshot")
+		return ""
+	
+	var img = viewport.get_texture().get_image()
+	if not img:
+		push_warning("⚠️ SaveLoadManager: Failed to capture screenshot")
+		return ""
+	
+	# リサイズして圧縮
+	img.resize(SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT, Image.INTERPOLATE_LANCZOS)
+	
+	# JPEGとしてエンコード
+	var jpg_buffer = img.save_jpg_to_buffer(SCREENSHOT_QUALITY)
+	if jpg_buffer.size() == 0:
+		push_warning("⚠️ SaveLoadManager: Failed to encode screenshot")
+		return ""
+	
+	# Base64エンコード
+	var base64_data = Marshalls.raw_to_base64(jpg_buffer)
+	print("📷 SaveLoadManager: Screenshot captured (" + str(jpg_buffer.size()) + " bytes → " + str(base64_data.length()) + " chars)")
+	
+	return base64_data
 
 # === 暗号化ユーティリティ ===
 
@@ -486,3 +642,45 @@ func get_save_file_path(slot: int) -> String:
 func get_save_directory() -> String:
 	"""セーブディレクトリのパスを取得"""
 	return SAVE_FOLDER
+
+# === スクリーンショット・ユーティリティ ===
+
+func create_image_texture_from_screenshot(base64_data: String) -> ImageTexture:
+	"""Base64スクリーンショットからImageTextureを作成"""
+	if base64_data == "":
+		return null
+	
+	var jpg_buffer = Marshalls.base64_to_raw(base64_data)
+	if jpg_buffer.size() == 0:
+		push_error("❌ SaveLoadManager: Failed to decode screenshot data")
+		return null
+	
+	var img = Image.new()
+	var error = img.load_jpg_from_buffer(jpg_buffer)
+	if error != OK:
+		push_error("❌ SaveLoadManager: Failed to load screenshot image")
+		return null
+	
+	var texture = ImageTexture.create_from_image(img)
+	return texture
+
+func is_screenshot_enabled() -> bool:
+	"""スクリーンショット機能が有効かどうか"""
+	return ENABLE_SCREENSHOTS
+
+# === スロット・バリデーション ===
+
+func is_valid_save_slot(slot: int) -> bool:
+	"""有効なセーブスロットかどうかチェック"""
+	return slot >= 0 and slot < max_save_slots
+
+func is_user_save_slot(slot: int) -> bool:
+	"""ユーザーが使用可能なセーブスロットかどうか（オートセーブ以外）"""
+	return slot > AUTO_SAVE_SLOT and slot < max_save_slots
+
+func get_available_user_slots() -> Array:
+	"""利用可能なユーザーセーブスロット番号の配列を取得"""
+	var slots = []
+	for slot in range(1, max_save_slots):  # スロット1から開始（0はオートセーブ）
+		slots.append(slot)
+	return slots

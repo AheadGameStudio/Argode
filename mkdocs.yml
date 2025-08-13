@@ -82,6 +82,7 @@ plugins:
               - GDScript連携: custom-commands/gdscript-integration.ja.md
             - セーブ・ロードシステム:
               - 概要: save-load/index.ja.md
+              - 一時スクリーンショット: save-load/temporary-screenshots.ja.md
               - 実例: save-load/examples.ja.md
             - UIシステム:
               - AdvScreen: ui/advscreen.ja.md
@@ -148,6 +149,7 @@ nav:
     - GDScript Integration: custom-commands/gdscript-integration.md
   - Save & Load System:
     - Overview: save-load/index.md
+    - Temporary Screenshots: save-load/temporary-screenshots.md
     - Examples: save-load/examples.md
   - UI System:
     - AdvScreen: ui/advscreen.md

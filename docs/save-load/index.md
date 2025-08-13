@@ -1,6 +1,6 @@
 # Save & Load System
 
-The Argode system provides a comprehensive save/load functionality similar to Ren'Py, allowing players to save their game progress and restore it later with full state preservation.
+The Argode system provides a comprehensive save/load functionality with advanced features like screenshot thumbnails and flexible slot management, allowing players to save their game progress and restore it later with full state preservation.
 
 ## Overview
 
@@ -10,6 +10,43 @@ The save/load system preserves:
 - **Background States**: Current background scenes and layers
 - **Audio States**: Current BGM, volume settings
 - **Script Progress**: Current script position and call stack
+- **Screenshot Thumbnails**: Visual preview of saved game states (Base64 encoded)
+
+## Screenshot Thumbnails
+
+The system automatically captures screenshots to provide visual previews of save states.
+
+### Temporary Screenshots
+
+To avoid UI elements in save thumbnails, use the temporary screenshot feature:
+
+```rgd
+# Capture current game scene before opening menus
+capture
+
+# Open menu/UI (won't be captured)
+ui pause_menu show
+
+# Save with clean screenshot
+save 1 "Chapter Complete"
+```
+
+### Automatic Screenshot Handling
+
+- **Temporary Priority**: Uses temporary screenshot if available
+- **Real-time Fallback**: Captures current screen if no temporary screenshot
+- **Auto-cleanup**: Temporary screenshots are automatically cleared after save/load
+- **Expiration**: Temporary screenshots expire after 5 minutes
+
+### Screenshot Settings
+
+```gdscript
+# In SaveLoadManager.gd
+const ENABLE_SCREENSHOTS = true        # Enable/disable screenshots
+const SCREENSHOT_WIDTH = 200          # Thumbnail width
+const SCREENSHOT_HEIGHT = 150         # Thumbnail height  
+const SCREENSHOT_QUALITY = 0.7        # JPEG quality (0.0-1.0)
+```
 
 ## Basic Usage
 
@@ -17,25 +54,29 @@ The save/load system preserves:
 
 Use these commands directly in your `.rgd` script files:
 
-```renpy
-# Save to slot 0
-save 0
+```argode
+# Capture temporary screenshot (before opening menus)
+capture
 
-# Save to slot 1 with custom name
-save 1 "Before Boss Battle"
+# Save to slot 1 (slot 0 is reserved for auto-save)
+save 1
 
-# Load from slot 0
+# Save to slot 2 with custom name
+save 2 "Before Boss Battle"
+
+# Load from auto-save slot
 load 0
 
-# Load from slot 1
+# Load from manual save slot
 load 1
 ```
 
 ### Save Slots
 
-- **10 Save Slots**: Slots 0-9 available
-- **Auto Save**: Slot 9 is reserved for auto-save functionality
-- **Slot Management**: Each slot stores complete game state
+- **Configurable Slots**: Default 10 slots (1 auto-save + 9 manual saves)
+- **Auto Save**: Slot 0 is reserved for auto-save functionality
+- **Manual Saves**: Slots 1+ for user saves
+- **Slot Management**: Each slot stores complete game state with screenshot thumbnail
 
 ## Programmatic API
 
@@ -48,12 +89,17 @@ var success = ArgodeSystem.save_game(slot_number, "Save Name")
 # Load game from specified slot
 var success = ArgodeSystem.load_game(slot_number)
 
-# Get save information
+# Get save information (includes screenshot data)
 var save_info = ArgodeSystem.get_save_info(slot_number)
 
 # Auto-save functionality
 var success = ArgodeSystem.SaveLoadManager.auto_save()
 var success = ArgodeSystem.SaveLoadManager.load_auto_save()
+
+# Temporary screenshot management
+var success = ArgodeSystem.capture_temp_screenshot()
+var has_screenshot = ArgodeSystem.has_temp_screenshot()
+ArgodeSystem.clear_temp_screenshot()
 ```
 
 ### Save Information Structure
@@ -64,7 +110,9 @@ var success = ArgodeSystem.SaveLoadManager.load_auto_save()
     "save_date": "2025-08-13T14:30:15",
     "save_time": 1692800215,
     "script_file": "res://scenarios/main.rgd",
-    "line_number": 42
+    "line_number": 42,
+    "has_screenshot": true,
+    "screenshot": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ..."  # Base64 image data
 }
 ```
 
@@ -91,10 +139,11 @@ var success = ArgodeSystem.SaveLoadManager.load_auto_save()
 
 ```
 saves/
-├── slot_0.save    # Save slot 0
-├── slot_1.save    # Save slot 1
+├── slot_0.save    # Auto-save slot  
+├── slot_1.save    # Manual save slot 1
+├── slot_2.save    # Manual save slot 2
 ├── ...
-└── slot_9.save    # Auto-save slot
+└── slot_9.save    # Manual save slot 9
 ```
 
 ## Security & Encryption
@@ -168,10 +217,11 @@ The save file contains:
 ```json
 {
     "version": "2.0",
-    "slot": 0,
+    "slot": 1,
     "save_name": "Player Save",
     "save_date_string": "2025-08-13T14:30:15",
     "save_time": 1692800215,
+    "screenshot": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...",
     "variables": {
         "player_name": "Hero",
         "level": 5,
@@ -190,6 +240,19 @@ The save file contains:
     "current_line_index": 42,
     "call_stack": []
 }
+```
+
+### Working with Screenshots
+
+```gdscript
+# Get screenshot from save data
+var save_info = ArgodeSystem.get_save_info(slot)
+if save_info.has("screenshot"):
+    var texture = ArgodeSystem.SaveLoadManager.create_image_texture_from_screenshot(
+        save_info["screenshot"]
+    )
+    # Use texture in UI
+    save_thumbnail.texture = texture
 ```
 
 ### Custom Save Data
@@ -211,8 +274,11 @@ func add_custom_save_data(save_data: Dictionary):
 
 ```gdscript
 # Use descriptive save names
-ArgodeSystem.save_game(0, "Chapter 1 Complete")
-ArgodeSystem.save_game(1, "Before Final Boss")
+ArgodeSystem.save_game(1, "Chapter 1 Complete")
+ArgodeSystem.save_game(2, "Before Final Boss")
+
+# Auto-save doesn't need naming
+ArgodeSystem.SaveLoadManager.auto_save()
 ```
 
 ### Auto-Save Integration
@@ -224,6 +290,22 @@ func on_chapter_complete():
 
 func on_important_choice():
     ArgodeSystem.SaveLoadManager.auto_save()
+```
+
+### Screenshot Best Practices
+
+```gdscript
+# Capture clean screenshots before UI operations
+func open_save_menu():
+    # Capture current game state first
+    ArgodeSystem.capture_temp_screenshot()
+    
+    # Then show menu UI
+    show_save_menu()
+
+func save_game_with_clean_thumbnail(slot: int, name: String):
+    # Screenshot was already captured before menu opened
+    ArgodeSystem.save_game(slot, name)
 ```
 
 ### Save Validation

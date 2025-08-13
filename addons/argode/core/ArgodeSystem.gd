@@ -589,5 +589,27 @@ func has_auto_save() -> bool:
 	if not SaveLoadManager:
 		return false
 	
-	var auto_save_info = SaveLoadManager.get_save_info(SaveLoadManager.MAX_SAVE_SLOTS - 1)
+	var auto_save_info = SaveLoadManager.get_save_info(0)  # AUTO_SAVE_SLOT
 	return not auto_save_info.is_empty()
+
+# === 一時スクリーンショット機能 ===
+
+func capture_temp_screenshot() -> bool:
+	"""一時的なスクリーンショットを撮影（メニューを開く前などに使用）"""
+	if not SaveLoadManager:
+		push_error("❌ SaveLoadManager not initialized")
+		return false
+	
+	return SaveLoadManager.capture_temp_screenshot()
+
+func has_temp_screenshot() -> bool:
+	"""有効な一時スクリーンショットが存在するかチェック"""
+	if not SaveLoadManager:
+		return false
+	
+	return SaveLoadManager.has_temp_screenshot()
+
+func clear_temp_screenshot():
+	"""一時スクリーンショットを手動でクリア"""
+	if SaveLoadManager:
+		SaveLoadManager._clear_temp_screenshot()
