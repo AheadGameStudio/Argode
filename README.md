@@ -80,11 +80,24 @@ A powerful and flexible visual novel framework for Godot Engine, designed to mak
        return
    ```
 
-2. **Load your scenario**:
-   ```gdscript
-   # In your GDScript code
-   ArgodeSystem.load_scenario("res://scenarios/my_story.rgd")
-   ```
+2.  **Load the scenario**:
+    ```gdscript
+    # Call this in your Main scene.
+    
+    # Specify the message window that inherits from ArgodeScreen and was added to the scene
+    @onready var argode_gui: ArgodeScreen = %ArgodeGui
+
+    func _ready() -> void:
+        # Wait for the message window to be ready
+        await argode_gui.screen_ready
+
+        # Ensure both ArgodeSystem and UIManager exist to avoid errors
+        if ArgodeSystem and ArgodeSystem.UIManager:
+            # Jump to the 'start' label to begin
+            argode_gui.jump_to("start")
+        else:
+            print("❌ ArgodeSystem or UIManager not found")
+    ```
 
 ## 📚 Documentation
 
@@ -102,22 +115,20 @@ Visit our online documentation for detailed guides:
 ## 🎮 Core Commands
 
 ### Basic Commands
-- `character` - Define characters with sprites and properties
-- `scene` - Set background images and scenes
-- `music` - Play background music
-- `sound` - Play sound effects
-- `menu` - Create interactive choices
+- `character` - Defines a character with sprites and properties
+- `scene` - Sets the background image and scene
+- `audio` - Plays audio data
+- `menu` - Creates interactive choices
 
 ### Save System Commands
-- `save [slot]` - Save game to specified slot (1+)
-- `load [slot]` - Load game from specified slot (0+)
-- `capture` - Take temporary screenshot for clean save thumbnails
+- `save [slot]` - Saves the game to a specified slot (1 or higher)
+- `load [slot]` - Loads the game from a specified slot (0 or higher)
+- `capture` - Takes a temporary screenshot for the save thumbnail
 
 ### Advanced Commands
 - `fade` - Screen transitions and effects
-- `wait` - Pause execution for timing
-- `define` - Create reusable definitions
-- `variable` - Manage game variables
+- `wait` - Pauses execution for timing control
+- `set` - Creates variables, arrays, and dictionaries
 
 ## 🛠️ Development
 
@@ -136,7 +147,6 @@ For the best development experience, install our official VS Code extension:
 - **Syntax Highlighting**: Full support for RGD script syntax with beautiful color themes
 - **Smart Indentation**: Automatic indentation for labels, menus, and choices
 - **Code Folding**: Collapsible label blocks for better organization
-- **Ren'Py-like Experience**: Familiar syntax highlighting for visual novel developers
 
 📦 **Installation:**
 1. Download the `.vsix` file from the [releases page](https://github.com/AheadGameStudio/Argode-rgd-syntax-highlighter)
@@ -145,27 +155,30 @@ For the best development experience, install our official VS Code extension:
 4. Select the downloaded file
 
 ### Project Structure
+If you create definition files with a `.rgd` extension inside the `definitions` directory, ArgodeSystem will automatically load them first.
+Similarly, `.gd` files in `custom/commands` that inherit from `BaseCustomCommand` are also automatically loaded as user-defined custom commands.
+
 ```
 addons/argode/          # Core framework files
 ├── core/               # Main system components
-├── builtin/           # Built-in commands
-├── commands/          # Command handling system
-└── managers/          # Game state managers
+├── builtin/            # Built-in commands
+├── commands/           # Command handling system
+└── managers/           # Game state managers
 
 custom/                 # Your custom commands (optional)
 └── commands/          # Custom command implementations
 
-definitions/           # Asset and character definitions
-├── assets.rgd         # Image, audio, UI definitions
-├── characters.rgd     # Character definitions
-└── variables.rgd      # Global variable definitions
+definitions/            # Asset and character definitions (optional)
+├── assets.rgd          # Image, audio, and UI definitions
+├── characters.rgd      # Character definitions
+└── variables.rgd       # Global variable definitions
 
-scenarios/             # Your story scripts (.rgd files)
-└── main.rgd           # Main scenario entry point
+scenarios/              # Story scripts (.rgd files)
+└── main.rgd            # Scenario file
 
-Root Files:
-├── project.godot      # Godot project file
-└── README.md          # This file
+Root files:
+├── project.godot       # Godot project file
+└── README.md           # This file
 ```
 
 **Documentation:** Full documentation is available online at [https://aheadgamestudio.github.io/Argode/](https://aheadgamestudio.github.io/Argode/)
@@ -207,9 +220,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Issues**: https://github.com/AheadGameStudio/Argode/issues
 - **Discussions**: https://github.com/AheadGameStudio/Argode/discussions
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgements
 
-Special thanks to all contributors who help make Argode better for the visual novel development community.
+Thank you to all contributors who help make Argode better for the visual novel development community.
 
 ---
 

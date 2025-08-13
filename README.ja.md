@@ -81,10 +81,23 @@ Godot Engine用の強力で柔軟なビジュアルノベルフレームワー�
    ```
 
 2. **シナリオをロード**:
-   ```gdscript
-   # GDScriptコード内で
-   ArgodeSystem.load_scenario("res://scenarios/my_story.rgd")
-   ```
+    ```gdscript
+    # Mainシーンで呼び出してください。
+    
+    # シーンに追加したArgodeScreenを継承したメッセージウィンドウを指定
+    @onready var argode_gui: ArgodeScreen = %ArgodeGui
+
+    func _ready() -> void:
+        # メッセージウィンドウの準備ができるまで待機
+        await argode_gui.screen_ready
+
+        # エラー回避のためArgodeSystemとUIManagerの両方があることを確認
+        if ArgodeSystem and ArgodeSystem.UIManager:
+            # startラベルにジャンプして開始
+            argode_gui.jump_to("start")
+        else:
+            print("❌ ArgodeSystem or UIManager not found")
+    ```
 
 ## 📚 ドキュメント
 
@@ -103,20 +116,18 @@ Godot Engine用の強力で柔軟なビジュアルノベルフレームワー�
 ### 基本コマンド
 - `character` - スプライトとプロパティを持つキャラクターを定義
 - `scene` - 背景画像とシーンを設定
-- `music` - 背景音楽を再生
-- `sound` - 効果音を再生
+- `audio` - 音声データを再生
 - `menu` - インタラクティブな選択肢を作成
 
 ### セーブシステムコマンド
 - `save [slot]` - 指定スロット（1以上）にゲームをセーブ
 - `load [slot]` - 指定スロット（0以上）からゲームをロード
-- `capture` - 綺麗なセーブサムネイル用の一時スクリーンショットを撮影
+- `capture` - セーブサムネイル用の一時スクリーンショットを撮影
 
 ### 高度なコマンド
 - `fade` - 画面遷移と効果
 - `wait` - タイミング制御のための実行一時停止
-- `define` - 再利用可能な定義を作成
-- `variable` - ゲーム変数を管理
+- `set` - 変数・配列・辞書を作成
 
 ## 🛠️ 開発
 
@@ -135,7 +146,6 @@ Godot Engine用の強力で柔軟なビジュアルノベルフレームワー�
 - **シンタックスハイライト**: 美しいカラーテーマによるRGDスクリプト構文の完全サポート
 - **スマートインデント**: ラベル、メニュー、選択肢の自動インデント
 - **コード折りたたみ**: より良い整理のための折りたたみ可能なラベルブロック
-- **Ren'Py風体験**: ビジュアルノベル開発者に馴染みのあるシンタックスハイライト
 
 📦 **インストール:**
 1. [リリースページ](https://github.com/AheadGameStudio/Argode-rgd-syntax-highlighter)から`.vsix`ファイルをダウンロード
@@ -144,6 +154,9 @@ Godot Engine用の強力で柔軟なビジュアルノベルフレームワー�
 4. ダウンロードしたファイルを選択
 
 ### プロジェクト構造
+`definitions`ディレクトリ内に`.rgd`ファイルで定義ファイルを作成すると、ArgodeSystemは自動的に最初に読み込みます。  
+また、`custom/commands`内の`BaseCustomCommand`を継承した`.gd`ファイルも、ユーザー定義のカスタムコマンドとして認識するため自動的に読み込みます。
+
 ```
 addons/argode/          # コアフレームワークファイル
 ├── core/               # メインシステムコンポーネント
@@ -154,13 +167,13 @@ addons/argode/          # コアフレームワークファイル
 custom/                 # カスタムコマンド（オプション）
 └── commands/          # カスタムコマンド実装
 
-definitions/           # アセットとキャラクター定義
+definitions/           # アセットとキャラクター定義（オプション）
 ├── assets.rgd         # 画像、音声、UI定義
 ├── characters.rgd     # キャラクター定義
 └── variables.rgd      # グローバル変数定義
 
 scenarios/             # ストーリースクリプト（.rgdファイル）
-└── main.rgd           # メインシナリオエントリーポイント
+└── main.rgd           # シナリオファイル
 
 ルートファイル:
 ├── project.godot      # Godotプロジェクトファイル

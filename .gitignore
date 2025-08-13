@@ -36,6 +36,7 @@ docs/
 scenarios/tests/
 test/
 tools/
+assets/*
 
 # Development Assets & Scenes (Keep structure, exclude content)
 assets/audios/
