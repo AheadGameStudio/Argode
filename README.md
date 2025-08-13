@@ -146,12 +146,30 @@ For the best development experience, install our official VS Code extension:
 ### Project Structure
 ```
 addons/argode/          # Core framework files
-scenarios/              # Your story scripts (.rgd files)
-characters/             # Character definitions
-assets/                 # Images, audio, and other resources
-custom/                 # Custom commands and extensions
-docs/                   # Documentation source
+├── core/               # Main system components
+├── builtin/           # Built-in commands
+├── commands/          # Command handling system
+└── managers/          # Game state managers
+
+custom/                 # Your custom commands (optional)
+└── commands/          # Custom command implementations
+
+definitions/           # Asset and character definitions
+├── assets.rgd         # Image, audio, UI definitions
+├── characters.rgd     # Character definitions
+└── variables.rgd      # Global variable definitions
+
+scenarios/             # Your story scripts (.rgd files)
+└── main.rgd           # Main scenario entry point
+
+Root Files:
+├── project.godot      # Godot project file
+└── README.md          # This file
 ```
+
+**Documentation:** Full documentation is available online at [https://aheadgamestudio.github.io/Argode/](https://aheadgamestudio.github.io/Argode/)
+
+**Note:** Development files (test/, tools/, assets/, scenes/, docs/, etc.) are excluded from distribution to keep the framework clean and focused.
 
 ### Creating Custom Commands
 ```gdscript

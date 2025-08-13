@@ -146,12 +146,30 @@ Godot Engine用の強力で柔軟なビジュアルノベルフレームワー�
 ### プロジェクト構造
 ```
 addons/argode/          # コアフレームワークファイル
-scenarios/              # ストーリースクリプト（.rgdファイル）
-characters/             # キャラクター定義
-assets/                 # 画像、音声、その他のリソース
-custom/                 # カスタムコマンドと拡張
-docs/                   # ドキュメントソース
+├── core/               # メインシステムコンポーネント
+├── builtin/           # 組み込みコマンド
+├── commands/          # コマンドハンドリングシステム
+└── managers/          # ゲーム状態マネージャー
+
+custom/                 # カスタムコマンド（オプション）
+└── commands/          # カスタムコマンド実装
+
+definitions/           # アセットとキャラクター定義
+├── assets.rgd         # 画像、音声、UI定義
+├── characters.rgd     # キャラクター定義
+└── variables.rgd      # グローバル変数定義
+
+scenarios/             # ストーリースクリプト（.rgdファイル）
+└── main.rgd           # メインシナリオエントリーポイント
+
+ルートファイル:
+├── project.godot      # Godotプロジェクトファイル
+└── README.md          # このファイル
 ```
+
+**ドキュメント:** 完全なドキュメントは [https://aheadgamestudio.github.io/Argode/](https://aheadgamestudio.github.io/Argode/) でオンライン閲覧可能です。
+
+**注意:** 開発ファイル（test/, tools/, assets/, scenes/, docs/など）はフレームワークをクリーンで焦点を絞ったものに保つため、配布から除外されています。
 
 ### カスタムコマンドの作成
 ```gdscript
