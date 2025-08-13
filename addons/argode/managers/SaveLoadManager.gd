@@ -16,9 +16,9 @@ signal settings_load_failed(error: String)
 # === セーブデータ構造 ===
 const SAVE_VERSION = "2.0"
 const SAVE_EXTENSION = ".save"
-const SAVE_FOLDER = "user://saves/"
+var SAVE_FOLDER: String  # プロジェクト設定から読み取り
 const AUTO_SAVE_SLOT = 0  # スロット0をオートセーブ専用に
-var max_save_slots = 10   # デフォルト10スロット（設定可能）
+var max_save_slots: int   # プロジェクト設定から読み取り
 
 # === 設定ファイル ===
 const SETTINGS_FILE = "user://argode_settings.cfg"
@@ -70,14 +70,14 @@ var default_settings = {
 var current_settings: Dictionary = {}
 
 # === 暗号化設定 ===
-const ENABLE_ENCRYPTION = true
-const ENCRYPTION_KEY = "argode_save_key_2024"  # 本番では環境変数や設定ファイルから取得推奨
+var ENABLE_ENCRYPTION: bool  # プロジェクト設定から読み取り
+var ENCRYPTION_KEY: String   # プロジェクト設定から読み取り
 
 # === スクリーンショット設定 ===
-const ENABLE_SCREENSHOTS = true
-const SCREENSHOT_WIDTH = 200
-const SCREENSHOT_HEIGHT = 150
-const SCREENSHOT_QUALITY = 0.7  # JPEG品質 (0.0-1.0)
+var ENABLE_SCREENSHOTS: bool  # プロジェクト設定から読み取り
+var SCREENSHOT_WIDTH: int     # プロジェクト設定から読み取り
+var SCREENSHOT_HEIGHT: int    # プロジェクト設定から読み取り
+var SCREENSHOT_QUALITY: float # プロジェクト設定から読み取り
 
 # === マネージャー参照 ===
 var argode_system: Node = null
@@ -91,12 +91,38 @@ var temp_screenshot_timestamp: float = 0.0  # 撮影タイムスタンプ
 const TEMP_SCREENSHOT_LIFETIME = 300.0  # 一時スクショの有効期限（5分）
 
 func _ready():
+	# プロジェクト設定から値を読み取り
+	_load_project_settings()
+	
 	print("💾 SaveLoadManager: Initializing save/load system...")
 	print("🔐 Encryption: " + ("Enabled" if ENABLE_ENCRYPTION else "Disabled"))
 	_ensure_save_directory()
 	_load_save_info_cache()
 	_initialize_settings()
 	print("⚙️ SaveLoadManager: Settings system initialized")
+
+func _load_project_settings():
+	"""プロジェクト設定からArgode関連の設定を読み取り"""
+	
+	# セーブ＆ロード設定
+	SAVE_FOLDER = ProjectSettings.get_setting("argode/save/save_folder", "user://saves/")
+	max_save_slots = ProjectSettings.get_setting("argode/save/max_save_slots", 10)
+	
+	# 暗号化設定
+	ENABLE_ENCRYPTION = ProjectSettings.get_setting("argode/encryption/enable_encryption", true)
+	ENCRYPTION_KEY = ProjectSettings.get_setting("argode/encryption/encryption_key", "argode_default_key_2024")
+	
+	# スクリーンショット設定
+	ENABLE_SCREENSHOTS = ProjectSettings.get_setting("argode/screenshot/enable_screenshots", true)
+	SCREENSHOT_WIDTH = ProjectSettings.get_setting("argode/screenshot/screenshot_width", 200)
+	SCREENSHOT_HEIGHT = ProjectSettings.get_setting("argode/screenshot/screenshot_height", 150)
+	SCREENSHOT_QUALITY = ProjectSettings.get_setting("argode/screenshot/screenshot_quality", 0.7)
+	
+	print("⚙️ SaveLoadManager: Project settings loaded")
+	print("  Save folder: %s" % SAVE_FOLDER)
+	print("  Max save slots: %d" % max_save_slots)
+	print("  Encryption: %s" % ("Enabled" if ENABLE_ENCRYPTION else "Disabled"))
+	print("  Screenshots: %s" % ("Enabled" if ENABLE_SCREENSHOTS else "Disabled"))
 
 func initialize(adv_system: Node):
 	"""ArgodeSystemからの参照を設定"""
@@ -747,7 +773,37 @@ func get_available_user_slots() -> Array:
 func _initialize_settings():
 	"""設定システムの初期化"""
 	current_settings = default_settings.duplicate(true)
+	
+	# プロジェクト設定からデフォルト値を上書き
+	_apply_project_settings_to_defaults()
+	
 	load_settings()  # 保存された設定があれば読み込み
+
+func _apply_project_settings_to_defaults():
+	"""プロジェクト設定の値をデフォルト設定に適用"""
+	
+	# オーディオ設定
+	if current_settings.has("audio"):
+		current_settings.audio.master_volume = ProjectSettings.get_setting("argode/audio/master_volume", current_settings.audio.master_volume)
+		current_settings.audio.bgm_volume = ProjectSettings.get_setting("argode/audio/bgm_volume", current_settings.audio.bgm_volume)
+		current_settings.audio.se_volume = ProjectSettings.get_setting("argode/audio/se_volume", current_settings.audio.se_volume)
+		current_settings.audio.voice_volume = ProjectSettings.get_setting("argode/audio/voice_volume", current_settings.audio.voice_volume)
+	
+	# UI設定
+	if current_settings.has("text"):
+		var default_text_speed = ProjectSettings.get_setting("argode/ui/default_text_speed", 0.05)
+		current_settings.text.text_speed = 1.0 / default_text_speed if default_text_speed > 0 else 20.0
+		
+		var auto_advance_time = ProjectSettings.get_setting("argode/ui/auto_advance_time", 3.0)
+		current_settings.text.auto_play_speed = auto_advance_time
+		
+		current_settings.text.skip_unread_text = ProjectSettings.get_setting("argode/ui/skip_unread", false)
+	
+	# システム設定
+	if current_settings.has("system"):
+		current_settings.system.auto_save_interval = ProjectSettings.get_setting("argode/save/auto_save_interval", 300.0)
+	
+	print("⚙️ SaveLoadManager: Applied project settings to default values")
 
 # === 設定の保存・読み込み ===
 
