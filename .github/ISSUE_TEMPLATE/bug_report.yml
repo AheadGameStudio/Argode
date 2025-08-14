@@ -38,13 +38,11 @@ body:
       required: true
 
   - type: dropdown
-    id: browsers
+    id: OS
     attributes:
-      label: 発生したブラウザ
+      label: 発生したOS
       multiple: true
       options:
-        - Chrome
-        - Firefox
-        - Safari
-        - Edge
-        - その他
+        - Windows
+        - Mac
+        - Linux
