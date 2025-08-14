@@ -366,7 +366,7 @@ func show_control_scene(scene_instance: Control, position: String = "center", tr
 		print("❌ LayerManager: UI layer is null - cannot display scene")
 		return false
 	
-	if not scene_instance or not scene_instance is Control:
+	if not is_instance_valid(scene_instance) or not scene_instance is Control:
 		push_warning("⚠️ Invalid Control scene instance")
 		print("❌ LayerManager: Invalid scene instance")
 		return false
@@ -394,7 +394,7 @@ func hide_control_scene(scene_instance: Control, transition: String = "none", fr
 	print("🔍 transition:", transition)
 	print("🔍 free_after_hide:", free_after_hide)
 	
-	if not scene_instance or not scene_instance.is_inside_tree():
+	if not is_instance_valid(scene_instance) or not scene_instance.is_inside_tree():
 		push_warning("⚠️ Scene instance not in tree or invalid")
 		print("❌ LayerManager: Scene instance invalid or not in tree")
 		return false
@@ -407,13 +407,20 @@ func hide_control_scene(scene_instance: Control, transition: String = "none", fr
 	
 	if free_after_hide:
 		# シーンを削除（従来の動作）
-		scene_instance.queue_free()
-		print("✅ Control scene hidden and freed")
+		if is_instance_valid(scene_instance):
+			scene_instance.queue_free()
+			print("✅ Control scene hidden and freed")
+		else:
+			print("⚠️ Scene instance already freed, skipping queue_free")
 	else:
 		# シーンを非表示にするだけ（UICommandの隠し機能用）
-		scene_instance.visible = false
-		scene_instance.get_parent().remove_child(scene_instance)
-		print("✅ Control scene hidden (not freed)")
+		if is_instance_valid(scene_instance):
+			scene_instance.visible = false
+			if scene_instance.get_parent():
+				scene_instance.get_parent().remove_child(scene_instance)
+			print("✅ Control scene hidden (not freed)")
+		else:
+			print("⚠️ Scene instance already freed, skipping hide operation")
 	
 	return true
 
