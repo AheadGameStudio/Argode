@@ -89,10 +89,15 @@ func show_choices(choices: Array):
 		sample_ui.show_choices(choices)
 		return
 	
+	if current_screen:
+		current_screen.show_choices(choices)
+
 	# Clear existing choice buttons (for basic UI implementation)
 	if choice_container:
-		for child in choice_container.get_children():
-			child.queue_free()
+		print(choice_container)
+		if choice_container.get_children() != null:
+			for child in choice_container.get_children():
+				child.queue_free()
 		
 		# Create buttons for each choice
 		for i in range(choices.size()):
@@ -345,9 +350,9 @@ func _update_message_window_visibility(visible: bool):
 		if current_screen is ArgodeScreen:
 			var params:Dictionary = current_screen.screen_parameters
 			if visible:
-				current_screen.on_screen_shown(params)
+				current_screen.show_screen(params)
 			else:
-				current_screen.on_screen_hidden()
+				current_screen.hide_screen()
 		else:
 			current_screen.visible = visible
 		print("📱 Current screen visibility also set to: ", visible)
