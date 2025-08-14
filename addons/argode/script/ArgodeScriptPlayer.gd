@@ -11,6 +11,9 @@ var current_script_path: String = ""  # 現在実行中のスクリプトファ�
 var current_line_index: int = -1
 var is_playing: bool = false
 var is_waiting_for_choice: bool = false
+var is_processing_choice_block: bool = false  # 選択肢ブロック処理中フラグ
+var choice_block_menu_indent_level: int = 0  # 選択肢ブロック処理中のmenuインデントレベル
+var selected_choice_index: int = -1  # 選択された選択肢のインデックス
 
 var regex_label: RegEx
 var regex_say: RegEx
@@ -216,6 +219,13 @@ func _tick():
 	if line.is_empty() or line.begins_with("#"):
 		_tick()
 		return
+	
+	# 選択肢ブロック処理中の場合、境界検出を行う
+	if is_processing_choice_block:
+		if _check_choice_block_boundary(line):
+			print("🔍 Choice block ended, transitioning to menu block skip")
+			_skip_menu_block_remainder()
+			return
 	
 	var stop_execution = await _parse_and_execute(line)
 	
@@ -579,9 +589,11 @@ func _parse_and_execute(line: String) -> bool:
 func _handle_menu():
 	var choices = []
 	var choice_targets = []
-	var menu_indent_level = _get_indent_level(script_lines[current_line_index])  # 現在のmenuのインデントレベルを記録
+	var menu_indent_level = _get_indent_level(script_lines[current_line_index])
+	
+	print("🔍 _handle_menu: Starting menu parsing at line ", current_line_index + 1)
 
-	# Collect choices
+	# Collect choices and their targets
 	var temp_index = current_line_index
 	while temp_index + 1 < script_lines.size():
 		temp_index += 1
@@ -595,6 +607,7 @@ func _handle_menu():
 		if choice_match:
 			var choice_text = choice_match.get_string(1)
 			choices.append(choice_text)
+			print("🔍 Found choice: '", choice_text, "' at line ", temp_index + 1)
 
 			# Find the target after the colon
 			temp_index += 1
@@ -602,68 +615,61 @@ func _handle_menu():
 				var target_line = script_lines[temp_index]
 				var target_trimmed = target_line.strip_edges()
 				if not target_trimmed.is_empty() and not target_trimmed.begins_with("#"):
-					choice_targets.append(temp_index - 1)
+					choice_targets.append(temp_index)
+					print("🔍 Choice target found at line ", temp_index + 1, ": ", target_trimmed)
 					break
 				temp_index += 1
 		else:
 			# インデントレベルをチェックしてブロック終了を判定
 			var indent_level = _get_indent_level(line)
 			if indent_level <= menu_indent_level and not line_trimmed.is_empty():
-				break  # menuのインデントレベル以下なら終了
+				print("🔍 Menu block ended at line ", temp_index + 1)
+				break
 
 	if choices.size() > 0:
-		is_waiting_for_choice = true
+		print("🔍 Displaying ", choices.size(), " choices")
+		# UIManagerを通じて選択肢を表示
 		ui_manager.show_choices(choices)
+
+		# 選択肢が選ばれるまで待機
+		is_waiting_for_choice = true
+		while is_waiting_for_choice:
+			await get_tree().process_frame
+
+		print("🔍 Choice selected: ", selected_choice_index)
+		# 選択された選択肢のターゲットにジャンプして処理
+		if selected_choice_index >= 0 and selected_choice_index < choice_targets.size():
+			var target_line_index = choice_targets[selected_choice_index]
+			print("🔍 Executing choice block starting at line ", target_line_index + 1)
+			
+			# 選択された選択肢の行に移動して、通常の実行フローに任せる
+			current_line_index = target_line_index - 1  # _tick() でインクリメントされるので -1
+			is_processing_choice_block = true  # 選択肢ブロック処理開始
+			choice_block_menu_indent_level = menu_indent_level  # menuインデントレベルを保存
+			# 選択肢ブロック処理を開始
+			_tick()
+		else:
+			push_error("Invalid choice index selected: " + str(selected_choice_index))
+			return
 	else:
 		print("⚠️ No choices found for menu")
 
+func _process_line(line: String) -> bool:
+	"""
+	スクリプトの1行を解析して実行する。
+	:param line: 処理するスクリプト行
+	:return: 実行を停止する場合は true、それ以外は false
+	"""
+	if line.is_empty() or line.begins_with("#"):
+		return false  # 空行やコメント行はスキップ
+
+	return await _parse_and_execute(line)
 func on_choice_selected(choice_index: int):
 	print("🔔 AdvScriptPlayer: Choice selected - index:", choice_index)
+	selected_choice_index = choice_index
 	is_waiting_for_choice = false
-	
-	# Find the target line for this choice
-	var choices_found = 0
-	var temp_index = current_line_index
-	
-	while temp_index + 1 < script_lines.size():
-		temp_index += 1
-		var line = script_lines[temp_index]
-		var line_trimmed = line.strip_edges()
-		
-		if line_trimmed.is_empty() or line_trimmed.begins_with("#"):
-			continue
-		
-		var choice_match = regex_choice.search(line)
-		if choice_match:
-			if choices_found == choice_index:
-				print("🎯 Found target choice at line:", temp_index)
-				# Find the first non-empty line after this choice
-				temp_index += 1
-				while temp_index < script_lines.size():
-					var target_line = script_lines[temp_index]
-					var target_trimmed = target_line.strip_edges()
-					if not target_trimmed.is_empty() and not target_trimmed.begins_with("#"):
-						current_line_index = temp_index - 1  # -1 because _tick() will increment
-						print("🚀 Jumping to line:", current_line_index + 1, "->", target_trimmed)
-						call_deferred("_tick")
-						return
-					temp_index += 1
-				
-				# If no valid line found after choice, end menu processing
-				print("⚠️ No valid line found after choice")
-				current_line_index = temp_index - 1
-				call_deferred("_tick")
-				return
-			
-			choices_found += 1
-		else:
-			# インデントレベルをチェックしてブロック終了を判定
-			var indent_level = _get_indent_level(line)
-			if indent_level == 0 and not line_trimmed.is_empty():
-				print("📋 Menu block ended at line:", temp_index)
-				break
-	
-	print("❌ Choice index", choice_index, "not found. Found", choices_found, "choices total.")
+	# 実際の処理は _handle_menu() で行う
+	# 実際の処理は _handle_menu() で行う
 
 func _get_indent_level(line: String) -> int:
 	"""行のインデントレベルを取得（スペース4個 or タブ1個 = レベル1）"""
@@ -950,8 +956,8 @@ func _handle_call(label_name: String) -> bool:
 	call_stack.append({
 		"line": return_line,
 		"script_lines": script_lines.duplicate(),  # 現在のスクリプト内容を保存
-		"label_map": label_map.duplicate(),        # 現在のラベルマップを保存
-		"file_info": "current_script"              # 将来的にファイルパスを保存
+		"label_map": label_map.duplicate(),		# 現在のラベルマップを保存
+		"file_info": "current_script"			  # 将来的にファイルパスを保存
 	})
 	
 	print("📞 CALL DEBUG: Calling label '", label_name, "' from line ", current_line_index + 1)
@@ -1068,3 +1074,42 @@ func return_from_call():
 	"""外部からreturn（ArgodeUIScene用）"""
 	print("↩️ [ArgodeScriptPlayer] External return from call")
 	_handle_return()
+
+# === 選択肢ブロック処理用ヘルパー関数 ===
+
+func _check_choice_block_boundary(line: String) -> bool:
+	"""選択肢ブロックの境界検出"""
+	var current_indent = _get_indent_level(script_lines[current_line_index])
+	
+	# 選択肢行（"選択肢X":）に到達したら終了
+	var choice_match = regex_choice.search(script_lines[current_line_index])
+	if choice_match:
+		print("🔍 Choice block ended - reached another choice at line ", current_line_index + 1, ": ", line)
+		return true
+	
+	# menuレベル以下のインデントに到達したら終了
+	if current_indent <= choice_block_menu_indent_level:
+		print("🔍 Choice block ended - reached menu level at line ", current_line_index + 1, ": ", line)
+		return true
+	
+	return false
+
+func _skip_menu_block_remainder():
+	"""menuブロックの残りをスキップ"""
+	is_processing_choice_block = false
+	print("🔍 Skipping rest of menu block from line ", current_line_index + 1)
+	
+	while current_line_index < script_lines.size():
+		var line = script_lines[current_line_index]
+		var indent_level = _get_indent_level(line)
+		var line_trimmed = line.strip_edges()
+		
+		if indent_level <= choice_block_menu_indent_level and not line_trimmed.is_empty():
+			current_line_index -= 1  # 次の行を飛ばさないように調整
+			print("🔍 Menu block fully skipped, next line: ", current_line_index + 2, ": ", line_trimmed)
+			break
+		
+		current_line_index += 1
+	
+	# 通常実行に戻る
+	_tick()
