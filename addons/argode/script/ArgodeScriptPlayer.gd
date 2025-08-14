@@ -53,6 +53,9 @@ var layer_manager  # LayerManager (v2新機能)
 var label_registry  # LabelRegistry
 var script_manager: Node
 
+# クラス変数として宣言
+var selected_choice_index: int = -1
+
 func _ready():
 	_compile_regex()
 	# v2: 参照はArgodeSystemの_setup_manager_references()で設定される
@@ -609,16 +612,40 @@ func _handle_menu():
 			# インデントレベルをチェックしてブロック終了を判定
 			var indent_level = _get_indent_level(line)
 			if indent_level <= menu_indent_level and not line_trimmed.is_empty():
-				break  # menuのインデントレベル以下なら終了
+				current_line_index -= 1  # 次の行を飛ばさないように調整
+				break
 
 	if choices.size() > 0:
-		is_waiting_for_choice = true
+		# UIManagerを通じて選択肢を表示
 		ui_manager.show_choices(choices)
+		
+		# 選択肢が選ばれるまで待機
+		is_waiting_for_choice = true
+		while is_waiting_for_choice:
+			await get_tree().process_frame  # フレームを待機
+		
+		# 選択された選択肢のターゲットにジャンプ
+		if selected_choice_index >= 0 and selected_choice_index < choice_targets.size():
+			current_line_index = choice_targets[selected_choice_index]
+		else:
+			push_error("Invalid choice index selected: " + str(selected_choice_index))
+			return
+		
+		# 現在のmenuブロックをスキップ
+		while current_line_index + 1 < script_lines.size():
+			current_line_index += 1
+			var line = script_lines[current_line_index]
+			var indent_level = _get_indent_level(line)
+			if indent_level <= menu_indent_level and not line.strip_edges().is_empty():
+				current_line_index -= 1  # 次の行を飛ばさないように調整
+				break
 	else:
 		print("⚠️ No choices found for menu")
 
 func on_choice_selected(choice_index: int):
 	print("🔔 AdvScriptPlayer: Choice selected - index:", choice_index)
+	# 選択肢が選ばれた際に呼び出される
+	selected_choice_index = choice_index
 	is_waiting_for_choice = false
 	
 	# Find the target line for this choice
