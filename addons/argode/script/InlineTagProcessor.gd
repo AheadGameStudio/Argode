@@ -62,7 +62,7 @@ func process_text(input_text: String) -> ProcessResult:
 	"""テキストを解析してインラインタグを抽出・処理"""
 	var result = ProcessResult.new(input_text)
 	var regex = RegEx.new()
-	regex.compile("\\{([^}]+)\\}")
+	regex.compile("\\[([^\\]]+)\\]")
 	
 	result.clean_text = input_text
 	var current_clean_position = 0
