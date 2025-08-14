@@ -405,6 +405,9 @@ func _setup_manager_references():
 	# InlineTagProcessorにCustomCommandHandlerを関連付け
 	InlineTagProcessor.set_custom_command_handler(CustomCommandHandler)
 	
+	# カスタムタグの自動登録
+	_register_builtin_tags()
+	
 	print("🔗 Manager references configured")
 
 func _build_definitions():
@@ -648,3 +651,126 @@ func jump_to_label(label_name: String):
 		return
 	
 	LabelRegistry.jump_to_label(label_name, Player)
+
+func _register_builtin_tags():
+	"""組み込みカスタムタグを自動発見・登録"""
+	print("🏷️ Auto-discovering and registering custom tags...")
+	
+	var registered_count = _auto_discover_and_register_tags()
+	
+	print("🏷️ Custom tag auto-registration completed: ", registered_count, " tags registered")
+
+func _auto_discover_and_register_tags() -> int:
+	"""カスタムタグを自動発見・登録する"""
+	var registered_count = 0
+	var search_directories = [
+		"res://addons/argode/builtin/tags/",    # Argode組み込みタグ（最優先）
+		"res://custom/tags/",                   # プロジェクト専用カスタムタグ
+		"res://addons/*/tags/",                 # 他のアドオンからのタグ
+	]
+	
+	for directory in search_directories:
+		var found_tags = _scan_directory_for_tags(directory)
+		
+		for tag_path in found_tags:
+			if _try_load_and_register_tag(tag_path):
+				registered_count += 1
+	
+	return registered_count
+
+func _scan_directory_for_tags(directory_path: String) -> Array[String]:
+	"""指定ディレクトリ内のタグファイルをスキャン"""
+	var tag_files: Array[String] = []
+	
+	# ワイルドカード対応
+	if directory_path.contains("*"):
+		return _scan_wildcard_directories_for_tags(directory_path)
+	
+	print("🔍 Scanning for tags in: ", directory_path)
+	var dir = DirAccess.open(directory_path)
+	if not dir:
+		print("⚠️ Tag directory not accessible: ", directory_path)
+		return tag_files
+	
+	dir.list_dir_begin()
+	var file_name = dir.get_next()
+	
+	while file_name != "":
+		if file_name.ends_with(".gd") and not file_name.begins_with(".") and not file_name == "README.md" and file_name != "BaseCustomTag.gd":
+			var full_path = directory_path + "/" + file_name
+			print("   🏷️ Found potential tag file: ", full_path)
+			tag_files.append(full_path)
+		file_name = dir.get_next()
+	
+	return tag_files
+
+func _scan_wildcard_directories_for_tags(pattern: String) -> Array[String]:
+	"""ワイルドカードパターンでディレクトリをスキャン"""
+	var tag_files: Array[String] = []
+	var parts = pattern.split("*")
+	if parts.size() != 2:
+		return tag_files
+	
+	var base_path = parts[0].rstrip("/")
+	var suffix_path = parts[1].lstrip("/")
+	
+	var base_dir = DirAccess.open(base_path)
+	if not base_dir:
+		return tag_files
+	
+	base_dir.list_dir_begin()
+	var dir_name = base_dir.get_next()
+	
+	while dir_name != "":
+		if base_dir.current_is_dir() and not dir_name.begins_with("."):
+			var full_pattern = base_path + "/" + dir_name + "/" + suffix_path
+			var found_files = _scan_directory_for_tags(full_pattern)
+			tag_files.append_array(found_files)
+		dir_name = base_dir.get_next()
+	
+	return tag_files
+
+func _try_load_and_register_tag(tag_path: String) -> bool:
+	"""タグファイルをロードして登録を試行"""
+	print("🔄 Attempting to load custom tag: ", tag_path)
+	
+	# リソースとしてスクリプトをロード
+	var script = load(tag_path)
+	if not script:
+		print("❌ Failed to load tag script: ", tag_path)
+		return false
+	
+	# インスタンスを作成して検証
+	var tag_instance = script.new()
+	if not tag_instance:
+		print("❌ Failed to instantiate tag: ", tag_path)
+		return false
+	
+	# BaseCustomTagを継承しているかチェック
+	if not _is_valid_custom_tag(tag_instance):
+		print("❌ Invalid custom tag (not extending BaseCustomTag): ", tag_path)
+		return false
+	
+	# タグをインスタンス付きで登録
+	var tag_name = tag_instance.get_tag_name()
+	InlineTagProcessor.register_custom_tag_instance(tag_name, tag_instance)
+	print("✅ Registered custom tag: ", tag_name, " from ", tag_path)
+	
+	return true
+
+func _is_valid_custom_tag(instance) -> bool:
+	"""カスタムタグインスタンスが有効かどうかを検証"""
+	# 必要なメソッドが存在するかチェック
+	var has_required_methods = (instance.has_method("get_tag_name") and 
+								instance.has_method("get_tag_type") and
+								instance.has_method("get_tag_properties"))
+	
+	print("🔍 Custom tag validation - methods: ", has_required_methods)
+	print("🔍 Instance type: ", instance.get_class() if instance else "null")
+	
+	# BaseCustomTag自体は無効（抽象クラス）
+	if instance.get_script() and instance.get_script().resource_path.ends_with("BaseCustomTag.gd"):
+		print("🔍 Excluding BaseCustomTag (abstract class)")
+		return false
+	
+	return has_required_methods

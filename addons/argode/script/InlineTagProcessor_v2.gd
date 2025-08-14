@@ -44,6 +44,9 @@ var decoration_tags: Dictionary = {
 # カスタムタグレジストリ（ユーザー定義タグ）
 var custom_tags: Dictionary = {}
 
+# カスタムタグインスタンスレジストリ（実際のインスタンス）
+var custom_tag_instances: Dictionary = {}
+
 # カスタムコマンドハンドラー参照
 var custom_command_handler: CustomCommandHandler
 
@@ -125,6 +128,27 @@ func process_text_pre_variable(input_text: String) -> ProcessResult:
 				# タイプライター中実行用として保存（位置調整）
 				parsed_tag.start_position = match.get_start() - offset
 				result.typewriter_tags.append(parsed_tag)
+		
+		# カスタムタグの処理を追加
+		elif parsed_tag and custom_tag_instances.has(parsed_tag.tag_name):
+			var tag_instance = custom_tag_instances[parsed_tag.tag_name]
+			if tag_instance:
+				var tag_properties = tag_instance.get_tag_properties()
+				var execution_timing = tag_properties.get("execution_timing", "POST_VARIABLE")
+				
+				if execution_timing == "PRE_VARIABLE":
+					# PRE_VARIABLE設定のカスタムタグは即座実行として処理
+					result.immediate_commands.append({
+						"command": parsed_tag.tag_name,
+						"parameters": parsed_tag.parameters,
+						"original": parsed_tag.original_text
+					})
+					
+					# テキストからタグを除去
+					var tag_start = match.get_start() - offset
+					var tag_end = match.get_end() - offset
+					result.clean_text = result.clean_text.left(tag_start) + result.clean_text.substr(tag_end)
+					offset += tag_end - tag_start
 	
 	print("🏷️ Pre-variable processing result: ", result.immediate_commands.size(), " immediate commands, ", result.typewriter_tags.size(), " typewriter tags")
 	return result
@@ -322,6 +346,10 @@ func execute_immediate_commands(commands: Array[Dictionary], adv_system: Node):
 	for cmd in commands:
 		print("🎯 Executing immediate tag command: ", cmd.command, " with params: ", cmd.parameters)
 		
+		# カスタムタグの処理を優先チェック
+		if _execute_custom_tag_if_exists(cmd.command, cmd.parameters, adv_system):
+			continue
+		
 		match cmd.command:
 			"w", "wait":
 				var duration = cmd.parameters.get("duration", 1.0)
@@ -391,3 +419,25 @@ func get_tag_help(tag_name: String) -> String:
 			if custom_tags.has(tag_name):
 				return "Custom tag: " + tag_name + " - " + str(custom_tags[tag_name])
 			return "Unknown tag: " + tag_name
+
+func register_custom_tag_instance(tag_name: String, tag_instance):
+	"""カスタムタグインスタンスを登録"""
+	custom_tag_instances[tag_name] = tag_instance
+	
+	# 基本情報も登録
+	register_custom_tag(tag_name, tag_instance.get_tag_type(), tag_instance.get_tag_properties())
+	
+	print("✅ Registered custom tag instance: ", tag_name)
+
+func _execute_custom_tag_if_exists(tag_name: String, parameters: Dictionary, adv_system: Node) -> bool:
+	"""カスタムタグが存在する場合実行"""
+	if not custom_tag_instances.has(tag_name):
+		return false
+	
+	var tag_instance = custom_tag_instances[tag_name]
+	if not tag_instance:
+		return false
+	
+	# カスタムタグを実行
+	tag_instance.process_tag(tag_name, parameters, adv_system)
+	return true
