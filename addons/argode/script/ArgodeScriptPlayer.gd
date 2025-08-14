@@ -13,7 +13,6 @@ var is_playing: bool = false
 var is_waiting_for_choice: bool = false
 var is_processing_choice_block: bool = false  # 選択肢ブロック処理中フラグ
 var choice_block_menu_indent_level: int = 0  # 選択肢ブロック処理中のmenuインデントレベル
-var selected_choice_index: int = -1  # 選択された選択肢のインデックス
 
 var regex_label: RegEx
 var regex_say: RegEx
@@ -626,7 +625,6 @@ func _handle_menu():
 			# インデントレベルをチェックしてブロック終了を判定
 			var indent_level = _get_indent_level(line)
 			if indent_level <= menu_indent_level and not line_trimmed.is_empty():
-
 				print("🔍 Menu block ended at line ", temp_index + 1)
 				break
 
@@ -655,7 +653,6 @@ func _handle_menu():
 		else:
 			push_error("Invalid choice index selected: " + str(selected_choice_index))
 			return
-
 	else:
 		print("⚠️ No choices found for menu")
 
@@ -669,12 +666,12 @@ func _process_line(line: String) -> bool:
 		return false  # 空行やコメント行はスキップ
 
 	return await _parse_and_execute(line)
+
 func on_choice_selected(choice_index: int):
 	print("🔔 AdvScriptPlayer: Choice selected - index:", choice_index)
-
+	# 選択肢が選ばれた際に呼び出される
 	selected_choice_index = choice_index
 	is_waiting_for_choice = false
-	# 実際の処理は _handle_menu() で行う
 	# 実際の処理は _handle_menu() で行う
 
 func _get_indent_level(line: String) -> int:
