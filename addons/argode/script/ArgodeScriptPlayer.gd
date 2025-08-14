@@ -579,22 +579,23 @@ func _parse_and_execute(line: String) -> bool:
 func _handle_menu():
 	var choices = []
 	var choice_targets = []
-	
+	var menu_indent_level = _get_indent_level(script_lines[current_line_index])  # 現在のmenuのインデントレベルを記録
+
 	# Collect choices
 	var temp_index = current_line_index
 	while temp_index + 1 < script_lines.size():
 		temp_index += 1
 		var line = script_lines[temp_index]
 		var line_trimmed = line.strip_edges()
-		
+
 		if line_trimmed.is_empty() or line_trimmed.begins_with("#"):
 			continue
-			
+
 		var choice_match = regex_choice.search(line)
 		if choice_match:
 			var choice_text = choice_match.get_string(1)
 			choices.append(choice_text)
-			
+
 			# Find the target after the colon
 			temp_index += 1
 			while temp_index < script_lines.size():
@@ -607,9 +608,9 @@ func _handle_menu():
 		else:
 			# インデントレベルをチェックしてブロック終了を判定
 			var indent_level = _get_indent_level(line)
-			if indent_level == 0 and not line_trimmed.is_empty():
-				break
-	
+			if indent_level <= menu_indent_level and not line_trimmed.is_empty():
+				break  # menuのインデントレベル以下なら終了
+
 	if choices.size() > 0:
 		is_waiting_for_choice = true
 		ui_manager.show_choices(choices)

@@ -349,9 +349,9 @@ func _update_message_window_visibility(visible: bool):
 	if current_screen:
 		if current_screen is ArgodeScreen:
 			var params:Dictionary = current_screen.screen_parameters
-			if visible:
+			if visible and not current_screen.visible:
 				current_screen.show_screen(params)
-			else:
+			elif not visible and current_screen.visible:
 				current_screen.hide_screen()
 		else:
 			current_screen.visible = visible

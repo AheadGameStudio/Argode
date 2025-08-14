@@ -28,7 +28,7 @@ var TransitionPlayer  # TransitionPlayer
 var LayerManager  # LayerManager (v2新機能)
 var AudioManager  # AudioManager (v2新機能)
 var CustomCommandHandler  # CustomCommandHandler (v2新機能)
-
+var DebugScreen:ArgodeDebugScreen
 # === レイヤーマッピング (v2新機能) ===
 var layers: Dictionary = {}
 
@@ -53,6 +53,10 @@ func _ready():
 	
 	# ゲーム初期化を完了
 	initialize_game({})
+
+	# デバッグスクリーンの初期化
+	DebugScreen = preload("res://addons/argode/ui/ArgodeDebugScreen.tscn").instantiate()
+	add_child(DebugScreen)
 
 func _create_managers():
 	"""既存のManagerインスタンスを子ノードとして作成・統合"""
@@ -620,3 +624,10 @@ func clear_temp_screenshot():
 	"""一時スクリーンショットを手動でクリア"""
 	if SaveLoadManager:
 		SaveLoadManager._clear_temp_screenshot()
+
+func trace(message:Variant):
+	"""デバッグ用のトレース出力"""
+	if DebugScreen:
+		DebugScreen._add_text_to_console(message)
+	else:
+		print("DebugScreen not initialized, cannot trace: ", message)

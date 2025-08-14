@@ -161,6 +161,8 @@ func on_screen_closing() -> bool:
 
 func show_screen(parameters: Dictionary = {}):
 	"""画面を表示する"""
+	print("🟦 show_screen called!")
+	print_stack()
 	visible = true
 	on_screen_shown(parameters)
 

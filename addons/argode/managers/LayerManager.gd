@@ -655,4 +655,3 @@ func blur_layer(layer_name: String, amount: float = 2.0, duration: float = 0.0) 
 	}
 	
 	return apply_layer_shader(layer_name, "blur", params, duration)
-
