@@ -58,7 +58,7 @@ func _ready():
 	punctuation_timer.timeout.connect(_on_punctuation_timer_timeout)
 	
 	# v2新機能: InlineTagProcessorを初期化
-	var inline_tag_script = preload("res://addons/argode/script/InlineTagProcessor.gd")
+	var inline_tag_script = preload("res://addons/argode/script/InlineTagProcessor_v2.gd")
 	inline_tag_processor = inline_tag_script.new()
 	
 	# 自分自身のシグナルを接続してインラインタグに対応
@@ -84,7 +84,7 @@ func start_typing(text: String):
 	# v2新機能: インラインタグを処理
 	# inline_tag_processorが初期化されていない場合は初期化
 	if not inline_tag_processor:
-		var inline_tag_script = preload("res://addons/argode/script/InlineTagProcessor.gd")
+		var inline_tag_script = preload("res://addons/argode/script/InlineTagProcessor_v2.gd")
 		inline_tag_processor = inline_tag_script.new()
 		print("⚠️ TypewriterText: InlineTagProcessor initialized in start_typing()")
 	
@@ -107,15 +107,18 @@ func start_typing(text: String):
 		
 		print("⚠️ TypewriterText: Timers initialized in start_typing()")
 	
-	var process_result = inline_tag_processor.process_text(text)
-	processed_tags = process_result.tags
+	# 新しいタグシステムに対応: post-variable処理のみ使用（variable展開は上流で実行済み）
+	var processed_text = inline_tag_processor.process_text_post_variable(text)
 	
-	# process_result.clean_textはすでにBBCode変換済みなので、これを元のテキストとして使用
-	original_text = process_result.clean_text
-	visible_text = _extract_visible_text(process_result.clean_text)
+	# 新しいタグシステムでは、{w=0.5}などの即座実行タグは上流で処理済み
+	# ここでは変換済みテキストをそのまま使用
+	processed_tags = []  # タグ処理は新システムで上流実行済み
 	
-	# インラインタグの位置をvisible_text基準で再計算
-	_recalculate_tag_positions()
+	# 処理されたテキストをそのまま使用（BBCode変換済み）
+	original_text = processed_text
+	visible_text = _extract_visible_text(processed_text)
+	
+	# 新しいタグシステムでは位置再計算は不要
 	
 	bbcode_text = ""
 	current_position = 0

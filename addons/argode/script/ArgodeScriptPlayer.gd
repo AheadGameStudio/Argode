@@ -270,11 +270,26 @@ func _parse_and_execute(line: String) -> bool:
 		var char_id = regex_match.get_string("char_id")
 		var message = regex_match.get_string("message")
 		# print("📝 expand_variables 入力: ", message)
-		# v2新機能: インラインタグ処理は変数展開の前に行う
-		# インラインタグ（{tag}）と変数展開（[var]）を区別
-		# 注意: インラインタグ処理はUIManager/TypewriterTextで行うため、ここでは変数展開のみ
+		
+		# v2新機能: 統合タグシステム - 変数展開前にタグ処理
+		var tag_processor = get_node("/root/ArgodeSystem").InlineTagProcessor
+		if tag_processor:
+			# 即座実行タグ（{w=0.5}など）を前処理
+			var pre_result = tag_processor.process_text_pre_variable(message)
+			message = pre_result.clean_text
+			
+			# 即座実行コマンドを実行
+			if pre_result.immediate_commands.size() > 0:
+				await tag_processor.execute_immediate_commands(pre_result.immediate_commands, self)
+		
+		# 変数展開
 		message = variable_manager.expand_variables(message)
-		# print("📝 expand_variables 出力: ", message)
+		
+		# 装飾タグをBBCodeに変換
+		if tag_processor:
+			message = tag_processor.process_text_post_variable(message)
+		
+		# print("📝 Final processed message: ", message)
 		
 		var char_data = null
 		if char_id:

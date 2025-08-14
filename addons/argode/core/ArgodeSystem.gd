@@ -28,6 +28,7 @@ var TransitionPlayer  # TransitionPlayer
 var LayerManager  # LayerManager (v2新機能)
 var AudioManager  # AudioManager (v2新機能)
 var CustomCommandHandler  # CustomCommandHandler (v2新機能)
+var InlineTagProcessor  # InlineTagProcessor (v2新機能)
 var DebugScreen:ArgodeDebugScreen
 # === レイヤーマッピング (v2新機能) ===
 var layers: Dictionary = {}
@@ -136,6 +137,11 @@ func _create_managers():
 	CustomCommandHandler = custom_command_script.new()
 	CustomCommandHandler.name = "CustomCommandHandler"
 	add_child(CustomCommandHandler)
+	
+	# v2新機能: InlineTagProcessor
+	var inline_tag_script = preload("res://addons/argode/script/InlineTagProcessor_v2.gd")
+	InlineTagProcessor = inline_tag_script.new()
+	# InlineTagProcessorはRefCountedなのでNodeではない（add_childしない）
 	
 	# v2新機能: SaveLoadManager
 	var save_load_manager_script = preload("res://addons/argode/managers/SaveLoadManager.gd")
@@ -396,6 +402,9 @@ func _setup_manager_references():
 	# AudioManagerに定義マネージャーへの参照を設定
 	AudioManager.audio_defs = AudioDefs  # v2新機能
 	
+	# InlineTagProcessorにCustomCommandHandlerを関連付け
+	InlineTagProcessor.set_custom_command_handler(CustomCommandHandler)
+	
 	print("🔗 Manager references configured")
 
 func _build_definitions():
@@ -631,3 +640,11 @@ func trace(message:Variant):
 		DebugScreen._add_text_to_console(message)
 	else:
 		print("DebugScreen not initialized, cannot trace: ", message)
+
+func jump_to_label(label_name: String):
+	"""指定されたラベルにジャンプ"""
+	if not LabelRegistry:
+		push_error("❌ LabelRegistry not initialized")
+		return
+	
+	LabelRegistry.jump_to_label(label_name, Player)

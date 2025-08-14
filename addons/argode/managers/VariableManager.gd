@@ -159,7 +159,6 @@ func evaluate_condition(expression_str: String) -> bool:
 		return false
 
 func expand_variables(text: String) -> String:
-	print("📝 expand_variables 入力: ", text)
 	var result = text
 	
 	# v2新構文: [variable] または [group.key] 形式の変数展開をサポート
@@ -170,6 +169,10 @@ func expand_variables(text: String) -> String:
 	for match in matches_v2:
 		var var_path = match.get_string(1)
 		var value = null
+		
+		# v2新機能: 装飾タグ（color=red, a=glossary:key等）は変数処理から除外
+		if _is_decoration_tag(var_path):
+			continue  # 装飾タグは変数処理をスキップ
 		
 		# ドット記法の場合はネスト変数として取得
 		if "." in var_path:
@@ -194,6 +197,10 @@ func expand_variables(text: String) -> String:
 		var var_expression = match.get_string(1)
 		var value = null
 		
+		# v2新機能: 装飾タグ（color=red, /color等）は変数処理から除外
+		if _is_decoration_tag(var_expression):
+			continue  # 装飾タグは変数処理をスキップ
+		
 		# 配列アクセス（例: inventory[0]）を処理
 		if "[" in var_expression and "]" in var_expression:
 			value = _evaluate_array_access(var_expression)
@@ -207,7 +214,6 @@ func expand_variables(text: String) -> String:
 		if value != null:
 			var value_str = str(value)
 			result = result.replace("{" + var_expression + "}", value_str)
-			print("🔄 Variable expanded: {", var_expression, "} -> ", value_str)
 		else:
 			push_warning("⚠️ Undefined variable in text: " + var_expression)
 	
@@ -368,3 +374,28 @@ func _parse_array_literal(array_str: String) -> Array:
 func get_all_variables() -> Dictionary:
 	"""すべての変数を取得（セーブ・ロード用）"""
 	return global_vars.duplicate()
+
+func _is_decoration_tag(expression: String) -> bool:
+	"""装飾タグかどうかを判定（変数処理から除外するため）"""
+	
+	# 終了タグ（/color, /b, /i等）をチェック
+	if expression.begins_with("/"):
+		return true
+	
+	# 装飾タグのパターン（color=値, b=値, i=値等）をチェック
+	var decoration_patterns = [
+		"color=", "font=", "size=", "b=", "i=", "u=", "s=", 
+		"bgcolor=", "fgcolor=", "outline_size=", "outline_color=",
+		"shadow_size=", "shadow_color=", "wave=", "tornado=", "a="
+	]
+	
+	for pattern in decoration_patterns:
+		if expression.begins_with(pattern):
+			return true
+	
+	# 単独の装飾タグ（b, i, u, s等）もチェック
+	var standalone_tags = ["b", "i", "u", "s", "code", "kbd", "center", "left", "right", "fill", "a"]
+	if expression in standalone_tags:
+		return true
+	
+	return false

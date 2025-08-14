@@ -323,6 +323,12 @@ func _initialize_typewriter():
 	typewriter.typewriter_skipped.connect(_on_typewriter_skipped)
 	typewriter.character_typed.connect(_on_character_typed)
 	
+	# RichTextLabelのリンククリック処理を接続
+	if message_label is RichTextLabel:
+		message_label.meta_clicked.connect(_on_glossary_link_clicked)
+		message_label.bbcode_enabled = true
+		print("🔗 AdvScreen: Glossary link support enabled")
+	
 	print("📱 AdvScreen: TypewriterText initialized")
 
 func _on_typewriter_started(_text: String):
@@ -350,6 +356,29 @@ func _on_character_typed(_character: String, _position: int):
 func on_character_typed(_character: String, _position: int):
 	"""文字が入力された時の仮想メソッド（継承先でオーバーライド）"""
 	pass
+
+# === グロッサリーリンクシステム ===
+
+signal glossary_link_clicked(link_type: String, link_key: String)
+
+func _on_glossary_link_clicked(meta: Variant):
+	"""RichTextLabelのリンククリック処理"""
+	var link_data = str(meta)
+	print("🔗 AdvScreen: Glossary link clicked: ", link_data)
+	
+	# "glossary:sangenjaya" のような形式を解析
+	if link_data.contains(":"):
+		var parts = link_data.split(":", 2)
+		if parts.size() >= 2:
+			var link_type = parts[0]
+			var link_key = parts[1]
+			print("📖 AdvScreen: Parsed link - type: ", link_type, ", key: ", link_key)
+			glossary_link_clicked.emit(link_type, link_key)
+		else:
+			print("⚠️ AdvScreen: Invalid link format: ", link_data)
+	else:
+		# 単純なリンクの場合
+		glossary_link_clicked.emit("link", link_data)
 
 # === レイヤーマッピングシステム ===
 
