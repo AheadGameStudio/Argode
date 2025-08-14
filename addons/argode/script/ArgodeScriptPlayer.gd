@@ -56,6 +56,9 @@ var layer_manager  # LayerManager (v2新機能)
 var label_registry  # LabelRegistry
 var script_manager: Node
 
+# クラス変数として宣言
+var selected_choice_index: int = -1
+
 func _ready():
 	_compile_regex()
 	# v2: 参照はArgodeSystemの_setup_manager_references()で設定される
@@ -623,6 +626,7 @@ func _handle_menu():
 			# インデントレベルをチェックしてブロック終了を判定
 			var indent_level = _get_indent_level(line)
 			if indent_level <= menu_indent_level and not line_trimmed.is_empty():
+
 				print("🔍 Menu block ended at line ", temp_index + 1)
 				break
 
@@ -651,6 +655,7 @@ func _handle_menu():
 		else:
 			push_error("Invalid choice index selected: " + str(selected_choice_index))
 			return
+
 	else:
 		print("⚠️ No choices found for menu")
 
@@ -666,6 +671,7 @@ func _process_line(line: String) -> bool:
 	return await _parse_and_execute(line)
 func on_choice_selected(choice_index: int):
 	print("🔔 AdvScriptPlayer: Choice selected - index:", choice_index)
+
 	selected_choice_index = choice_index
 	is_waiting_for_choice = false
 	# 実際の処理は _handle_menu() で行う
