@@ -58,14 +58,13 @@ func get_nested_variable(path: String, separator: String = ".") -> Variant:
 	"""ネストした変数の値を取得 (例: "player.stats.level")"""
 	var keys = path.split(separator)
 	var current = global_vars
-	
 	for key in keys:
+		print("🔍 get_nested_variable: key=", key, " current=", current)
 		if current is Dictionary and current.has(key):
 			current = current[key]
 		else:
 			push_warning("⚠️ Undefined nested variable: " + path)
 			return null
-	
 	return current
 
 func set_nested_variable(path: String, value: Variant, separator: String = "."):
@@ -160,6 +159,7 @@ func evaluate_condition(expression_str: String) -> bool:
 		return false
 
 func expand_variables(text: String) -> String:
+	print("📝 expand_variables 入力: ", text)
 	var result = text
 	
 	# v2新構文: [variable] または [group.key] 形式の変数展開をサポート

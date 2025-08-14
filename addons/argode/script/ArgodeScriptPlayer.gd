@@ -67,7 +67,7 @@ func _compile_regex():
 	regex_say.compile("^\\s*(?:(?<char_id>\\w+)\\s+)?\"(?<message>.*)\"")
 	
 	regex_set = RegEx.new()
-	regex_set.compile("^\\s*set\\s+(?<var_name>\\w+)\\s*=\\s*(?<expression>.+)")
+	regex_set.compile("^\\s*set\\s+(?<var_name>[\\w\\.]+)\\s*=\\s*(?<expression>.+)")
 	
 	regex_if = RegEx.new()
 	regex_if.compile("^\\s*if\\s+(?<condition>.+):")
@@ -257,10 +257,12 @@ func _parse_and_execute(line: String) -> bool:
 	if regex_match:
 		var char_id = regex_match.get_string("char_id")
 		var message = regex_match.get_string("message")
+		# print("📝 expand_variables 入力: ", message)
 		# v2新機能: インラインタグ処理は変数展開の前に行う
 		# インラインタグ（{tag}）と変数展開（[var]）を区別
 		# 注意: インラインタグ処理はUIManager/TypewriterTextで行うため、ここでは変数展開のみ
 		message = variable_manager.expand_variables(message)
+		# print("📝 expand_variables 出力: ", message)
 		
 		var char_data = null
 		if char_id:
@@ -286,7 +288,12 @@ func _parse_and_execute(line: String) -> bool:
 	if regex_match:
 		var var_name = regex_match.get_string("var_name")
 		var expression = regex_match.get_string("expression")
-		variable_manager.set_variable(var_name, expression)
+		if "." in var_name:
+			# ドット記法はネスト変数として直接値をセット
+			var value = variable_manager._parse_expression(expression)
+			variable_manager.set_nested_variable(var_name, value)
+		else:
+			variable_manager.set_variable(var_name, expression)
 		return false
 	
 	# jump

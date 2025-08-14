@@ -8,7 +8,8 @@ func _init():
 	help_text = "set <variable_name> = <value>\n変数に値を設定します。ドット記法で辞書の個別キーも設定可能。\n例: set player_name = \"主人公\"\n例: set player.level = 5"
 
 # コマンドを実行
-func execute(parameters: Dictionary, adv_system: Node) -> void:
+func execute_async(parameters: Dictionary, adv_system: Node) -> void:
+	print("📝 SetCommand.execute called. parameters=", parameters)
 	var raw_command = parameters.get("_raw", "")
 	
 	# "set variable_name = value" の形式をパース
