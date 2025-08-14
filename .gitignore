@@ -42,7 +42,7 @@ assets/*
 assets/audios/
 assets/images/
 scenes/ui/
-ui/
+./ui/
 src/scenes/
 
 # Character Resources (Development)

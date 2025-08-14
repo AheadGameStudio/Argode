@@ -1,0 +1,99 @@
+[gd_scene load_steps=3 format=3 uid="uid://b7k5qxd3qjksxs"]
+
+[ext_resource type="Script" path="res://addons/argode/ui/ArgodeScreen.gd" id="1_main_screen"]
+[ext_resource type="Theme" path="res://assets/themes/theme.tres" id="2_main_theme"]
+
+[node name="ArgodeScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_main_theme")
+script = ExtResource("1_main_screen")
+message_box_path = NodePath("MessageBox")
+name_label_path = NodePath("MessageBox/VBoxContainer/NameLabel")
+message_label_path = NodePath("MessageBox/VBoxContainer/MessageLabel")
+choice_container_path = NodePath("ChoiceContainer")
+choice_panel_path = NodePath("ChoiceContainer/ChoicePanel")
+choice_vbox_path = NodePath("ChoiceContainer/ChoicePanel/VBoxContainer")
+continue_prompt_path = NodePath("MessageBox/ContinuePrompt")
+
+[node name="BackgroundLayer" type="CanvasLayer" parent="."]
+layer = 0
+
+[node name="CharacterLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+layer = 20
+
+[node name="MessageBox" type="PanelContainer" parent="UILayer"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -150.0
+offset_right = 400.0
+offset_bottom = -20.0
+grow_horizontal = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/MessageBox"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="UILayer/MessageBox/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "キャラクター名"
+horizontal_alignment = 1
+
+[node name="MessageLabel" type="RichTextLabel" parent="UILayer/MessageBox/VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 80)
+bbcode_enabled = true
+text = "メッセージがここに表示されます。"
+fit_content = true
+
+[node name="ContinuePrompt" type="Label" parent="UILayer/MessageBox"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -30.0
+offset_top = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_font_sizes/font_size = 14
+text = "▼"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ChoiceContainer" type="Control" parent="UILayer"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ChoicePanel" type="PanelContainer" parent="UILayer/ChoiceContainer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UILayer/ChoiceContainer/ChoicePanel"]
+layout_mode = 2
