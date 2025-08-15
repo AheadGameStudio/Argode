@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://b7k5qxd3qjksxs"]
+[gd_scene load_steps=4 format=3 uid="uid://b7k5qxd3qjksxs"]
 
 [ext_resource type="Script" path="res://addons/argode/ui/ArgodeScreen.gd" id="1_main_screen"]
 [ext_resource type="Theme" path="res://assets/themes/theme.tres" id="2_main_theme"]
+[ext_resource type="Script" path="res://addons/argode/ui/RubyRichTextLabel.gd" id="3_ruby_label"]
 
 [node name="ArgodeScreen" type="Control"]
 layout_mode = 3
@@ -56,6 +57,7 @@ custom_minimum_size = Vector2(0, 80)
 bbcode_enabled = true
 text = "メッセージがここに表示されます。"
 fit_content = true
+script = ExtResource("3_ruby_label")
 
 [node name="ContinuePrompt" type="Label" parent="UILayer/MessageBox"]
 anchors_preset = 3
