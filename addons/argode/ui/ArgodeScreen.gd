@@ -1359,15 +1359,18 @@ func _parse_ruby_syntax(text: String) -> Dictionary:
 		# 漢字部分
 		var kanji = result.get_string(1)
 		var reading = result.get_string(2)
+		var clean_start_pos = clean_text.length()  # ルビが適用される開始位置
 		clean_text += kanji
 		
-		print("🔍 [Ruby Debug] Match: kanji='%s', reading='%s', position=%d" % [kanji, reading, clean_text.length() - kanji.length()])
+		print("🔍 [Ruby Debug] Match: kanji='%s', reading='%s', clean_pos=%d, original_pos=%d" % [kanji, reading, clean_start_pos, result.get_start()])
 		
-		# ルビ情報を保存
+		# ルビ情報を保存（一意の識別情報を追加）
 		rubies.append({
 			"kanji": kanji,
 			"reading": reading,
-			"clean_pos": clean_text.length() - kanji.length()
+			"clean_pos": clean_start_pos,
+			"original_pos": result.get_start(),  # 元テキスト内での位置も記録
+			"length": kanji.length()
 		})
 		
 		offset = result.get_end()
