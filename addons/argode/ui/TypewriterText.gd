@@ -81,6 +81,24 @@ func start_typing(text: String):
 	# 状態初期化
 	original_text = text
 	
+	# ArgodeScreenから改行調整済みテキストを取得（事前処理はArgodeScreenで完了済み）
+	var argode_screen = target_label.get_parent()
+	while argode_screen and not argode_screen.has_method("set_text_with_ruby_draw"):
+		argode_screen = argode_screen.get_parent()
+		if not argode_screen:
+			break
+	
+	# 事前に改行調整処理はArgodeScreenで完了済み - 調整結果を取得するのみ
+	if argode_screen and argode_screen.has_method("get_adjusted_text"):
+		var adjusted_text = argode_screen.get_adjusted_text()
+		if not adjusted_text.is_empty():
+			print("🚀 [CRITICAL] Using PRE-ADJUSTED text from ArgodeScreen: '%s'" % adjusted_text.replace("\n", "\\n"))
+			original_text = adjusted_text  # 調整されたテキストを使用
+		else:
+			print("🚀 [CRITICAL] No adjusted text available - using original")
+	else:
+		print("🔍 [TypewriterText] ArgodeScreen not found or no get_adjusted_text method")
+	
 	# v2新機能: インラインタグを処理
 	# inline_tag_processorが初期化されていない場合は初期化
 	if not inline_tag_processor:
@@ -108,7 +126,29 @@ func start_typing(text: String):
 		print("⚠️ TypewriterText: Timers initialized in start_typing()")
 	
 	# 新しいタグシステムに対応: post-variable処理のみ使用（variable展開は上流で実行済み）
-	var processed_text = inline_tag_processor.process_text_post_variable(text)
+	var processed_text = inline_tag_processor.process_text_post_variable(original_text)
+	
+	print("🔍 [TypewriterText] BEFORE adjustment - processed_text: '%s'" % processed_text.replace("\n", "\\n"))
+	print("🚀 [CRITICAL] TypewriterText checking for adjusted text...")
+	
+	# ArgodeScreenから改行調整されたテキストを取得
+	if argode_screen and argode_screen.has_method("get_adjusted_text"):
+		print("🚀 [CRITICAL] ArgodeScreen found with get_adjusted_text method")
+		var adjusted_text = argode_screen.get_adjusted_text()
+		print("🚀 [CRITICAL] get_adjusted_text() returned: '%s'" % adjusted_text.replace("\n", "\\n"))
+		if not adjusted_text.is_empty():
+			print("🚀 [CRITICAL] Using adjusted text from ArgodeScreen!")
+			print("🔍 [TypewriterText] Using adjusted text from ArgodeScreen: '%s'" % adjusted_text.replace("\n", "\\n"))
+			processed_text = adjusted_text  # 調整されたテキストを使用
+		else:
+			print("🚀 [CRITICAL] Adjusted text is empty - using original")
+			print("🔍 [TypewriterText] No adjusted text available, using original")
+	else:
+		print("🚀 [CRITICAL] ArgodeScreen not found or no get_adjusted_text method")
+		print("🔍 [TypewriterText] ArgodeScreen not found or no get_adjusted_text method")
+	
+	print("🚀 [CRITICAL] FINAL processed_text contains 商店街: %s" % processed_text.contains("商店街"))
+	print("🔍 [TypewriterText] FINAL processed_text: '%s'" % processed_text.replace("\n", "\\n"))
 	
 	# 新しいタグシステムでは、{w=0.5}などの即座実行タグは上流で処理済み
 	# ここでは変換済みテキストをそのまま使用
@@ -157,6 +197,9 @@ func skip_typing():
 	# 全文を即座に表示
 	_set_label_text(original_text)
 	current_position = visible_text.length()
+	
+	# スキップ時にもルビの位置を更新
+	_update_ruby_visibility_for_position(current_position)
 	
 	typewriter_skipped.emit()
 	typewriter_finished.emit()
@@ -215,6 +258,9 @@ func _type_next_character():
 	# ラベルに反映
 	_set_label_text(bbcode_text)
 	
+	# RubyRichTextLabelのルビ表示を更新（タイプライター進行に応じて）
+	_update_ruby_visibility_for_position(current_position)
+	
 	# シグナル発行
 	character_typed.emit(character, current_position - 1)
 	
@@ -261,7 +307,49 @@ func _set_label_text(text: String):
 	"""ラベルにテキストを設定（RichTextLabel/Label対応）"""
 	if not target_label:
 		return
-		
+	
+	print("🔍 [TypewriterText] _set_label_text called:")
+	print("  - target_label type: ", target_label.get_class())
+	print("  - target_label name: ", target_label.name)
+	print("  - text length: ", text.length())
+	
+	# ArgodeScreenの場合は特別な処理
+	var argode_screen = target_label.get_parent()
+	while argode_screen and not argode_screen.has_method("set_text_with_ruby_draw"):
+		argode_screen = argode_screen.get_parent()
+		if not argode_screen:
+			break
+	
+	if argode_screen and argode_screen.has_method("set_text_with_ruby_draw"):
+		print("🔍 [TypewriterText] Found ArgodeScreen parent - using set_text_with_ruby_draw")
+		if argode_screen.get("preserve_ruby_data"):
+			print("🔍 [TypewriterText] preserve_ruby_data is active")
+		else:
+			print("🔍 [TypewriterText] preserve_ruby_data is NOT active")
+		# 空のテキストの場合のみ直接設定、それ以外は通常のタイプライター処理
+		if text.is_empty():
+			print("🔍 [TypewriterText] Empty text - setting directly to avoid ruby data loss")
+			if target_label is RichTextLabel:
+				target_label.text = text
+			elif target_label is Label:
+				target_label.text = text
+			elif target_label.has_method("set_text"):
+				target_label.text = text
+		else:
+			print("🔍 [TypewriterText] Non-empty text - using standard label text setting")
+			# タイプライターエフェクトのため、通常のテキスト設定を使用
+			# 改行調整は start_typing() で事前に処理済み
+			if target_label is RichTextLabel:
+				target_label.text = text
+			elif target_label is Label:
+				target_label.text = text
+			elif target_label.has_method("set_text"):
+				target_label.text = text
+		return
+	
+	print("🔍 [TypewriterText] No ArgodeScreen parent found - using standard approach")
+	print("🔍 [TypewriterText] Before setting text - calling target_label.text = ...")
+	
 	if target_label is RichTextLabel:
 		target_label.text = text
 	elif target_label is Label:
@@ -270,6 +358,8 @@ func _set_label_text(text: String):
 		target_label.text = text
 	else:
 		push_warning("⚠️ Unsupported label type: " + str(target_label.get_class()))
+	
+	print("🔍 [TypewriterText] After setting text - assignment completed")
 
 func _on_type_timer_timeout():
 	"""通常文字のタイマータイムアウト"""
@@ -452,3 +542,19 @@ func get_inline_tag_help(tag_name: String) -> String:
 	if inline_tag_processor:
 		return inline_tag_processor.get_tag_help(tag_name)
 	return "InlineTagProcessor not available"
+
+func _update_ruby_visibility_for_position(typed_position: int):
+	"""タイプライター進行に応じてRubyRichTextLabelのルビ表示を更新"""
+	var parent = get_parent()
+	while parent:
+		if parent.has_method("get_message_label"):
+			var message_label = parent.get_message_label()
+			if message_label and message_label.has_method("update_ruby_positions_for_visible"):
+				# ArgodeScreenからルビデータを取得
+				if parent.has_method("get_current_ruby_data"):
+					var current_rubies = parent.get_current_ruby_data()
+					message_label.update_ruby_positions_for_visible(current_rubies, typed_position)
+					print("🔍 [TypewriterText] Updated ruby visibility for position %d" % typed_position)
+				return
+			break
+		parent = parent.get_parent()

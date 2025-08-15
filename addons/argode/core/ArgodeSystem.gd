@@ -29,6 +29,9 @@ var LayerManager  # LayerManager (v2新機能)
 var AudioManager  # AudioManager (v2新機能)
 var CustomCommandHandler  # CustomCommandHandler (v2新機能)
 var InlineTagProcessor  # InlineTagProcessor (v2新機能)
+
+# RubyRichTextLabel使用制御フラグ
+var use_ruby_rich_text_label: bool = false
 var DebugScreen:ArgodeDebugScreen
 # === レイヤーマッピング (v2新機能) ===
 var layers: Dictionary = {}
@@ -774,3 +777,14 @@ func _is_valid_custom_tag(instance) -> bool:
 		return false
 	
 	return has_required_methods
+
+# === RubyRichTextLabel制御メソッド ===
+
+func set_ruby_rich_text_label_enabled(enabled: bool):
+	"""RubyRichTextLabel使用状況を設定"""
+	use_ruby_rich_text_label = enabled
+	print("🏷️ RubyRichTextLabel usage set to: ", enabled)
+
+func is_ruby_rich_text_label_enabled() -> bool:
+	"""RubyRichTextLabel使用状況を取得"""
+	return use_ruby_rich_text_label

@@ -94,15 +94,18 @@ func set_custom_command_handler(handler: CustomCommandHandler):
 
 # === メインの解析機能 ===
 
-func process_text_pre_variable(input_text: String) -> ProcessResult:
+func process_text_pre_variable(input_text: String, skip_ruby_conversion: bool = false) -> ProcessResult:
 	"""変数展開前のタグ処理（即座実行タグのみ）"""
 	print("🏷️ Processing pre-variable tags in: ", input_text)
 	
-	var result = ProcessResult.new(input_text)
+	# まず、Ren'Pyスタイルのルビタグを処理（タイプライターエフェクト前に処理）
+	var text_with_ruby = _process_ruby_tags(input_text, skip_ruby_conversion)
+	
+	var result = ProcessResult.new(text_with_ruby)
 	var regex = RegEx.new()
 	regex.compile("\\{([^}]+)\\}")  # {tag} 形式
 	
-	var matches = regex.search_all(input_text)
+	var matches = regex.search_all(result.clean_text)
 	var offset = 0
 	
 	for match in matches:
@@ -157,7 +160,7 @@ func process_text_post_variable(input_text: String) -> String:
 	"""変数展開後のタグ処理（装飾タグをBBCodeに変換）"""
 	print("🏷️ Processing post-variable tags in: ", input_text)
 	
-	var result_text = input_text
+	var result_text = input_text  # ルビ処理はPRE_VARIABLEで完了済み
 	
 	# 角括弧パターン [tag=param] と波括弧パターン {tag=param} の両方を処理
 	var regex_bracket = RegEx.new()
@@ -308,6 +311,63 @@ func _parse_color_string(color_str: String) -> Color:
 				return Color.html(color_str)
 			else:
 				return Color.WHITE
+
+func _process_ruby_tags(input_text: String, skip_ruby_conversion: bool = false) -> String:
+	"""Ren'Pyスタイルのルビタグ【漢字｜読み】とGodotスタイル%ruby{漢字,読み}をBBCodeに変換
+	
+	参考プロジェクト: https://github.com/clvs7-gh/godot-sample-project-furigana-ruby
+	Godot 4のRubyタグサポートが不安定なため、読みやすい括弧形式で代替実装
+	"""
+	# RubyRichTextLabelを使用する場合はルビ変換をスキップ
+	if skip_ruby_conversion:
+		print("🏷️ Ruby conversion skipped (using RubyRichTextLabel)")
+		return input_text
+	
+	var result_text = input_text
+	
+	# パターン1: 【漢字｜読み】（現行システム）
+	var regex1 = RegEx.new()
+	regex1.compile("【([^｜]+)｜([^】]+)】")
+	
+	# パターン2: %ruby{漢字,読み}（参考プロジェクト形式）
+	var regex2 = RegEx.new()
+	regex2.compile("%ruby\\{([^,]+),([^}]+)\\}")
+	
+	# 両方のパターンを処理（後ろから前に向かって処理してオフセットの問題を回避）
+	var all_matches = []
+	
+	# パターン1のマッチを収集
+	var matches1 = regex1.search_all(result_text)
+	for match in matches1:
+		all_matches.append({"match": match, "type": 1})
+	
+	# パターン2のマッチを収集
+	var matches2 = regex2.search_all(result_text)
+	for match in matches2:
+		all_matches.append({"match": match, "type": 2})
+	
+	# 位置でソート（後ろから処理するため降順）
+	all_matches.sort_custom(func(a, b): return a.match.get_start() > b.match.get_start())
+	
+	# 全パターンを処理
+	for match_info in all_matches:
+		var match = match_info.match
+		var kanji = match.get_string(1)      # 漢字部分
+		var reading = match.get_string(2)    # 読み部分
+		
+		# 参考プロジェクトを元にした読みやすいルビ実装
+		# 漢字の後に括弧付きで読み仮名を小さく表示
+		var ruby_bbcode = "%s[font_size=10]（%s）[/font_size]" % [kanji, reading]
+		
+		# テキストを置換（後ろから前に処理するのでオフセットを気にしなくて良い）
+		var tag_start = match.get_start()
+		var tag_end = match.get_end()
+		result_text = result_text.left(tag_start) + ruby_bbcode + result_text.right(result_text.length() - tag_end)
+		
+		var pattern_name = "【｜】" if match_info.type == 1 else "%ruby{,}"
+		print("🏷️ Ruby tag converted (%s): %s -> %s" % [pattern_name, match.get_string(0), ruby_bbcode])
+	
+	return result_text
 
 func _convert_to_bbcode(tag_name: String, param: String, is_end_tag: bool, tag_info: Dictionary) -> String:
 	"""装飾タグをBBCodeに変換"""

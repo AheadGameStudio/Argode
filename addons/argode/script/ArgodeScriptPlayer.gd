@@ -274,8 +274,12 @@ func _parse_and_execute(line: String) -> bool:
 		# v2新機能: 統合タグシステム - 変数展開前にタグ処理
 		var tag_processor = get_node("/root/ArgodeSystem").InlineTagProcessor
 		if tag_processor:
+			# RubyRichTextLabel使用時はルビ変換をスキップ
+			var argode_system = get_node("/root/ArgodeSystem")
+			var skip_ruby_conversion = argode_system.is_ruby_rich_text_label_enabled()
+			
 			# 即座実行タグ（{w=0.5}など）を前処理
-			var pre_result = tag_processor.process_text_pre_variable(message)
+			var pre_result = tag_processor.process_text_pre_variable(message, skip_ruby_conversion)
 			message = pre_result.clean_text
 			
 			# 即座実行コマンドを実行
