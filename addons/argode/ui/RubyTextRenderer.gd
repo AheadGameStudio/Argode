@@ -27,6 +27,9 @@ var ruby_labels: Array = []
 signal text_updated()
 
 func _ready():
+	# マウスクリックを下位のRichTextLabelに通すためIGNOREに設定
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
 	# デフォルトフォントを設定
 	_setup_default_fonts()
 	
@@ -36,6 +39,10 @@ func _ready():
 		main_label.bbcode_enabled = true
 		main_label.fit_content = true
 		main_label.scroll_active = false
+		
+		# マウスクリックを通すためIGNOREに設定
+		main_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		
 		# 最小サイズを設定
 		main_label.custom_minimum_size = Vector2(200, 50)
 		add_child(main_label)
@@ -192,6 +199,9 @@ func _create_ruby_label(ruby: Dictionary) -> Label:
 	var label = Label.new()
 	label.text = ruby.reading
 	label.modulate = ruby_color
+	
+	# マウスクリックを下位のRichTextLabelに通すためIGNOREに設定
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	print("🔧 Creating ruby label: '%s'" % ruby.reading)
 	print("   - Modulate color: %s" % ruby_color)

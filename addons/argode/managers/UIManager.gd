@@ -3,6 +3,9 @@
 # v2.5統合: UIElementDiscoveryManager機能統合
 extends CanvasLayer
 
+# === 統合: MessageDisplayManager機能のためのpreload ===
+const RubyParser = preload("res://addons/argode/ui/ruby/RubyParser.gd")
+
 var name_label: Label
 var text_label: Control  # Label または RichTextLabel に対応
 var choice_container: VBoxContainer
@@ -51,9 +54,10 @@ func show_message(char_data, message: String):
 	
 	# 🚀 v2優先: current_screenを最初にチェック
 	print("🔍 Checking current_screen: ", current_screen)
-	if current_screen and current_screen.has_method("show_message"):
-		print("✅ Using v2 current_screen.show_message()")
-		current_screen.show_message(display_name, message, name_color)
+	if current_screen:
+		print("✅ Using v2 direct display_message_with_effects()")
+		# 無限ループを避けるため、直接display_message_with_effectsを呼び出し
+		display_message_with_effects(display_name, message, name_color)
 		return
 	
 	# 🔄 フォールバック: sample_ui検索（後方互換性）
@@ -92,14 +96,36 @@ func show_choices(choices: Array):
 		sample_ui.show_choices(choices)
 		return
 	
-	if current_screen:
-		current_screen.show_choices(choices)
+	# 直接的なUI要素制御（無限ループ回避のためcurrent_screen経由はしない）
+	_display_choices_directly(choices)
 
-	# Clear existing choice buttons (for basic UI implementation)
-	if choice_container:
-		print(choice_container)
-		if choice_container.get_children() != null:
-			for child in choice_container.get_children():
+func _display_choices_directly(choices: Array):
+	"""選択肢を直接UI要素に表示（無限ループ回避版）"""
+	print("🔍 Attempting to display choices directly")
+	
+	# ChoiceContainerの動的発見を試行
+	if not choice_container and current_screen:
+		choice_container = current_screen.find_child("ChoiceContainer", true, false)
+		print("🔍 Dynamically found ChoiceContainer: ", choice_container)
+	
+	# さらに具体的な探索: VBoxContainer を探す
+	var choice_vbox = null
+	if current_screen:
+		choice_vbox = current_screen.find_child("VBoxContainer", true, false)
+		if choice_vbox and choice_vbox.get_parent().name.contains("Choice"):
+			print("🔍 Found choice VBoxContainer: ", choice_vbox)
+		else:
+			choice_vbox = null
+	
+	# choice_container または choice_vbox のどちらかを使用
+	var target_container = choice_container if choice_container else choice_vbox
+	
+	if target_container:
+		print("✅ Using container: ", target_container, " (Type: ", target_container.get_class(), ")")
+		
+		# Clear existing choice buttons
+		if target_container.get_children() != null:
+			for child in target_container.get_children():
 				child.queue_free()
 		
 		# Create buttons for each choice
@@ -107,13 +133,55 @@ func show_choices(choices: Array):
 			var button = Button.new()
 			button.text = str(i + 1) + ". " + choices[i]
 			button.pressed.connect(_on_choice_button_pressed.bind(i))
-			choice_container.add_child(button)
+			target_container.add_child(button)
+		
+		# ChoiceContainerとその親を表示
+		target_container.visible = true
+		if target_container.get_parent():
+			target_container.get_parent().visible = true
+			print("📱 Container and parent set visible")
+		
+		# 追加: コンテナ階層を強制的に表示
+		var current_node = target_container
+		while current_node:
+			current_node.visible = true
+			# modulateプロパティを持つノードのみに適用
+			if current_node.has_method("set_modulate"):
+				current_node.modulate.a = 1.0  # 透明度確保
+			if current_node == current_screen:
+				break
+			current_node = current_node.get_parent()
+		
+		print("🔍 Final choice container visibility: %s" % target_container.visible)
+		print("🔍 Final choice container modulate: %s" % target_container.modulate)
+		
+		# choice_containerの参照を更新
+		if not choice_container:
+			choice_container = target_container
+	else:
+		print("❌ No choice container found - choices won't be displayed")
+		print("🔍 Available children in current_screen:")
+		if current_screen:
+			_debug_print_children(current_screen, 0)
+
+func _debug_print_children(node: Node, depth: int):
+	"""デバッグ用: ノードの子要素を再帰的に出力"""
+	var indent = ""
+	for i in range(depth):
+		indent += "  "
+	print(indent + "- " + node.name + " (" + node.get_class() + ")")
+	
+	if depth < 3:  # 深度制限
+		for child in node.get_children():
+			_debug_print_children(child, depth + 1)
 
 func _on_choice_button_pressed(choice_index: int):
 	# Clear choice buttons
 	if choice_container:
 		for child in choice_container.get_children():
 			child.queue_free()
+		# ChoiceContainerを非表示
+		choice_container.visible = false
 	
 	# Notify script player
 	if script_player:
@@ -154,6 +222,18 @@ func _setup_sample_ui_integration(ui_node: Node):
 func is_typewriter_active() -> bool:
 	"""タイプライターが動作中かどうかチェック"""
 	print("🔍 Checking typewriter state...")
+	
+	# v2優先: current_screenのTypewriterTextIntegrationManagerをチェック
+	if current_screen and current_screen.typewriter_integration_manager:
+		var typewriter_manager = current_screen.typewriter_integration_manager
+		if typewriter_manager.has_method("is_typing_active"):
+			var is_active = typewriter_manager.is_typing_active()
+			print("⌨️ TypewriterIntegrationManager is active: ", is_active)
+			return is_active
+		else:
+			print("❌ TypewriterIntegrationManager has no is_typing_active method")
+	
+	# フォールバック: 従来のsample_ui検索
 	var sample_ui = _find_adv_game_ui(get_tree().current_scene)
 	if sample_ui:
 		print("✅ Sample UI found: ", sample_ui.name)
@@ -175,28 +255,63 @@ func is_typewriter_active() -> bool:
 func skip_typewriter():
 	"""タイプライターをスキップ"""
 	print("⌨️ Attempting to skip typewriter...")
+	
+	# v2優先: current_screenのTypewriterTextIntegrationManagerをチェック
+	if current_screen and current_screen.typewriter_integration_manager:
+		var typewriter_manager = current_screen.typewriter_integration_manager
+		if typewriter_manager.has_method("skip_typing"):
+			print("✅ Skipping typewriter via integration manager")
+			typewriter_manager.skip_typing()
+			return
+		else:
+			print("❌ TypewriterIntegrationManager has no skip_typing method")
+	
+	# フォールバック: 従来のsample_ui検索
 	var sample_ui = _find_adv_game_ui(get_tree().current_scene)
 	if sample_ui:
 		var typewriter = sample_ui.get("typewriter")
 		if typewriter and typewriter.has_method("skip_typing"):
-			print("✅ Skipping typewriter")
+			print("✅ Skipping typewriter via sample UI")
 			typewriter.skip_typing()
 		else:
 			print("❌ Cannot skip typewriter")
+	else:
+		print("❌ No typewriter found to skip")
 
 func handle_input_for_argode(event) -> bool:
 	"""ADVエンジン用の入力処理 - タイプライター状態を考慮"""
+	print("🔍 Checking typewriter state...")
+	
+	# TypewriterTextの状態確認
+	var is_typing_active = false
+	if current_screen and current_screen.typewriter_integration_manager:
+		if current_screen.typewriter_integration_manager.has_method("is_typing_active"):
+			is_typing_active = current_screen.typewriter_integration_manager.is_typing_active()
+			print("✅ TypewriterIntegrationManager is_typing_active: ", is_typing_active)
+		else:
+			print("❌ TypewriterIntegrationManager has no is_typing_active method")
+	else:
+		print("❌ No TypewriterIntegrationManager available")
+	
+	# Sample UI確認（後方互換性）
+	var sample_ui = _find_adv_game_ui(get_tree().current_scene)
+	if not sample_ui:
+		print("❌ No sample UI found")
+	
 	if event.is_action_pressed("ui_accept"):
 		print("🎮 Enter key pressed - checking typewriter...")
-		if is_typewriter_active():
+		if is_typing_active:
 			# タイプライター中ならスキップ
 			print("⌨️ Skipping typewriter...")
-			skip_typewriter()
+			if current_screen and current_screen.typewriter_integration_manager:
+				current_screen.typewriter_integration_manager.skip_typing()
+				print("⏭️ Typewriter skip triggered")
 			print("✅ Input consumed by typewriter")
 			return true  # 入力を消費（次に進まない）
 		else:
 			# タイプライター完了済みなら次に進む
 			print("➡️ Typewriter not active, allowing ADV engine to process")
+			print("➡️ UIManager returned false, proceeding with ArgodeScreen logic")
 			return false  # 入力を消費しない（ADVエンジンが処理）
 	
 	return false  # その他の入力は処理しない
@@ -574,16 +689,40 @@ func display_message_with_effects(
 	"""メッセージを表示する（MessageDisplayManager統合）"""
 	print("🔍 [UIManager] display_message_with_effects called:")
 	print("  - character: ", character_name, ", message: ", message)
+	print("  - text_label available: ", text_label != null)
+	print("  - current_screen available: ", current_screen != null)
 	
 	if not text_label:
-		print("❌ UIManager: MessageLabel not available for message display")
-		return
+		print("❌ UIManager: MessageLabel not available, attempting to discover UI elements")
+		# UI要素の再発見を試行
+		if current_screen:
+			discover_ui_elements(current_screen)
+		if not text_label:
+			print("❌ UIManager: Still no MessageLabel found after discovery")
+			return
 	
 	# UI要素の表示制御
 	if current_sample_ui:
 		current_sample_ui.visible = true
+	
+	# ChoiceContainerを確実に非表示にする
 	if choice_container:
 		choice_container.visible = false
+		print("🔍 UIManager: ChoiceContainer set to invisible")
+	
+	# current_screenからもChoiceContainerを探して非表示にする
+	if current_screen:
+		var screen_choice_container = current_screen.find_child("ChoiceContainer", true, false)
+		if screen_choice_container:
+			screen_choice_container.visible = false
+			print("🔍 UIManager: Screen ChoiceContainer set to invisible")
+	
+	# ContinuePromptも初期は非表示にする
+	var continue_prompt = get_node_or_null("ContinuePrompt")
+	if not continue_prompt and current_screen:
+		continue_prompt = current_screen.find_child("ContinuePrompt", true, false)
+	if continue_prompt:
+		continue_prompt.visible = false
 	
 	# キャラクター名の設定
 	if character_name.is_empty():
@@ -605,23 +744,63 @@ func _display_message_text(message: String, override_multi_label_ruby: bool = fa
 	if not text_label:
 		return
 	
+	# 改行コードの変換処理
+	var processed_message = message.replace("\\n", "\n")
+	
 	# RubyRichTextLabel対応
 	if text_label.get_class() == "RubyRichTextLabel" or text_label.has_method("set_ruby_data"):
 		print("🔤 UIManager: Using RubyRichTextLabel for message display")
 		
-		# ルビ解析とテキスト設定
-		var ruby_parser = preload("res://addons/argode/ui/ruby/RubyParser.gd").new()
-		var parsed_result = ruby_parser.parse_ruby_text(message)
+		# ルビ解析とテキスト設定（正しいメソッド名で呼び出し）
+		var parsed_result = RubyParser.parse_ruby_syntax(processed_message)
 		
 		if parsed_result.rubies.size() > 0:
 			text_label.set_ruby_data(parsed_result.rubies)
-			text_label.text = parsed_result.base_text
-			print("🔤 UIManager: Set %d ruby entries" % parsed_result.rubies.size())
+			# タイプライター機能を使用（TypewriterTextIntegrationManager経由）
+			if current_screen and current_screen.typewriter_integration_manager:
+				current_screen.typewriter_integration_manager.start_typing(parsed_result.text)
+				print("🔤 UIManager: Started typewriter via integration manager with %d ruby entries" % parsed_result.rubies.size())
+			else:
+				text_label.text = parsed_result.text
+				print("🔤 UIManager: Set text directly (no typewriter integration)")
 		else:
-			text_label.text = message
+			# ルビなしの場合もタイプライター使用
+			if current_screen and current_screen.typewriter_integration_manager:
+				current_screen.typewriter_integration_manager.start_typing(processed_message)
+				print("🔤 UIManager: Started typewriter for text without rubies")
+			else:
+				text_label.text = processed_message
 			text_label.clear_ruby_data() if text_label.has_method("clear_ruby_data") else null
 	else:
-		# 通常のRichTextLabel
-		text_label.text = message
+		# 通常のRichTextLabel - タイプライター機能使用
+		if current_screen and current_screen.typewriter_integration_manager:
+			current_screen.typewriter_integration_manager.start_typing(processed_message)
+			print("🔤 UIManager: Started typewriter for standard RichTextLabel")
+		else:
+			text_label.text = processed_message
 	
-	print("📝 UIManager: Message text set successfully")
+	# タイプライター完了後にContinuePromptを表示するシグナル接続
+	_setup_typewriter_signals()
+	
+	print("📝 UIManager: Message text set with typewriter functionality")
+
+func _setup_typewriter_signals():
+	"""タイプライター完了シグナルの設定"""
+	if not current_screen or not current_screen.typewriter_integration_manager:
+		return
+	
+	# TypewriterTextIntegrationManagerのシグナルに接続
+	var typewriter_manager = current_screen.typewriter_integration_manager
+	if typewriter_manager.has_signal("typing_finished") and not typewriter_manager.is_connected("typing_finished", _on_typewriter_finished):
+		typewriter_manager.connect("typing_finished", _on_typewriter_finished)
+		print("🔗 UIManager: Connected to typewriter_integration_manager.typing_finished signal")
+
+func _on_typewriter_finished():
+	"""タイプライター完了時の処理"""
+	# ContinuePromptを表示
+	var continue_prompt = get_node_or_null("ContinuePrompt")
+	if not continue_prompt and current_screen:
+		continue_prompt = current_screen.find_child("ContinuePrompt", true, false)
+	if continue_prompt:
+		continue_prompt.visible = true
+		print("📱 UIManager: ContinuePrompt shown after typewriter finished")

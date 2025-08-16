@@ -18,7 +18,7 @@ static func parse_ruby_syntax(text: String) -> Dictionary:
 	print("🔍 [RubyParser] Original text: '%s'" % text)
 	
 	var clean_text = ""
-	var rubies = []
+	var rubies: Array[Dictionary] = []  # 型付き配列に修正
 	var pos = 0
 	
 	print("🔍 [RubyParser Debug] Parsing text with BBCode preserved: '%s'" % text)

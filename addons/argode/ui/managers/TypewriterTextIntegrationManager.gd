@@ -131,6 +131,10 @@ func is_typing() -> bool:
 		return typewriter.is_typing
 	return false
 
+func is_typing_active() -> bool:
+	"""タイプライター表示中かどうか（エイリアス）"""
+	return is_typing()
+
 func set_speed(characters_per_second: float):
 	"""タイプライター速度を設定"""
 	if typewriter:

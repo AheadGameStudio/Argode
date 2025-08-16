@@ -310,6 +310,9 @@ func _setup_ui_element_discovery_integration():
 	
 	# RubyRichTextLabelの設定
 	_setup_ruby_rich_text_label()
+	
+	# meta_clickedシグナルの接続（Glossaryタグ対応）
+	_setup_meta_clicked_handler()
 
 # === TypewriterText統合システム ===
 
@@ -353,6 +356,33 @@ func _setup_ruby_rich_text_label():
 		print("🔤 RubyRichTextLabel methods configured with debug=%s" % show_ruby_debug)
 	else:
 		print("ℹ️ message_label is %s - RubyRichTextLabel features not available" % message_label.get_class())
+
+func _setup_meta_clicked_handler():
+	"""RichTextLabelのmeta_clickedシグナル接続（Glossaryタグ対応）"""
+	if not message_label:
+		print("⚠️ No message_label found - skipping meta_clicked setup")
+		return
+	
+	if not message_label is RichTextLabel:
+		print("⚠️ message_label is not RichTextLabel - cannot setup meta_clicked")
+		return
+	
+	# BBCode有効化（URLタグのため）
+	var rich_text_label = message_label as RichTextLabel
+	rich_text_label.bbcode_enabled = true
+	print("🔗 BBCode enabled for meta_clicked functionality")
+	
+	# meta_clickedシグナルが既に接続されている場合は切断
+	if message_label.meta_clicked.is_connected(_on_message_label_meta_clicked):
+		message_label.meta_clicked.disconnect(_on_message_label_meta_clicked)
+		print("🔄 Disconnected existing meta_clicked signal")
+	
+	# meta_clickedシグナルを接続
+	var result = message_label.meta_clicked.connect(_on_message_label_meta_clicked)
+	if result == OK:
+		print("✅ meta_clicked signal connected successfully for Glossary tags")
+	else:
+		print("❌ Failed to connect meta_clicked signal: %d" % result)
 
 func _initialize_ruby_text_manager():
 	"""新しいRubyTextManagerの初期化"""
@@ -551,8 +581,8 @@ func show_message(character_name: String = "", message: String = "", name_color:
 func show_choices(choices: Array, is_numbered: bool = false):
 	"""選択肢を表示する（UIManager統合機能使用）"""
 	if adv_system and adv_system.UIManager:
-		# UIManagerの選択肢表示機能を呼び出し（既存メソッドを使用）
-		adv_system.UIManager.show_choices(choices, is_numbered)
+		# UIManagerの選択肢表示機能を呼び出し（引数1つのみ対応）
+		adv_system.UIManager.show_choices(choices)
 	else:
 		_log_manager_not_available("UIManager")
 
@@ -580,6 +610,19 @@ func _unhandled_input(event):
 		return
 	
 	if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_select"):
+		print("🎮 ArgodeScreen: Input detected (ui_accept/ui_select)")
+		
+		# UIManagerの入力処理を優先的に呼び出し
+		if adv_system and adv_system.UIManager:
+			var handled = adv_system.UIManager.handle_input_for_argode(event)
+			if handled:
+				print("✅ Input handled by UIManager")
+				get_viewport().set_input_as_handled()
+				return
+			else:
+				print("➡️ UIManager returned false, proceeding with ArgodeScreen logic")
+		
+		# UIManagerが処理しなかった場合の従来ロジック
 		if message_box.visible and not (choice_container and choice_container.visible):
 			if not is_message_complete:
 				if typewriter_integration_manager:
@@ -664,3 +707,34 @@ func get_adjusted_text() -> String:
 		return adjusted_text
 	else:
 		return message_label.text if message_label else ""
+
+# === Glossaryタグ対応: meta_clickedハンドラー ===
+
+func _on_message_label_meta_clicked(meta: Variant):
+	"""RichTextLabelのmeta_clickedシグナル処理（Glossaryタグ対応）"""
+	print("🔗 meta_clicked triggered: %s (%s)" % [meta, typeof(meta)])
+	
+	# meta引数の型チェック
+	var meta_str: String = ""
+	if meta is String:
+		meta_str = meta as String
+	else:
+		meta_str = str(meta)
+	
+	# Glossaryタグの処理
+	if meta_str.begins_with("glossary:"):
+		var glossary_key = meta_str.substr(9)  # "glossary:"の部分を除去
+		print("📖 Glossary tag clicked: '%s'" % glossary_key)
+		_handle_glossary_click(glossary_key)
+	else:
+		print("ℹ️ Unknown meta tag: '%s'" % meta_str)
+
+func _handle_glossary_click(glossary_key: String):
+	"""Glossaryクリック処理"""
+	print("📋 Handling glossary click for: '%s'" % glossary_key)
+	
+	# TODO: ここにGlossaryシステムとの連携処理を実装
+	# 例: Glossaryウィンドウを開く、説明テキストを表示する等
+	
+	# 現在はデバッグ表示のみ
+	print("💡 Glossary '%s' の説明を表示する処理をここに実装予定" % glossary_key)

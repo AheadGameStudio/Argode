@@ -207,6 +207,11 @@ func process_text_post_variable(input_text: String) -> String:
 				offset -= bbcode_tag.length() - (tag_end - tag_start)
 				print("🏷️ [DEBUG] Applied BBCode replacement: '%s'" % bbcode_tag)
 		
+		# BBCodeタグをそのまま保持（スキップ）
+		elif tag_name in ["url", "font_size", "color", "b", "i", "u", "s", "bgcolor"]:
+			print("🏷️ [DEBUG] BBCode tag '%s' preserved as-is" % tag_name)
+			# 何もせずそのまま保持
+		
 		# カスタム装飾タグの処理
 		elif custom_tags.has(tag_name) and custom_tags[tag_name].type == TagType.DECORATION:
 			var custom_tag = custom_tags[tag_name]
