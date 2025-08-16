@@ -4,9 +4,9 @@ extends Control
 class_name ArgodeScreen
 
 # レイヤー自動展開システム
-const AutoLayerSetup = preload("res://addons/argode/managers/AutoLayerSetup.gd")
-const RubyTextRenderer = preload("res://addons/argode/ui/RubyTextRenderer.gd")
-const RubyRichTextLabel = preload("res://addons/argode/ui/RubyRichTextLabel.gd")
+# const AutoLayerSetup = preload("res://addons/argode/managers/AutoLayerSetup.gd")
+# const RubyTextRenderer = preload("res://addons/argode/ui/RubyTextRenderer.gd")
+# const RubyRichTextLabel = preload("res://addons/argode/ui/RubyRichTextLabel.gd")
 
 # === シグナル ===
 signal screen_closed(return_value)
@@ -1339,44 +1339,55 @@ func _calculate_ruby_positions(rubies: Array, main_text: String):
 
 func _parse_ruby_syntax(text: String) -> Dictionary:
 	"""【漢字｜ふりがな】形式のテキストを解析"""
+	print("🚀🚀🚀 [NEW PARSE] _parse_ruby_syntax CALLED WITH FIXED CODE! 🚀🚀🚀")
+	
+	# 最初にBBCodeタグを除去してから処理
+	var regex_bbcode = RegEx.new()
+	regex_bbcode.compile("\\[/?[^\\]]*\\]")
+	var text_without_bbcode = regex_bbcode.sub(text, "", true)
+	print("🔍 [Ruby Parse] Original text: '%s'" % text)
+	print("🔍 [Ruby Parse] Text without BBCode: '%s'" % text_without_bbcode)
+	
 	var clean_text = ""
 	var rubies = []
 	var pos = 0
 	
-	print("🔍 [Ruby Debug] Parsing text: '%s'" % text)
+	print("🔍 [Ruby Debug] Parsing text: '%s'" % text_without_bbcode)
 	
 	var ruby_pattern = RegEx.new()
 	ruby_pattern.compile("【([^｜]+)｜([^】]+)】")
 	
 	var offset = 0
-	var matches = ruby_pattern.search_all(text)
+	var matches = ruby_pattern.search_all(text_without_bbcode)
 	print("🔍 [Ruby Debug] Found %d ruby matches" % matches.size())
 	
 	for result in matches:
 		# マッチ前のテキスト
-		clean_text += text.substr(offset, result.get_start() - offset)
+		var before_text = text_without_bbcode.substr(offset, result.get_start() - offset)
+		clean_text += before_text
+		print("🔍 [Ruby Parse] Before text: '%s', clean_text_length_before: %d" % [before_text, clean_text.length()])
+		
+		# 漢字部分を追加する前の位置を記録（これが正しいclean_pos）
+		var kanji_start_pos = clean_text.length()
 		
 		# 漢字部分
 		var kanji = result.get_string(1)
 		var reading = result.get_string(2)
-		var clean_start_pos = clean_text.length()  # ルビが適用される開始位置
 		clean_text += kanji
 		
-		print("🔍 [Ruby Debug] Match: kanji='%s', reading='%s', clean_pos=%d, original_pos=%d" % [kanji, reading, clean_start_pos, result.get_start()])
+		print("🔍 [Ruby Parse] Added kanji: '%s', clean_pos=%d, clean_text_after='%s'" % [kanji, kanji_start_pos, clean_text])
 		
-		# ルビ情報を保存（一意の識別情報を追加）
+		# ルビ情報を保存
 		rubies.append({
 			"kanji": kanji,
 			"reading": reading,
-			"clean_pos": clean_start_pos,
-			"original_pos": result.get_start(),  # 元テキスト内での位置も記録
-			"length": kanji.length()
+			"clean_pos": kanji_start_pos
 		})
 		
 		offset = result.get_end()
 	
 	# 残りのテキスト
-	clean_text += text.substr(offset)
+	clean_text += text_without_bbcode.substr(offset)
 	
 	print("🔍 [Ruby Debug] Result: clean_text='%s', rubies=%s" % [clean_text, rubies])
 	return {"text": clean_text, "rubies": rubies}

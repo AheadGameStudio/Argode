@@ -437,6 +437,8 @@ func _calculate_ruby_positions_for_visible(visible_rubies: Array, target_text: S
 		var reading_text = ruby.get("reading", "")
 		var kanji_pos_in_text = ruby.get("clean_pos", 0)
 		
+		print("🔍 [Visible Ruby] kanji='%s', reading='%s', clean_pos=%s (original ruby: %s)" % [kanji_text, reading_text, kanji_pos_in_text, ruby])
+		
 		# BBCodeタグを除去したプレーンテキストを取得
 		var displayed_text = target_text if not target_text.is_empty() else get_parsed_text()
 		
@@ -445,13 +447,20 @@ func _calculate_ruby_positions_for_visible(visible_rubies: Array, target_text: S
 		regex.compile("\\[/?[^\\]]*\\]")  # BBCodeタグをマッチ
 		var clean_displayed_text = regex.sub(displayed_text, "", true)
 		
-		# 漢字の実際の位置を検索（クリーンなテキストで）
-		var kanji_start_in_displayed = clean_displayed_text.find(kanji_text, max(0, kanji_pos_in_text - 10))
-		if kanji_start_in_displayed == -1:
-			# フォールバック: 最初から検索
-			kanji_start_in_displayed = clean_displayed_text.find(kanji_text, 0)
-			if kanji_start_in_displayed == -1:
-				kanji_start_in_displayed = kanji_pos_in_text
+		# clean_posを完全に信頼する（重複文字問題の解決）
+		var kanji_start_in_displayed = kanji_pos_in_text
+		
+		# デバッグ情報を詳しく出力
+		print("🔍 [Ruby Position] kanji='%s', clean_pos=%d, clean_text_length=%d" % [kanji_text, kanji_pos_in_text, clean_displayed_text.length()])
+		if kanji_pos_in_text >= 0 and kanji_pos_in_text < clean_displayed_text.length():
+			var text_at_pos = clean_displayed_text.substr(kanji_pos_in_text, min(kanji_text.length(), clean_displayed_text.length() - kanji_pos_in_text))
+			print("🔍 [Ruby Position] text_at_clean_pos='%s' (expected='%s')" % [text_at_pos, kanji_text])
+		
+		# サニティチェック1：位置が有効な範囲内か確認
+		if kanji_start_in_displayed < 0 or kanji_start_in_displayed >= clean_displayed_text.length():
+			print("🔍 [Ruby Position] clean_pos out of range, using position 0")
+			kanji_start_in_displayed = 0
+		# サニティチェック2は一時的に無効化してclean_posを信頼
 
 		# 改行を考慮した位置計算（自動改行対応）
 		var char_position = _get_character_position(clean_displayed_text, kanji_start_in_displayed, font_size)
@@ -511,6 +520,11 @@ func calculate_ruby_positions(rubies: Array, target_text: String = ""):
 	"""全ルビの描画位置を計算（タイプライター完了時用）"""
 	print("🔍 [Ruby Debug] calculate_ruby_positions called with %d rubies" % rubies.size())
 	
+	# 受け取ったルビ配列の詳細を出力
+	for i in range(rubies.size()):
+		var ruby = rubies[i]
+		print("🔍 [Received Ruby %d] kanji='%s', reading='%s', clean_pos=%s" % [i, ruby.get("kanji", "?"), ruby.get("reading", "?"), ruby.get("clean_pos", "?")])
+	
 	# 生ルビデータを保存（スキップ時の再計算用）
 	raw_ruby_data = rubies.duplicate(true)
 	
@@ -538,7 +552,7 @@ func calculate_ruby_positions(rubies: Array, target_text: String = ""):
 		var reading_text = ruby.reading
 		var kanji_pos_in_text = ruby.clean_pos
 		
-		print("🔍 [Ruby Debug] Processing ruby %d: kanji='%s', reading='%s', pos=%d" % [i, kanji_text, reading_text, kanji_pos_in_text])
+		print("🔍 [Processing Ruby %d] kanji='%s', reading='%s', clean_pos=%d (from ruby.clean_pos)" % [i, kanji_text, reading_text, kanji_pos_in_text])
 		
 		# BBCodeタグを除去したプレーンテキストを取得
 		var displayed_text = target_text if not target_text.is_empty() else get_parsed_text()
@@ -548,13 +562,26 @@ func calculate_ruby_positions(rubies: Array, target_text: String = ""):
 		regex.compile("\\[/?[^\\]]*\\]")  # BBCodeタグをマッチ
 		var clean_displayed_text = regex.sub(displayed_text, "", true)
 		
-		# 漢字の実際の位置を検索（クリーンなテキストで）
-		var kanji_start_in_displayed = clean_displayed_text.find(kanji_text, max(0, kanji_pos_in_text - 10))
-		if kanji_start_in_displayed == -1:
-			# フォールバック: 最初から検索
-			kanji_start_in_displayed = clean_displayed_text.find(kanji_text, 0)
-			if kanji_start_in_displayed == -1:
-				kanji_start_in_displayed = kanji_pos_in_text
+		# clean_posを完全に信頼する（重複文字問題の解決）
+		var kanji_start_in_displayed = kanji_pos_in_text
+		
+		# デバッグ情報を詳しく出力
+		print("🔍 [Ruby Position Fix] kanji='%s', clean_pos=%d, clean_text_length=%d" % [kanji_text, kanji_pos_in_text, clean_displayed_text.length()])
+		if kanji_pos_in_text >= 0 and kanji_pos_in_text < clean_displayed_text.length():
+			var text_at_pos = clean_displayed_text.substr(kanji_pos_in_text, min(kanji_text.length(), clean_displayed_text.length() - kanji_pos_in_text))
+			print("🔍 [Ruby Position Fix] text_at_clean_pos='%s' (expected='%s') - MATCH: %s" % [text_at_pos, kanji_text, text_at_pos == kanji_text])
+		
+		# サニティチェック：位置が有効な範囲内か確認
+		if kanji_start_in_displayed < 0 or kanji_start_in_displayed >= clean_displayed_text.length():
+			print("� [Ruby Position Fix] clean_pos out of range, using position 0")
+			kanji_start_in_displayed = 0
+		else:
+			# 位置の正確性を確認
+			var expected_text = clean_displayed_text.substr(kanji_start_in_displayed, min(kanji_text.length(), clean_displayed_text.length() - kanji_start_in_displayed))
+			if expected_text != kanji_text:
+				print("🚨 [Ruby Position Fix] Position mismatch! Expected '%s' but found '%s' at position %d" % [kanji_text, expected_text, kanji_start_in_displayed])
+			else:
+				print("✅ [Ruby Position Fix] Position verified! Found '%s' at correct position %d" % [kanji_text, kanji_start_in_displayed])
 
 		# 改行を考慮した位置計算（自動改行対応）
 		var char_position = _get_character_position(clean_displayed_text, kanji_start_in_displayed, font_size)
@@ -600,6 +627,7 @@ func calculate_ruby_positions(rubies: Array, target_text: String = ""):
 		ruby_data.append({
 			"reading": reading_text,
 			"kanji": kanji_text,
+			"clean_pos": kanji_pos_in_text,  # clean_posを保存！
 			"position": Vector2(ruby_x, ruby_y),
 			"color": Color(0.9, 0.9, 0.9, 1.0)
 		})
