@@ -1,7 +1,11 @@
 # LayerManager.gd
 # v2設計: レイヤーシステム管理（背景・キャラクター・UI層の制御）
+# v2.5統合: LayerInitializationManager機能統合
 extends Node
 class_name LayerManager
+
+# === 統合: AutoLayerSetup参照 ===
+const AutoLayerSetup = preload("res://addons/argode/managers/AutoLayerSetup.gd")
 
 # === シグナル ===
 signal layer_changed(layer_name: String, content: Node)
@@ -62,6 +66,78 @@ func initialize_layers(bg_layer: Control, char_layer: Control, ui_layer_ref: Con
 	_initialize_shader_system()
 	
 	print("✅ LayerManager: All layers initialized successfully")
+
+# === 統合: LayerInitializationManager機能 ===
+
+func initialize_argode_layers(
+	parent_scene: Node,
+	auto_create_layers: bool = true,
+	background_layer_path: NodePath = NodePath(""),
+	character_layer_path: NodePath = NodePath(""),
+	ui_layer_path: NodePath = NodePath(""),
+	ui_fallback_node: Node = null
+) -> Dictionary:
+	"""Argode標準レイヤー構造を初期化（LayerInitializationManager統合）"""
+	
+	var layer_mappings: Dictionary = {}
+	
+	if not parent_scene:
+		print("❌ LayerManager: No parent scene provided for layer initialization")
+		return layer_mappings
+	
+	# 自動展開モードが有効な場合
+	if auto_create_layers:
+		print("🏗️ LayerManager: Auto-creating Argode standard layers...")
+		layer_mappings = AutoLayerSetup.setup_layer_hierarchy(parent_scene)
+		print("✅ LayerManager: Auto-created layers:", layer_mappings.keys())
+	else:
+		# 手動モード：NodePathまたは自動発見
+		var bg_layer = _get_layer_from_path_or_fallback(background_layer_path, "BackgroundLayer", parent_scene)
+		var char_layer = _get_layer_from_path_or_fallback(character_layer_path, "CharacterLayer", parent_scene)
+		var ui_layer = _get_layer_from_path_or_fallback(ui_layer_path, "", parent_scene) or ui_fallback_node
+		
+		layer_mappings = {
+			"background": bg_layer,
+			"character": char_layer,
+			"ui": ui_layer
+		}
+	
+	# レイヤーシステムを初期化
+	if layer_mappings.get("background") and layer_mappings.get("character") and layer_mappings.get("ui"):
+		initialize_layers(layer_mappings["background"], layer_mappings["character"], layer_mappings["ui"])
+		print("✅ LayerManager: Argode layers initialized successfully")
+	else:
+		print("⚠️ LayerManager: Missing layers for initialization:", {
+			"background": layer_mappings.get("background") != null,
+			"character": layer_mappings.get("character") != null,
+			"ui": layer_mappings.get("ui") != null
+		})
+	
+	return layer_mappings
+
+func _get_layer_from_path_or_fallback(node_path: NodePath, fallback_name: String, parent_scene: Node) -> Node:
+	"""レイヤーをNodePathまたは自動発見で取得（LayerInitializationManager統合）"""
+	
+	# 1. @export NodePathが指定されている場合
+	if not node_path.is_empty():
+		var node = parent_scene.get_node_or_null(node_path)
+		if node:
+			print("   ✅ LayerManager: Using layer NodePath: ", fallback_name if not fallback_name.is_empty() else "UILayer", " -> ", node_path)
+			return node
+		else:
+			print("   ⚠️ LayerManager: Layer NodePath not found: ", node_path, " for ", fallback_name if not fallback_name.is_empty() else "UILayer")
+	
+	# 2. フォールバック：自動発見（UIレイヤーの場合はスキップ）
+	if fallback_name.is_empty():
+		return null
+	
+	var found_layer = parent_scene.find_child(fallback_name, true, false)
+	if found_layer:
+		print("   🔍 LayerManager: Auto-discovered layer: ", fallback_name, " -> ", found_layer.get_path())
+		return found_layer
+	else:
+		print("   ⚠️ LayerManager: Layer auto-discovery failed: ", fallback_name)
+		return null
 
 # === 背景管理 ===
 

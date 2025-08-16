@@ -9,10 +9,10 @@ class_name ArgodeScreen
 const RubyTextManager = preload("res://addons/argode/ui/ruby/RubyTextManager.gd")
 # 削除済み: RubyParser (未使用)
 const RubyMessageHandler = preload("res://addons/argode/ui/ruby/RubyMessageHandler.gd")
-const MessageDisplayManager = preload("res://addons/argode/ui/display/MessageDisplayManager.gd")
+# 統合済み: MessageDisplayManager → UIManager
+# 統合済み: LayerInitializationManager → LayerManager
+# 統合済み: UIElementDiscoveryManager → UIManager
 const TypewriterTextIntegrationManager = preload("res://addons/argode/ui/managers/TypewriterTextIntegrationManager.gd")
-const LayerInitializationManager = preload("res://addons/argode/ui/managers/LayerInitializationManager.gd")
-const UIElementDiscoveryManager = preload("res://addons/argode/ui/managers/UIElementDiscoveryManager.gd")
 
 # === シグナル ===
 signal screen_closed(return_value)
@@ -26,10 +26,11 @@ var return_value: Variant = null
 var screen_parameters: Dictionary = {}
 # 削除済み: parent_screen (未使用変数)
 
-# === UI要素発見マネージャー ===
-var ui_element_discovery_manager: UIElementDiscoveryManager = null
-
-# === ArgodeSystem統合 ===
+# === UI要素参照（実行時に設定される） ===
+# === TypewriterText統合 ===
+var typewriter_integration_manager: TypewriterTextIntegrationManager = null
+var is_message_complete: bool = false
+var handle_input: bool = true
 var adv_system: Node = null
 
 # === UI要素NodePath設定（エディタで指定可能） ===
@@ -58,11 +59,6 @@ var choice_panel: PanelContainer = null
 var choice_vbox: VBoxContainer = null
 var continue_prompt: Control = null
 
-# === TypewriterText統合 ===
-var typewriter_integration_manager: TypewriterTextIntegrationManager = null
-var is_message_complete: bool = false
-var handle_input: bool = true
-
 # === 削除済み: 自動スクリプト設定 ===
 # use ArgodeSystem.set_auto_start_label() instead
 # === ルビ表示設定 ===
@@ -75,16 +71,13 @@ var handle_input: bool = true
 var adjusted_text: String = ""
 
 # === 削除済み: レガシールビ描画システム（_draw方式用） ===
-# === RubyTextManager統合（新しいアーキテクチャ） ===
+# === 統合済み: RubyTextManager統合（新しいアーキテクチャ） ===
 var ruby_text_manager: RubyTextManager = null  # Ruby処理の専用マネージャー
 @export var use_ruby_text_manager: bool = true  # 新しいRubyTextManagerを使用するか（テスト有効化）
 
 # === Ruby Message Handler ===
 var ruby_message_handler: RubyMessageHandler = null  # Ruby処理専用ハンドラー
-var message_display_manager: MessageDisplayManager = null  # メッセージ表示専用マネージャー
-
-# === レイヤー初期化マネージャー ===
-var layer_initialization_manager: LayerInitializationManager = null
+# 統合済み: MessageDisplayManager → UIManager
 
 # === RubyRichTextLabel統合 ===
 var current_rubies: Array = []  # 現在のメッセージのルビデータ
@@ -135,8 +128,8 @@ func _ready():
 	call_deferred("_emit_screen_ready")
 
 func _emit_screen_ready():
-	# UI要素の自動発見
-	_setup_ui_element_discovery_manager()
+	# UI要素の自動発見（UIManager統合機能使用）
+	_setup_ui_element_discovery_integration()
 	
 	# TypewriterText初期化
 	_initialize_typewriter()
@@ -144,8 +137,8 @@ func _emit_screen_ready():
 	# RubyTextManager初期化（新しいアーキテクチャ）
 	_initialize_ruby_text_manager()
 	
-	# レイヤー初期化マネージャーをセットアップ
-	_setup_layer_initialization_manager()
+	# レイヤー初期化（LayerManager統合機能使用）
+	_setup_layer_initialization_integration()
 	
 	# カスタムコマンド接続
 	_connect_custom_command_signals()
@@ -158,7 +151,7 @@ func _emit_screen_ready():
 	
 	# RubyMessageHandler初期化
 	_initialize_ruby_message_handler()
-	_initialize_message_display_manager()
+	# MessageDisplayManager統合済み（UIManager）
 	
 	# 削除済み: 自動スクリプト開始 (ArgodeSystemに移管)
 	
@@ -278,13 +271,18 @@ func is_active() -> bool:
 	"""画面がアクティブかチェック"""
 	return is_screen_active
 
-# === UI要素発見システム ===
+# === UI要素発見システム（UIManager統合） ===
 
-func _setup_ui_element_discovery_manager():
-	"""UIElementDiscoveryManagerをセットアップ"""
-	ui_element_discovery_manager = UIElementDiscoveryManager.new()
+func _setup_ui_element_discovery_integration():
+	"""UIManager統合機能を使用してUI要素を発見"""
+	if not adv_system or not adv_system.UIManager:
+		print("❌ ArgodeScreen: UIManager not available for UI element discovery")
+		return
 	
-	var success = ui_element_discovery_manager.initialize(
+	var ui_manager = adv_system.UIManager
+	
+	# UIManagerの統合機能を使用してUI要素を発見
+	var discovered = ui_manager.discover_ui_elements(
 		self,
 		message_box_path,
 		name_label_path,
@@ -294,13 +292,6 @@ func _setup_ui_element_discovery_manager():
 		choice_vbox_path,
 		continue_prompt_path
 	)
-	
-	if not success:
-		print("❌ ArgodeScreen: UIElementDiscoveryManager initialization failed")
-		return
-	
-	# UI要素を発見して設定
-	var discovered = ui_element_discovery_manager.discover_ui_elements()
 	
 	if discovered.is_empty():
 		print("⚠️ ArgodeScreen: No UI elements discovered")
@@ -315,7 +306,7 @@ func _setup_ui_element_discovery_manager():
 	choice_vbox = discovered.get("choice_vbox")
 	continue_prompt = discovered.get("continue_prompt")
 	
-	print("✅ ArgodeScreen: UI element discovery completed successfully")
+	print("✅ ArgodeScreen: UI element discovery completed via UIManager integration")
 	
 	# RubyRichTextLabelの設定
 	_setup_ruby_rich_text_label()
@@ -405,27 +396,6 @@ func _initialize_ruby_message_handler():
 	else:
 		print("❌ Failed to initialize RubyMessageHandler")
 
-func _initialize_message_display_manager():
-	"""MessageDisplayManagerの初期化"""
-	print("🚀 Initializing MessageDisplayManager...")
-	
-	# MessageDisplayManagerインスタンス作成
-	message_display_manager = MessageDisplayManager.new(self)
-	
-	# UI要素を設定
-	message_display_manager.set_ui_elements(
-		message_box, name_label, message_label,
-		choice_container, choice_panel, choice_vbox, continue_prompt
-	)
-	
-	# 関連システムを設定
-	message_display_manager.set_ruby_message_handler(ruby_message_handler)
-	if typewriter_integration_manager:
-		message_display_manager.set_typewriter(typewriter_integration_manager.typewriter)
-		message_display_manager.set_ruby_text_renderer(typewriter_integration_manager.ruby_text_renderer)
-	
-	print("✅ MessageDisplayManager initialized successfully")
-
 func _on_ruby_text_updated(ruby_data: Array):
 	"""RubyTextManagerからのruby_text_updatedシグナル処理"""
 	print("📝 Ruby text updated: %d items" % ruby_data.size())
@@ -503,32 +473,33 @@ func _on_glossary_link_clicked(meta: Variant):
 		# 単純なリンクの場合
 		glossary_link_clicked.emit("link", link_data)
 
-# === レイヤー初期化システム ===
+# === レイヤー初期化システム（LayerManager統合） ===
 
-func _setup_layer_initialization_manager():
-	"""LayerInitializationManagerをセットアップ"""
-	layer_initialization_manager = LayerInitializationManager.new()
+func _setup_layer_initialization_integration():
+	"""LayerManager統合機能を使用してレイヤーを初期化"""
+	if not adv_system or not adv_system.LayerManager:
+		print("❌ ArgodeScreen: LayerManager not available for layer initialization")
+		return
 	
-	var success = layer_initialization_manager.initialize(
+	var layer_manager = adv_system.LayerManager
+	
+	# LayerManagerの統合機能を使用してレイヤーを初期化
+	var parent_scene = get_tree().current_scene
+	var layer_mappings = layer_manager.initialize_argode_layers(
+		parent_scene,
 		auto_create_layers,
 		background_layer_path,
 		character_layer_path,
 		ui_layer_path,
-		adv_system
+		self
 	)
 	
-	if not success:
-		print("❌ ArgodeScreen: LayerInitializationManager initialization failed")
+	if layer_mappings.is_empty():
+		print("❌ ArgodeScreen: Layer initialization failed")
 		return
 	
-	# レイヤーセットアップを実行
-	var parent_scene = get_tree().current_scene
-	success = layer_initialization_manager.setup_layers(parent_scene, self)
-	
-	if success:
-		print("✅ ArgodeScreen: Layer initialization completed successfully")
-	else:
-		print("❌ ArgodeScreen: Layer setup failed")
+	print("✅ ArgodeScreen: Layer initialization completed via LayerManager integration")
+	print("   Layers: ", layer_mappings.keys())
 
 # === カスタムコマンド統合 ===
 
@@ -571,18 +542,19 @@ func _setup_ui_manager_integration():
 # === メッセージ表示API ===
 
 func show_message(character_name: String = "", message: String = "", name_color: Color = Color.WHITE, override_multi_label_ruby: bool = false):
-	"""メッセージを表示する（MessageDisplayManagerに委譲）"""
-	if message_display_manager:
-		message_display_manager.show_message(character_name, message, name_color, override_multi_label_ruby)
+	"""メッセージを表示する（UIManager統合機能使用）"""
+	if adv_system and adv_system.UIManager:
+		adv_system.UIManager.display_message_with_effects(character_name, message, name_color, override_multi_label_ruby)
 	else:
-		_log_manager_not_available("MessageDisplayManager")
+		_log_manager_not_available("UIManager")
 
 func show_choices(choices: Array, is_numbered: bool = false):
-	"""選択肢を表示する（MessageDisplayManagerに委譲）"""
-	if message_display_manager:
-		message_display_manager.show_choices(choices, is_numbered)
+	"""選択肢を表示する（UIManager統合機能使用）"""
+	if adv_system and adv_system.UIManager:
+		# UIManagerの選択肢表示機能を呼び出し（既存メソッドを使用）
+		adv_system.UIManager.show_choices(choices, is_numbered)
 	else:
-		_log_manager_not_available("MessageDisplayManager")
+		_log_manager_not_available("UIManager")
 
 func _log_manager_not_available(manager_name: String):
 	"""マネージャー不在エラーログの統一メソッド"""

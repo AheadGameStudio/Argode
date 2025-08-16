@@ -1,3 +1,6 @@
+# UIManager.gd
+# v2設計: UI管理システム - 統合版
+# v2.5統合: UIElementDiscoveryManager機能統合
 extends CanvasLayer
 
 var name_label: Label
@@ -483,3 +486,142 @@ func set_main_screen(screen: Node):
 		print("🖥️ Main screen set: ", screen.name)
 	else:
 		print("⚠️ Invalid screen provided to set_main_screen")
+
+# === 統合: UIElementDiscoveryManager機能 ===
+
+func discover_ui_elements(
+	target_root: Node,
+	message_box_path: NodePath = NodePath(""),
+	name_label_path: NodePath = NodePath(""),
+	message_label_path: NodePath = NodePath(""),
+	choice_container_path: NodePath = NodePath(""),
+	choice_panel_path: NodePath = NodePath(""),
+	choice_vbox_path: NodePath = NodePath(""),
+	continue_prompt_path: NodePath = NodePath("")
+) -> Dictionary:
+	"""UI要素を自動発見（UIElementDiscoveryManager統合）"""
+	
+	if not target_root:
+		print("❌ UIManager: No root node provided for UI element discovery")
+		return {}
+	
+	print("🔍 UIManager: Starting UI element discovery")
+	print("  - Root node: ", target_root.name, " (", target_root.get_class(), ")")
+	
+	# @exportで指定されたNodePathを優先使用
+	var message_box = _get_ui_node_from_path_or_fallback(target_root, message_box_path, "MessageBox")
+	var name_label = _get_ui_node_from_path_or_fallback(target_root, name_label_path, "NameLabel", message_box)
+	var message_label = _get_ui_node_from_path_or_fallback(target_root, message_label_path, "MessageLabel", message_box)
+	
+	var choice_container = _get_ui_node_from_path_or_fallback(target_root, choice_container_path, "ChoiceContainer")
+	var choice_panel = _get_ui_node_from_path_or_fallback(target_root, choice_panel_path, "ChoicePanel", choice_container)
+	var choice_vbox = _get_ui_node_from_path_or_fallback(target_root, choice_vbox_path, "VBoxContainer", choice_panel)
+	
+	var continue_prompt = _get_ui_node_from_path_or_fallback(target_root, continue_prompt_path, "ContinuePrompt")
+	
+	# UIManagerの内部参照を更新
+	if name_label:
+		self.name_label = name_label
+	if message_label:
+		self.text_label = message_label
+	if choice_vbox:
+		self.choice_container = choice_vbox
+	
+	var discovered_elements = {
+		"message_box": message_box,
+		"name_label": name_label,
+		"message_label": message_label,
+		"choice_container": choice_container,
+		"choice_panel": choice_panel,
+		"choice_vbox": choice_vbox,
+		"continue_prompt": continue_prompt
+	}
+	
+	print("✅ UIManager: UI element discovery complete - elements found: ", discovered_elements.keys().size())
+	return discovered_elements
+
+func _get_ui_node_from_path_or_fallback(root_node: Node, node_path: NodePath, fallback_name: String, parent_node: Node = null) -> Node:
+	"""NodePathが指定されていればそれを使用、なければ自動発見（UIElementDiscoveryManager統合）"""
+	
+	# 1. @export NodePathが指定されている場合
+	if not node_path.is_empty():
+		var node = root_node.get_node_or_null(node_path)
+		if node:
+			print("   ✅ UIManager: Using NodePath: ", fallback_name, " -> ", node_path, " (", node.get_class(), ")")
+			return node
+		else:
+			print("   ⚠️ UIManager: NodePath not found: ", node_path, " for ", fallback_name)
+	
+	# 2. フォールバック：自動発見
+	var search_root = parent_node if parent_node else root_node
+	var node = search_root.find_child(fallback_name, true, false)
+	
+	if node:
+		print("   🔍 UIManager: Auto-discovered: ", fallback_name, " -> ", node.get_path(), " (", node.get_class(), ")")
+	else:
+		print("   ❌ UIManager: Not found: ", fallback_name)
+	
+	return node
+
+# === 統合: MessageDisplayManager機能 ===
+
+func display_message_with_effects(
+	character_name: String = "", 
+	message: String = "", 
+	name_color: Color = Color.WHITE, 
+	override_multi_label_ruby: bool = false
+):
+	"""メッセージを表示する（MessageDisplayManager統合）"""
+	print("🔍 [UIManager] display_message_with_effects called:")
+	print("  - character: ", character_name, ", message: ", message)
+	
+	if not text_label:
+		print("❌ UIManager: MessageLabel not available for message display")
+		return
+	
+	# UI要素の表示制御
+	if current_sample_ui:
+		current_sample_ui.visible = true
+	if choice_container:
+		choice_container.visible = false
+	
+	# キャラクター名の設定
+	if character_name.is_empty():
+		if name_label:
+			name_label.visible = false
+	else:
+		if name_label:
+			name_label.text = character_name
+			name_label.modulate = name_color
+			name_label.visible = true
+	
+	# メッセージ表示処理
+	_display_message_text(message, override_multi_label_ruby)
+	
+	print("✅ UIManager: Message display complete")
+
+func _display_message_text(message: String, override_multi_label_ruby: bool = false):
+	"""メッセージテキストの表示処理（内部メソッド）"""
+	if not text_label:
+		return
+	
+	# RubyRichTextLabel対応
+	if text_label.get_class() == "RubyRichTextLabel" or text_label.has_method("set_ruby_data"):
+		print("🔤 UIManager: Using RubyRichTextLabel for message display")
+		
+		# ルビ解析とテキスト設定
+		var ruby_parser = preload("res://addons/argode/ui/ruby/RubyParser.gd").new()
+		var parsed_result = ruby_parser.parse_ruby_text(message)
+		
+		if parsed_result.rubies.size() > 0:
+			text_label.set_ruby_data(parsed_result.rubies)
+			text_label.text = parsed_result.base_text
+			print("🔤 UIManager: Set %d ruby entries" % parsed_result.rubies.size())
+		else:
+			text_label.text = message
+			text_label.clear_ruby_data() if text_label.has_method("clear_ruby_data") else null
+	else:
+		# 通常のRichTextLabel
+		text_label.text = message
+	
+	print("📝 UIManager: Message text set successfully")
