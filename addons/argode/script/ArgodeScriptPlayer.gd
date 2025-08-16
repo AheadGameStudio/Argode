@@ -484,9 +484,12 @@ func _parse_and_execute(line: String) -> bool:
 			if not success:
 				push_warning("⚠️ Failed to change background to:", scene_name)
 		else:
-			# フォールバック: 旧CharacterManager方式
-			if character_manager:
-				await character_manager.show_scene(scene_name, transition)
+			# フォールバック: LayerManagerを直接使用
+			if layer_manager:
+				var bg_path = "res://assets/images/backgrounds/" + scene_name + ".png"
+				await layer_manager.change_background(bg_path, transition)
+			else:
+				push_warning("⚠️ No LayerManager available for background handling")
 		
 		# Only wait for transition if it's not "none"
 		return (transition != "none")
