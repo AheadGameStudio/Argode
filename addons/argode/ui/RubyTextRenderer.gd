@@ -13,6 +13,8 @@ class_name RubyTextRenderer
 @export var ruby_spacing_extra: float = 3  # フリガナの追加スペース
 
 # デフォルトフォントの設定（プロジェクトのフォントを使用）
+# TODO: Argodeプロジェクトとして汎用のフォントファイル（再配布可能な多言語対応のもの）に置き換える
+# TODO: ゲームプロジェクト側で設定できるようにする。
 var default_main_font_path: String = "res://assets/common/fonts/03スマートフォントUI.otf"
 var default_ruby_font_path: String = "res://assets/common/fonts/03スマートフォントUI.otf"
 

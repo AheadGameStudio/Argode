@@ -11,6 +11,8 @@ class_name ArgodeScreen
 # === 新しいRubyTextManager統合 ===
 const RubyTextManager = preload("res://addons/argode/ui/ruby/RubyTextManager.gd")
 const RubyParser = preload("res://addons/argode/ui/ruby/RubyParser.gd")
+const RubyMessageHandler = preload("res://addons/argode/ui/ruby/RubyMessageHandler.gd")
+const MessageDisplayManager = preload("res://addons/argode/ui/display/MessageDisplayManager.gd")
 
 # === シグナル ===
 signal screen_closed(return_value)
@@ -86,6 +88,10 @@ var ruby_font: Font = null
 # === RubyTextManager統合（新しいアーキテクチャ） ===
 var ruby_text_manager: RubyTextManager = null  # Ruby処理の専用マネージャー
 @export var use_ruby_text_manager: bool = true  # 新しいRubyTextManagerを使用するか（テスト有効化）
+
+# === Ruby Message Handler ===
+var ruby_message_handler: RubyMessageHandler = null  # Ruby処理専用ハンドラー
+var message_display_manager: MessageDisplayManager = null  # メッセージ表示専用マネージャー
 
 # === RubyRichTextLabel統合 ===
 var current_rubies: Array = []  # 現在のメッセージのルビデータ
@@ -167,6 +173,10 @@ func _emit_screen_ready():
 	
 	# RubyRichTextLabel設定
 	_setup_ruby_rich_text_label()
+	
+	# RubyMessageHandler初期化
+	_initialize_ruby_message_handler()
+	_initialize_message_display_manager()
 	
 	# 自動スクリプト開始
 	if auto_start_script:
@@ -459,6 +469,40 @@ func _initialize_ruby_text_manager():
 	print("✅ RubyTextManager initialized successfully")
 	print("🔍 RubyTextManager debug info: %s" % ruby_text_manager.debug_info())
 
+func _initialize_ruby_message_handler():
+	"""RubyMessageHandlerの初期化"""
+	print("🚀 Initializing RubyMessageHandler...")
+	
+	# RubyMessageHandlerインスタンス作成
+	ruby_message_handler = RubyMessageHandler.new(message_label)
+	
+	# 設定を引き継ぎ
+	if ruby_message_handler:
+		ruby_message_handler.use_ruby_rich_text_label = use_ruby_rich_text_label
+		print("✅ RubyMessageHandler initialized successfully")
+	else:
+		print("❌ Failed to initialize RubyMessageHandler")
+
+func _initialize_message_display_manager():
+	"""MessageDisplayManagerの初期化"""
+	print("🚀 Initializing MessageDisplayManager...")
+	
+	# MessageDisplayManagerインスタンス作成
+	message_display_manager = MessageDisplayManager.new(self)
+	
+	# UI要素を設定
+	message_display_manager.set_ui_elements(
+		message_box, name_label, message_label,
+		choice_container, choice_panel, choice_vbox, continue_prompt
+	)
+	
+	# 関連システムを設定
+	message_display_manager.set_ruby_message_handler(ruby_message_handler)
+	message_display_manager.set_typewriter(typewriter)
+	message_display_manager.set_ruby_text_renderer(ruby_text_renderer)
+	
+	print("✅ MessageDisplayManager initialized successfully")
+
 func _on_ruby_text_updated(ruby_data: Array):
 	"""RubyTextManagerからのruby_text_updatedシグナル処理"""
 	print("📝 Ruby text updated: %d items" % ruby_data.size())
@@ -689,143 +733,18 @@ func _start_auto_script():
 # === メッセージ表示API ===
 
 func show_message(character_name: String = "", message: String = "", name_color: Color = Color.WHITE, override_multi_label_ruby: bool = false):
-	"""メッセージを表示する（タイプライター付き）
-	@param override_multi_label_ruby: trueで複数Label方式を強制使用（通常はuse_multi_label_rubyプロパティを使用）
-	"""
-	print("🔍 [Debug] show_message called:")
-	print("  - message_box: ", message_box)
-	print("  - message_label: ", message_label)
-	print("  - message_box is null: ", message_box == null)
-	print("  - message_label is null: ", message_label == null)
-	
-	if not message_box or not message_label:
-		push_error("❌ AdvScreen: MessageBox or MessageLabel not available")
-		print("❌ [Debug] Missing UI elements - attempting re-initialization")
-		_auto_discover_ui_elements()  # 再初期化を試行
-		if not message_box or not message_label:
-			push_error("❌ AdvScreen: UI elements still not available after re-initialization")
-			return
-		else:
-			print("✅ [Debug] UI elements found after re-initialization")
-	
-	message_box.visible = true
-	if choice_container:
-		choice_container.visible = false
-	if continue_prompt:
-		continue_prompt.visible = false
-	is_message_complete = false
-	
-	# 前のメッセージのルビデータをクリア
-	if current_rubies:
-		current_rubies.clear()
-		print("🔄 Previous current_rubies cleared")
-	
-	if character_name.is_empty():
-		if name_label:
-			name_label.text = ""
-			name_label.visible = false
+	"""メッセージを表示する（MessageDisplayManagerに委譲）"""
+	if message_display_manager:
+		message_display_manager.show_message(character_name, message, name_color, override_multi_label_ruby)
 	else:
-		if name_label:
-			name_label.text = character_name
-			name_label.modulate = name_color
-			name_label.visible = true
-	
-	var processed_message = _process_escape_sequences(message)
-	
-	# 初回呼び出し時にRubyRichTextLabel設定を確認
-	if use_ruby_rich_text_label:
-		print("🔧 [Lazy Init] RubyRichTextLabel setup not yet done, triggering...")
-		_setup_ruby_rich_text_label()
-	
-	# ルビシステム選択（複数Label方式は廃止、常にfalse）
-	var should_use_multi_label = override_multi_label_ruby
-	
-	if use_ruby_rich_text_label and (message_label is RubyRichTextLabel or (message_label != null and message_label.has_method("set_ruby_data"))):
-		print("🎨 Using RubyRichTextLabel ruby system")
-		
-		# 前のルビデータをクリア
-		if message_label.has_method("clear_ruby_data"):
-			message_label.clear_ruby_data()
-			print("🔄 Previous ruby data cleared")
-		
-		# RubyRichTextLabel方式でルビを表示
-		if ruby_text_renderer:
-			ruby_text_renderer.visible = false
-		message_label.visible = true
-		
-		# BBCode形式のルビを元の【｜】形式に逆変換
-		var raw_ruby_message = RubyParser.reverse_ruby_conversion(processed_message)
-		print("🔄 [Debug] Raw ruby message: '%s'" % raw_ruby_message.replace("\n", "\\n"))
-		
-		# シンプルな改行調整を適用
-		var adjusted_message = simple_ruby_line_break_adjustment(raw_ruby_message)
-		print("✅ [Simple] Using adjusted message: '%s'" % adjusted_message.replace("\n", "\\n"))
-		
-		set_text_with_ruby_draw(adjusted_message)
-		
-		# TypewriterTextでタイプライター効果（RubyRichTextLabel使用時はclean_textを使用）
-		if typewriter:
-			# RubyRichTextLabel用にclean_textを取得
-			var parse_result = _parse_ruby_syntax(adjusted_message)
-			var clean_text_for_typing = parse_result.text
-			print("🎨 TypewriterText using clean text for RubyRichTextLabel: '%s'" % clean_text_for_typing)
-			typewriter.start_typing(clean_text_for_typing)
-		else:
-			is_message_complete = true
-			if continue_prompt:
-				continue_prompt.visible = true
-	elif should_use_multi_label and ruby_text_renderer:
-		print("🏷️ Using multi-label ruby system")
-		# 複数Label方式でルビを表示
-		ruby_text_renderer.set_text_with_ruby(processed_message)
-		# メインラベルは非表示（RubyTextRendererが代替）
-		message_label.visible = false
-		ruby_text_renderer.visible = true
-		# タイプライターは無効化（複数Labelでは複雑）
-		is_message_complete = true
-		if continue_prompt:
-			continue_prompt.visible = true
-	else:
-		# 従来のBBCodeベースのルビシステム
-		print("🏷️ Using BBCode-based ruby system")
-		if ruby_text_renderer:
-			ruby_text_renderer.visible = false
-		message_label.visible = true
-		
-		if typewriter:
-			typewriter.start_typing(processed_message)
-		else:
-			message_label.text = processed_message
-			is_message_complete = true
-			if continue_prompt:
-				continue_prompt.visible = true
-	
-	print("💬 AdvScreen Message: [", character_name, "] ", processed_message)
+		print("❌ ArgodeScreen: MessageDisplayManager not available")
 
 func show_choices(choices: Array, is_numbered: bool = false):
-	"""選択肢を表示する"""
-	if not choice_container or not choice_vbox:
-		push_error("❌ AdvScreen: ChoiceContainer or choice_vbox not available")
-		return
-	
-	if message_box:
-		message_box.visible = true
-	choice_container.visible = true
-	if continue_prompt:
-		continue_prompt.visible = false
-	
-	_clear_choice_buttons()
-	
-	for i in range(choices.size()):
-		var button = Button.new()
-		button.text = ""
-		if is_numbered:
-			button.text += str(i + 1) + "."
-		button.text += choices[i]
-		button.pressed.connect(_on_choice_selected.bind(i))
-		choice_vbox.add_child(button)
-	
-	print("🤔 AdvScreen Choices displayed: ", choices.size(), " options")
+	"""選択肢を表示する（MessageDisplayManagerに委譲）"""
+	if message_display_manager:
+		message_display_manager.show_choices(choices, is_numbered)
+	else:
+		print("❌ ArgodeScreen: MessageDisplayManager not available")
 
 func hide_ui():
 	"""UI全体を非表示にする"""
@@ -960,116 +879,33 @@ func set_message_window_visible(visible: bool):
 # 実際のルビ描画はRubyRichTextLabelで処理されるため削除
 
 func simple_ruby_line_break_adjustment(text: String) -> String:
-	"""行をまたぐルビ対象文字の前にのみ改行を挿入"""
-	print("🔧 [Smart Fix] Checking for ruby targets that cross lines")
-	
-	if not message_label:
-		print("❌ [Smart Fix] No message_label available")
+	"""行をまたぐルビ対象文字の前にのみ改行を挿入 - RubyMessageHandlerに委譲"""
+	if ruby_message_handler:
+		return ruby_message_handler.simple_ruby_line_break_adjustment(text)
+	else:
+		print("⚠️ RubyMessageHandler not available, returning original text")
 		return text
-	
-	var font = message_label.get_theme_default_font()
-	if not font:
-		print("❌ [Smart Fix] No font available")
-		return text
-	
-	var font_size = message_label.get_theme_font_size("normal_font_size")
-	var container_width = message_label.get_rect().size.x
-	
-	if container_width <= 0:
-		print("❌ [Smart Fix] Invalid container width: %f" % container_width)
-		return text
-	
-	print("🔧 [Smart Fix] Container width: %f, font size: %d" % [container_width, font_size])
-	
-	# 【漢字｜ひらがな】パターンを検索
-	var regex = RegEx.new()
-	regex.compile("【([^｜]+)｜[^】]+】")
-	
-	var result = text
-	var matches = regex.search_all(result)
-	
-	for match in matches:
-		var full_match = match.get_string()
-		var kanji_part = match.get_string(1)  # 【】内の漢字部分
-		var match_start = result.find(full_match)
-		
-		if match_start >= 0:
-			# このルビ対象文字が行をまたぐかどうかをチェック
-			if _will_ruby_cross_line(result, match_start, kanji_part, font, font_size, container_width):
-				print("🔧 [Cross Line] Ruby target '%s' will cross line - adding break" % kanji_part)
-				
-				# ルビ対象文字の前に改行を挿入
-				var before_ruby = result.substr(0, match_start)
-				var from_ruby = result.substr(match_start)
-				result = before_ruby.strip_edges() + "\n" + from_ruby
-			else:
-				print("🔧 [Same Line] Ruby target '%s' stays on same line - no break needed" % kanji_part)
-	
-	print("🔧 [Smart Fix] Result: '%s'" % result.replace("\n", "\\n"))
-	return result
 
 func _will_ruby_cross_line(text: String, ruby_start_pos: int, kanji_part: String, font: Font, font_size: int, container_width: float) -> bool:
-	"""ルビ対象文字が行をまたぐかどうかを判定"""
-	
-	# ruby_start_pos以前の文字で、最後の改行位置を見つける
-	var line_start_pos = 0
-	var last_newline = text.rfind("\n", ruby_start_pos - 1)
-	if last_newline >= 0:
-		line_start_pos = last_newline + 1
-	
-	# 現在行の開始からルビ対象文字までのテキスト
-	var line_before_ruby = text.substr(line_start_pos, ruby_start_pos - line_start_pos)
-	
-	# 現在行の幅を計算
-	var current_line_width = font.get_string_size(line_before_ruby, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-	
-	# ルビ対象文字の幅を計算
-	var kanji_width = font.get_string_size(kanji_part, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-	
-	# ルビ対象文字を追加すると行幅を超えるかどうか
-	var will_cross = (current_line_width + kanji_width) > container_width
-	
-	print("📏 [Line Check] Line before ruby: '%s' (width: %f)" % [line_before_ruby.replace("\n", "\\n"), current_line_width])
-	print("📏 [Line Check] Kanji '%s' width: %f, total would be: %f, container: %f" % [kanji_part, kanji_width, current_line_width + kanji_width, container_width])
-	print("📏 [Line Check] Will cross line: %s" % will_cross)
-	
-	return will_cross
+	"""ルビ対象文字が行をまたぐかどうかを判定 - RubyMessageHandlerに委譲"""
+	if ruby_message_handler:
+		return ruby_message_handler._will_ruby_cross_line(text, ruby_start_pos, kanji_part, font, font_size, container_width)
+	else:
+		print("⚠️ RubyMessageHandler not available, returning false")
+		return false
 
 func set_text_with_ruby_draw(text: String):
-	"""ルビ付きテキストを設定（RubyRichTextLabel優先）"""
-	print("🔍 [Ruby Debug] set_text_with_ruby_draw called with: '%s'" % text)
-	print("🔍 [Ruby Debug] use_ruby_rich_text_label = %s" % use_ruby_rich_text_label)
-	print("🔍 [Ruby Debug] message_label is RubyRichTextLabel = %s" % (message_label is RubyRichTextLabel))
-	
-	# RubyRichTextLabelが利用可能な場合は優先使用
-	if use_ruby_rich_text_label and message_label is RubyRichTextLabel:
-		print("🎨 [RubyRichTextLabel] Using RubyRichTextLabel system")
-		
-		# ルビを解析
-		var parse_result = _parse_ruby_syntax(text)
-		var clean_text = parse_result.text
-		var rubies = parse_result.rubies
-		
-		print("🎨 [RubyRichTextLabel] Clean text: '%s'" % clean_text)
-		print("🎨 [RubyRichTextLabel] Found %d rubies" % rubies.size())
-		
-		# メインテキストを設定
-		message_label.text = clean_text
-		
-		# ルビデータを計算して設定
-		var ruby_label = message_label as RubyRichTextLabel
-		ruby_label.calculate_ruby_positions(rubies)
-		
-		# 調整済みテキストを保存（TypewriterText用）
-		adjusted_text = clean_text
-		
+	"""ルビ付きテキストを設定 - RubyMessageHandlerに委譲"""
+	if ruby_message_handler:
+		ruby_message_handler.set_text_with_ruby_draw(text)
+		# 状態を同期
+		adjusted_text = ruby_message_handler.get_adjusted_text()
+		current_rubies = ruby_message_handler.get_current_ruby_data()
 	else:
-		# 通常のRichTextLabel処理
-		print("🎨 [Standard] Using standard RichTextLabel")
-		message_label.text = text
+		print("⚠️ RubyMessageHandler not available, using fallback")
+		if message_label:
+			message_label.text = text
 		adjusted_text = text
-	
-	print("✅ [Ruby Debug] set_text_with_ruby_draw completed")
 
 # use_draw_ruby=false により _update_ruby_visibility_for_position 関数は削除（デッドコード）
 
@@ -1078,64 +914,20 @@ func set_text_with_ruby_draw(text: String):
 # use_draw_ruby=false により _calculate_ruby_positions 関数は削除（デッドコード）
 
 func _parse_ruby_syntax(text: String) -> Dictionary:
-	"""【漢字｜ふりがな】形式のテキストを解析"""
-	print("🚀🚀🚀 [NEW PARSE] _parse_ruby_syntax CALLED WITH FIXED CODE! 🚀🚀🚀")
-	
-	# BBCodeを保持しつつルビを処理する新しいアプローチ
-	print("🔍 [Ruby Parse] Original text: '%s'" % text)
-	
-	var clean_text = ""
-	var rubies = []
-	var pos = 0
-	
-	print("🔍 [Ruby Debug] Parsing text with BBCode preserved: '%s'" % text)
-	
-	var ruby_pattern = RegEx.new()
-	ruby_pattern.compile("【([^｜]+)｜([^】]+)】")
-	
-	var offset = 0
-	var matches = ruby_pattern.search_all(text)
-	print("🔍 [Ruby Debug] Found %d ruby matches" % matches.size())
-	
-	for result in matches:
-		# マッチ前のテキスト
-		var before_text = text.substr(offset, result.get_start() - offset)
-		clean_text += before_text
-		print("🔍 [Ruby Parse] Before text: '%s', clean_text_length_before: %d" % [before_text, clean_text.length()])
-		
-		# BBCodeを除去して実際の表示位置を計算
-		var regex_bbcode = RegEx.new()
-		regex_bbcode.compile("\\[/?[^\\]]*\\]")
-		var clean_text_without_bbcode = regex_bbcode.sub(clean_text, "", true)
-		var kanji_start_pos = clean_text_without_bbcode.length()
-		
-		# 漢字部分
-		var kanji = result.get_string(1)
-		var reading = result.get_string(2)
-		clean_text += kanji
-		
-		print("🔍 [Ruby Parse] Added kanji: '%s', clean_pos=%d (BBCode-adjusted), clean_text_after='%s'" % [kanji, kanji_start_pos, clean_text])
-		
-		# ルビ情報を保存（BBCode除去後の位置で）
-		rubies.append({
-			"kanji": kanji,
-			"reading": reading,
-			"clean_pos": kanji_start_pos
-		})
-		
-		offset = result.get_end()
-	
-	# 残りのテキスト
-	clean_text += text.substr(offset)
-	
-	print("🔍 [Ruby Debug] Result: clean_text='%s', rubies=%s" % [clean_text, rubies])
-	return {"text": clean_text, "rubies": rubies}
+	"""【漢字｜ふりがな】形式のテキストを解析 - RubyMessageHandlerに委譲"""
+	if ruby_message_handler:
+		return ruby_message_handler._parse_ruby_syntax(text)
+	else:
+		print("⚠️ RubyMessageHandler not available, returning empty result")
+		return {"text": text, "rubies": []}
 
 # === RubyRichTextLabelサポートメソッド ===
 
 func get_current_ruby_data() -> Array:
-	"""現在のルビデータを取得（TypewriterTextからアクセス用）"""
-	if message_label and message_label.has_method("get_ruby_data"):
+	"""現在のルビデータを取得（TypewriterTextからアクセス用） - RubyMessageHandlerに委譲"""
+	if ruby_message_handler:
+		return ruby_message_handler.get_current_ruby_data()
+	elif message_label and message_label.has_method("get_ruby_data"):
 		return message_label.get_ruby_data()
 	return current_rubies if current_rubies else []
 
@@ -1145,12 +937,10 @@ func get_message_label():
 
 # 改行調整されたテキストを取得
 func get_adjusted_text() -> String:
-	"""改行調整されたテキストを取得（TypewriterTextからアクセス用）"""
-	print("🚀 [CRITICAL] get_adjusted_text() called - adjusted_text: '%s'" % adjusted_text.replace("\n", "\\n"))
-	if adjusted_text.is_empty():
-		print("🚀 [CRITICAL] adjusted_text is empty, returning message_label.text")
-		print("⚠️ [Ruby Text Access] adjusted_text is empty, returning message_label.text")
+	"""改行調整されたテキストを取得（TypewriterTextからアクセス用） - RubyMessageHandlerに委譲"""
+	if ruby_message_handler:
+		return ruby_message_handler.get_adjusted_text()
+	elif not adjusted_text.is_empty():
+		return adjusted_text
+	else:
 		return message_label.text if message_label else ""
-	print("🚀 [CRITICAL] Returning adjusted text length: %d" % adjusted_text.length())
-	print("🔍 [Ruby Text Access] Returning adjusted text: '%s'" % adjusted_text.replace("\n", "\\n"))
-	return adjusted_text
