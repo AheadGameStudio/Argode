@@ -13,6 +13,9 @@ const RubyTextManager = preload("res://addons/argode/ui/ruby/RubyTextManager.gd"
 const RubyParser = preload("res://addons/argode/ui/ruby/RubyParser.gd")
 const RubyMessageHandler = preload("res://addons/argode/ui/ruby/RubyMessageHandler.gd")
 const MessageDisplayManager = preload("res://addons/argode/ui/display/MessageDisplayManager.gd")
+const TypewriterTextIntegrationManager = preload("res://addons/argode/ui/managers/TypewriterTextIntegrationManager.gd")
+const LayerInitializationManager = preload("res://addons/argode/ui/managers/LayerInitializationManager.gd")
+const UIElementDiscoveryManager = preload("res://addons/argode/ui/managers/UIElementDiscoveryManager.gd")
 
 # === シグナル ===
 signal screen_closed(return_value)
@@ -25,6 +28,9 @@ var is_screen_active: bool = false
 var return_value: Variant = null
 var screen_parameters: Dictionary = {}
 var parent_screen = null
+
+# === UI要素発見マネージャー ===
+var ui_element_discovery_manager: UIElementDiscoveryManager = null
 
 # === ArgodeSystem統合 ===
 var adv_system: Node = null
@@ -56,18 +62,13 @@ var choice_vbox: VBoxContainer = null
 var continue_prompt: Control = null
 
 # === TypewriterText統合 ===
-var typewriter: TypewriterText = null
-var ruby_text_renderer: RubyTextRenderer = null  # 複数Label方式のルビ表示システム
+var typewriter_integration_manager: TypewriterTextIntegrationManager = null
 var is_message_complete: bool = false
 var handle_input: bool = true
 
-# === 自動スクリプト設定 ===
-## シーン開始時に自動的にスクリプトを実行するかどうか
-@export var auto_start_script: bool = false
-## 自動実行するスクリプトファイルのパス（.rgdファイル）
-@export var default_script_path: String = ""
-## スクリプト開始時のラベル名（通常は"start"）
-@export var start_label: String = "start"
+# === 削除済み: 自動スクリプト設定 ===
+# AutoScript機能はArgodeSystemに移管済み
+# use ArgodeSystem.set_auto_start_label() instead
 
 # === ルビ表示設定 ===
 ## RubyRichTextLabelを使用するかどうか（推奨実装）
@@ -93,6 +94,9 @@ var ruby_text_manager: RubyTextManager = null  # Ruby処理の専用マネージ
 var ruby_message_handler: RubyMessageHandler = null  # Ruby処理専用ハンドラー
 var message_display_manager: MessageDisplayManager = null  # メッセージ表示専用マネージャー
 
+# === レイヤー初期化マネージャー ===
+var layer_initialization_manager: LayerInitializationManager = null
+
 # === RubyRichTextLabel統合 ===
 var current_rubies: Array = []  # 現在のメッセージのルビデータ
 
@@ -109,14 +113,6 @@ var current_rubies: Array = []  # 現在のメッセージのルビデータ
 @export var character_layer_path: NodePath = ""
 ## UIレイヤーノード（通常は空の場合、このArgodeScreen自身が使用される）
 @export var ui_layer_path: NodePath = ""
-
-# === レイヤーマッピング設定 ===
-## レイヤーの実際のノード参照（背景・キャラクター・UIの3層構造）
-@export var layer_mappings: Dictionary = {
-	"background": null,	# 背景レイヤー（最下層）
-	"character": null,	 # キャラクターレイヤー（中層）
-	"ui": null			# UIレイヤー（最上層、通常はArgodeScreen自身またはui_layer_pathで指定）
-}
 
 func _ready():
 	print("📱 AdvScreen initializing:", name, " (", get_class(), ")")
@@ -151,7 +147,7 @@ func _ready():
 
 func _emit_screen_ready():
 	# UI要素の自動発見
-	_auto_discover_ui_elements()
+	_setup_ui_element_discovery_manager()
 	
 	# TypewriterText初期化
 	_initialize_typewriter()
@@ -159,11 +155,8 @@ func _emit_screen_ready():
 	# RubyTextManager初期化（新しいアーキテクチャ）
 	_initialize_ruby_text_manager()
 	
-	# レイヤーマッピング初期化
-	_initialize_layer_mappings()
-	
-	# ArgodeSystemのレイヤー初期化を確実に実行
-	_ensure_layer_manager_initialization()
+	# レイヤー初期化マネージャーをセットアップ
+	_setup_layer_initialization_manager()
 	
 	# カスタムコマンド接続
 	_connect_custom_command_signals()
@@ -178,9 +171,7 @@ func _emit_screen_ready():
 	_initialize_ruby_message_handler()
 	_initialize_message_display_manager()
 	
-	# 自動スクリプト開始
-	if auto_start_script:
-		call_deferred("_start_auto_script")
+	# 削除済み: 自動スクリプト開始 (ArgodeSystemに移管)
 	
 	screen_ready.emit()
 	on_screen_ready()
@@ -298,123 +289,65 @@ func is_active() -> bool:
 	"""画面がアクティブかチェック"""
 	return is_screen_active
 
-# === UI要素自動発見システム ===
+# === UI要素発見システム ===
 
-func _auto_discover_ui_elements():
-	"""UI要素を設定（@export NodePath優先、フォールバック自動発見）"""
+func _setup_ui_element_discovery_manager():
+	"""UIElementDiscoveryManagerをセットアップ"""
+	ui_element_discovery_manager = UIElementDiscoveryManager.new()
 	
-	print("🔍 [Debug] _auto_discover_ui_elements() called")
-	print("  - Current scene name: ", get_scene_file_path())
-	print("  - Node count: ", get_child_count())
+	var success = ui_element_discovery_manager.initialize(
+		self,
+		message_box_path,
+		name_label_path,
+		message_label_path,
+		choice_container_path,
+		choice_panel_path,
+		choice_vbox_path,
+		continue_prompt_path
+	)
 	
-	# 子ノードの一覧を表示
-	print("🔍 [Debug] Child nodes:")
-	for i in range(get_child_count()):
-		var child = get_child(i)
-		print("  - [", i, "] ", child.name, " (", child.get_class(), ")")
+	if not success:
+		print("❌ ArgodeScreen: UIElementDiscoveryManager initialization failed")
+		return
 	
-	# 1. @exportで指定されたNodePathを優先使用
-	message_box = _get_node_from_path_or_fallback(message_box_path, "MessageBox")
-	name_label = _get_node_from_path_or_fallback(name_label_path, "NameLabel", message_box)
-	message_label = _get_node_from_path_or_fallback(message_label_path, "MessageLabel", message_box)
+	# UI要素を発見して設定
+	var discovered = ui_element_discovery_manager.discover_ui_elements()
 	
-	choice_container = _get_node_from_path_or_fallback(choice_container_path, "ChoiceContainer")
-	choice_panel = _get_node_from_path_or_fallback(choice_panel_path, "ChoicePanel", choice_container)
-	choice_vbox = _get_node_from_path_or_fallback(choice_vbox_path, "VBoxContainer", choice_panel)
+	if discovered.is_empty():
+		print("⚠️ ArgodeScreen: No UI elements discovered")
+		return
 	
-	continue_prompt = _get_node_from_path_or_fallback(continue_prompt_path, "ContinuePrompt")
+	# 発見された要素を変数に設定
+	message_box = discovered.get("message_box")
+	name_label = discovered.get("name_label")
+	message_label = discovered.get("message_label")
+	choice_container = discovered.get("choice_container")
+	choice_panel = discovered.get("choice_panel")
+	choice_vbox = discovered.get("choice_vbox")
+	continue_prompt = discovered.get("continue_prompt")
 	
-	print("📱 AdvScreen UI discovery: MessageBox=", message_box != null, 
-		  ", ChoiceContainer=", choice_container != null, 
-		  ", MessageLabel=", message_label != null)
-	print("   Using NodePath exports: ", _count_exported_paths(), "/7 specified")
-	
-	# デバッグ: 実際に見つかった要素を詳細表示
-	print("🔍 [Debug] Found UI elements:")
-	print("  - message_box: ", message_box, " (type: ", message_box.get_class() if message_box else "null", ")")
-	print("  - message_label: ", message_label, " (type: ", message_label.get_class() if message_label else "null", ")")
+	print("✅ ArgodeScreen: UI element discovery completed successfully")
 	
 	# RubyRichTextLabelの設定
 	_setup_ruby_rich_text_label()
 
-func _get_node_from_path_or_fallback(node_path: NodePath, fallback_name: String, parent_node: Node = null) -> Node:
-	"""NodePathが指定されていればそれを使用、なければ自動発見"""
-	
-	# 1. @export NodePathが指定されている場合
-	if not node_path.is_empty():
-		var node = get_node_or_null(node_path)
-		if node:
-			print("   ✅ Using NodePath: ", fallback_name, " -> ", node_path, " (", node.get_class(), ")")
-			return node
-		else:
-			print("   ⚠️ NodePath not found: ", node_path, " for ", fallback_name)
-	
-	# 2. フォールバック：自動発見
-	var search_root = parent_node if parent_node else self
-	var node = search_root.find_child(fallback_name, true, false)
-	
-	if node:
-		print("   🔍 Auto-discovered: ", fallback_name, " -> ", node.get_path(), " (", node.get_class(), ")")
-	else:
-		print("   ❌ Not found: ", fallback_name)
-	
-	return node
-
-func _count_exported_paths() -> int:
-	"""指定されたNodePathの数をカウント"""
-	var count = 0
-	if not message_box_path.is_empty(): count += 1
-	if not name_label_path.is_empty(): count += 1
-	if not message_label_path.is_empty(): count += 1
-	if not choice_container_path.is_empty(): count += 1
-	if not choice_panel_path.is_empty(): count += 1
-	if not choice_vbox_path.is_empty(): count += 1
-	if not continue_prompt_path.is_empty(): count += 1
-	return count
-
 # === TypewriterText統合システム ===
 
 func _initialize_typewriter():
-	"""TypewriterTextとRubyTextRendererを初期化"""
+	"""TypewriterTextIntegrationManagerを初期化"""
 	if not message_label:
 		print("⚠️ AdvScreen: No message_label found - skipping typewriter initialization")
 		return
 	
-	# TypewriterText初期化
-	typewriter = TypewriterText.new()
-	add_child(typewriter)
-	typewriter.setup_target(message_label)
-	typewriter.skip_key_enabled = false
+	# TypewriterTextIntegrationManager初期化
+	typewriter_integration_manager = TypewriterTextIntegrationManager.new()
+	var success = typewriter_integration_manager.initialize(message_label, self)
 	
-	# RubyTextRenderer初期化（複数Label方式のルビシステム）
-	ruby_text_renderer = RubyTextRenderer.new()
-	ruby_text_renderer.name = "RubyTextRenderer"
-	# message_labelの親に追加してオーバーレイ
-	if message_label.get_parent():
-		message_label.get_parent().add_child(ruby_text_renderer)
-		# message_labelと同じ位置・サイズに設定
-		ruby_text_renderer.position = message_label.position
-		ruby_text_renderer.size = message_label.size
-		ruby_text_renderer.anchor_left = message_label.anchor_left
-		ruby_text_renderer.anchor_top = message_label.anchor_top
-		ruby_text_renderer.anchor_right = message_label.anchor_right
-		ruby_text_renderer.anchor_bottom = message_label.anchor_bottom
+	if success:
+		print("📱 AdvScreen: TypewriterTextIntegrationManager initialized successfully")
 	else:
-		add_child(ruby_text_renderer)
-	
-	# シグナル接続
-	typewriter.typewriter_started.connect(_on_typewriter_started)
-	typewriter.typewriter_finished.connect(_on_typewriter_finished)
-	typewriter.typewriter_skipped.connect(_on_typewriter_skipped)
-	typewriter.character_typed.connect(_on_character_typed)
-	
-	# RichTextLabelのリンククリック処理を接続
-	if message_label is RichTextLabel:
-		message_label.meta_clicked.connect(_on_glossary_link_clicked)
-		message_label.bbcode_enabled = true
-		print("🔗 AdvScreen: Glossary link support enabled")
-	
-	print("📱 AdvScreen: TypewriterText and RubyTextRenderer initialized")
+		print("❌ AdvScreen: TypewriterTextIntegrationManager initialization failed")
+		typewriter_integration_manager = null
 
 func _setup_ruby_rich_text_label():
 	"""RubyRichTextLabelの設定を行う"""
@@ -498,8 +431,9 @@ func _initialize_message_display_manager():
 	
 	# 関連システムを設定
 	message_display_manager.set_ruby_message_handler(ruby_message_handler)
-	message_display_manager.set_typewriter(typewriter)
-	message_display_manager.set_ruby_text_renderer(ruby_text_renderer)
+	if typewriter_integration_manager:
+		message_display_manager.set_typewriter(typewriter_integration_manager.typewriter)
+		message_display_manager.set_ruby_text_renderer(typewriter_integration_manager.ruby_text_renderer)
 	
 	print("✅ MessageDisplayManager initialized successfully")
 
@@ -580,89 +514,32 @@ func _on_glossary_link_clicked(meta: Variant):
 		# 単純なリンクの場合
 		glossary_link_clicked.emit("link", link_data)
 
-# === レイヤーマッピングシステム ===
+# === レイヤー初期化システム ===
 
-func _ensure_layer_manager_initialization():
-	"""LayerManagerの初期化を確実に実行する"""
-	if not adv_system:
-		print("⚠️ ArgodeSystem not available - skipping layer initialization")
-		return
+func _setup_layer_initialization_manager():
+	"""LayerInitializationManagerをセットアップ"""
+	layer_initialization_manager = LayerInitializationManager.new()
 	
-	if adv_system.is_initialized:
-		print("✅ ArgodeSystem already initialized")
-		return
+	var success = layer_initialization_manager.initialize(
+		auto_create_layers,
+		background_layer_path,
+		character_layer_path,
+		ui_layer_path,
+		adv_system
+	)
 	
-	print("🚀 Initializing ArgodeSystem LayerManager...")
-	var success = adv_system.initialize_game(layer_mappings)
 	if not success:
-		print("❌ ArgodeSystem LayerManager initialization failed")
-	else:
-		print("✅ ArgodeSystem LayerManager initialization successful")
-
-func _initialize_layer_mappings():
-	"""レイヤーマッピングの初期化（@export NodePath優先、フォールバック自動発見）"""
+		print("❌ ArgodeScreen: LayerInitializationManager initialization failed")
+		return
 	
+	# レイヤーセットアップを実行
 	var parent_scene = get_tree().current_scene
-	if not parent_scene:
-		print("⚠️ Current scene not found for layer mapping")
-		return
+	success = layer_initialization_manager.setup_layers(parent_scene, self)
 	
-	# 自動展開モードが有効な場合
-	if auto_create_layers:
-		print("🏗️ Auto-creating Argode standard layers...")
-		layer_mappings = AutoLayerSetup.setup_layer_hierarchy(parent_scene)
-		print("✅ Auto-created layers:", layer_mappings.keys())
-		_initialize_layer_manager()
-		return
-	
-	# BackgroundLayer
-	var bg_layer = _get_layer_from_path_or_fallback(background_layer_path, "BackgroundLayer", parent_scene)
-	if bg_layer:
-		layer_mappings["background"] = bg_layer
-	
-	# CharacterLayer  
-	var char_layer = _get_layer_from_path_or_fallback(character_layer_path, "CharacterLayer", parent_scene)
-	if char_layer:
-		layer_mappings["character"] = char_layer
-	
-	# UILayer（NodePathが指定されていない場合はself、指定されている場合はそのノードを使用）
-	var ui_layer = _get_layer_from_path_or_fallback(ui_layer_path, "", parent_scene)
-	if ui_layer:
-		layer_mappings["ui"] = ui_layer
-		print("   🎯 Using specified UI layer: ", ui_layer.get_path())
+	if success:
+		print("✅ ArgodeScreen: Layer initialization completed successfully")
 	else:
-		layer_mappings["ui"] = self
-		print("   🎯 Using self as UI layer: ", self.get_path())
-	
-	print("📱 AdvScreen: Layer mappings initialized:", layer_mappings)
-	
-	# LayerManagerを初期化
-	_initialize_layer_manager()
-
-func _get_layer_from_path_or_fallback(node_path: NodePath, fallback_name: String, parent_scene: Node) -> Node:
-	"""レイヤーをNodePathまたは自動発見で取得"""
-	
-	# 1. @export NodePathが指定されている場合
-	if not node_path.is_empty():
-		var node = get_node_or_null(node_path)
-		if node:
-			print("   ✅ Using layer NodePath: ", fallback_name if not fallback_name.is_empty() else "UILayer", " -> ", node_path)
-			return node
-		else:
-			print("   ⚠️ Layer NodePath not found: ", node_path, " for ", fallback_name if not fallback_name.is_empty() else "UILayer")
-	
-	# 2. フォールバック：自動発見（UIレイヤーの場合はスキップ）
-	if fallback_name.is_empty():
-		# UIレイヤーの場合は自動発見をスキップ（selfがデフォルト）
-		return null
-	
-	var node = parent_scene.find_child(fallback_name, true, false)
-	if node:
-		print("   🔍 Auto-discovered layer: ", fallback_name, " -> ", node.get_path())
-	else:
-		print("   ❌ Layer not found: ", fallback_name)
-	
-	return node
+		print("❌ ArgodeScreen: Layer setup failed")
 
 # === カスタムコマンド統合 ===
 
@@ -702,33 +579,8 @@ func _setup_ui_manager_integration():
 	handle_input = true
 	print("📱 AdvScreen: UI integrated with UIManager")
 
-# === 自動スクリプト開始 ===
-
-func _start_auto_script():
-	"""自動スクリプトを開始"""
-	print("📱 AdvScreen: Starting auto script")
-	
-	if default_script_path.is_empty():
-		print("⚠️ No default script path specified")
-		return
-	
-	if not adv_system:
-		push_error("❌ ArgodeSystem not found")
-		return
-	
-	print("🎬 Auto-starting script:", default_script_path, "from label:", start_label)
-	
-	# LayerManager初期化は_ensure_layer_manager_initialization()で実行済み
-	if not adv_system.is_initialized:
-		print("⚠️ ArgodeSystem not initialized - this should not happen")
-		var success = adv_system.initialize_game(layer_mappings)
-		if not success:
-			print("❌ ArgodeSystem initialization failed")
-			return
-		print("✅ ArgodeSystem initialization successful")
-	
-	# スクリプトを開始
-	adv_system.start_script(default_script_path, start_label)
+# === 削除済み: 自動スクリプト開始 ===
+# _start_auto_script()はArgodeSystemに移管済み
 
 # === メッセージ表示API ===
 
@@ -768,8 +620,8 @@ func _unhandled_input(event):
 	if event.is_action_pressed("ui_accept") or event.is_action_pressed("ui_select"):
 		if message_box.visible and not (choice_container and choice_container.visible):
 			if not is_message_complete:
-				if typewriter:
-					typewriter.skip_typing()
+				if typewriter_integration_manager:
+					typewriter_integration_manager.skip_typing()
 				get_viewport().set_input_as_handled()
 			else:
 				if adv_system and adv_system.Player:
@@ -808,10 +660,13 @@ func _process_escape_sequences(text: String) -> String:
 	return result
 
 func set_script_path(path: String, label: String = "start"):
-	"""スクリプトパスとラベルを設定"""
-	default_script_path = path
-	start_label = label
-	print("📱 AdvScreen: Script path set to:", path, "with label:", label)
+	"""スクリプトパスとラベルを設定（DEPRECATED - ArgodeSystem.set_auto_start_label()を使用してください）"""
+	if adv_system and adv_system.has_method("set_auto_start_label"):
+		adv_system.set_auto_start_label(label)
+		print("📱 AdvScreen: Auto-start label set via ArgodeSystem:", label)
+	else:
+		print("⚠️ DEPRECATED: set_script_path() - use ArgodeSystem.set_auto_start_label() instead")
+		print("📱 AdvScreen: Script path:", path, "label:", label)
 
 # === デバッグ用 ===
 
@@ -827,40 +682,13 @@ func debug_info() -> Dictionary:
 			"message_box": message_box != null,
 			"message_label": message_label != null,
 			"choice_container": choice_container != null,
-			"typewriter": typewriter != null
+			"typewriter": typewriter_integration_manager != null and typewriter_integration_manager.typewriter != null
 		}
 	}
 
 # === v2新機能: メッセージウィンドウ表示制御 ===
 # 注意: v2.1でUIManagerがCanvasLayerレベル制御に変更されたため、
 # 個別UI要素制御は不要になりました。UIManager.visible で全体制御されます。
-
-func _initialize_layer_manager():
-	"""LayerManagerをレイヤーマッピングで初期化"""
-	var adv_system = get_node("/root/ArgodeSystem")
-	if not adv_system:
-		print("⚠️ ArgodeSystem not found for LayerManager initialization")
-		return
-	
-	var layer_manager = adv_system.get("LayerManager")
-	if not layer_manager:
-		print("⚠️ LayerManager not found in ArgodeSystem")
-		return
-	
-	# レイヤーを取得
-	var bg_layer = layer_mappings.get("background")
-	var char_layer = layer_mappings.get("character") 
-	var ui_layer = layer_mappings.get("ui")
-	
-	if bg_layer and char_layer and ui_layer:
-		layer_manager.initialize_layers(bg_layer, char_layer, ui_layer)
-		print("✅ LayerManager initialized with layers:", layer_mappings.keys())
-	else:
-		print("⚠️ Missing layers for LayerManager initialization:", {
-			"background": bg_layer != null,
-			"character": char_layer != null,
-			"ui": ui_layer != null
-		})
 
 func set_message_window_visible(visible: bool):
 	"""メッセージウィンドウの表示/非表示を制御（レガシー互換用）"""

@@ -40,6 +40,9 @@ var layers: Dictionary = {}
 var is_initialized: bool = false
 var initialization_errors: Array[String] = []
 
+# === 自動開始設定 ===
+var auto_start_label: String = ""  # 自動開始するラベル名（空の場合は自動開始しない）
+
 func _ready():
 	print("🎮 ArgodeSystem: Initializing v2 architecture...")
 	# グループに追加（他のノードから参照しやすくする）
@@ -362,6 +365,12 @@ func initialize_game(layer_map: Dictionary) -> bool:
 	is_initialized = true
 	system_initialized.emit()
 	print("✅ ArgodeSystem: Game initialization completed successfully!")
+	
+	# 自動開始ラベルが設定されている場合は実行
+	if not auto_start_label.is_empty():
+		print("🚀 ArgodeSystem: Auto-starting from label: ", auto_start_label)
+		call_deferred("play_from_label", auto_start_label)
+	
 	return true
 
 func _initialize_layer_manager(layer_map: Dictionary):
@@ -458,6 +467,29 @@ func start_script(script_path: String, label_name: String = "start"):
 func is_playing() -> bool:
 	"""シナリオ再生中かどうか"""
 	return Player.is_playing if Player else false
+
+## 自動開始設定API
+func set_auto_start_label(label_name: String):
+	"""自動開始するラベルを設定"""
+	auto_start_label = label_name
+	print("🎬 ArgodeSystem: Auto-start label set to: ", label_name)
+
+func get_auto_start_label() -> String:
+	"""現在の自動開始ラベルを取得"""
+	return auto_start_label
+
+func play_from_label(label_name: String):
+	"""LabelRegistryを使用してラベルから直接再生開始"""
+	if not is_initialized:
+		push_error("🚫 ArgodeSystem not initialized! Call initialize_game() first.")
+		return
+	
+	if not LabelRegistry:
+		push_error("🚫 LabelRegistry not available!")
+		return
+	
+	print("🎬 ArgodeSystem: Playing from label: ", label_name)
+	Player.play_from_label(label_name)
 
 func _preparse_v2_definitions(script_lines: PackedStringArray):
 	"""v2新機能: スクリプト内の定義ステートメントを事前解析"""
