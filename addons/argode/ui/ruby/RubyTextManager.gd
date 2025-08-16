@@ -8,7 +8,7 @@ ArgodeScreen.gdからRuby関連機能を分離し、単一責任原則に基づ�
 
 # 依存クラスのpreload
 const RubyParser = preload("res://addons/argode/ui/ruby/RubyParser.gd")
-const RubyRenderer = preload("res://addons/argode/ruby/RubyRenderer.gd")
+const RubyRenderer = preload("res://addons/argode/ui/ruby/RubyRenderer.gd")
 
 # シグナル
 signal ruby_text_updated(ruby_data: Array)
