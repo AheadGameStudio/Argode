@@ -10,6 +10,7 @@ class_name ArgodeScreen
 
 # === 新しいRubyTextManager統合 ===
 const RubyTextManager = preload("res://addons/argode/ui/ruby/RubyTextManager.gd")
+const RubyParser = preload("res://addons/argode/ui/ruby/RubyParser.gd")
 
 # === シグナル ===
 signal screen_closed(return_value)
@@ -67,10 +68,6 @@ var handle_input: bool = true
 @export var start_label: String = "start"
 
 # === ルビ表示設定 ===
-## 複数Label方式のルビシステムを使用するかどうか
-@export var use_multi_label_ruby: bool = false
-## _draw()関数でルビを直接描画するかどうか（レガシー実装）
-@export var use_draw_ruby: bool = false
 ## RubyRichTextLabelを使用するかどうか（推奨実装）
 @export var use_ruby_rich_text_label: bool = true
 ## ルビのデバッグ表示を有効にするかどうか
@@ -81,7 +78,7 @@ var adjusted_text: String = ""
 
 # === ルビ描画システム（レガシー_draw方式用） ===
 var ruby_data: Array[Dictionary] = []  # 描画するルビ情報
-var display_ruby_data: Array[Dictionary] = []  # 実際に表示するルビ情報（表示制御用）
+# display_ruby_data: use_draw_ruby=false により削除（デッドコード）
 var preserve_ruby_data: bool = false  # TypewriterText実行中はruby_dataを保持
 var ruby_main_font: Font = null
 var ruby_font: Font = null
@@ -452,8 +449,8 @@ func _initialize_ruby_text_manager():
 	# デバッグモード設定
 	ruby_text_manager.set_debug_mode(show_ruby_debug)
 	
-	# 既存の設定を引き継ぎ
-	ruby_text_manager.set_draw_mode(use_draw_ruby)
+	# 既存の設定を引き継ぎ（_draw方式は廃止、常にfalse）
+	ruby_text_manager.set_draw_mode(false)
 	
 	# シグナル接続
 	ruby_text_manager.ruby_text_updated.connect(_on_ruby_text_updated)
@@ -484,17 +481,7 @@ func _on_typewriter_finished():
 		continue_prompt.visible = true
 	print("⌨️ AdvScreen: Typewriter finished")
 	
-	# _draw方式のルビを使用している場合の処理
-	if use_draw_ruby and ruby_data.size() > 0:
-		# タイプライター完了時に全ルビを表示（現在のテキストを元に計算）
-		current_rubies.clear()
-		for ruby_info in ruby_data:
-			current_rubies.append({
-				"kanji": ruby_info.get("kanji", ""),
-				"reading": ruby_info.get("reading", ""),
-				"clean_pos": ruby_info.get("clean_pos", 0)
-			})
-		_calculate_ruby_positions(current_rubies, message_label.text)
+	# use_draw_ruby=false によりレガシー_draw方式コードは削除
 
 func _on_typewriter_skipped():
 	is_message_complete = true
@@ -513,25 +500,11 @@ func _on_typewriter_skipped():
 		else:
 			print("🔍 No raw ruby data available for recalculation")
 	
-	# _draw方式のルビを使用している場合の処理
-	elif use_draw_ruby and ruby_data.size() > 0:
-		# タイプライター完了時に全ルビを表示（現在のテキストを元に計算）
-		current_rubies.clear()
-		for ruby_info in ruby_data:
-			current_rubies.append({
-				"kanji": ruby_info.get("kanji", ""),
-				"reading": ruby_info.get("reading", ""),
-				"clean_pos": ruby_info.get("clean_pos", 0)
-			})
-		_calculate_ruby_positions(current_rubies, message_label.text)
-		print("✅ Legacy ruby positions recalculated on typewriter skip")
+	# use_draw_ruby=false によりレガシー_draw方式コードは削除
 
 func _on_character_typed(_character: String, _position: int):
 	print("🔤 [Character Typed] character='%s', position=%d" % [_character, _position])
-	# _draw方式のルビを使用している場合の処理
-	if use_draw_ruby:
-		print("🔤 [Character Typed] Calling _update_ruby_visibility_for_position")
-		_update_ruby_visibility_for_position(_position)
+	# use_draw_ruby=false によりレガシー_draw方式コードは削除
 	
 	# 継承先でオーバーライド可能
 	on_character_typed(_character, _position)
@@ -760,12 +733,12 @@ func show_message(character_name: String = "", message: String = "", name_color:
 	var processed_message = _process_escape_sequences(message)
 	
 	# 初回呼び出し時にRubyRichTextLabel設定を確認
-	if not use_draw_ruby and use_ruby_rich_text_label:
+	if use_ruby_rich_text_label:
 		print("🔧 [Lazy Init] RubyRichTextLabel setup not yet done, triggering...")
 		_setup_ruby_rich_text_label()
 	
-	# ルビシステム選択（プロパティまたは強制オーバーライド）
-	var should_use_multi_label = use_multi_label_ruby or override_multi_label_ruby
+	# ルビシステム選択（複数Label方式は廃止、常にfalse）
+	var should_use_multi_label = override_multi_label_ruby
 	
 	if use_ruby_rich_text_label and (message_label is RubyRichTextLabel or (message_label != null and message_label.has_method("set_ruby_data"))):
 		print("🎨 Using RubyRichTextLabel ruby system")
@@ -781,7 +754,7 @@ func show_message(character_name: String = "", message: String = "", name_color:
 		message_label.visible = true
 		
 		# BBCode形式のルビを元の【｜】形式に逆変換
-		var raw_ruby_message = _reverse_ruby_conversion(processed_message)
+		var raw_ruby_message = RubyParser.reverse_ruby_conversion(processed_message)
 		print("🔄 [Debug] Raw ruby message: '%s'" % raw_ruby_message.replace("\n", "\\n"))
 		
 		# シンプルな改行調整を適用
@@ -797,26 +770,6 @@ func show_message(character_name: String = "", message: String = "", name_color:
 			var clean_text_for_typing = parse_result.text
 			print("🎨 TypewriterText using clean text for RubyRichTextLabel: '%s'" % clean_text_for_typing)
 			typewriter.start_typing(clean_text_for_typing)
-		else:
-			is_message_complete = true
-			if continue_prompt:
-				continue_prompt.visible = true
-	elif use_draw_ruby:
-		print("🎨 Using draw-based ruby system")
-		# _draw()方式でルビを表示
-		if ruby_text_renderer:
-			ruby_text_renderer.visible = false
-		message_label.visible = true
-		
-		# BBCode形式のルビを元の【｜】形式に逆変換
-		var raw_ruby_message = _reverse_ruby_conversion(processed_message)
-		preserve_ruby_data = true  # ruby_dataを保護
-		set_text_with_ruby_draw(raw_ruby_message)
-		preserve_ruby_data = false  # 保護解除（ただしTypewriterTextが再度設定）
-		
-		# TypewriterTextでタイプライター効果
-		if typewriter:
-			typewriter.start_typing(processed_message)
 		else:
 			is_message_complete = true
 			if continue_prompt:
@@ -1002,20 +955,9 @@ func set_message_window_visible(visible: bool):
 	# else:
 	#     print("⚠️ message_box not found for visibility control")
 
-# === ルビ描画システム（_draw方式） ===
-
-func _draw():
-	"""カスタム描画関数 - RubyTextManagerに完全委譲"""
-	if not use_draw_ruby or display_ruby_data.is_empty():
-		return
-	
-	# RubyTextManagerに描画を委譲
-	if ruby_text_manager:
-		ruby_text_manager.execute_ruby_drawing(self)
-	else:
-		print("⚠️ [ArgodeScreen] RubyTextManager not available for drawing")
-
-	# 削除済み: setup_ruby_fonts()関数はRubyRenderer.gdに移行
+# === ルビ描画システム（_draw方式） - 削除済み ===
+# Note: _draw()方式は use_draw_ruby=false で無効化されており、
+# 実際のルビ描画はRubyRichTextLabelで処理されるため削除
 
 func simple_ruby_line_break_adjustment(text: String) -> String:
 	"""行をまたぐルビ対象文字の前にのみ改行を挿入"""
@@ -1129,199 +1071,11 @@ func set_text_with_ruby_draw(text: String):
 	
 	print("✅ [Ruby Debug] set_text_with_ruby_draw completed")
 
-func _update_ruby_visibility_for_position(typed_position: int):
-	"""タイプライター位置に応じてルビの表示を更新（RubyRichTextLabel優先）"""
-	print("🔍 [Ruby Visibility] typed_position=%d" % typed_position)
-	
-	# RubyRichTextLabelが利用可能な場合は優先使用
-	if use_ruby_rich_text_label and message_label is RubyRichTextLabel:
-		print("✅ Using RubyRichTextLabel for ruby visibility update")
-		var ruby_label = message_label as RubyRichTextLabel
-		ruby_label.update_ruby_positions_for_visible(ruby_label.ruby_data, typed_position)
-		return
-	
-	# レガシー_draw方式（後方互換性のため）
-	print("🔍 [Ruby Visibility] ruby_data.size()=%d" % ruby_data.size())
-	if ruby_data.is_empty():
-		print("🔍 [Ruby Visibility] ruby_data is empty - returning early")
-		return
-	
-	var visible_rubies = []
-	for ruby_info in ruby_data:
-		var kanji_start_pos = ruby_info.get("clean_pos", 0)
-		var kanji_text = ruby_info.get("kanji", "")
-		var kanji_end_pos = kanji_start_pos + kanji_text.length()
-		
-		# ルビ対象文字が完全に表示されている場合のみルビを表示
-		if kanji_end_pos <= typed_position:
-			visible_rubies.append(ruby_info)
-			print("🔍 [Ruby Visible] Kanji '%s' at pos %d-%d is fully visible (typed: %d)" % [kanji_text, kanji_start_pos, kanji_end_pos, typed_position])
-		else:
-			print("🔍 [Ruby Hidden] Kanji '%s' at pos %d-%d not yet fully visible (typed: %d)" % [kanji_text, kanji_start_pos, kanji_end_pos, typed_position])
-	
-	print("🔍 [Ruby Visibility] visible_rubies count: %d" % visible_rubies.size())
-	
-	# 表示するルビがある場合のみ位置を計算
-	if visible_rubies.size() > 0:
-		_calculate_ruby_positions_for_visible(visible_rubies, message_label.text.substr(0, typed_position))
-	else:
-		print("🔍 [Ruby Visibility] No visible rubies - skipping position calculation")
-		# ルビが表示されない場合は表示をクリア
-		display_ruby_data.clear()
-		queue_redraw()
+# use_draw_ruby=false により _update_ruby_visibility_for_position 関数は削除（デッドコード）
 
-func _calculate_ruby_positions_for_visible(visible_rubies: Array, current_text: String):
-	"""表示中のルビの位置を計算"""
-	print("📍 [Ruby Position Calc] _calculate_ruby_positions_for_visible")
-	
-	# 表示するルビがない場合は処理しない
-	if visible_rubies.size() == 0:
-		print("🔍 [Ruby Protection] No visible rubies - clearing display data")
-		display_ruby_data.clear()
-		queue_redraw()
-		return
-	
-	# 表示用のルビデータを更新（常に実行）
-	display_ruby_data.clear()
-	
-	if not message_label or not ruby_main_font:
-		return
-	
-	var font_size = 16
-	if message_label.has_theme_font_size_override("font_size"):
-		font_size = message_label.get_theme_font_size("font_size")
-	
-	# メッセージラベルのグローバル位置を取得
-	var label_global_pos = message_label.global_position
-	var screen_global_pos = global_position
-	var label_offset = label_global_pos - screen_global_pos
-	
-	for ruby in visible_rubies:
-		var kanji_text = ruby.kanji
-		var reading_text = ruby.reading
-		var kanji_pos_in_text = ruby.clean_pos
-		
-		# 表示されているテキストはBBCodeが処理されたプレーンテキスト
-		# message_labelから直接取得する（RichTextLabelのplain_textプロパティを使用）
-		var displayed_text = message_label.get_parsed_text()
-		
-		# クリーンテキストでの漢字位置を、実際に表示されるテキストでの位置に変換
-		# 漢字そのものを探して正確な位置を取得
-		var kanji_start_in_displayed = displayed_text.find(kanji_text, kanji_pos_in_text - 10 if kanji_pos_in_text > 10 else 0)
-		if kanji_start_in_displayed == -1:
-			# 見つからない場合はクリーンポジションをそのまま使用
-			kanji_start_in_displayed = kanji_pos_in_text
-		
-		# 漢字位置までのテキスト幅を計算（BBCode処理後のテキストで）
-		var text_before = displayed_text.substr(0, kanji_start_in_displayed)
-		var text_width = ruby_main_font.get_string_size(text_before, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-		
-		# 漢字の幅を計算
-		var kanji_width = ruby_main_font.get_string_size(kanji_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-		
-		# ルビの幅を計算
-		var ruby_font_size = 14
-		var ruby_width = ruby_font.get_string_size(reading_text, HORIZONTAL_ALIGNMENT_LEFT, -1, ruby_font_size).x
-		
-		# ルビを漢字の中央揃えで配置（メッセージラベルの位置を考慮）
-		var ruby_x = label_offset.x + text_width + (kanji_width - ruby_width) / 2
-		var ruby_y = label_offset.y - ruby_font_size - 3  # メインテキストより上に配置
-		
-		display_ruby_data.append({
-			"reading": reading_text,
-			"kanji": kanji_text,
-			"position": Vector2(ruby_x, ruby_y),
-			"color": Color(0.9, 0.9, 0.9, 1.0)
-		})
-		
-		print("🔍 [Ruby Position] Ruby '%s' at position (%f, %f)" % [reading_text, ruby_x, ruby_y])
-		print("🔍 [Ruby Debug] kanji_text='%s', kanji_pos_in_text=%d" % [kanji_text, kanji_pos_in_text])
-		print("🔍 [Ruby Debug] kanji_start_in_displayed=%d" % kanji_start_in_displayed)
-		print("🔍 [Ruby Debug] text_before='%s', text_width=%f" % [text_before, text_width])
-		print("🔍 [Ruby Debug] kanji_width=%f, ruby_width=%f" % [kanji_width, ruby_width])
-		print("🔍 [Ruby Debug] displayed_text='%s'" % displayed_text)
-	
-	print("🔍 [Ruby Position] Updated display_ruby_data with %d rubies" % display_ruby_data.size())
-	
-	# 再描画をトリガー
-	queue_redraw()
+# use_draw_ruby=false により _calculate_ruby_positions_for_visible 関数は削除（デッドコード）
 
-func _calculate_ruby_positions(rubies: Array, main_text: String):
-	"""ルビの描画位置を計算"""
-	print("🔍 [Ruby Debug] _calculate_ruby_positions called")
-	print("🔍 [Ruby Debug] rubies.size() = %d" % rubies.size())
-	print("🔍 [Ruby Debug] main_text = '%s'" % main_text)
-	print("🔍 [Ruby Debug] message_label = %s" % message_label)
-	print("🔍 [Ruby Debug] ruby_main_font = %s" % ruby_main_font)
-	
-	print("📍 [Ruby Data Clear] Location: _calculate_ruby_positions")
-	ruby_data.clear()
-	
-	if not message_label or not ruby_main_font:
-		print("🔍 [Ruby Debug] Missing message_label or ruby_main_font, exiting")
-		return
-	
-	var font_size = 16
-	if message_label.has_theme_font_size_override("font_size"):
-		font_size = message_label.get_theme_font_size("font_size")
-	
-	print("🔍 [Ruby Debug] Using font_size = %d" % font_size)
-	
-	for i in range(rubies.size()):
-		var ruby = rubies[i]
-		var kanji_text = ruby.kanji
-		var reading_text = ruby.reading
-		var kanji_pos_in_text = ruby.clean_pos
-		
-		print("🔍 [Ruby Debug] Processing ruby %d: kanji='%s', reading='%s', pos=%d" % [i, kanji_text, reading_text, kanji_pos_in_text])
-		
-		# メッセージラベルのグローバル位置を取得
-		var label_global_pos = message_label.global_position
-		var screen_global_pos = global_position
-		var label_offset = label_global_pos - screen_global_pos
-		
-		# 表示されているテキストから文字幅を計算
-		var displayed_text = message_label.get_parsed_text()
-		
-		# クリーンテキストでの漢字位置を、実際に表示されるテキストでの位置に変換
-		var kanji_start_in_displayed = displayed_text.find(kanji_text, kanji_pos_in_text - 10 if kanji_pos_in_text > 10 else 0)
-		if kanji_start_in_displayed == -1:
-			# 見つからない場合はクリーンポジションをそのまま使用
-			kanji_start_in_displayed = kanji_pos_in_text
-		
-		var text_before = displayed_text.substr(0, kanji_start_in_displayed)
-		var text_width = ruby_main_font.get_string_size(text_before, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-		
-		# 漢字の幅を計算
-		var kanji_width = ruby_main_font.get_string_size(kanji_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
-		
-		# ルビの幅を計算
-		var ruby_font_size = 12
-		var ruby_width = ruby_font.get_string_size(reading_text, HORIZONTAL_ALIGNMENT_LEFT, -1, ruby_font_size).x
-		
-		# ルビを漢字の中央揃えで配置（メッセージラベルの位置を考慮）
-		var ruby_x = label_offset.x + text_width + (kanji_width - ruby_width) / 2
-		var ruby_y = label_offset.y - ruby_font_size - 3  # メインテキストより上に配置
-		
-		print("🔍 [Ruby Debug] Calculated position: x=%f, y=%f" % [ruby_x, ruby_y])
-		print("🔍 [Ruby Debug] kanji_start_in_displayed=%d, text_width=%f" % [kanji_start_in_displayed, text_width])
-		print("🔍 [Ruby Debug] displayed_text='%s', text_before='%s'" % [displayed_text, text_before])
-		print("🔍 [Ruby Debug] kanji_width=%f, ruby_width=%f" % [kanji_width, ruby_width])
-		
-		ruby_data.append({
-			"reading": reading_text,
-			"kanji": kanji_text,  # 中央揃えのために漢字も保存
-			"position": Vector2(ruby_x, ruby_y),
-			"color": Color(0.9, 0.9, 0.9, 1.0)  # より明るい色
-		})
-	
-	# display_ruby_data も更新（タイプライター完了時は全ルビを表示）
-	display_ruby_data = ruby_data.duplicate(true)
-	
-	# 再描画をトリガー
-	queue_redraw()
-	print("🎨 Ruby draw positions calculated: %d rubies" % ruby_data.size())
-	print("🎨 Display ruby data updated: %d rubies" % display_ruby_data.size())
+# use_draw_ruby=false により _calculate_ruby_positions 関数は削除（デッドコード）
 
 func _parse_ruby_syntax(text: String) -> Dictionary:
 	"""【漢字｜ふりがな】形式のテキストを解析"""
@@ -1376,43 +1130,6 @@ func _parse_ruby_syntax(text: String) -> Dictionary:
 	
 	print("🔍 [Ruby Debug] Result: clean_text='%s', rubies=%s" % [clean_text, rubies])
 	return {"text": clean_text, "rubies": rubies}
-
-func _reverse_ruby_conversion(bbcode_text: String) -> String:
-	"""BBCode形式のルビを【｜】形式に逆変換"""
-	var result_text = bbcode_text
-	
-	# パターン1: 漢字[font_size=10]（読み）[/font_size] -> 【漢字｜読み】 (URLタグ無し)
-	var regex1 = RegEx.new()
-	regex1.compile("([^\\[\\]]+)\\[font_size=10\\]（([^）]+)）\\[/font_size\\]")
-	
-	# パターン2: [url=xxx]漢字[font_size=10]（読み）[/font_size][/url] -> [url=xxx]【漢字｜読み】[/url]
-	var regex2 = RegEx.new()
-	regex2.compile("(\\[url=[^\\]]+\\])([^\\[\\]]+)\\[font_size=10\\]（([^）]+)）\\[/font_size\\](\\[/url\\])")
-	
-	# パターン2を先に処理（URLタグ付き）
-	var matches2 = regex2.search_all(result_text)
-	for i in range(matches2.size() - 1, -1, -1):
-		var match = matches2[i]
-		var url_start = match.get_string(1)  # [url=xxx]
-		var kanji = match.get_string(2)      # 漢字
-		var reading = match.get_string(3)    # 読み
-		var url_end = match.get_string(4)    # [/url]
-		var ruby_format = url_start + "【" + kanji + "｜" + reading + "】" + url_end
-		
-		result_text = result_text.substr(0, match.get_start()) + ruby_format + result_text.substr(match.get_end())
-	
-	# パターン1を処理（URLタグ無し）
-	var matches1 = regex1.search_all(result_text)
-	for i in range(matches1.size() - 1, -1, -1):
-		var match = matches1[i]
-		var kanji = match.get_string(1)
-		var reading = match.get_string(2)
-		var ruby_format = "【" + kanji + "｜" + reading + "】"
-		
-		result_text = result_text.substr(0, match.get_start()) + ruby_format + result_text.substr(match.get_end())
-	
-	print("🔄 Ruby reverse conversion: '%s' -> '%s'" % [bbcode_text, result_text])
-	return result_text
 
 # === RubyRichTextLabelサポートメソッド ===
 
