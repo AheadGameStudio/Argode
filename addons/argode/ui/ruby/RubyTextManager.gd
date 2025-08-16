@@ -82,11 +82,11 @@ func set_text_with_ruby(text: String) -> void:
 	ruby_text_updated.emit(current_ruby_data)
 
 func parse_ruby_syntax(text: String) -> Dictionary:
-	"""Ruby構文の解析 - RubyParserクラスを使用"""
+	"""Ruby構文の解析 - 完全移植されたRubyParserクラスを使用"""
 	if debug_enabled:
-		print("🎯 [RubyManager] Parsing ruby syntax using RubyParser")
+		print("🎯 [RubyManager] Parsing ruby syntax using fully migrated RubyParser")
 	
-	# RubyParserクラスを使用
+	# ArgodeScreenから完全移植されたRubyParserクラスを使用
 	var result = RubyParser.parse_ruby_syntax(text)
 	
 	if debug_enabled:
@@ -94,6 +94,13 @@ func parse_ruby_syntax(text: String) -> Dictionary:
 		RubyParser.debug_parse_result(result)
 	
 	return result
+
+func reverse_ruby_conversion(bbcode_text: String) -> String:
+	"""BBCode→Ruby形式逆変換 - RubyParserを使用"""
+	if debug_enabled:
+		print("🎯 [RubyManager] Reversing ruby conversion using RubyParser")
+	
+	return RubyParser.reverse_ruby_conversion(bbcode_text)
 
 func calculate_positions(rubies: Array, main_text: String) -> Array:
 	"""Ruby位置の計算 - 現在は仮実装、後でRubyPositionCalculatorに移行"""
