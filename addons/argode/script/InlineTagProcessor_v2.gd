@@ -173,6 +173,8 @@ func process_text_post_variable(input_text: String) -> String:
 	var matches_bracket = regex_bracket.search_all(result_text)
 	var matches_brace = regex_brace.search_all(result_text)
 	
+	print("🏷️ [DEBUG] Found %d bracket matches, %d brace matches" % [matches_bracket.size(), matches_brace.size()])
+	
 	# 全てのマッチを位置順にソート
 	var all_matches = []
 	for match in matches_bracket:
@@ -190,28 +192,38 @@ func process_text_post_variable(input_text: String) -> String:
 		var tag_name = match.get_string(2)
 		var tag_param = match.get_string(3) if match.get_group_count() > 2 else ""
 		
+		print("🏷️ [DEBUG] Processing tag: '%s', is_end: %s, param: '%s'" % [tag_name, is_end_tag, tag_param])
+		
 		# 装飾タグの処理
 		if decoration_tags.has(tag_name):
 			var tag_info = decoration_tags[tag_name]
 			var bbcode_tag = _convert_to_bbcode(tag_name, tag_param, is_end_tag, tag_info)
+			print("🏷️ [DEBUG] Decoration tag '%s' -> BBCode: '%s'" % [tag_name, bbcode_tag])
 			
 			if not bbcode_tag.is_empty():
 				var tag_start = match.get_start() - offset
 				var tag_end = match.get_end() - offset
 				result_text = result_text.left(tag_start) + bbcode_tag + result_text.substr(tag_end)
 				offset -= bbcode_tag.length() - (tag_end - tag_start)
+				print("🏷️ [DEBUG] Applied BBCode replacement: '%s'" % bbcode_tag)
 		
 		# カスタム装飾タグの処理
 		elif custom_tags.has(tag_name) and custom_tags[tag_name].type == TagType.DECORATION:
 			var custom_tag = custom_tags[tag_name]
 			var custom_bbcode = _process_custom_decoration_tag(tag_name, tag_param, is_end_tag, custom_tag)
+			print("🏷️ [DEBUG] Custom decoration tag '%s' -> BBCode: '%s'" % [tag_name, custom_bbcode])
 			
 			if not custom_bbcode.is_empty():
 				var tag_start = match.get_start() - offset
 				var tag_end = match.get_end() - offset
 				result_text = result_text.left(tag_start) + custom_bbcode + result_text.substr(tag_end)
 				offset -= custom_bbcode.length() - (tag_end - tag_start)
+		else:
+			print("🏷️ [DEBUG] Unknown tag '%s' - skipping" % tag_name)
 	
+	print("🏷️ [DEBUG] Post-variable processing complete.")
+	print("🏷️ [DEBUG] Input:  '%s'" % input_text)
+	print("🏷️ [DEBUG] Output: '%s'" % result_text)
 	print("🏷️ Post-variable processing result: ", result_text)
 	return result_text
 

@@ -8,6 +8,9 @@ class_name ArgodeScreen
 # const RubyTextRenderer = preload("res://addons/argode/ui/RubyTextRenderer.gd")
 # const RubyRichTextLabel = preload("res://addons/argode/ui/RubyRichTextLabel.gd")
 
+# === 新しいRubyTextManager統合 ===
+const RubyTextManager = preload("res://addons/argode/ui/ruby/RubyTextManager.gd")
+
 # === シグナル ===
 signal screen_closed(return_value)
 signal screen_ready()
@@ -83,6 +86,10 @@ var preserve_ruby_data: bool = false  # TypewriterText実行中はruby_dataを�
 var ruby_main_font: Font = null
 var ruby_font: Font = null
 
+# === RubyTextManager統合（新しいアーキテクチャ） ===
+var ruby_text_manager: RubyTextManager = null  # Ruby処理の専用マネージャー
+@export var use_ruby_text_manager: bool = true  # 新しいRubyTextManagerを使用するか（テスト有効化）
+
 # === RubyRichTextLabel統合 ===
 var current_rubies: Array = []  # 現在のメッセージのルビデータ
 
@@ -145,6 +152,9 @@ func _emit_screen_ready():
 	
 	# TypewriterText初期化
 	_initialize_typewriter()
+	
+	# RubyTextManager初期化（新しいアーキテクチャ）
+	_initialize_ruby_text_manager()
 	
 	# レイヤーマッピング初期化
 	_initialize_layer_mappings()
@@ -423,6 +433,42 @@ func _setup_ruby_rich_text_label():
 		print("🔤 RubyRichTextLabel methods configured with debug=%s" % show_ruby_debug)
 	else:
 		print("ℹ️ message_label is %s - RubyRichTextLabel features not available" % message_label.get_class())
+
+func _initialize_ruby_text_manager():
+	"""新しいRubyTextManagerの初期化"""
+	if not use_ruby_text_manager:
+		print("ℹ️ RubyTextManager is disabled - skipping initialization")
+		return
+	
+	if not message_label:
+		print("⚠️ No message_label found - cannot initialize RubyTextManager")
+		return
+	
+	print("🚀 Initializing RubyTextManager...")
+	
+	# RubyTextManagerインスタンス作成
+	ruby_text_manager = RubyTextManager.new(message_label, null)
+	
+	# デバッグモード設定
+	ruby_text_manager.set_debug_mode(show_ruby_debug)
+	
+	# 既存の設定を引き継ぎ
+	ruby_text_manager.set_draw_mode(use_draw_ruby)
+	
+	# シグナル接続
+	ruby_text_manager.ruby_text_updated.connect(_on_ruby_text_updated)
+	ruby_text_manager.ruby_visibility_changed.connect(_on_ruby_visibility_changed)
+	
+	print("✅ RubyTextManager initialized successfully")
+	print("🔍 RubyTextManager debug info: %s" % ruby_text_manager.debug_info())
+
+func _on_ruby_text_updated(ruby_data: Array):
+	"""RubyTextManagerからのruby_text_updatedシグナル処理"""
+	print("📝 Ruby text updated: %d items" % ruby_data.size())
+
+func _on_ruby_visibility_changed(visible_count: int):
+	"""RubyTextManagerからのruby_visibility_changedシグナル処理"""
+	print("👁️ Ruby visibility changed: %d visible" % visible_count)
 
 func _on_typewriter_started(_text: String):
 	is_message_complete = false
@@ -1341,43 +1387,42 @@ func _parse_ruby_syntax(text: String) -> Dictionary:
 	"""【漢字｜ふりがな】形式のテキストを解析"""
 	print("🚀🚀🚀 [NEW PARSE] _parse_ruby_syntax CALLED WITH FIXED CODE! 🚀🚀🚀")
 	
-	# 最初にBBCodeタグを除去してから処理
-	var regex_bbcode = RegEx.new()
-	regex_bbcode.compile("\\[/?[^\\]]*\\]")
-	var text_without_bbcode = regex_bbcode.sub(text, "", true)
+	# BBCodeを保持しつつルビを処理する新しいアプローチ
 	print("🔍 [Ruby Parse] Original text: '%s'" % text)
-	print("🔍 [Ruby Parse] Text without BBCode: '%s'" % text_without_bbcode)
 	
 	var clean_text = ""
 	var rubies = []
 	var pos = 0
 	
-	print("🔍 [Ruby Debug] Parsing text: '%s'" % text_without_bbcode)
+	print("🔍 [Ruby Debug] Parsing text with BBCode preserved: '%s'" % text)
 	
 	var ruby_pattern = RegEx.new()
 	ruby_pattern.compile("【([^｜]+)｜([^】]+)】")
 	
 	var offset = 0
-	var matches = ruby_pattern.search_all(text_without_bbcode)
+	var matches = ruby_pattern.search_all(text)
 	print("🔍 [Ruby Debug] Found %d ruby matches" % matches.size())
 	
 	for result in matches:
 		# マッチ前のテキスト
-		var before_text = text_without_bbcode.substr(offset, result.get_start() - offset)
+		var before_text = text.substr(offset, result.get_start() - offset)
 		clean_text += before_text
 		print("🔍 [Ruby Parse] Before text: '%s', clean_text_length_before: %d" % [before_text, clean_text.length()])
 		
-		# 漢字部分を追加する前の位置を記録（これが正しいclean_pos）
-		var kanji_start_pos = clean_text.length()
+		# BBCodeを除去して実際の表示位置を計算
+		var regex_bbcode = RegEx.new()
+		regex_bbcode.compile("\\[/?[^\\]]*\\]")
+		var clean_text_without_bbcode = regex_bbcode.sub(clean_text, "", true)
+		var kanji_start_pos = clean_text_without_bbcode.length()
 		
 		# 漢字部分
 		var kanji = result.get_string(1)
 		var reading = result.get_string(2)
 		clean_text += kanji
 		
-		print("🔍 [Ruby Parse] Added kanji: '%s', clean_pos=%d, clean_text_after='%s'" % [kanji, kanji_start_pos, clean_text])
+		print("🔍 [Ruby Parse] Added kanji: '%s', clean_pos=%d (BBCode-adjusted), clean_text_after='%s'" % [kanji, kanji_start_pos, clean_text])
 		
-		# ルビ情報を保存
+		# ルビ情報を保存（BBCode除去後の位置で）
 		rubies.append({
 			"kanji": kanji,
 			"reading": reading,
@@ -1387,7 +1432,7 @@ func _parse_ruby_syntax(text: String) -> Dictionary:
 		offset = result.get_end()
 	
 	# 残りのテキスト
-	clean_text += text_without_bbcode.substr(offset)
+	clean_text += text.substr(offset)
 	
 	print("🔍 [Ruby Debug] Result: clean_text='%s', rubies=%s" % [clean_text, rubies])
 	return {"text": clean_text, "rubies": rubies}
