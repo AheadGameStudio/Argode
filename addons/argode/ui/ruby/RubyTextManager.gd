@@ -8,6 +8,7 @@ ArgodeScreen.gdからRuby関連機能を分離し、単一責任原則に基づ�
 
 # 依存クラスのpreload
 const RubyParser = preload("res://addons/argode/ui/ruby/RubyParser.gd")
+const RubyRenderer = preload("res://addons/argode/ruby/RubyRenderer.gd")
 
 # シグナル
 signal ruby_text_updated(ruby_data: Array)
@@ -30,7 +31,7 @@ var ruby_main_font: Font
 
 # 子マネージャー（後のフェーズで実装）
 var parser: RefCounted  # RubyParser
-var renderer: RefCounted  # RubyRenderer
+var renderer: RubyRenderer  # RubyRenderer - 実体化済み
 var position_calculator: RefCounted  # RubyPositionCalculator
 var layout_adjuster: RefCounted  # RubyLayoutAdjuster
 
@@ -47,6 +48,9 @@ func _initialize():
 	if message_label == null:
 		push_error("RubyTextManager: message_label is required")
 		return
+	
+	# RubyRendererの初期化
+	renderer = RubyRenderer.new()
 	
 	# フォント設定の初期化
 	setup_fonts()
@@ -134,6 +138,32 @@ func adjust_line_breaks(text: String) -> String:
 	# TODO: RubyLayoutAdjusterクラスに移行予定
 	return text  # 仮実装
 
+## 描画API ##
+
+func execute_ruby_drawing(screen: ArgodeScreen) -> void:
+	"""Ruby描画の実行 - RubyRendererに委譲"""
+	if not renderer:
+		push_error("RubyTextManager: RubyRenderer not initialized")
+		return
+	
+	# 表示可能なRubyデータのみフィルタリング
+	var visible_rubies = []
+	for ruby_info in display_ruby_data:
+		if ruby_info.get("visible", false):
+			visible_rubies.append(ruby_info)
+	
+	if debug_enabled:
+		print("🎨 [RubyManager] Executing drawing for %d visible rubies" % visible_rubies.size())
+	
+	renderer.execute_ruby_drawing(screen, visible_rubies)
+
+func setup_renderer_fonts() -> void:
+	"""RubyRendererのフォント設定を同期"""
+	if renderer:
+		renderer.ruby_font = ruby_font
+		renderer.ruby_main_font = ruby_main_font
+		renderer.show_ruby_debug = show_ruby_debug
+
 ## 設定API ##
 
 func setup_fonts(main_font: Font = null, ruby_font_param: Font = null) -> void:
@@ -154,6 +184,9 @@ func setup_fonts(main_font: Font = null, ruby_font_param: Font = null) -> void:
 	else:
 		ruby_font = ruby_main_font  # 同じフォントを使用
 	
+	# RubyRendererにフォントを同期
+	setup_renderer_fonts()
+	
 	if debug_enabled:
 		print("🎨 [RubyManager] Fonts configured: main=%s, ruby=%s" % [ruby_main_font != null, ruby_font != null])
 
@@ -161,6 +194,11 @@ func set_debug_mode(enabled: bool) -> void:
 	"""デバッグモードの設定"""
 	debug_enabled = enabled
 	show_ruby_debug = enabled
+	
+	# RubyRendererのデバッグモードも同期
+	if renderer:
+		renderer.set_debug_mode(enabled)
+	
 	print("🔧 [RubyManager] Debug mode: %s" % enabled)
 
 func set_draw_mode(enabled: bool) -> void:

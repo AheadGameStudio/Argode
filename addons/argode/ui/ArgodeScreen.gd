@@ -1005,7 +1005,7 @@ func set_message_window_visible(visible: bool):
 # === ルビ描画システム（_draw方式） ===
 
 func _draw():
-	"""カスタム描画関数 - ルビを直接描画"""
+	"""カスタム描画関数 - ルビを直接描画（RubyTextManager経由）"""
 	print("🔍 [Ruby Debug] _draw() called")
 	print("🔍 [Ruby Debug] use_draw_ruby = %s" % use_draw_ruby)
 	print("🔍 [Ruby Debug] display_ruby_data.size() = %d" % display_ruby_data.size())
@@ -1014,11 +1014,18 @@ func _draw():
 		print("🔍 [Ruby Debug] Exiting _draw: use_draw_ruby=%s, display_ruby_data empty=%s" % [use_draw_ruby, display_ruby_data.is_empty()])
 		return
 	
+	# RubyTextManagerが利用可能な場合はそちらを使用
+	if ruby_text_manager and ruby_text_manager.renderer:
+		print("🎨 [Ruby Debug] Using RubyTextManager for drawing")
+		ruby_text_manager.execute_ruby_drawing(self)
+		return
+	
+	# フォールバック: 従来の描画方式
 	if not message_label or not ruby_font:
 		print("🔍 [Ruby Debug] Missing message_label or ruby_font")
 		return
 	
-	print("🔍 [Ruby Debug] Drawing %d rubies" % display_ruby_data.size())
+	print("🔍 [Ruby Debug] Using fallback drawing mode: %d rubies" % display_ruby_data.size())
 	
 	# デバッグ表示: メッセージラベルの境界
 	if show_ruby_debug:
