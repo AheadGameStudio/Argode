@@ -3,14 +3,11 @@
 extends Control
 class_name ArgodeScreen
 
-# レイヤー自動展開システム
-# const AutoLayerSetup = preload("res://addons/argode/managers/AutoLayerSetup.gd")
-# const RubyTextRenderer = preload("res://addons/argode/ui/RubyTextRenderer.gd")
-# const RubyRichTextLabel = preload("res://addons/argode/ui/RubyRichTextLabel.gd")
+# === 削除済み: レイヤー自動展開システム ===
 
 # === 新しいRubyTextManager統合 ===
 const RubyTextManager = preload("res://addons/argode/ui/ruby/RubyTextManager.gd")
-const RubyParser = preload("res://addons/argode/ui/ruby/RubyParser.gd")
+# 削除済み: RubyParser (未使用)
 const RubyMessageHandler = preload("res://addons/argode/ui/ruby/RubyMessageHandler.gd")
 const MessageDisplayManager = preload("res://addons/argode/ui/display/MessageDisplayManager.gd")
 const TypewriterTextIntegrationManager = preload("res://addons/argode/ui/managers/TypewriterTextIntegrationManager.gd")
@@ -27,7 +24,7 @@ var screen_name: String = ""
 var is_screen_active: bool = false
 var return_value: Variant = null
 var screen_parameters: Dictionary = {}
-var parent_screen = null
+# 削除済み: parent_screen (未使用変数)
 
 # === UI要素発見マネージャー ===
 var ui_element_discovery_manager: UIElementDiscoveryManager = null
@@ -67,9 +64,7 @@ var is_message_complete: bool = false
 var handle_input: bool = true
 
 # === 削除済み: 自動スクリプト設定 ===
-# AutoScript機能はArgodeSystemに移管済み
 # use ArgodeSystem.set_auto_start_label() instead
-
 # === ルビ表示設定 ===
 ## RubyRichTextLabelを使用するかどうか（推奨実装）
 @export var use_ruby_rich_text_label: bool = true
@@ -79,13 +74,7 @@ var handle_input: bool = true
 # 改行調整されたテキストを保存（TypewriterTextからアクセス可能）
 var adjusted_text: String = ""
 
-# === ルビ描画システム（レガシー_draw方式用） ===
-var ruby_data: Array[Dictionary] = []  # 描画するルビ情報
-# display_ruby_data: use_draw_ruby=false により削除（デッドコード）
-var preserve_ruby_data: bool = false  # TypewriterText実行中はruby_dataを保持
-var ruby_main_font: Font = null
-var ruby_font: Font = null
-
+# === 削除済み: レガシールビ描画システム（_draw方式用） ===
 # === RubyTextManager統合（新しいアーキテクチャ） ===
 var ruby_text_manager: RubyTextManager = null  # Ruby処理の専用マネージャー
 @export var use_ruby_text_manager: bool = true  # 新しいRubyTextManagerを使用するか（テスト有効化）
@@ -449,12 +438,12 @@ func _on_typewriter_started(_text: String):
 	is_message_complete = false
 	if continue_prompt:
 		continue_prompt.visible = false
-	preserve_ruby_data = true  # TypewriterText実行中はruby_dataを保護
+	# 削除済み: preserve_ruby_data = true (未使用変数)
 	print("⌨️ AdvScreen: Typewriter started")
 
 func _on_typewriter_finished():
 	is_message_complete = true
-	preserve_ruby_data = false  # TypewriterText完了時は保護解除
+	# 削除済み: preserve_ruby_data = false (未使用変数)
 	if continue_prompt:
 		continue_prompt.visible = true
 	print("⌨️ AdvScreen: Typewriter finished")
@@ -579,9 +568,6 @@ func _setup_ui_manager_integration():
 	handle_input = true
 	print("📱 AdvScreen: UI integrated with UIManager")
 
-# === 削除済み: 自動スクリプト開始 ===
-# _start_auto_script()はArgodeSystemに移管済み
-
 # === メッセージ表示API ===
 
 func show_message(character_name: String = "", message: String = "", name_color: Color = Color.WHITE, override_multi_label_ruby: bool = false):
@@ -589,14 +575,18 @@ func show_message(character_name: String = "", message: String = "", name_color:
 	if message_display_manager:
 		message_display_manager.show_message(character_name, message, name_color, override_multi_label_ruby)
 	else:
-		print("❌ ArgodeScreen: MessageDisplayManager not available")
+		_log_manager_not_available("MessageDisplayManager")
 
 func show_choices(choices: Array, is_numbered: bool = false):
 	"""選択肢を表示する（MessageDisplayManagerに委譲）"""
 	if message_display_manager:
 		message_display_manager.show_choices(choices, is_numbered)
 	else:
-		print("❌ ArgodeScreen: MessageDisplayManager not available")
+		_log_manager_not_available("MessageDisplayManager")
+
+func _log_manager_not_available(manager_name: String):
+	"""マネージャー不在エラーログの統一メソッド"""
+	print("❌ ArgodeScreen: %s not available" % manager_name)
 
 func hide_ui():
 	"""UI全体を非表示にする"""
@@ -650,24 +640,6 @@ func _clear_choice_buttons():
 		if child is Button:
 			child.queue_free()
 
-func _process_escape_sequences(text: String) -> String:
-	"""エスケープシーケンスを処理"""
-	var result = text
-	result = result.replace("\\n", "\n")
-	result = result.replace("\\t", "\t")
-	result = result.replace("\\r", "\r")
-	result = result.replace("\\\\", "\\")
-	return result
-
-func set_script_path(path: String, label: String = "start"):
-	"""スクリプトパスとラベルを設定（DEPRECATED - ArgodeSystem.set_auto_start_label()を使用してください）"""
-	if adv_system and adv_system.has_method("set_auto_start_label"):
-		adv_system.set_auto_start_label(label)
-		print("📱 AdvScreen: Auto-start label set via ArgodeSystem:", label)
-	else:
-		print("⚠️ DEPRECATED: set_script_path() - use ArgodeSystem.set_auto_start_label() instead")
-		print("📱 AdvScreen: Script path:", path, "label:", label)
-
 # === デバッグ用 ===
 
 func debug_info() -> Dictionary:
@@ -696,58 +668,6 @@ func set_message_window_visible(visible: bool):
 	print("ℹ️  現在はUIManager.visible で全体制御されるため、この処理は無効です")
 	
 	# 互換性のため残しておくが、実際の制御はUIManagerで行われる
-	# if message_box:
-	#     message_box.visible = visible
-	#     print("📦 Message box visibility set to:", visible)
-	# else:
-	#     print("⚠️ message_box not found for visibility control")
-
-# === ルビ描画システム（_draw方式） - 削除済み ===
-# Note: _draw()方式は use_draw_ruby=false で無効化されており、
-# 実際のルビ描画はRubyRichTextLabelで処理されるため削除
-
-func simple_ruby_line_break_adjustment(text: String) -> String:
-	"""行をまたぐルビ対象文字の前にのみ改行を挿入 - RubyMessageHandlerに委譲"""
-	if ruby_message_handler:
-		return ruby_message_handler.simple_ruby_line_break_adjustment(text)
-	else:
-		print("⚠️ RubyMessageHandler not available, returning original text")
-		return text
-
-func _will_ruby_cross_line(text: String, ruby_start_pos: int, kanji_part: String, font: Font, font_size: int, container_width: float) -> bool:
-	"""ルビ対象文字が行をまたぐかどうかを判定 - RubyMessageHandlerに委譲"""
-	if ruby_message_handler:
-		return ruby_message_handler._will_ruby_cross_line(text, ruby_start_pos, kanji_part, font, font_size, container_width)
-	else:
-		print("⚠️ RubyMessageHandler not available, returning false")
-		return false
-
-func set_text_with_ruby_draw(text: String):
-	"""ルビ付きテキストを設定 - RubyMessageHandlerに委譲"""
-	if ruby_message_handler:
-		ruby_message_handler.set_text_with_ruby_draw(text)
-		# 状態を同期
-		adjusted_text = ruby_message_handler.get_adjusted_text()
-		current_rubies = ruby_message_handler.get_current_ruby_data()
-	else:
-		print("⚠️ RubyMessageHandler not available, using fallback")
-		if message_label:
-			message_label.text = text
-		adjusted_text = text
-
-# use_draw_ruby=false により _update_ruby_visibility_for_position 関数は削除（デッドコード）
-
-# use_draw_ruby=false により _calculate_ruby_positions_for_visible 関数は削除（デッドコード）
-
-# use_draw_ruby=false により _calculate_ruby_positions 関数は削除（デッドコード）
-
-func _parse_ruby_syntax(text: String) -> Dictionary:
-	"""【漢字｜ふりがな】形式のテキストを解析 - RubyMessageHandlerに委譲"""
-	if ruby_message_handler:
-		return ruby_message_handler._parse_ruby_syntax(text)
-	else:
-		print("⚠️ RubyMessageHandler not available, returning empty result")
-		return {"text": text, "rubies": []}
 
 # === RubyRichTextLabelサポートメソッド ===
 
