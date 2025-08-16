@@ -1005,84 +1005,17 @@ func set_message_window_visible(visible: bool):
 # === ルビ描画システム（_draw方式） ===
 
 func _draw():
-	"""カスタム描画関数 - ルビを直接描画（RubyTextManager経由）"""
-	print("🔍 [Ruby Debug] _draw() called")
-	print("🔍 [Ruby Debug] use_draw_ruby = %s" % use_draw_ruby)
-	print("🔍 [Ruby Debug] display_ruby_data.size() = %d" % display_ruby_data.size())
-	
+	"""カスタム描画関数 - RubyTextManagerに完全委譲"""
 	if not use_draw_ruby or display_ruby_data.is_empty():
-		print("🔍 [Ruby Debug] Exiting _draw: use_draw_ruby=%s, display_ruby_data empty=%s" % [use_draw_ruby, display_ruby_data.is_empty()])
 		return
 	
-	# RubyTextManagerが利用可能な場合はそちらを使用
-	if ruby_text_manager and ruby_text_manager.renderer:
-		print("🎨 [Ruby Debug] Using RubyTextManager for drawing")
+	# RubyTextManagerに描画を委譲
+	if ruby_text_manager:
 		ruby_text_manager.execute_ruby_drawing(self)
-		return
-	
-	# フォールバック: 従来の描画方式
-	if not message_label or not ruby_font:
-		print("🔍 [Ruby Debug] Missing message_label or ruby_font")
-		return
-	
-	print("🔍 [Ruby Debug] Using fallback drawing mode: %d rubies" % display_ruby_data.size())
-	
-	# デバッグ表示: メッセージラベルの境界
-	if show_ruby_debug:
-		var label_global_pos = message_label.global_position
-		var label_size = message_label.size
-		var screen_global_pos = global_position
-		var relative_pos = label_global_pos - screen_global_pos
-		var rect = Rect2(relative_pos, label_size)
-		draw_rect(rect, Color.CYAN, false, 2.0)
-		draw_string(ThemeDB.fallback_font, relative_pos + Vector2(5, -10), "Message Label Area", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color.CYAN)
-	
-	for ruby_info in display_ruby_data:
-		_draw_single_ruby(ruby_info)
-
-func _draw_single_ruby(ruby_info: Dictionary):
-	"""単一のルビを描画"""
-	var reading = ruby_info.get("reading", "")
-	var kanji = ruby_info.get("kanji", "")
-	var position = ruby_info.get("position", Vector2.ZERO)
-	# 色を明るくし、メインテキストに近い色に
-	var color = ruby_info.get("color", Color(0.9, 0.9, 0.9, 1.0))
-	
-	# ルビの描画位置（position には既にメッセージラベルの位置が含まれている）
-	var draw_pos = position
-	
-	# デバッグ表示
-	if show_ruby_debug:
-		# ルビの基点を緑の円で表示
-		draw_circle(draw_pos, 3.0, Color.GREEN)
-		
-		# ルビの範囲を青い矩形で表示
-		var ruby_font_size = 14
-		var ruby_width = ruby_font.get_string_size(reading, HORIZONTAL_ALIGNMENT_LEFT, -1, ruby_font_size).x
-		var ruby_rect = Rect2(draw_pos, Vector2(ruby_width, ruby_font_size))
-		draw_rect(ruby_rect, Color.BLUE, false, 1.0)
-		
-		# デバッグ情報をテキストで表示
-		var debug_text = "漢字: %s | ルビ: %s" % [kanji, reading]
-		draw_string(ThemeDB.fallback_font, draw_pos + Vector2(0, ruby_font_size + 15), debug_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color.YELLOW)
-	
-	# ルビテキストを描画（サイズも少し大きく）
-	var font_size = 14
-	draw_string(ruby_font, draw_pos, reading, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
-
-func setup_ruby_fonts():
-	"""ルビ描画用フォントを設定"""
-	var default_font_path = "res://assets/common/fonts/03スマートフォントUI.otf"
-	
-	# メインフォント設定
-	if FileAccess.file_exists(default_font_path):
-		ruby_main_font = load(default_font_path)
-		ruby_font = ruby_main_font  # ルビも同じフォントを使用
-		print("🎨 Ruby draw fonts loaded: ", default_font_path)
 	else:
-		ruby_main_font = ThemeDB.fallback_font
-		ruby_font = ThemeDB.fallback_font
-		print("⚠️ Using fallback font for ruby drawing")
+		print("⚠️ [ArgodeScreen] RubyTextManager not available for drawing")
+
+	# 削除済み: setup_ruby_fonts()関数はRubyRenderer.gdに移行
 
 func simple_ruby_line_break_adjustment(text: String) -> String:
 	"""行をまたぐルビ対象文字の前にのみ改行を挿入"""
