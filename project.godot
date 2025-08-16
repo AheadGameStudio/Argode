@@ -47,6 +47,7 @@ window/size/viewport_height=720
 
 [editor]
 
+script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "rgd")
 script/file_dialog_access=["*.rgd"]
 
 [editor_plugins]
