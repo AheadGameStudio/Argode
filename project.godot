@@ -10,46 +10,12 @@ config_version=5
 
 [application]
 
-config/name="RenGd"
-run/main_scene="res://src/scenes/main.tscn"
+config/name="Argode - Adoventure Game Framework"
+run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.4")
 config/icon="res://icon.svg"
-
-[argode]
-
-save/save_folder="user://saves/"
-save/max_save_slots=10
-save/auto_save_interval=300.0
-encryption/enable_encryption=true
-encryption/encryption_key="argode_default_key_2024"
-screenshot/enable_screenshots=true
-screenshot/screenshot_width=200
-screenshot/screenshot_height=150
-screenshot/screenshot_quality=0.8
-ui/default_text_speed=0.05
-ui/auto_advance_time=3.0
-ui/skip_unread=false
-audio/master_volume=1.0
-audio/bgm_volume=0.8
-audio/se_volume=0.9
-audio/voice_volume=1.0
-debug/enable_debug_mode=false
-debug/log_level=1
-
-[autoload]
-
-ArgodeSystem="*res://addons/argode/core/ArgodeSystem.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-
-[editor]
-
-script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "rgd")
-script/file_dialog_access=["*.rgd"]
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/argode/plugin.cfg")
