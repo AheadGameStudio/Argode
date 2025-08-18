@@ -1,0 +1,2 @@
+extends ArgodeCommandBase
+class_name CharacterCommand

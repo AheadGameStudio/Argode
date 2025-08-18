@@ -1,0 +1,3 @@
+# 引数として受け取った情報（画像パスと待機時間）をもとに、GodotのAnimatedTextureリソースを動的に生成。
+extends RefCounted
+class_name ArgodeAnimatedTextureGenerator

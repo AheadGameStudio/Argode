@@ -1,0 +1,63 @@
+[gd_scene load_steps=4 format=3 uid="uid://c6xvdv4hc7wjo"]
+
+[ext_resource type="Script" uid="uid://cevy6pe1svidb" path="res://addons/argode/builtin/scenes/argode_loading/ArgodeLoadingScreen.gd" id="1_loading"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4x55i"]
+content_margin_top = 1.0
+bg_color = Color(0.0627451, 0.0627451, 0.0627451, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_al856"]
+bg_color = Color(0, 1, 1, 1)
+
+[node name="ArgodeLoadingScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_loading")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0666667, 0.0666667, 0.0666667, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -46.5
+offset_bottom = 46.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.392157)
+theme_override_font_sizes/font_size = 24
+text = "Argode Framework"
+horizontal_alignment = 1
+
+[node name="ProgressLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.392157)
+text = "準備中..."
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_4x55i")
+theme_override_styles/fill = SubResource("StyleBoxFlat_al856")
+show_percentage = false
+
+[node name="DetailLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.392157)
+horizontal_alignment = 1

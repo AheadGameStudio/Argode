@@ -1,0 +1,4 @@
+# ArgodeRichTextConverter
+# TagTokenizerが分解したトークンをGodotのRichLabelが解釈できるBBCodeに変換する。
+extends RefCounted
+class_name ArgodeRichTextConverter
