@@ -52,27 +52,59 @@ func _safe_set_progress_bar_value(bar: ProgressBar, value: float):
 	if bar and is_instance_valid(bar):
 		bar.value = value
 
+## 安全にシーンツリーを取得する
+func _get_safe_tree():
+	if not is_instance_valid(self):
+		return null
+	
+	# is_inside_tree()をチェックしてからget_tree()を呼び出す
+	if not is_inside_tree():
+		return null
+		
+	return get_tree()
+
+## ノードとツリーの基本的な安全性をチェックする
+func _is_safe() -> bool:
+	return is_instance_valid(self) and is_inside_tree()
+
+## 安全でない場合は即座に終了する
+func _check_safety_or_return() -> bool:
+	if not _is_safe():
+		return false
+	return true
+
 ## 安全な待機処理
 func _safe_wait(duration: float):
-	if get_tree() and is_inside_tree():
-		await get_tree().create_timer(duration).timeout
+	if not _check_safety_or_return():
+		return
+	
+	var tree = _get_safe_tree()
+	if tree:
+		await tree.create_timer(duration).timeout
 	else:
-		# フォールバック：フレーム単位での待機
-		var frames = int(duration * 60)  # 60FPSを想定
-		for i in frames:
-			if Engine.get_main_loop():
-				await Engine.get_main_loop().process_frame
-			else:
-				break  # メインループが無効な場合は中断
+		# フォールバック：Engine.get_main_loop()を使用
+		var main_loop = Engine.get_main_loop()
+		if main_loop:
+			var frames = int(duration * 60)  # 60FPSを想定
+			for i in frames:
+				if not _is_safe():
+					break
+				await main_loop.process_frame
 
 ## レジストリ開始時の処理
 func on_registry_started(registry_name: String):
+	if not _check_safety_or_return():
+		return
+	
 	current_registry = registry_name
 	_safe_set_label_text(main_label, "Argodeシステム初期化中...")
 	_safe_set_label_text(detail_label, "%s を処理中..." % _get_registry_display_name(registry_name))
 
 ## レジストリ進捗更新時の処理
 func on_registry_progress_updated(task_name: String, progress: float, total: int, current: int):
+	if not _check_safety_or_return():
+		return
+	
 	var overall_progress = (float(completed_registries) + progress) / float(total_registries)
 	_safe_set_progress_bar_value(progress_bar, overall_progress * 100)
 	
@@ -85,6 +117,9 @@ func on_registry_progress_updated(task_name: String, progress: float, total: int
 
 ## レジストリ完了時の処理
 func on_registry_completed(registry_name: String):
+	if not _check_safety_or_return():
+		return
+	
 	completed_registries += 1
 	var overall_progress = float(completed_registries) / float(total_registries)
 	_safe_set_progress_bar_value(progress_bar, overall_progress * 100)
@@ -94,9 +129,14 @@ func on_registry_completed(registry_name: String):
 		_safe_set_label_text(progress_label, "100%")
 		_safe_set_label_text(detail_label, "ゲームを開始します...")
 		
-		# 少し待ってからローディング画面を閉じる
-		await _safe_wait(1.0)
-		_close_loading_screen()
+		# 最終チェックしてからクローズ処理を実行
+		if _is_safe():
+			await _safe_wait(1.0)
+			_close_loading_screen()
+		else:
+			# 安全でない場合は即座に終了
+			if is_instance_valid(self):
+				queue_free.call_deferred()
 	else:
 		_safe_set_label_text(detail_label, "%s 完了" % _get_registry_display_name(registry_name))
 
@@ -114,17 +154,18 @@ func _get_registry_display_name(registry_name: String) -> String:
 
 ## ローディング画面を閉じる
 func _close_loading_screen():
-	# シーンツリーが有効かチェック
-	if not get_tree() or not is_inside_tree():
-		# 即座に削除
-		queue_free.call_deferred()
+	if not _check_safety_or_return():
+		if is_instance_valid(self):
+			queue_free.call_deferred()
 		return
 	
-	# フェードアウトアニメーション
+	# フェードアウトアニメーション（短時間に変更）
 	var tween = create_tween()
-	if tween:
+	if tween and _is_safe():
 		tween.tween_property(self, "modulate:a", 0.0, 0.1)
-		await tween.finished
+		if is_instance_valid(tween):
+			await tween.finished
 	
-	# 安全に削除
-	queue_free.call_deferred()
+	# 安全に削除（再度有効性をチェック）
+	if is_instance_valid(self):
+		queue_free.call_deferred()

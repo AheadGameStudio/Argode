@@ -1,0 +1,18 @@
+# ナレーターはデフォルトに存在するので、色だけ上書き
+character narator color "#cccccc"
+
+# キャラクター定義
+# pathからprefixを基準として、自動的にnormal, smile...などの表情差分を読み込み
+# パスが指定されていても、画像が存在しない場合もある。
+# その場合は自動的にNONEを設定し、エラーは出さずに警告だけ出して、画面上もキャラクターは表示しない。
+character ayane "彩音" prefix "ayane" path "res://examples/assets/character/ayane" color "#FF69B4"
+character akari "アカリ" prefix "akari" path "res://examples/assets/character/akari" color "#ffb769ff"
+
+# character <alias> <name> <prefix> <path> <color>
+# <alias>: Sayコマンドで必要なキャラクター定義を呼び出すためのエイリアス
+# <name>: キャラクターの表示名
+# <prefix>: キャラクターのプレフィックス（表情差分の識別子）
+# <path>: キャラクター画像ディレクトリのパス
+# <color>: キャラクターのセリフの色
+
+

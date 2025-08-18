@@ -6,6 +6,7 @@ class_name ArgodeLabelRegistry
 ## Argodeラベルを登録するレジストリ
 ## scenarios/ から .rgd ファイルを検索し、
 ## labelステートメントを抽出してラベル名・ファイルパス・行番号を登録
+## .rgdファイルはプレーンテキストとしてビルド後も利用可能
 
 signal progress_updated(task_name: String, progress: float, total: int, current: int)
 signal registry_completed(registry_name: String)
@@ -15,7 +16,6 @@ var search_directories: Array[String] = []
 var total_files: int = 0
 var processed_files: int = 0
 var label_dictionary: Dictionary = {}
-var label_names: PackedStringArray = []
 
 func _init():
 	# プロジェクト設定からディレクトリを取得
@@ -23,25 +23,45 @@ func _init():
 
 ## プロジェクト設定から検索ディレクトリを読み込み
 func _load_search_directories():
+	search_directories = []
+	
 	# プロジェクト設定からシナリオディレクトリを取得
 	var scenario_dir = ProjectSettings.get_setting("argode/general/scenario_directory", "res://scenarios/")
 	if scenario_dir != "":
-		search_directories = [scenario_dir]
+		search_directories.append(scenario_dir)
+	
+	# カスタムシナリオディレクトリがあれば追加
+	var custom_scenario_dir = ProjectSettings.get_setting("argode/general/custom_scenario_directory", "")
+	if custom_scenario_dir != "" and custom_scenario_dir != scenario_dir:
+		search_directories.append(custom_scenario_dir)
+	
+	# デバッグ情報を出力
+	ArgodeSystem.log("🔍 LabelRegistry search directories: %s" % str(search_directories))
+	ArgodeSystem.log("� Project setting scenario_directory: '%s'" % scenario_dir)
 
 ## レジストリ処理を開始
 func start_registry():
 	total_files = 0
 	processed_files = 0
 	label_dictionary.clear()
-	label_names.clear()
 	
 	# ファイル総数をカウント
 	_count_rgd_files()
 	
 	ArgodeSystem.log("🔄 ArgodeLabelRegistry started. Total files: %d" % total_files)
 	
-	# シナリオファイルを処理
-	await _process_scenario_files()
+	# ファイルがない場合の進捗表示
+	if total_files == 0:
+		progress_updated.emit("ラベル検索", 0.5, 1, 0)
+		await ArgodeSystem.get_tree().create_timer(0.3).timeout
+		progress_updated.emit("ラベル検索", 1.0, 1, 1)
+		await ArgodeSystem.get_tree().create_timer(0.2).timeout
+	else:
+		# シナリオファイルを処理
+		await _process_scenario_files()
+	
+	# ラベル辞書をレジストリに登録
+	_register_labels_to_system()
 	
 	ArgodeSystem.log("✅ ArgodeLabelRegistry completed. Registered %d labels." % label_dictionary.size())
 	registry_completed.emit("ArgodeLabelRegistry")
@@ -49,8 +69,13 @@ func start_registry():
 ## 設定されたディレクトリからRGDファイルの総数をカウント
 func _count_rgd_files():
 	for directory_path in search_directories:
+		ArgodeSystem.log("🔍 Checking directory: %s" % directory_path)
 		if DirAccess.dir_exists_absolute(directory_path):
-			total_files += _count_rgd_files_recursive(directory_path)
+			var count = _count_rgd_files_recursive(directory_path)
+			total_files += count
+			ArgodeSystem.log("📁 Found %d .rgd files in %s" % [count, directory_path])
+		else:
+			ArgodeSystem.log("❌ Directory does not exist: %s" % directory_path)
 
 ## 再帰的にRGDファイルをカウント
 func _count_rgd_files_recursive(path: String) -> int:
@@ -92,34 +117,46 @@ func _process_scenario_file(file_path: String):
 	var progress = float(processed_files) / float(total_files)
 	progress_updated.emit("ラベル検索", progress, total_files, processed_files)
 	
+	ArgodeSystem.log("📄 Processing scenario file: %s" % file_path)
+	
 	# RGDファイルからラベルを抽出
 	_extract_labels_from_file(file_path)
 	
-	# 処理の重さをシミュレート
-	await ArgodeSystem.get_tree().process_frame
+	# LoadingScreenで進捗が見えるように少し遅延
+	await ArgodeSystem.get_tree().create_timer(0.05).timeout
 
-## RGDファイルからラベルを抽出
+## RGDファイルからラベルを抽出（ビルド後対応でFileAccessを使用）
 func _extract_labels_from_file(file_path: String):
 	var file = FileAccess.open(file_path, FileAccess.READ)
-	if file:
-		var line_number = 0
-		while not file.eof_reached():
-			var line = file.get_line().strip_edges()
-			line_number += 1
+	if not file:
+		ArgodeSystem.log("❌ Failed to open scenario file: %s" % file_path, 2)
+		return
+	
+	var line_number = 0
+	while not file.eof_reached():
+		var line = file.get_line().strip_edges()
+		line_number += 1
+		
+		# コメント行や空行をスキップ
+		if line.is_empty() or line.begins_with("#"):
+			continue
+		
+		# labelコマンドかチェック（コロン付きまたはなし）
+		if line.begins_with("label "):
+			var label_line = line.substr(6).strip_edges()
+			var label_name = label_line
 			
-			# コメント行や空行をスキップ
-			if line.is_empty() or line.begins_with("#"):
-				continue
+			# コロンがある場合は除去
+			if label_line.ends_with(":"):
+				label_name = label_line.substr(0, label_line.length() - 1).strip_edges()
 			
-			# labelコマンドかチェック
-			if line.begins_with("label "):
-				var label_name = line.substr(6).strip_edges()
-				_register_label(label_name, file_path, line_number)
-		file.close()
+			_register_label(label_name, file_path, line_number)
+	
+	file.close()
 
 ## ラベルを登録
 func _register_label(label_name: String, file_path: String, line_number: int):
-# ラベルの重複チェック
+	# ラベルの重複チェック
 	if label_dictionary.has(label_name):
 		ArgodeSystem.log("❌ Error: Label '%s' already exists at %s:%d. Duplicate found at %s:%d" % [
 			label_name,
@@ -128,22 +165,51 @@ func _register_label(label_name: String, file_path: String, line_number: int):
 			file_path,
 			line_number
 		], 2)
-		return	# ラベル登録
+		return
+		
+	# ラベル登録
 	var label_data = {
 		"label": label_name,
 		"path": file_path,
-		"line": line_number
+		"line": line_number,
+		"file_resource": null  # 将来的なキャッシュ用
 	}
 	
 	label_dictionary[label_name] = label_data
-	label_names.append(label_name)
 	
 	ArgodeSystem.log("🏷️ Label registered: %s at %s:%d" % [label_name, file_path, line_number])
+
+## ラベル辞書をArgodeSystemに登録
+func _register_labels_to_system():
+	# ラベル辞書はRegistryが管理し、必要に応じて他のコンポーネントから参照される
+	ArgodeSystem.log("🔗 Label registry prepared with %d labels" % label_dictionary.size())
 
 ## ラベル辞書を取得
 func get_label_dictionary() -> Dictionary:
 	return label_dictionary
 
-## ラベル名配列を取得
+## ラベル名配列を取得（動的生成）
 func get_label_names() -> PackedStringArray:
-	return label_names
+	var names: PackedStringArray = []
+	for label_name in label_dictionary.keys():
+		names.append(label_name)
+	return names
+
+## 特定のラベルを取得
+func get_label(label_name: String) -> Dictionary:
+	if label_dictionary.has(label_name):
+		return label_dictionary[label_name]
+	return {}
+
+## ラベルが存在するかチェック
+func has_label(label_name: String) -> bool:
+	return label_dictionary.has(label_name)
+
+## ファイルパスでラベルを検索
+func find_labels_in_file(file_path: String) -> Array[Dictionary]:
+	var labels: Array[Dictionary] = []
+	for label_name in label_dictionary:
+		var label_data = label_dictionary[label_name]
+		if label_data.path == file_path:
+			labels.append(label_data)
+	return labels

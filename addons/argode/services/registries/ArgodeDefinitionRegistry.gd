@@ -3,24 +3,20 @@ extends RefCounted
 
 class_name ArgodeDefinitionRegistry
 
-## Argode定義コマンドを処理するレジストリ
-## builtin/definitions/ と definitions/ から .rgd ファイルを検索し、
-## 定義コマンドを抽出して実際にArgodeSystemに定義処理を行う
+## Argode定義コマンドを登録するレジストリ
+## .rgd ファイルから定義コマンドの位置情報を抽出し、辞書として保存
+## ArgodeCommandRegistryと連携して定義コマンドを識別
+## 実際のパースと実行は将来のRGDパーサーとArgodeStatementManagerが担当
 
 signal progress_updated(task_name: String, progress: float, total: int, current: int)
 signal registry_completed(registry_name: String)
 
 var search_directories: Array[String] = []
-
-var definition_commands_list: Array[String] = [
-	"character",
-	"set",
-	"define_position"
-]
-
 var total_files: int = 0
 var processed_files: int = 0
-var definitions_processed: int = 0
+
+# 定義コマンドの位置情報を保存する辞書
+var definition_dictionary: Dictionary = {}
 
 func _init():
 	# プロジェクト設定からディレクトリを取得
@@ -36,22 +32,36 @@ func _load_search_directories():
 	var definition_dir = ProjectSettings.get_setting("argode/general/definition_directory", "res://definitions/")
 	if definition_dir != "":
 		search_directories.append(definition_dir)
+	
+	# デバッグ情報を出力
+	ArgodeSystem.log("🔍 DefinitionRegistry search directories: %s" % str(search_directories))
+	ArgodeSystem.log("� Project setting definition_directory: '%s'" % definition_dir)
 
 ## レジストリ処理を開始
 func start_registry():
 	total_files = 0
 	processed_files = 0
-	definitions_processed = 0
+	definition_dictionary.clear()
 	
 	# ファイル総数をカウント
 	_count_rgd_files()
 	
 	ArgodeSystem.log("🔄 ArgodeDefinitionRegistry started. Total files: %d" % total_files)
 	
-	# 定義ファイルを処理
-	await _process_definition_files()
+	# ファイルがない場合の進捗表示
+	if total_files == 0:
+		progress_updated.emit("定義検索", 0.5, 1, 0)
+		await ArgodeSystem.get_tree().create_timer(0.3).timeout
+		progress_updated.emit("定義検索", 1.0, 1, 1)
+		await ArgodeSystem.get_tree().create_timer(0.2).timeout
+	else:
+		# 定義ファイルを処理
+		await _process_definition_files()
 	
-	ArgodeSystem.log("✅ ArgodeDefinitionRegistry completed. Processed %d definitions." % definitions_processed)
+	# 定義辞書をレジストリに登録
+	_register_definitions_to_system()
+	
+	ArgodeSystem.log("✅ ArgodeDefinitionRegistry completed. Registered %d definitions." % definition_dictionary.size())
 	registry_completed.emit("ArgodeDefinitionRegistry")
 
 ## 設定されたディレクトリからRGDファイルの総数をカウント
@@ -98,71 +108,132 @@ func _process_directory_recursive(path: String):
 func _process_definition_file(file_path: String):
 	processed_files += 1
 	var progress = float(processed_files) / float(total_files)
-	progress_updated.emit("定義処理", progress, total_files, processed_files)
+	progress_updated.emit("定義検索", progress, total_files, processed_files)
 	
-	# RGDファイルから定義コマンドを抽出して実行
-	var definitions = _extract_definition_commands(file_path)
-	for definition in definitions:
-		await _execute_definition_command(definition)
-		definitions_processed += 1
+	ArgodeSystem.log("📄 Processing definition file: %s" % file_path)
 	
-	# 処理の重さをシミュレート
-	await ArgodeSystem.get_tree().process_frame
+	# RGDファイルから定義コマンドを抽出して登録
+	_extract_definition_commands(file_path)
+	
+	# LoadingScreenで進捗が見えるように少し遅延
+	await ArgodeSystem.get_tree().create_timer(0.05).timeout
 
-## RGDファイルから定義コマンドを抽出
-func _extract_definition_commands(file_path: String) -> Array:
-	var definitions = []
-	var file = FileAccess.open(file_path, FileAccess.READ)
-	if file:
-		var line_number = 0
-		while not file.eof_reached():
-			var line = file.get_line().strip_edges()
-			line_number += 1
-			
-			# コメント行や空行をスキップ
-			if line.is_empty() or line.begins_with("#"):
-				continue
-			
-			# 定義コマンドかチェック
-			for command in definition_commands_list:
-				if line.begins_with(command + " "):
-					definitions.append({
-						"command": command,
-						"line": line,
-						"file_path": file_path,
-						"line_number": line_number
-					})
-					break
-		file.close()
+## RGDファイルから定義コマンドを抽出（ArgodeRGDParserを使用）
+func _extract_definition_commands(file_path: String):
+	# ArgodeRGDParserを使用してファイルをパース
+	var parser = ArgodeRGDParser.new()
+	# コマンドレジストリを手動で設定
+	parser.set_command_registry(ArgodeSystem.CommandRegistry)
+	
+	var statements = parser.parse_file(file_path)
+	
+	if statements.is_empty():
+		ArgodeSystem.log("⚠️ No statements found in definition file: %s" % file_path, 1)
+		return
+	
+	# ArgodeCommandRegistryから定義コマンド名のリストを取得
+	var define_command_names = ArgodeSystem.CommandRegistry.get_define_command_names()
+	ArgodeSystem.log("🔍 Available define commands: %s" % str(define_command_names))
+	ArgodeSystem.log("📄 Parsed %d statements from %s" % [statements.size(), file_path])
+	
+	# 各ステートメントをチェックして定義コマンドのみを抽出
+	for statement in statements:
+		if statement.get("type") == "command":
+			var command_name = statement.get("name", "")
+			if command_name in define_command_names:
+				var line_content = _reconstruct_line_from_statement(statement)
+				var line_number = statement.get("line", 0)
+				_register_definition(command_name, line_content, file_path, line_number)
+
+## ステートメント辞書から元の行を再構築
+func _reconstruct_line_from_statement(statement: Dictionary) -> String:
+	var line = statement.get("name", "")
+	var args = statement.get("args", [])
+	
+	for arg in args:
+		line += " "
+		# 引数にスペースが含まれている場合はクォートで囲む
+		if str(arg).find(" ") != -1:
+			line += '"' + str(arg) + '"'
+		else:
+			line += str(arg)
+	
+	return line
+
+## 定義コマンドを登録
+func _register_definition(command_name: String, line_content: String, file_path: String, line_number: int):
+	# 定義のユニークキーを生成
+	var definition_key = "%s:%d:%s" % [file_path.get_file().get_basename(), line_number, command_name]
+	
+	# 定義データを作成
+	var definition_data = {
+		"command_name": command_name,
+		"line_content": line_content,
+		"file_path": file_path,
+		"line_number": line_number,
+		"command_info": ArgodeSystem.CommandRegistry.get_command(command_name)  # コマンド詳細情報
+	}
+	
+	definition_dictionary[definition_key] = definition_data
+	
+	ArgodeSystem.log("📝 Definition registered: %s at %s:%d" % [command_name, file_path, line_number])
+
+## 定義辞書をArgodeSystemに登録
+func _register_definitions_to_system():
+	# 定義辞書はRegistryが管理し、必要に応じて他のコンポーネントから参照される
+	ArgodeSystem.log("🔗 Definition registry prepared with %d definitions" % definition_dictionary.size())
+
+## 定義辞書を取得
+func get_definition_dictionary() -> Dictionary:
+	return definition_dictionary
+
+## 特定のコマンド名の定義を取得
+func get_definitions_by_command(command_name: String) -> Array[Dictionary]:
+	var definitions: Array[Dictionary] = []
+	for definition_key in definition_dictionary:
+		var definition_data = definition_dictionary[definition_key]
+		if definition_data.command_name == command_name:
+			definitions.append(definition_data)
 	return definitions
 
-## 定義コマンドを実行
-func _execute_definition_command(definition: Dictionary):
-	ArgodeSystem.log("🏗️ Executing definition: %s at %s:%d" % [definition.command, definition.file_path, definition.line_number])
+## ファイルパスで定義を検索
+func find_definitions_in_file(file_path: String) -> Array[Dictionary]:
+	var definitions: Array[Dictionary] = []
+	for definition_key in definition_dictionary:
+		var definition_data = definition_dictionary[definition_key]
+		if definition_data.file_path == file_path:
+			definitions.append(definition_data)
+	return definitions
+
+## 定義が存在するかチェック
+func has_definitions() -> bool:
+	return definition_dictionary.size() > 0
+
+## 定義をステートメント形式で取得（StatementManager用）
+func get_definition_statements() -> Array:
+	var statements = []
 	
-	# TODO: 実際の定義コマンド実行処理を実装
-	match definition.command:
-		"character":
-			_process_character_definition(definition.line)
-		"set":
-			_process_variable_definition(definition.line)
-		"define_position":
-			_process_position_definition(definition.line)
-
-## キャラクター定義を処理
-func _process_character_definition(line: String):
-	# character alice "アリス" color "#ffcc00" image_prefix "alice" voice_prefix "alice"
-	# TODO: 実際のキャラクター定義処理
-	pass
-
-## 変数定義を処理
-func _process_variable_definition(line: String):
-	# set player_name = "プレイヤー"
-	# TODO: 実際の変数定義処理
-	pass
-
-## ポジション定義を処理
-func _process_position_definition(line: String):
-	# define_position center x=640 y=360
-	# TODO: 実際のポジション定義処理
-	pass
+	for definition_key in definition_dictionary:
+		var definition_data = definition_dictionary[definition_key]
+		var command_name = definition_data.get("command_name", "")
+		var line_content = definition_data.get("line_content", "")
+		var line_number = definition_data.get("line_number", 0)
+		
+		# RGDパーサーを使用して行をパース
+		var parser = ArgodeRGDParser.new()
+		# コマンドレジストリを手動で設定
+		parser.set_command_registry(ArgodeSystem.CommandRegistry)
+		
+		var parsed_statements = parser.parse_text(line_content)
+		
+		# パースした結果をステートメントリストに追加
+		for statement in parsed_statements:
+			# 行番号を元の定義ファイルの行番号に設定
+			statement["line"] = line_number
+			# 定義情報も追加
+			statement["definition_key"] = definition_key
+			statement["source_file"] = definition_data.get("file_path", "")
+			statements.append(statement)
+	
+	ArgodeSystem.log("📝 Converted %d definitions to %d statements" % [definition_dictionary.size(), statements.size()])
+	return statements

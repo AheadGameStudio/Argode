@@ -1,0 +1,58 @@
+label test_all_command:
+	# すべてのコマンドをテストする
+	"コマンドをテストするためのシナリオを開始します。"
+	ayane "キャラクター定義したキャラクターでセリフを表示する"
+	set player.name = "テストキャラクター"
+	ayane "[player.name]さん、こんにちは！"
+	ayane "ルビのテストをします。【古今東西｜ここんとうざい】\nいかがですか？"
+	ayane "タグのテストもします。{w=1.0}\n1秒の待機が発生したはずです。"
+	menu:
+		"好感度を上げる":
+			set player.affection += 10
+		"好感度を下げる":
+			set player.affection -= 10
+		"好感度を確認する":
+			get player_affection
+			ayane "現在の好感度は[player.affection]です。"
+
+	if player.affection > 0:
+		ayane "好感度が高いです！"
+		jump high_affection
+	elif player.affection < 0:
+		ayane "好感度が低いです。"
+		jump low_affection
+	else:
+		ayane "好感度が普通です。"
+		jump normal_affection
+
+label high_affection:
+	ayane "とても良い印象です。"
+	"このキャラクターはあなたに好意を持っています。"
+	call callable
+	jump end
+	
+label low_affection:
+	ayane "悪い印象です"
+	"このキャラクターはあなたに好意を持っていません。"
+	jump end
+
+label normal_affection:
+	ayane "普通です"
+	"このキャラクターはあなたに特別な感情を持っていません。"
+	jump end
+
+label callable:
+	ayane "このキャラクターはあなたに呼びかけています。"
+	menu:
+		"応答する":
+			ayane "あなたは応答しました。"
+			set player.response = true
+		"無視する":
+			ayane "あなたは無視しました。"
+			set player.response = false
+	return
+
+label end:
+	ayane "シナリオを終了します。"
+	ayane "テストが完了しました。"
+	return

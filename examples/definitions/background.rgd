@@ -1,0 +1,10 @@
+# 背景画像の定義
+# imageコマンドステートメントの例を定義します。
+# パスが指定されていても、画像が存在しない場合もある。
+# その場合は自動的にNONEを設定し、エラーは出さずに警告だけ出して、画面上も表示しない。
+
+image bg bg_1 path "res://examples/assets/backgrounds/bg1.png"
+image bg bg_2 path "res://examples/assets/backgrounds/bg2.png"
+image bg bg_3 path "res://examples/assets/backgrounds/bg3.png"
+
+# image <layer> <name> <path>
