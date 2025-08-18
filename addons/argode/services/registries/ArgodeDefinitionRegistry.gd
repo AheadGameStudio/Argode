@@ -50,10 +50,7 @@ func start_registry():
 	
 	# ファイルがない場合の進捗表示
 	if total_files == 0:
-		progress_updated.emit("定義検索", 0.5, 1, 0)
-		await ArgodeSystem.get_tree().create_timer(0.3).timeout
 		progress_updated.emit("定義検索", 1.0, 1, 1)
-		await ArgodeSystem.get_tree().create_timer(0.2).timeout
 	else:
 		# 定義ファイルを処理
 		await _process_definition_files()
@@ -114,9 +111,6 @@ func _process_definition_file(file_path: String):
 	
 	# RGDファイルから定義コマンドを抽出して登録
 	_extract_definition_commands(file_path)
-	
-	# LoadingScreenで進捗が見えるように少し遅延
-	await ArgodeSystem.get_tree().create_timer(0.05).timeout
 
 ## RGDファイルから定義コマンドを抽出（ArgodeRGDParserを使用）
 func _extract_definition_commands(file_path: String):

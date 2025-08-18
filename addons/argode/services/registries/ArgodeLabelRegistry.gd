@@ -52,10 +52,7 @@ func start_registry():
 	
 	# ファイルがない場合の進捗表示
 	if total_files == 0:
-		progress_updated.emit("ラベル検索", 0.5, 1, 0)
-		await ArgodeSystem.get_tree().create_timer(0.3).timeout
 		progress_updated.emit("ラベル検索", 1.0, 1, 1)
-		await ArgodeSystem.get_tree().create_timer(0.2).timeout
 	else:
 		# シナリオファイルを処理
 		await _process_scenario_files()
@@ -121,9 +118,6 @@ func _process_scenario_file(file_path: String):
 	
 	# RGDファイルからラベルを抽出
 	_extract_labels_from_file(file_path)
-	
-	# LoadingScreenで進捗が見えるように少し遅延
-	await ArgodeSystem.get_tree().create_timer(0.05).timeout
 
 ## RGDファイルからラベルを抽出（ビルド後対応でFileAccessを使用）
 func _extract_labels_from_file(file_path: String):

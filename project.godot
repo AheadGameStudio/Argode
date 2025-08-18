@@ -17,10 +17,14 @@ config/icon="res://icon.svg"
 
 [argode]
 
+general/show_loading_screen=false
 general/custom_command_directory="res://custom_commands/"
 general/definition_directory="res://examples/definitions"
-general/scenario_directory="res://examples/scenarios/"
-general/show_loading_screen=true
+general/scenario_directory="res://examples/scenarios"
+fonts/system_font_normal="uid://bi6rkqvpm04gc"
+fonts/system_font_bold="uid://c5emq6t2boyxs"
+fonts/serif_font_normal="uid://bi6rkqvpm04gc"
+fonts/serif_font_bold="uid://c5emq6t2boyxs"
 
 [autoload]
 

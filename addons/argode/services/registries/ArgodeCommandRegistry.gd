@@ -112,9 +112,6 @@ func _process_command_file(file_path: String):
 		var keywords_str = ", ".join(command_data.command_keywords)
 		var define_flag = " [DEFINE]" if command_data.is_define_command else ""
 		ArgodeSystem.log("📝 Command registered: %s -> %s [%s]%s" % [command_data.command_name, command_data.class_name, keywords_str, define_flag])
-	
-	# LoadingScreenで進捗が見えるように少し遅延
-	await ArgodeSystem.get_tree().create_timer(0.05).timeout
 
 ## GDScriptファイルからコマンドクラス情報を抽出
 func _parse_command_class(file_path: String) -> Dictionary:
