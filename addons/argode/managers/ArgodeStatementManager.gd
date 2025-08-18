@@ -33,6 +33,10 @@ func load_scenario_file(file_path: String) -> bool:
 	
 	ArgodeSystem.log("📖 Loading scenario file: %s" % file_path)
 	
+	# パーサーにコマンドレジストリを設定
+	if ArgodeSystem.CommandRegistry:
+		rgd_parser.set_command_registry(ArgodeSystem.CommandRegistry)
+	
 	# RGDファイルをパース
 	current_statements = rgd_parser.parse_file(file_path)
 	
@@ -42,7 +46,7 @@ func load_scenario_file(file_path: String) -> bool:
 	
 	# デバッグ出力
 	ArgodeSystem.log("✅ Loaded %d statements from %s" % [current_statements.size(), file_path])
-	if ArgodeSystem.debug_manager.is_debug_mode():
+	if ArgodeSystem.DebugManager.is_debug_mode():
 		rgd_parser.debug_print_statements(current_statements)
 	
 	# 実行インデックスをリセット

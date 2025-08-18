@@ -103,8 +103,13 @@ func _parse_next_statement(expected_indent: int) -> Dictionary:
 	
 	var first_token = tokens[0]
 	
-	# 登録されているコマンドかチェック
-	if command_registry and command_registry.has_command(first_token):
+	# コロン記法の処理（コマンド名にコロンが付いている場合）
+	var potential_command = first_token
+	if first_token.ends_with(":"):
+		potential_command = first_token.substr(0, first_token.length() - 1)
+	
+	# 登録されているコマンドかチェック（コロン記法も含む）
+	if command_registry and (command_registry.has_command(first_token) or command_registry.has_command(potential_command)):
 		return _parse_command_statement(tokens, line_number, expected_indent)
 	
 	# キャラクターエイリアス + セリフの形式をチェック
@@ -124,16 +129,18 @@ func _parse_command_statement(tokens: Array, line_number: int, current_indent: i
 	
 	# コロン記法への対応（例: "label test:" → "label", ["test"]）
 	var has_colon = false
-	if not args.is_empty():
+	
+	# コマンド名自体がコロンで終わっている場合
+	if command_name.ends_with(":"):
+		command_name = command_name.substr(0, command_name.length() - 1)
+		has_colon = true
+	# 最後の引数がコロンで終わっている場合
+	elif not args.is_empty():
 		var last_arg = args[-1]
 		if str(last_arg).ends_with(":"):
 			# 最後の引数からコロンを除去
 			args[-1] = str(last_arg).substr(0, str(last_arg).length() - 1)
 			has_colon = true
-	elif command_name.ends_with(":"):
-		# コマンド名自体がコロンで終わっている場合
-		command_name = command_name.substr(0, command_name.length() - 1)
-		has_colon = true
 	
 	var statement = {
 		STATEMENT_TYPE: TYPE_COMMAND,
@@ -149,9 +156,9 @@ func _parse_command_statement(tokens: Array, line_number: int, current_indent: i
 		elif command_name == "if":
 			_parse_if_block(statement, current_indent + 1)
 		elif command_name in ["elif", "else"]:
-			# elif/else単体は不正
-			push_error("ArgodeRGDParser: %s must be part of an if block (line %d)" % [command_name, line_number])
-			return {}
+			# elif/elseはifブロック内でのみ処理されるべき
+			# 単独で現れた場合はコマンドとして処理（エラーは呼び出し元で判定）
+			pass
 		else:
 			statement[STATEMENT_STATEMENTS] = _parse_block_statements(current_indent + 1)
 	
@@ -171,7 +178,7 @@ func _parse_if_block(if_statement: Dictionary, block_indent: int):
 		var preview_indent = _get_line_indent(preview_line)
 		var preview_clean = preview_line.strip_edges()
 		
-		# インデントが合わない場合は終了
+		# インデントが合わない場合は終了（if文と同じレベルのものを探す）
 		if preview_indent != block_indent - 1:  # if文と同じレベル
 			break
 		
@@ -180,6 +187,9 @@ func _parse_if_block(if_statement: Dictionary, block_indent: int):
 			break
 		
 		var preview_command = preview_tokens[0]
+		# コロン記法への対応
+		if preview_command.ends_with(":"):
+			preview_command = preview_command.substr(0, preview_command.length() - 1)
 		
 		# elif/elseではない場合は終了
 		if preview_command not in ["elif", "else"]:

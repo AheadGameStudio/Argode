@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://ccraf8q1lho5b"]
+[gd_scene load_steps=3 format=3 uid="uid://ccraf8q1lho5b"]
 
-[ext_resource type="Script" uid="uid://cr5t05rw6u2ks" path="res://addons/argode/views/ArgodeMessageWindow.gd" id="1_yyaf3"]
+[ext_resource type="Script" uid="uid://cn46tk2q7bb4t" path="res://addons/argode/builtin/scenes/default_message_window/default_message_window.gd" id="1_yyaf3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yyaf3"]
+content_margin_left = 20.0
+content_margin_right = 20.0
+bg_color = Color(0.0666667, 0.0666667, 0.0666667, 1)
 
 [node name="DefaultMessageWindow" type="Control"]
 layout_mode = 3
@@ -11,3 +16,98 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_yyaf3")
 metadata/_custom_type_script = "uid://cr5t05rw6u2ks"
+
+[node name="MessageContainer" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -513.0
+offset_top = -222.0
+offset_right = 513.0
+offset_bottom = -42.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MessagePanel" type="Panel" parent="MessageContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MessageLabel" type="RichTextLabel" parent="MessageContainer"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -481.0
+offset_top = -72.0
+offset_right = 481.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "Message"
+
+[node name="ContinuePrompt" type="Control" parent="MessageContainer"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -45.0
+offset_top = -37.0
+offset_right = -21.0
+offset_bottom = -13.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="MessageContainer/ContinuePrompt"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "▼"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NamePlate" type="PanelContainer" parent="MessageContainer"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 0
+offset_left = -3.0
+offset_top = -45.0
+offset_right = 177.0
+offset_bottom = -5.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_yyaf3")
+
+[node name="NameLabel" type="Label" parent="MessageContainer/NamePlate"]
+layout_mode = 2
+text = "Name"
+vertical_alignment = 1
+
+[node name="ChoiceContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ChoiceContainer"]
+layout_mode = 2

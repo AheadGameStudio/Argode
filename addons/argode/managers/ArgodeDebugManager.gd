@@ -26,6 +26,10 @@ func _ready():
         current_log_level = LogLevel.INFO
         ArgodeSystem.get_tree().root.add_child(DebugDraw.new())
 
+## デバッグモードかどうかを判定
+func is_debug_mode() -> bool:
+    return OS.is_debug_build() and current_log_level <= LogLevel.DEBUG
+
 func log(message: String, level: int = LogLevel.INFO):
     if level >= current_log_level:
         if log_history.has(message):

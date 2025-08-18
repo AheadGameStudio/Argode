@@ -27,7 +27,7 @@ var loading_scene_path: String = "res://addons/argode/builtin/scenes/argode_load
 
 # システム初期化状態
 var is_system_ready: bool = false
-
+signal system_ready
 
 func _ready():
 	if OS.is_debug_build():
@@ -58,10 +58,10 @@ func _ready():
 	await _initialize_system_with_loading()
 
 	ArgodeSystem.log("ArgodeSystem is ready.")
-	ArgodeSystem.log("All Built-in Command: %s" % str(CommandRegistry.command_dictionary))
-	ArgodeSystem.log("Define Commands: %s" % str(CommandRegistry.get_define_command_names()))
-	ArgodeSystem.log("All Labels: %s" % str(LabelRegistry.label_dictionary))
-	ArgodeSystem.log("All Definitions: %s" % str(DefinitionRegistry.definition_dictionary))
+	# ArgodeSystem.log("All Built-in Command: %s" % str(CommandRegistry.command_dictionary))
+	# ArgodeSystem.log("Define Commands: %s" % str(CommandRegistry.get_define_command_names()))
+	# ArgodeSystem.log("All Labels: %s" % str(LabelRegistry.label_dictionary))
+	# ArgodeSystem.log("All Definitions: %s" % str(DefinitionRegistry.definition_dictionary))
 	
 	# 自動実行の処理
 	await _handle_auto_execution()
@@ -164,6 +164,7 @@ func _initialize_system_with_loading():
 	
 	# システム準備完了
 	is_system_ready = true
+	emit_signal("system_ready")
 
 ## ローディング画面を表示
 func _show_loading_screen():
