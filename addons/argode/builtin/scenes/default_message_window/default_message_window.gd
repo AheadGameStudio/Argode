@@ -1,1 +1,2 @@
 extends ArgodeMessageWindow
+class_name ArgodeDefaultMessageWindow

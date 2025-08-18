@@ -6,20 +6,6 @@ class_name ArgodeMessageWindow
 @export_node_path var continue_prompt
 @export_node_path var name_plate
 var name_label: Label
-@export_node_path var choice_container
-
-@export var is_visible_choice_number: bool
-
-@export_category("Theme Variation")
-@export var choice_button_theme_variation: String = "ChoiceButton"
-
-func _init():
-	await ready
-	_after_ready_setup()
-
-func _after_ready_setup():
-	ArgodeSystem.log("✅ ArgodeMessageWindow is ready.", ArgodeSystem.DebugManager.LogLevel.INFO)
-	mouse_filter = MouseFilter.MOUSE_FILTER_IGNORE
 
 # TypewriterServiceから受け取ったメッセージを純粋に表示するだけの関数
 func set_message_text(text: String):
@@ -38,14 +24,6 @@ func set_name_text(name: String):
 	if name_label:
 		name_label.text = name
 
-## メッセージウィンドウ全体を表示にする
-func show_message_window():
-	visible = true
-
-## メッセージウィンドウ全体を非表示にする
-func hide_message_window():
-	visible = false
-
 # 続行プロンプトを表示
 func show_continue_prompt():
 	continue_prompt.visible = true
@@ -61,11 +39,3 @@ func show_name_plate():
 # 名前プレートを非表示にする
 func hide_name_plate():
 	name_plate.visible = false
-
-# 選択肢コンテナを表示
-func show_choice_container():
-	choice_container.visible = true
-
-# 選択肢コンテナを非表示にする
-func hide_choice_container():
-	choice_container.visible = false

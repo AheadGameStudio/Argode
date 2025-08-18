@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://6n1ia42kum2u"]
+
+[ext_resource type="Script" uid="uid://b1rmhjbugrr8o" path="res://addons/argode/builtin/scenes/default_notification_screen/default_notification_screen.gd" id="1_6aiar"]
+[ext_resource type="PackedScene" uid="uid://b8qf24vg6d6p2" path="res://addons/argode/builtin/scenes/default_notifycation_card/default_notification_card.tscn" id="2_s12o0"]
+
+[node name="DefaultNotificationScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = 16.0
+grow_horizontal = 0
+script = ExtResource("1_6aiar")
+notification_card_scene = ExtResource("2_s12o0")
+metadata/_custom_type_script = "uid://drubqy5q1r0mj"

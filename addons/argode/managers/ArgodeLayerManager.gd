@@ -35,6 +35,7 @@ func _init():
 		layer_instance.offset_top = 0
 		layer_instance.offset_bottom = 0
 		# CanvasLayerに追加
+		layer_instance.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		canvas_layer.add_child(layer_instance)
 
 	ArgodeSystem.log("📚ArgodeLayerManager is ready")

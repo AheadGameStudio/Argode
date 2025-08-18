@@ -1,0 +1,59 @@
+[gd_scene load_steps=7 format=3 uid="uid://b8qf24vg6d6p2"]
+
+[ext_resource type="Texture2D" uid="uid://cvfivhi84eule" path="res://addons/argode/assets/images/icon_light_1.png" id="1_j3wsx"]
+[ext_resource type="Texture2D" uid="uid://c86ry6lxkyqn0" path="res://addons/argode/assets/images/icon_light_2.png" id="2_sw2j7"]
+[ext_resource type="Texture2D" uid="uid://b5w0ocodg74re" path="res://addons/argode/assets/images/icon_light_3.png" id="3_bh3jl"]
+[ext_resource type="Texture2D" uid="uid://d228xkgoh1u7h" path="res://addons/argode/assets/images/icon_light_4.png" id="4_c1hh1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ccgyg"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+bg_color = Color(0.0666667, 0.0666667, 0.0666667, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.25098)
+shadow_size = 3
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_r00df"]
+frames = 6
+frame_0/texture = ExtResource("1_j3wsx")
+frame_0/duration = 0.1
+frame_1/texture = ExtResource("2_sw2j7")
+frame_1/duration = 0.1
+frame_2/texture = ExtResource("3_bh3jl")
+frame_2/duration = 0.1
+frame_3/texture = ExtResource("4_c1hh1")
+frame_3/duration = 0.3
+frame_4/texture = ExtResource("3_bh3jl")
+frame_4/duration = 0.1
+frame_5/texture = ExtResource("2_sw2j7")
+frame_5/duration = 0.1
+
+[node name="DefaultNotificationCard" type="PanelContainer"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_ccgyg")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="IconTexture" type="TextureRect" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = SubResource("AnimatedTexture_r00df")
+expand_mode = 2
+stretch_mode = 2
+
+[node name="MessageLabel" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "メッセージ"
