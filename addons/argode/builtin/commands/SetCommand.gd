@@ -14,33 +14,38 @@ func _ready():
 	if ArgodeSystem and ArgodeSystem.VariableManager:
 		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
 
-func execute(args: Dictionary) -> void:
-	# デバッグ：引数の詳細をログ出力
-	ArgodeSystem.log("🔍 SetCommand execute called with args: %s" % str(args))
-	
+## 引数検証（Stage 3共通基盤）
+func validate_args(args: Dictionary) -> bool:
+	var target = get_optional_arg(args, "arg0", "")
+	if target.is_empty():
+		log_error("変数名が指定されていません")
+		return false
+	return true
+
+## コマンド中核処理（Stage 3共通基盤）
+func execute_core(args: Dictionary) -> void:
 	# VariableResolverが初期化されていない場合の保険
 	if not variable_resolver and ArgodeSystem and ArgodeSystem.VariableManager:
 		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
-		ArgodeSystem.log("🔧 SetCommand: VariableResolver initialized")
+		log_info("VariableResolver initialized")
 	
 	if not variable_resolver:
-		ArgodeSystem.log("❌ SetCommand: VariableResolver not available", 2)
+		log_error("VariableResolver not available")
 		return
 	
 	# 引数を解析
-	var target = args.get("arg0", "")
-	var value_expression = args.get("arg1", "")
+	var target = get_required_arg(args, "arg0", "変数名")
+	var value_expression = get_optional_arg(args, "arg1", "")
 	
-	ArgodeSystem.log("🔍 SetCommand: target='%s', expression='%s'" % [target, value_expression])
+	if target == null:
+		return  # エラーは既にログ出力済み
 	
-	if target.is_empty():
-		ArgodeSystem.log("❌ SetCommand: No target variable specified", 2)
-		return
+	log_debug("target='%s', expression='%s'" % [target, value_expression])
 	
 	# 値を直接処理して設定（SetCommandでは変数名と値が既に分離されている）
 	var processed_value = variable_resolver._process_value(value_expression)
 	variable_resolver.set_variable(target, processed_value)
 	
-	ArgodeSystem.log("✅ Variable set: %s = %s" % [target, str(processed_value)])
+	log_info("変数設定完了: %s = %s" % [target, str(processed_value)])
 
 
