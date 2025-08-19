@@ -78,10 +78,11 @@ func draw_character_by_character(canvas, text: String, start_pos: Vector2, max_w
 		
 		# 描画情報を取得（装飾情報を含む）
 		var render_info = base_color
+		var current_font_size = font_size  # 元のフォントサイズを保持
 		if get_char_render_info_callback.is_valid():
 			var info = get_char_render_info_callback.call(char, font, font_size, base_color, current_position)
 			render_info = info.get("color", base_color)
-			font_size = info.get("font_size", font_size)
+			current_font_size = info.get("font_size", font_size)
 		
 		# アニメーション効果を適用
 		var final_position = Vector2(current_x, current_y)
@@ -106,10 +107,10 @@ func draw_character_by_character(canvas, text: String, start_pos: Vector2, max_w
 		
 		# 文字を描画（アニメーション効果適用後）
 		if should_render and final_color.a >= 0.01:  # アニメーション開始値を描画できるよう調整
-			canvas.draw_text_at(char, final_position, font, font_size, final_color)
+			canvas.draw_text_at(char, final_position, font, current_font_size, final_color)
 		
 		# 次の文字位置を計算
-		var char_width = font.get_string_size(char, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		var char_width = font.get_string_size(char, HORIZONTAL_ALIGNMENT_LEFT, -1, current_font_size).x
 		current_x += char_width
 		current_position += 1
 		

@@ -7,7 +7,7 @@ character narator color "#cccccc"
 # その場合は自動的にNONEを設定し、エラーは出さずに警告だけ出して、画面上もキャラクターは表示しない。
 character ayane "彩音" prefix "ayane" path "res://examples/assets/character/ayane" color "#FF69B4"
 character akari "アカリ" prefix "akari" path "res://examples/assets/character/akari" color "#ffb769ff"
-
+character akira "アキラ" prefix "akira" path "res://examples/assets/character/akira" color "#69B4FF"
 # character <alias> <name> <prefix> <path> <color>
 # <alias>: Sayコマンドで必要なキャラクター定義を呼び出すためのエイリアス
 # <name>: キャラクターの表示名

@@ -16,6 +16,7 @@ var _raw_text: String
 var tag_tokenizer: ArgodeTagTokenizer
 var tag_registry: ArgodeTagRegistry
 var rich_text_converter: ArgodeRichTextConverter
+var variable_resolver: ArgodeVariableResolver
 
 # 位置ベース処理のためのデータ構造
 var position_commands: Array[Dictionary] = []  # 位置ごとのコマンドリスト
@@ -25,11 +26,24 @@ var character_positions: Array[int] = []      # 表示文字位置のマッピ�
 func _init():
 	tag_tokenizer = ArgodeTagTokenizer.new()
 	tag_registry = ArgodeTagRegistry.new()
+	
+	# VariableResolverを初期化
+	if ArgodeSystem and ArgodeSystem.VariableManager:
+		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
 
 ## メインの処理関数：テキストを解析して表示用テキストと位置ベースコマンドを生成
 func process_text(raw_text: String) -> Dictionary:
+	# VariableResolverが初期化されていない場合の保険
+	if not variable_resolver and ArgodeSystem and ArgodeSystem.VariableManager:
+		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
+	
 	# エスケープされた改行文字を実際の改行文字に前処理で変換
 	_raw_text = raw_text.replace("\\n", "\n")
+	
+	# 変数解決を先に実行
+	if variable_resolver:
+		_raw_text = variable_resolver.resolve_text(_raw_text)
+	
 	position_commands.clear()
 	character_positions.clear()
 	
@@ -77,12 +91,11 @@ func _build_display_text_and_commands(tokens: Array[ArgodeTagTokenizer.TokenData
 					commands.append(command_info)
 			
 			ArgodeTagTokenizer.TokenType.VARIABLE:
-				# 変数の場合、表示用テキストに変数値を挿入（後で置換）
-				var var_value = _get_variable_value(token.command_data.variable_name)
-				display_builder.append(var_value)
-				for i in range(var_value.length()):
+				# 変数の場合は既にresolve_textで処理済みのため、通常テキストとして扱う
+				display_builder.append(token.display_text)
+				for i in range(token.display_text.length()):
 					char_positions.append(token.start_position + i)
-				current_display_pos += var_value.length()
+				current_display_pos += token.display_text.length()
 			
 			ArgodeTagTokenizer.TokenType.RUBY:
 				# ルビの場合、ベーステキストのみ表示用に追加
@@ -106,10 +119,12 @@ func _create_tag_command(token: ArgodeTagTokenizer.TokenData, display_position: 
 	var tag_command = token.command_data.get("command", "")
 	
 	ArgodeSystem.log("🏷️ Creating tag command: '%s' at display_position %d" % [tag_command, display_position])
+	ArgodeSystem.log("🔍 Available tags: %s" % str(tag_registry.get_tag_names()))
 	
 	# 終了タグの処理（例: /color）
 	if tag_command.begins_with("/"):
 		var base_command = tag_command.substr(1)  # "/"を除去
+		ArgodeSystem.log("🔍 Processing closing tag for base command: %s" % base_command)
 		if tag_registry.has_tag(base_command):
 			var command_data = tag_registry.get_tag_command(base_command)
 			var closing_args = token.command_data.duplicate()
@@ -130,6 +145,7 @@ func _create_tag_command(token: ArgodeTagTokenizer.TokenData, display_position: 
 			return {}
 	
 	# 開始タグの処理
+	ArgodeSystem.log("🔍 Processing opening tag: %s" % tag_command)
 	if tag_registry.has_tag(tag_command):
 		var command_data = tag_registry.get_tag_command(tag_command)
 		var result = {
@@ -167,35 +183,6 @@ func _create_ruby_command(token: ArgodeTagTokenizer.TokenData, display_position:
 		}
 	
 	return {}
-
-## 変数値の取得（ArgodeVariableManagerと連携）
-func _get_variable_value(variable_name: String) -> String:
-	ArgodeSystem.log("🔍 Getting variable value for: %s" % variable_name)
-	
-	if ArgodeSystem and ArgodeSystem.has_method("get") and ArgodeSystem.get("VariableManager"):
-		var variable_manager = ArgodeSystem.get("VariableManager")
-		var value = variable_manager.get_variable(variable_name)
-		ArgodeSystem.log("🔍 Variable manager returned: %s for %s" % [str(value), variable_name])
-		
-		if value != null:
-			return str(value)
-		else:
-			# 未定義変数の場合の処理オプション
-			# 1. 空文字を返す（何も表示しない）
-			# 2. プレースホルダーを表示
-			# 3. エラーメッセージを表示
-			
-			# デバッグモードの場合は警告を表示
-			if ArgodeSystem.DebugManager and ArgodeSystem.DebugManager.is_debug_mode():
-				ArgodeSystem.log("⚠️ Undefined variable referenced: %s" % variable_name, 1)
-				return "[UNDEFINED:%s]" % variable_name  # デバッグ表示
-			else:
-				# リリースモードでは空文字（何も表示しない）
-				return ""
-	
-	# VariableManagerが利用できない場合
-	ArgodeSystem.log("❌ VariableManager not available for variable: %s" % variable_name, 2)
-	return "[ERROR:%s]" % variable_name
 
 ## 指定された表示位置のコマンドを実行
 func execute_commands_at_position(position: int) -> Array[Dictionary]:

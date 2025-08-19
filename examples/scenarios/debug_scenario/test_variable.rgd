@@ -1,0 +1,5 @@
+label test_variable:
+	# 変数テスト専用シナリオ
+	set player.name = "テストユーザー"
+	"[player.name]さん、こんにちは！"
+	return

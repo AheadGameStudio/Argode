@@ -1,4 +1,4 @@
 message_animation clear  
-message_animation add fade 0.3
-message_animation add slide 0.2 offset_y -8
-message_animation add scale 0.3
+message_animation add fade 0.2
+message_animation add slide 0.2 offset_y -4
+message_animation add scale 0.2

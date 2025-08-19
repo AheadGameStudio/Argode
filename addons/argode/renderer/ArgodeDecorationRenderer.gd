@@ -17,14 +17,20 @@ func extract_decoration_data(position_commands: Array):
 	text_decorations.clear()
 	decoration_stack.clear()
 	
+	ArgodeSystem.log("🎨 DecorationRenderer: Processing %d position commands" % position_commands.size())
+	
 	for command_info in position_commands:
 		var command_name = command_info.get("command_name", "")
 		var position = command_info.get("display_position", 0)
 		var args = command_info.get("args", {})
 		
+		ArgodeSystem.log("🔍 Processing command: %s at position %d with args: %s" % [command_name, position, str(args)])
+		
 		# 装飾タグかチェック（color, bold, italic, size など）
 		if _is_decoration_command(command_name):
 			_process_decoration_command(command_name, position, args)
+		else:
+			ArgodeSystem.log("🔍 Command '%s' is not a decoration command" % command_name)
 
 ## 装飾コマンドかどうか判定
 func _is_decoration_command(command_name: String) -> bool:
@@ -98,8 +104,11 @@ func calculate_char_render_info(char: String, base_font: Font, base_font_size: i
 		match decoration.type:
 			"color":
 				render_info.color = _parse_color_from_args(decoration.args)
+				ArgodeSystem.log("🎨 Applied color decoration: %s" % str(render_info.color))
 			"size":
-				render_info.font_size = _parse_size_from_args(decoration.args, base_font_size)
+				var new_size = _parse_size_from_args(decoration.args, base_font_size)
+				render_info.font_size = new_size
+				ArgodeSystem.log("📏 Applied size decoration: %d -> %d" % [base_font_size, new_size])
 			# 他の装飾タイプ（bold, italic など）はフォント変更で対応予定
 	
 	return render_info

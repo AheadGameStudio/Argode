@@ -12,7 +12,7 @@ var animation_update_enabled: bool = false
 var animation_update_callback: Callable
 
 # フォント設定
-@export var font_size: int = 16 : set = set_font_size
+@export var font_size: int = 20 : set = set_font_size
 @export var use_bold_font: bool = false : set = set_use_bold_font
 @export var use_serif_font: bool = false : set = set_use_serif_font
 
