@@ -39,3 +39,23 @@ func _init():
 		canvas_layer.add_child(layer_instance)
 
 	ArgodeSystem.log("📚ArgodeLayerManager is ready")
+
+## 指定された名前のレイヤーを取得
+func get_layer(layer_name: String) -> Control:
+	var system_layer = ArgodeSystem.get_node_or_null("ArgodeSystemLayer")
+	if not system_layer:
+		return null
+	
+	return system_layer.get_node_or_null(layer_name)
+
+## GUIレイヤーを取得（便利メソッド）
+func get_gui_layer() -> Control:
+	return get_layer("GUI")
+
+## キャラクターレイヤーを取得（便利メソッド）
+func get_character_layer() -> Control:
+	return get_layer("Character")
+
+## 背景レイヤーを取得（便利メソッド）
+func get_background_layer() -> Control:
+	return get_layer("Background")

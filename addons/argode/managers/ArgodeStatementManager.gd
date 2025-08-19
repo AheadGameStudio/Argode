@@ -18,12 +18,116 @@ var current_statement_index: int = 0
 # 実行状態フラグ
 var is_executing: bool = false
 var is_paused: bool = false
+var is_waiting_for_input: bool = false
+var is_skipped: bool = false  # スキップされたかのフラグ
 
 # RGDパーサーのインスタンス
 var rgd_parser: ArgodeRGDParser
 
+# インラインコマンド管理
+var inline_command_manager: ArgodeInlineCommandManager
+
+# メッセージ関連の管理
+var message_window: ArgodeMessageWindow = null
+var message_renderer: ArgodeMessageRenderer = null
+
+# タイプライター制御状態
+var typewriter_speed_stack: Array[float] = []  # 速度スタック（ネストした速度変更に対応）
+var typewriter_pause_count: int = 0  # 一時停止要求カウント（ネストした一時停止に対応）
+
+# 入力コントローラーの参照
+var controller: ArgodeController = null
+
 func _init():
 	rgd_parser = ArgodeRGDParser.new()
+	inline_command_manager = ArgodeInlineCommandManager.new()
+	
+	# ArgodeControllerの参照を取得してシグナルを接続
+	_setup_input_controller()
+
+## ArgodeControllerとの連携を設定
+func _setup_input_controller():
+	# ArgodeSystemからControllerの参照を取得
+	controller = ArgodeSystem.Controller
+	
+	if controller:
+		# 入力シグナルを接続
+		if not controller.input_action_pressed.is_connected(_on_input_action_pressed):
+			controller.input_action_pressed.connect(_on_input_action_pressed)
+		
+		# デフォルトキーバインドを設定
+		controller.setup_argode_default_bindings()
+		
+		ArgodeSystem.log("✅ StatementManager: Input controller connected")
+	else:
+		ArgodeSystem.log("⚠️ ArgodeController not found, input waiting disabled", 1)
+
+## 入力アクションが押された時の処理
+func _on_input_action_pressed(action_name: String):
+	# 入力待ち状態での処理
+	if is_waiting_for_input:
+		match action_name:
+			"argode_advance":
+				# タイプライター効果が実行中の場合はスキップ
+				if message_renderer and message_renderer.typewriter_service and message_renderer.typewriter_service.is_currently_typing():
+					message_renderer.complete_typewriter()
+					is_skipped = true  # スキップフラグを設定
+					ArgodeSystem.log("⏭️ Typewriter effect skipped - waiting for completion")
+					# ここではis_waiting_for_inputをfalseにしない
+					# タイプライター完了後に_on_typing_finishedで処理される
+				else:
+					# タイプライター完了済み、または動作していない場合は次へ進む
+					is_waiting_for_input = false
+					is_skipped = false
+					ArgodeSystem.log("⏭️ User input received, continuing execution")
+			
+			"argode_skip":
+				# スキップアクション（Ctrl、右クリック）でも同様の処理
+				if message_renderer and message_renderer.typewriter_service and message_renderer.typewriter_service.is_currently_typing():
+					message_renderer.complete_typewriter()
+					is_skipped = true  # スキップフラグを設定
+					ArgodeSystem.log("⏭️ Typewriter effect force skipped with skip key")
+				else:
+					# 即座に次へ進む
+					is_waiting_for_input = false
+					is_skipped = false
+					ArgodeSystem.log("⏭️ Skip input received, continuing execution")
+
+## タイプライター完了時のコールバック
+func _on_typing_finished():
+	# スキップされた場合は即座に次のステートメントに進む
+	if is_skipped:
+		is_waiting_for_input = false
+		is_skipped = false
+		ArgodeSystem.log("✅ Typewriter effect completed - automatically continuing due to skip")
+	else:
+		# 通常完了の場合はユーザー入力を待つ
+		ArgodeSystem.log("✅ Typewriter completed - ready for user input")
+
+## ユーザー入力を待つ
+func _wait_for_user_input():
+	# コントローラーがない場合は再取得を試行
+	if not controller:
+		_setup_input_controller()
+	
+	if not controller:
+		# コントローラーがない場合は即座に続行
+		ArgodeSystem.log("⚠️ No controller available, skipping input wait", 1)
+		return
+	
+	ArgodeSystem.log("⏸️ Waiting for user input...")
+	is_waiting_for_input = true
+	
+	# 入力があるまで待機
+	while is_waiting_for_input and is_executing:
+		await Engine.get_main_loop().process_frame
+
+## タイプライター完了時のコールバック
+func _on_typewriter_completed():
+	# タイプライター完了後、入力待ち状態の場合は次へ進む準備完了
+	if is_waiting_for_input:
+		ArgodeSystem.log("✅ Typewriter completed - ready for next input")
+		# ここでは自動的に進まず、ユーザー入力を待つ
 
 ## ファイルパスからRGDファイルを読み込んで実行準備
 func load_scenario_file(file_path: String) -> bool:
@@ -138,10 +242,60 @@ func _execute_single_statement(statement: Dictionary):
 	match statement_type:
 		"command":
 			await _execute_command(statement_name, statement_args)
+			
+			# 子ステートメントがある場合は実行
+			if statement.has("statements") and statement.statements.size() > 0:
+				await _execute_child_statements(statement.statements)
 		"say":
-			await _execute_say_command(statement_args)
+			# Sayコマンドは特別にStatementManagerで処理
+			await _handle_say_command(statement_args)
 		_:
 			ArgodeSystem.log("⚠️ Unknown statement type: %s" % statement_type, 1)
+
+## 子ステートメントを実行
+func _execute_child_statements(child_statements: Array):
+	for child_statement in child_statements:
+		await _execute_single_statement(child_statement)
+
+## Sayコマンドの特別処理
+func _handle_say_command(args: Array):
+	# まずSayCommandを実行（ログ出力等）
+	await _execute_command("say", args)
+	
+	# メッセージウィンドウとレンダラーの初期化確認
+	_ensure_message_system_ready()
+	
+	# 引数からキャラクター名とメッセージを抽出
+	var character_name = ""
+	var message_text = ""
+	
+	if args.size() >= 2:
+		# キャラクター名がある場合: say ["キャラクター名", "メッセージ"]
+		character_name = args[0]
+		message_text = args[1]
+	elif args.size() >= 1:
+		# キャラクター名がない場合: say ["メッセージ"]
+		message_text = args[0]
+	else:
+		ArgodeSystem.log("⚠️ Say command called with no arguments", 1)
+		return
+	
+	# InlineCommandManagerでテキストを前処理
+	var processed_data = inline_command_manager.process_text(message_text)
+	var display_text = processed_data.display_text
+	var position_commands = processed_data.position_commands
+	
+	# MessageRendererに表示用テキストと位置ベースコマンドを渡して表示
+	if message_renderer:
+		message_renderer.render_message_with_position_commands(
+			character_name, 
+			display_text, 
+			position_commands,
+			inline_command_manager
+		)
+	
+	# ユーザー入力を待つ
+	await _wait_for_user_input()
 
 ## コマンドを実行
 func _execute_command(command_name: String, args: Array):
@@ -208,11 +362,6 @@ func _is_keyword_argument(arg: String) -> bool:
 	var keywords = ["path", "color", "prefix", "layer", "position", "size", "volume", "loop"]
 	return arg in keywords
 
-## Sayコマンドを実行
-func _execute_say_command(args: Array):
-	# SayCommandを直接実行
-	await _execute_command("say", args)
-
 ## 行番号からステートメントインデックスを検索
 func _find_statement_index_by_line(target_line: int) -> int:
 	for i in range(current_statements.size()):
@@ -238,6 +387,7 @@ func resume_execution():
 func stop_execution():
 	is_executing = false
 	is_paused = false
+	is_waiting_for_input = false
 	current_statement_index = 0
 	ArgodeSystem.log("⏹️ Statement execution stopped")
 
@@ -252,3 +402,125 @@ func debug_print_current_state():
 	ArgodeSystem.log("  - Current index: %d" % current_statement_index)
 	ArgodeSystem.log("  - Is executing: %s" % str(is_executing))
 	ArgodeSystem.log("  - Is paused: %s" % str(is_paused))
+	ArgodeSystem.log("  - Is waiting for input: %s" % str(is_waiting_for_input))
+
+## メッセージシステムの準備を確認・初期化
+func _ensure_message_system_ready():
+	# メッセージウィンドウの初期化
+	if not message_window:
+		_initialize_message_window()
+	
+	# メッセージレンダラーの初期化
+	if not message_renderer and message_window:
+		_initialize_message_renderer()
+	
+	# インラインコマンドマネージャーの初期化
+	if inline_command_manager and not inline_command_manager.tag_registry.tag_command_dictionary.size():
+		_initialize_inline_command_manager()
+
+## メッセージウィンドウを初期化
+func _initialize_message_window():
+	var gui_layer = ArgodeSystem.LayerManager.get_gui_layer()
+	if not gui_layer:
+		ArgodeSystem.log("❌ GUI layer not available for message window", 2)
+		return
+	
+	# デフォルトメッセージウィンドウシーンを読み込み
+	var message_window_scene = load("res://addons/argode/builtin/scenes/default_message_window/default_message_window.tscn")
+	if not message_window_scene:
+		ArgodeSystem.log("❌ Default message window scene not found", 2)
+		return
+	
+	# メッセージウィンドウをインスタンス化
+	message_window = message_window_scene.instantiate()
+	if not message_window:
+		ArgodeSystem.log("❌ Failed to instantiate message window", 2)
+		return
+	
+	# GUIレイヤーに追加
+	gui_layer.add_child(message_window)
+	
+	# 初期状態では非表示
+	message_window.visible = false
+	
+	ArgodeSystem.log("✅ StatementManager: Message window initialized")
+
+## メッセージレンダラーを初期化
+func _initialize_message_renderer():
+	if not message_window:
+		ArgodeSystem.log("❌ Cannot initialize renderer without message window", 2)
+		return
+	
+	# MessageRendererを作成してメッセージウィンドウを設定
+	message_renderer = ArgodeMessageRenderer.new()
+	message_renderer.set_message_window(message_window)
+	
+	# タイプライター完了コールバックを設定
+	message_renderer.set_typewriter_completion_callback(_on_typing_finished)
+	
+	ArgodeSystem.log("✅ StatementManager: Message renderer initialized")
+
+## インラインコマンドマネージャーを初期化
+func _initialize_inline_command_manager():
+	if ArgodeSystem.CommandRegistry:
+		inline_command_manager.initialize_tag_registry(ArgodeSystem.CommandRegistry)
+		ArgodeSystem.log("✅ StatementManager: Inline command manager initialized")
+
+# =============================================================================
+# タイプライター制御機能 (コマンドから使用)
+# =============================================================================
+
+## タイプライターを一時停止 (ネスト対応)
+func pause_typewriter():
+	typewriter_pause_count += 1
+	if message_renderer and message_renderer.typewriter_service:
+		message_renderer.typewriter_service.pause_typing()
+		ArgodeSystem.log("⏸️ StatementManager: Typewriter paused (count: %d)" % typewriter_pause_count)
+
+## タイプライターを再開 (ネスト対応)
+func resume_typewriter():
+	if typewriter_pause_count > 0:
+		typewriter_pause_count -= 1
+		
+		# すべての一時停止要求が解除された場合のみ再開
+		if typewriter_pause_count == 0:
+			if message_renderer and message_renderer.typewriter_service:
+				message_renderer.typewriter_service.resume_typing()
+				ArgodeSystem.log("▶️ StatementManager: Typewriter resumed")
+
+## タイプライター速度を変更 (スタック管理でネスト対応)
+func push_typewriter_speed(new_speed: float):
+	# 現在の速度を保存
+	var current_speed = get_current_typewriter_speed()
+	typewriter_speed_stack.push_back(current_speed)
+	
+	# 新しい速度を適用
+	if message_renderer and message_renderer.typewriter_service:
+		message_renderer.typewriter_service.typing_speed = new_speed
+		ArgodeSystem.log("⚡ StatementManager: Typewriter speed changed: %.3f → %.3f" % [current_speed, new_speed])
+
+## タイプライター速度を復元 (スタックからポップ)
+func pop_typewriter_speed():
+	if typewriter_speed_stack.size() > 0:
+		var previous_speed = typewriter_speed_stack.pop_back()
+		
+		if message_renderer and message_renderer.typewriter_service:
+			message_renderer.typewriter_service.typing_speed = previous_speed
+			ArgodeSystem.log("⚡ StatementManager: Typewriter speed restored: %.3f" % previous_speed)
+
+## 現在のタイプライター速度を取得
+func get_current_typewriter_speed() -> float:
+	if message_renderer and message_renderer.typewriter_service:
+		return message_renderer.typewriter_service.typing_speed
+	return 0.05  # デフォルト値
+
+## タイプライターが一時停止中かチェック
+func is_typewriter_paused() -> bool:
+	return typewriter_pause_count > 0
+
+## タイプライターが実行中かチェック
+func is_typewriter_active() -> bool:
+	if message_renderer and message_renderer.typewriter_service:
+		return message_renderer.typewriter_service.is_typing
+	return false
+

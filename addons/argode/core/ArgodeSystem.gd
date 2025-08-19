@@ -30,15 +30,26 @@ var is_system_ready: bool = false
 signal system_ready
 
 func _ready():
-	if OS.is_debug_build():
-		for argument in OS.get_cmdline_args():
+	# まず生のコマンドライン引数を確認
+	var raw_args = OS.get_cmdline_args()
+	print("🔍 Raw command line args: " + str(raw_args))
+	
+	# コマンドライン引数をパース（デバッグビルドでなくても処理する）
+	for argument in raw_args:
+		print("📝 Processing argument: " + str(argument))
+		if argument.begins_with("--"):
 			if argument.contains("="):
-				var key_value = argument.split("=")
+				var key_value = argument.split("=", false, 1)
 				command_line_args[key_value[0].trim_prefix("--")] = key_value[1]
+				print("  ✅ Added key-value: %s = %s" % [key_value[0].trim_prefix("--"), key_value[1]])
 			else:
 				# Options without an argument will be present in the dictionary,
 				# with the value set to an empty string.
 				command_line_args[argument.trim_prefix("--")] = ""
+				print("  ✅ Added flag: %s" % argument.trim_prefix("--"))
+	
+	# デバッグ: コマンドライン引数を表示
+	print("🔍 Parsed command line args: " + str(command_line_args))
 	
 	# ヘルプが指定されている場合はヘルプを表示
 	if command_line_args.has("help") or command_line_args.has("h"):
@@ -88,6 +99,8 @@ func _show_help():
 	print("  --help, --h                    Show this help message")
 	print("  --test_parser[=file]           Test RGD parser with specified file")
 	print("                                 Default: res://examples/scenarios/debug_scenario/test_all_command.rgd")
+	print("  --test_label_parser=file,label Test RGD parser for specific label block")
+	print("                                 Example: --test_label_parser=test.rgd,start")
 	print("  --test_only                    Exit after running tests")
 	print("  --verbose, --debug             Show detailed debug output")
 	print("  --auto_play[=label]            Automatically play specified label")
@@ -97,6 +110,7 @@ func _show_help():
 	print("Examples:")
 	print("  godot --headless -- --test_parser --verbose --test_only")
 	print("  godot --headless -- --test_parser=res://test.rgd --debug")
+	print("  godot --headless -- --test_label_parser=res://test.rgd,main --test_only")
 	print("  godot -- --auto_play=main_menu")
 	print("  godot -- --start_label=tutorial")
 
@@ -128,6 +142,21 @@ func _run_parser_test(file_path: String):
 
 ## 自動実行を処理
 func _handle_auto_execution():
+	# test_label_parserが指定されている場合はラベルパーサーテストを実行
+	if command_line_args.has("test_label_parser"):
+		var test_args = command_line_args.get("test_label_parser", "").split(",")
+		if test_args.size() >= 2:
+			var file_path = test_args[0].strip_edges()
+			var label_name = test_args[1].strip_edges()
+			ArgodeSystem.log("🧪 Testing label parser: file=%s, label=%s" % [file_path, label_name])
+			await _test_label_parser(file_path, label_name)
+		else:
+			ArgodeSystem.log("❌ test_label_parser requires file_path,label_name format", 2)
+		
+		if command_line_args.has("test_only"):
+			get_tree().quit()
+		return
+	
 	# auto_playが指定されている場合は自動でゲームを開始
 	if command_line_args.has("auto_play"):
 		var label = command_line_args.get("auto_play", "start")
@@ -146,6 +175,33 @@ func _setup_basic_managers():
 	Controller.name = "ArgodeController"
 	
 	ArgodeSystem.log("🎮 ArgodeController initialized and added to scene tree")
+
+## ラベルパーサーをテストする
+func _test_label_parser(file_path: String, label_name: String):
+	ArgodeSystem.log("🧪 Starting label parser test...")
+	ArgodeSystem.log("📁 File: %s" % file_path)
+	ArgodeSystem.log("🏷️ Label: %s" % label_name)
+	
+	# RGDパーサーを作成
+	var parser = ArgodeRGDParser.new()
+	parser.set_command_registry(CommandRegistry)
+	
+	# ファイル全体をパース
+	ArgodeSystem.log("📄 Parsing entire file...")
+	var all_statements = parser.parse_file(file_path)
+	ArgodeSystem.log("✅ Found %d statements in entire file" % all_statements.size())
+	
+	# 指定ラベルのブロックのみをパース
+	ArgodeSystem.log("🎯 Parsing label block: %s" % label_name)
+	var label_statements = parser.parse_label_block(file_path, label_name)
+	ArgodeSystem.log("✅ Found %d statements in label block" % label_statements.size())
+	
+	# デバッグ出力
+	if command_line_args.has("verbose"):
+		ArgodeSystem.log("📊 Label block statements:")
+		parser.debug_print_statements(label_statements)
+	
+	ArgodeSystem.log("🏁 Label parser test completed")
 
 ## ローディング画面を表示してシステム初期化を行う
 func _initialize_system_with_loading():
@@ -362,3 +418,24 @@ func get_command_dictionary() -> Dictionary:
 func wait_for_system_ready():
 	while not is_system_ready:
 		await get_tree().process_frame
+
+## ラベルブロックパースのテスト用関数
+func test_label_block_parser(file_path: String, label_name: String):
+	ArgodeSystem.log("🧪 Testing label block parser...")
+	ArgodeSystem.log("📄 File: %s" % file_path)
+	ArgodeSystem.log("🏷️ Label: %s" % label_name)
+	
+	var parser = ArgodeRGDParser.new()
+	parser.set_command_registry(CommandRegistry)
+	
+	# 指定ラベルブロックのみをパース
+	var statements = parser.parse_label_block(file_path, label_name)
+	
+	ArgodeSystem.log("📊 Parse result: %d statements found" % statements.size())
+	
+	if statements.size() > 0:
+		parser.debug_print_statements(statements)
+	else:
+		ArgodeSystem.log("⚠️ No statements found in label block '%s'" % label_name, 1)
+	
+	ArgodeSystem.log("✅ Label block parser test completed")

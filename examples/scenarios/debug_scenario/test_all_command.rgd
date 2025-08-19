@@ -5,6 +5,9 @@ label test_all_command:
 	set player.name = "テストキャラクター"
 	ayane "[player.name]さん、こんにちは！"
 	ayane "ルビのテストをします。【古今東西｜ここんとうざい】\nいかがですか？"
+	ayane "ルビの表示が正しく行われていますか？\n【古今東西｜ここんとうざい】を【旅｜たび】するのは【楽｜たの】しいですね。"
+	ayane "カラータグのテストです。{color=#ff0000}赤い文字{/color}と{color=blue}青い文字{/color}があります。"
+	ayane "サイズタグのテストです。{size=24}大きな文字{/size}と{size=12}小さな文字{/size}があります。"
 	ayane "タグのテストもします。{w=1.0}\n1秒の待機が発生したはずです。"
 	menu:
 		"好感度を上げる":

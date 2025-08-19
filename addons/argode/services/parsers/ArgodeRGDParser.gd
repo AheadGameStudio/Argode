@@ -55,6 +55,87 @@ func parse_file(file_path: String) -> Array:
 	
 	return parse_text(content)
 
+# 指定されたラベルのブロック範囲のみをパースする
+func parse_label_block(file_path: String, label_name: String) -> Array:
+	if not FileAccess.file_exists(file_path):
+		push_error("ArgodeRGDParser: ファイルが見つかりません: " + file_path)
+		return []
+	
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if not file:
+		push_error("ArgodeRGDParser: ファイルを開けませんでした: " + file_path)
+		return []
+	
+	var content = file.get_as_text()
+	file.close()
+	
+	return parse_label_block_from_text(content, label_name)
+
+# テキストから指定されたラベルのブロック範囲のみをパースする
+func parse_label_block_from_text(text: String, label_name: String) -> Array:
+	lines = text.split("\n")
+	current_line_index = 0
+	
+	# 指定されたラベルを探す
+	var label_start_line = -1
+	var label_indent = -1
+	
+	while current_line_index < lines.size():
+		var line = lines[current_line_index]
+		var clean_line = line.strip_edges()
+		
+		# ラベル行をチェック
+		if clean_line.begins_with("label "):
+			var label_line = clean_line.substr(6).strip_edges()
+			var found_label_name = label_line
+			
+			# コロンがある場合は除去
+			if label_line.ends_with(":"):
+				found_label_name = label_line.substr(0, label_line.length() - 1).strip_edges()
+			
+			if found_label_name == label_name:
+				label_start_line = current_line_index
+				label_indent = _get_line_indent(line)
+				current_line_index += 1
+				break
+		
+		current_line_index += 1
+	
+	# ラベルが見つからない場合
+	if label_start_line == -1:
+		push_warning("ArgodeRGDParser: ラベル '%s' が見つかりません" % label_name)
+		return []
+	
+	# ラベルブロックの終端を探す（同じインデントレベルの次のラベルまで）
+	var block_end_line = lines.size() - 1
+	
+	while current_line_index < lines.size():
+		var line = lines[current_line_index]
+		var line_indent = _get_line_indent(line)
+		var clean_line = line.strip_edges()
+		
+		# 空行やコメント行はスキップ
+		if clean_line.is_empty() or clean_line.begins_with("#"):
+			current_line_index += 1
+			continue
+		
+		# 同じインデントレベルで別のラベルが見つかったら終了
+		if line_indent <= label_indent and clean_line.begins_with("label "):
+			block_end_line = current_line_index - 1
+			break
+		
+		current_line_index += 1
+	
+	# ラベルブロック部分のテキストを抽出
+	var block_lines = []
+	for i in range(label_start_line, block_end_line + 1):
+		block_lines.append(lines[i])
+	
+	var block_text = "\n".join(block_lines)
+	
+	# ブロック部分をパース
+	return parse_text(block_text)
+
 # テキストからステートメントリストを生成する（高度なパーサー）
 func parse_text(text: String) -> Array:
 	lines = text.split("\n")
