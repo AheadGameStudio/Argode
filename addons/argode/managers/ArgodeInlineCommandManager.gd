@@ -170,11 +170,32 @@ func _create_ruby_command(token: ArgodeTagTokenizer.TokenData, display_position:
 
 ## 変数値の取得（ArgodeVariableManagerと連携）
 func _get_variable_value(variable_name: String) -> String:
+	ArgodeSystem.log("🔍 Getting variable value for: %s" % variable_name)
+	
 	if ArgodeSystem and ArgodeSystem.has_method("get") and ArgodeSystem.get("VariableManager"):
 		var variable_manager = ArgodeSystem.get("VariableManager")
 		var value = variable_manager.get_variable(variable_name)
-		return str(value) if value != null else "[" + variable_name + "]"
-	return "[" + variable_name + "]"
+		ArgodeSystem.log("🔍 Variable manager returned: %s for %s" % [str(value), variable_name])
+		
+		if value != null:
+			return str(value)
+		else:
+			# 未定義変数の場合の処理オプション
+			# 1. 空文字を返す（何も表示しない）
+			# 2. プレースホルダーを表示
+			# 3. エラーメッセージを表示
+			
+			# デバッグモードの場合は警告を表示
+			if ArgodeSystem.DebugManager and ArgodeSystem.DebugManager.is_debug_mode():
+				ArgodeSystem.log("⚠️ Undefined variable referenced: %s" % variable_name, 1)
+				return "[UNDEFINED:%s]" % variable_name  # デバッグ表示
+			else:
+				# リリースモードでは空文字（何も表示しない）
+				return ""
+	
+	# VariableManagerが利用できない場合
+	ArgodeSystem.log("❌ VariableManager not available for variable: %s" % variable_name, 2)
+	return "[ERROR:%s]" % variable_name
 
 ## 指定された表示位置のコマンドを実行
 func execute_commands_at_position(position: int) -> Array[Dictionary]:

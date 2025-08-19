@@ -1,6 +1,10 @@
 extends RefCounted
 class_name ArgodeCharacterAnimation
 
+# シグナル定義
+signal all_animations_completed()
+signal character_animation_completed(char_index: int)
+
 # アニメーション効果の基底クラス
 class CharacterAnimationEffect extends RefCounted:
 	var duration: float = 0.5
@@ -58,6 +62,7 @@ var character_animations: Array[Dictionary] = []  # 各文字のアニメーシ�
 var animation_effects: Array[CharacterAnimationEffect] = []  # 適用する効果のリスト
 var current_time: float = 0.0
 var is_skip_requested: bool = false
+var all_completion_notified: bool = false  # 全完了通知フラグ
 
 func _init():
 	# デフォルト効果を設定
@@ -73,6 +78,7 @@ func initialize_for_text(text_length: int):
 	character_animations.clear()
 	current_time = 0.0
 	is_skip_requested = false
+	all_completion_notified = false  # 通知フラグをリセット
 	
 	for i in range(text_length):
 		var char_anim = {
@@ -133,6 +139,11 @@ func update_animations(delta_time: float):
 				char_anim.current_values[key] = effect_values[key]
 		
 		char_anim.is_completed = all_effects_completed
+		
+		# 文字アニメーション完了時にシグナル発行
+		if all_effects_completed and not char_anim.get("completion_notified", false):
+			char_anim["completion_notified"] = true
+			character_animation_completed.emit(char_anim.char_index)
 
 ## 個別効果状態の更新（経過時間ベース）
 func _update_effect_state_with_elapsed_time(effect_state: Dictionary, char_anim: Dictionary, elapsed_time: float):
@@ -205,6 +216,7 @@ func get_character_animation_values(char_index: int) -> Dictionary:
 			var effect_final = effect_state.effect.get_final_values()
 			for key in effect_final:
 				final_values[key] = effect_final[key]
+		ArgodeSystem.log("⏭️ Returning final values for char %d during skip: %s" % [char_index, str(final_values)])
 		return final_values
 	
 	return char_anim.current_values
@@ -212,21 +224,39 @@ func get_character_animation_values(char_index: int) -> Dictionary:
 ## 全アニメーションをスキップ
 func skip_all_animations():
 	is_skip_requested = true
+	ArgodeSystem.log("⏭️ Skipping all character animations")
 	
 	# 全文字を即座に完了状態にする
 	for char_anim in character_animations:
+		# 文字をトリガー状態にする（まだトリガーされていない場合）
+		if not char_anim.is_triggered:
+			char_anim.is_triggered = true
+			char_anim.trigger_time = current_time
+		
 		char_anim.is_completed = true
 		char_anim.current_values.clear()
 		
+		# 各効果を完了状態にして最終値を統合
 		for effect_state in char_anim.effects:
 			effect_state.progress = 1.0
 			effect_state.is_completed = true
 			effect_state.is_active = true
 			
-			# 最終値を設定
+			# 最終値を設定（すべての効果の最終値を統合）
 			var final_values = effect_state.effect.get_final_values()
 			for key in final_values:
 				char_anim.current_values[key] = final_values[key]
+		
+		# 完了通知フラグも設定
+		char_anim["completion_notified"] = true
+	
+	ArgodeSystem.log("✅ All character animations set to final state")
+	
+	# スキップ完了シグナルを発行
+	if not all_completion_notified:
+		all_completion_notified = true
+		all_animations_completed.emit()
+		ArgodeSystem.log("📢 All animations completed signal emitted")
 
 ## 全アニメーションが完了したかチェック
 func are_all_animations_completed() -> bool:
@@ -236,6 +266,12 @@ func are_all_animations_completed() -> bool:
 	for char_anim in character_animations:
 		if not char_anim.is_completed:
 			return false
+	
+	# 全て完了していて、まだ通知していない場合はシグナル発行
+	if not all_completion_notified:
+		all_completion_notified = true
+		all_animations_completed.emit()
+	
 	return true
 
 ## 指定文字がトリガーされているかチェック

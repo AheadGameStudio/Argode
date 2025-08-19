@@ -8,6 +8,7 @@ class_name ArgodeTypewriterService
 var typing_speed: float = 0.05  # 1文字あたりの秒数
 var is_typing: bool = false
 var is_paused: bool = false
+var was_skipped: bool = false  # ユーザーによってスキップされたかどうか
 var current_text: String = ""
 var display_text: String = ""
 var current_index: int = 0
@@ -37,6 +38,7 @@ func start_typing(text: String, speed: float = 0.05):
 	current_index = 0
 	is_typing = true
 	is_paused = false
+	was_skipped = false  # スキップフラグをリセット
 	
 	ArgodeSystem.log("⌨️ Starting typewriter effect: '%s'" % current_text.substr(0, 20) + ("..." if current_text.length() > 20 else ""))
 	
@@ -62,6 +64,7 @@ func complete_typing():
 		current_index = current_text.length()
 		is_typing = false
 		is_paused = false
+		was_skipped = true  # スキップフラグを設定
 		
 		# 完全なテキストが表示されるよう文字タイプコールバックを呼び出し
 		if on_character_typed.is_valid():
@@ -73,12 +76,13 @@ func complete_typing():
 			on_typing_finished.call(display_text)
 		
 		typing_finished.emit(display_text)
-		ArgodeSystem.log("⏭️ Typewriter completed instantly")
+		ArgodeSystem.log("⏭️ Typewriter completed instantly (SKIPPED)")
 
 ## タイプライター処理を停止
 func stop_typing():
 	is_typing = false
 	is_paused = false
+	was_skipped = false  # スキップフラグをリセット
 	display_text = ""
 	current_index = 0
 	ArgodeSystem.log("⏹️ Typewriter stopped")
@@ -125,12 +129,13 @@ func _process_typing():
 	if is_typing and current_index >= current_text.length():
 		is_typing = false
 		is_paused = false
+		# was_skipped はそのまま（自然完了の場合は false のまま）
 		
 		if on_typing_finished.is_valid():
 			on_typing_finished.call(display_text)
 		
 		typing_finished.emit(display_text)
-		ArgodeSystem.log("✅ Typewriter effect completed")
+		ArgodeSystem.log("✅ Typewriter effect completed naturally (not skipped)")
 
 ## 特殊文字の開始かどうかを判定
 func _is_special_character_start(char: String) -> bool:
@@ -171,6 +176,9 @@ func set_callbacks(character_callback: Callable, finish_callback: Callable):
 ## 現在の状態を取得
 func is_currently_typing() -> bool:
 	return is_typing
+
+func was_typewriter_skipped() -> bool:
+	return was_skipped
 
 func get_current_display_text() -> String:
 	return display_text

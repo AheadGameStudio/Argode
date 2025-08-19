@@ -14,6 +14,7 @@ var command_line_args: Dictionary = {}
 var DebugManager:ArgodeDebugManager # デバッグマネージャーのインスタンス
 var StatementManager:ArgodeStatementManager # ステートメントマネージャーのインスタンス
 var LayerManager:ArgodeLayerManager # レイヤーマネージャーのインスタンス
+var VariableManager:ArgodeVariableManager # 変数マネージャーのインスタンス
 var Controller:ArgodeController # コントローラーのインスタンス
 
 # レジストリのインスタンス
@@ -169,6 +170,7 @@ func _setup_basic_managers():
 	StatementManager = ArgodeStatementManager.new()
 	Controller = ArgodeController.new()
 	LayerManager = ArgodeLayerManager.new()
+	VariableManager = ArgodeVariableManager.new()
 	
 	# コントローラーをシーンツリーに追加（入力処理のため）
 	add_child(Controller)

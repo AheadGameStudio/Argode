@@ -85,8 +85,11 @@ func _initialize_typewriter_service():
 ## 文字アニメーションシステムを初期化
 func _initialize_character_animation():
 	# 動的にクラスを作成
-	var AnimationClass = load("res://addons/argode/renderer/ArgodeCharacterAnimation.gd")
-	character_animation = AnimationClass.new()
+	var CharacterAnimationClass = load("res://addons/argode/renderer/ArgodeCharacterAnimation.gd")
+	character_animation = CharacterAnimationClass.new()
+	
+	# シグナル接続
+	character_animation.all_animations_completed.connect(_on_all_animations_completed)
 	
 	ArgodeSystem.log("✅ MessageRenderer: Character animation system initialized")
 
@@ -113,18 +116,32 @@ func _on_character_typed(character: String, current_display: String):
 func _on_typing_finished(final_text: String):
 	ArgodeSystem.log("✅ Typewriter effect completed: %s" % final_text.substr(0, 30) + ("..." if final_text.length() > 30 else ""))
 	
-	# アニメーションが有効な場合は、アニメーション完了を待つ
+	# アニメーションが有効な場合の処理
 	if character_animation and is_animation_enabled:
-		ArgodeSystem.log("⏳ Waiting for character animations to complete...")
-		_wait_for_animations_completion()
+		# スキップされた場合のみアニメーションも強制完了
+		if typewriter_service and typewriter_service.was_typewriter_skipped():
+			ArgodeSystem.log("⏭️ Typewriter was skipped - forcing animation completion")
+			character_animation.skip_all_animations()
+			_notify_message_completion()
+		else:
+			# 自然完了の場合はアニメーション完了を待つ
+			ArgodeSystem.log("⏳ Typewriter completed naturally - waiting for animations...")
+			_wait_for_animations_completion()
 	else:
 		# アニメーションが無効な場合は即座に完了通知
+		ArgodeSystem.log("🔄 No animations enabled, completing immediately")
 		_notify_message_completion()
+
+## 全アニメーション完了シグナル受信
+func _on_all_animations_completed():
+	ArgodeSystem.log("✅ All character animations completed via signal")
+	_notify_message_completion()
 
 ## アニメーションの完了を待つ
 func _wait_for_animations_completion():
-	# アニメーション完了チェックを開始
-	_start_animation_completion_check()
+	# シグナルベースで処理するため、何もしない
+	# 完了時に_on_all_animations_completed()が自動的に呼ばれる
+	ArgodeSystem.log("🔄 Waiting for animations completion via signal...")
 
 ## アニメーション完了チェックを開始
 func _start_animation_completion_check():
@@ -134,6 +151,7 @@ func _start_animation_completion_check():
 		timer.wait_time = 0.05  # 50msごとにチェック
 		timer.timeout.connect(_check_animation_completion)
 		timer.timeout.connect(timer.queue_free)  # 自動削除
+		timer.one_shot = false  # 繰り返し実行
 		message_canvas.add_child(timer)
 		timer.start()
 	else:
@@ -146,9 +164,12 @@ func _check_animation_completion():
 	if character_animation and character_animation.are_all_animations_completed():
 		ArgodeSystem.log("✅ All character animations completed")
 		_notify_message_completion()
-	else:
-		# まだ完了していない場合は次のフレームで再チェック
-		_start_animation_completion_check()
+		# タイマーを停止して削除
+		var timer = message_canvas.get_children().filter(func(child): return child is Timer).back()
+		if timer:
+			timer.stop()
+			timer.queue_free()
+	# まだ完了していない場合はタイマーが継続して動作
 
 ## メッセージ表示完了を通知
 func _notify_message_completion():
@@ -156,8 +177,12 @@ func _notify_message_completion():
 	if message_canvas:
 		message_canvas.stop_animation_updates()
 	
+	# StatementManagerに完了を通知
 	if on_typewriter_completed.is_valid():
+		ArgodeSystem.log("📢 Notifying typewriter completion to StatementManager")
 		on_typewriter_completed.call()
+	else:
+		ArgodeSystem.log("⚠️ Typewriter completion callback not set")
 
 ## メッセージをレンダリング
 func render_message(character_name: String, text: String):
@@ -240,13 +265,18 @@ func clear_message():
 ## タイプライター効果を即座に完了
 func complete_typewriter():
 	if typewriter_service and typewriter_service.is_currently_typing():
+		ArgodeSystem.log("⏭️ Typewriter effect being completed by user (SKIP)")
 		typewriter_service.complete_typing()
-		ArgodeSystem.log("⏭️ Typewriter effect completed by user")
-	
-	# アニメーションもスキップ
-	if character_animation and is_animation_enabled:
-		character_animation.skip_all_animations()
-		ArgodeSystem.log("⏭️ Character animations skipped by user")
+		
+		# アニメーションもスキップ（ユーザーが明示的にスキップした場合のみ）
+		if character_animation and is_animation_enabled:
+			character_animation.skip_all_animations()
+			ArgodeSystem.log("⏭️ Character animations skipped due to user skip")
+			
+			# アニメーション完了を即座に通知
+			_notify_message_completion()
+	else:
+		ArgodeSystem.log("⚠️ Typewriter already completed or not running")
 
 ## タイプライター効果を停止
 func stop_typewriter():
@@ -256,6 +286,10 @@ func stop_typewriter():
 
 ## タイプライター完了コールバックを設定
 func set_typewriter_completion_callback(callback: Callable):
+	on_typewriter_completed = callback
+
+## スキップ状態付きでタイプライター完了コールバックを設定
+func set_typewriter_completion_callback_with_skip_flag(callback: Callable):
 	on_typewriter_completed = callback
 
 ## 実際の描画処理（CanvasからCallableで呼ばれる）
@@ -356,24 +390,26 @@ func _draw_decorated_text(canvas, text: String, start_pos: Vector2, max_width: f
 		var final_scale = 1.0
 		
 		if character_animation and is_animation_enabled:
-			# 文字がトリガーされている場合のみアニメーション値を取得
-			if character_animation.is_character_ready_to_show(current_position):
+			# スキップモードまたは文字がトリガーされている場合のみアニメーション値を取得
+			if character_animation.is_skip_requested or character_animation.is_character_ready_to_show(current_position):
 				var animation_values = character_animation.get_character_animation_values(current_position)
 				
 				# アニメーション値を適用（デフォルト値を設定）
 				if animation_values.has("alpha"):
 					final_color.a *= animation_values.alpha
-				else:
-					# アニメーションが開始されていない場合は透明にする
-					if not character_animation.is_character_ready_to_show(current_position):
-						final_color.a = 0.0
+				elif character_animation.is_skip_requested:
+					# スキップ時は強制的にalpha=1.0を保証
+					final_color.a *= 1.0
 				
-				if animation_values.has("offset_y"):
+				if animation_values.has("y_offset"):
+					final_position.y += animation_values.y_offset
+				elif animation_values.has("offset_y"):  # 後方互換
 					final_position.y += animation_values.offset_y
+				
 				if animation_values.has("scale"):
 					final_scale = animation_values.scale
 			else:
-				# まだトリガーされていない文字は描画しない
+				# まだトリガーされていない文字は透明にする
 				final_color.a = 0.0
 		
 		# 文字を描画（アニメーション効果適用後）

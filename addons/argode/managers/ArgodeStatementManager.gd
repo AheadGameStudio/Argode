@@ -20,6 +20,9 @@ var is_executing: bool = false
 var is_paused: bool = false
 var is_waiting_for_input: bool = false
 var is_skipped: bool = false  # スキップされたかのフラグ
+var input_debounce_timer: float = 0.0  # 入力デバウンス用
+var last_input_time: int = 0  # 最後の入力時刻（ミリ秒）
+const INPUT_DEBOUNCE_TIME: float = 0.1  # 入力間隔の最小時間（100ms）
 
 # RGDパーサーのインスタンス
 var rgd_parser: ArgodeRGDParser
@@ -64,19 +67,35 @@ func _setup_input_controller():
 
 ## 入力アクションが押された時の処理
 func _on_input_action_pressed(action_name: String):
+	# Argode専用アクションのみを処理（Godotデフォルトアクションを無視）
+	if not action_name.begins_with("argode_"):
+		return
+	
+	# デバウンシング処理（ミリ秒単位で処理）
+	var current_time_ms = Time.get_ticks_msec()
+	var time_since_last_input = (current_time_ms - last_input_time) / 1000.0  # 秒に変換
+	
+	if time_since_last_input < INPUT_DEBOUNCE_TIME:
+		ArgodeSystem.log("⏭️ Input debounced: %.3fs since last input" % time_since_last_input)
+		return
+	
+	last_input_time = current_time_ms
+	
 	# 入力待ち状態での処理
 	if is_waiting_for_input:
+		ArgodeSystem.log("🎮 Processing input action: %s (waiting: %s)" % [action_name, str(is_waiting_for_input)])
 		match action_name:
 			"argode_advance":
 				# タイプライター効果が実行中の場合はスキップ
 				if message_renderer and message_renderer.typewriter_service and message_renderer.typewriter_service.is_currently_typing():
+					ArgodeSystem.log("⏭️ Typewriter is running, completing it")
 					message_renderer.complete_typewriter()
 					is_skipped = true  # スキップフラグを設定
 					ArgodeSystem.log("⏭️ Typewriter effect skipped - waiting for completion")
-					# ここではis_waiting_for_inputをfalseにしない
-					# タイプライター完了後に_on_typing_finishedで処理される
+					# タイプライター完了処理は_on_typing_finishedで行われる
 				else:
 					# タイプライター完了済み、または動作していない場合は次へ進む
+					ArgodeSystem.log("⏭️ Typewriter not running, proceeding to next statement")
 					is_waiting_for_input = false
 					is_skipped = false
 					ArgodeSystem.log("⏭️ User input received, continuing execution")
@@ -84,17 +103,24 @@ func _on_input_action_pressed(action_name: String):
 			"argode_skip":
 				# スキップアクション（Ctrl、右クリック）でも同様の処理
 				if message_renderer and message_renderer.typewriter_service and message_renderer.typewriter_service.is_currently_typing():
+					ArgodeSystem.log("⏭️ Force skipping typewriter with skip key")
 					message_renderer.complete_typewriter()
 					is_skipped = true  # スキップフラグを設定
 					ArgodeSystem.log("⏭️ Typewriter effect force skipped with skip key")
+					# タイプライター完了処理は_on_typing_finishedで行われる
 				else:
 					# 即座に次へ進む
+					ArgodeSystem.log("⏭️ Skip key pressed, proceeding to next statement")
 					is_waiting_for_input = false
 					is_skipped = false
 					ArgodeSystem.log("⏭️ Skip input received, continuing execution")
+	else:
+		ArgodeSystem.log("🎮 Input action '%s' received but not waiting for input" % action_name)
 
 ## タイプライター完了時のコールバック
 func _on_typing_finished():
+	ArgodeSystem.log("✅ Typewriter finished callback received, skipped: %s" % str(is_skipped))
+	
 	# スキップされた場合は即座に次のステートメントに進む
 	if is_skipped:
 		is_waiting_for_input = false
@@ -115,18 +141,26 @@ func _wait_for_user_input():
 		ArgodeSystem.log("⚠️ No controller available, skipping input wait", 1)
 		return
 	
-	ArgodeSystem.log("⏸️ Waiting for user input...")
+	# 入力待ち状態を設定してからログ出力
 	is_waiting_for_input = true
+	ArgodeSystem.log("⏸️ Waiting for user input... (is_waiting_for_input: %s)" % str(is_waiting_for_input))
 	
 	# 入力があるまで待機
 	while is_waiting_for_input and is_executing:
 		await Engine.get_main_loop().process_frame
+	
+	ArgodeSystem.log("▶️ Input wait completed, continuing execution")
 
 ## タイプライター完了時のコールバック
 func _on_typewriter_completed():
 	# タイプライター完了後、入力待ち状態の場合は次へ進む準備完了
 	if is_waiting_for_input:
-		ArgodeSystem.log("✅ Typewriter completed - ready for next input")
+		ArgodeSystem.log("✅ Typewriter finished callback received, skipped: %s" % str(is_skipped))
+		if is_skipped:
+			ArgodeSystem.log("✅ Typewriter was skipped - ready for user input")
+			is_skipped = false  # スキップフラグをリセット
+		else:
+			ArgodeSystem.log("✅ Typewriter completed - ready for user input")
 		# ここでは自動的に進まず、ユーザー入力を待つ
 
 ## ファイルパスからRGDファイルを読み込んで実行準備
@@ -523,4 +557,3 @@ func is_typewriter_active() -> bool:
 	if message_renderer and message_renderer.typewriter_service:
 		return message_renderer.typewriter_service.is_typing
 	return false
-
