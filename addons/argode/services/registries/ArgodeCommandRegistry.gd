@@ -126,11 +126,15 @@ func _parse_command_class(file_path: String) -> Dictionary:
 		# global_nameがない場合、ファイル名から推定
 		script_class = file_path.get_file().get_basename()
 	
-	# コマンド名を推定（例: "SayCommand" から "say"）
-	var command_name = _derive_command_name(script_class)
-	
 	# コマンドクラスからキーワード配列とインスタンスを取得
 	var command_data = _extract_command_keywords(script)
+	
+	# コマンド名を決定：command_execute_nameが設定されていればそれを使用、なければクラス名から推定
+	var command_name: String
+	if command_data.has("command_execute_name") and not command_data.command_execute_name.is_empty():
+		command_name = command_data.command_execute_name
+	else:
+		command_name = _derive_command_name(script_class)
 	
 	return {
 		"class_name": script_class,
@@ -174,10 +178,14 @@ func _extract_command_keywords(script: Script) -> Dictionary:
 	if define_flag != null:
 		is_define_command = define_flag
 	
+	# command_execute_nameを取得（設定されている場合）
+	var execute_name = command_instance.get("command_execute_name")
+	
 	return {
 		"keywords": keywords,
 		"instance": command_instance,
-		"is_define_command": is_define_command
+		"is_define_command": is_define_command,
+		"command_execute_name": execute_name
 	}
 
 ## コマンドをArgodeSystemに登録

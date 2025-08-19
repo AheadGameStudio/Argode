@@ -5,73 +5,64 @@ class_name ArgodeCharacterAnimation
 signal all_animations_completed()
 signal character_animation_completed(char_index: int)
 
-# アニメーション効果の基底クラス
-class CharacterAnimationEffect extends RefCounted:
-	var duration: float = 0.5
-	var delay: float = 0.0
-	var is_completed: bool = false
-	var start_time: float = 0.0
-	
-	# アニメーション効果を計算（0.0-1.0の進捗で効果値を返す）
-	func calculate_effect(progress: float) -> Dictionary:
-		return {}
-	
-	# アニメーション完了時の最終値を返す
-	func get_final_values() -> Dictionary:
-		return calculate_effect(1.0)
-
-# フェードイン効果
-class FadeInEffect extends CharacterAnimationEffect:
-	var start_alpha: float = 0.0
-	var end_alpha: float = 1.0
-	
-	func _init(fade_duration: float = 0.3):
-		duration = fade_duration
-	
-	func calculate_effect(progress: float) -> Dictionary:
-		var alpha = lerp(start_alpha, end_alpha, progress)
-		return {"alpha": alpha}
-
-# Y座標移動効果（上から下へフェードイン）
-class SlideDownEffect extends CharacterAnimationEffect:
-	var start_offset: float = -10.0
-	var end_offset: float = 0.0
-	
-	func _init(slide_duration: float = 0.4, y_offset: float = -10.0):
-		duration = slide_duration
-		start_offset = y_offset
-	
-	func calculate_effect(progress: float) -> Dictionary:
-		var y_offset = lerp(start_offset, end_offset, progress)
-		return {"y_offset": y_offset}
-
-# スケール効果
-class ScaleEffect extends CharacterAnimationEffect:
-	var start_scale: float = 0.8
-	var end_scale: float = 1.0
-	
-	func _init(scale_duration: float = 0.25):
-		duration = scale_duration
-	
-	func calculate_effect(progress: float) -> Dictionary:
-		var scale = lerp(start_scale, end_scale, progress)
-		return {"scale": scale}
-
 # 文字アニメーション状態管理
 var character_animations: Array[Dictionary] = []  # 各文字のアニメーション状態
-var animation_effects: Array[CharacterAnimationEffect] = []  # 適用する効果のリスト
+var animation_effects: Array = []  # 適用する効果のリスト（CharacterAnimationEffectベースクラス）
 var current_time: float = 0.0
 var is_skip_requested: bool = false
 var all_completion_notified: bool = false  # 全完了通知フラグ
 
 func _init():
 	# デフォルト効果を設定
-	add_effect(FadeInEffect.new(0.3))
-	add_effect(SlideDownEffect.new(0.4, -8.0))
+	# add_effect(FadeInEffect.new(0.3))
+	# add_effect(SlideDownEffect.new(0.2, -4.0))
+	pass
 
 ## アニメーション効果を追加
-func add_effect(effect: CharacterAnimationEffect):
+func add_effect(effect):
 	animation_effects.append(effect)
+
+## カスタムアニメーション設定を適用
+func setup_custom_animation(config: Dictionary):
+	"""
+	カスタムアニメーション設定を適用
+	config例:
+	{
+		"fade_in": {"duration": 0.5, "enabled": true},
+		"slide_down": {"duration": 0.3, "offset": -15.0, "enabled": true},
+		"scale": {"duration": 0.2, "enabled": false}
+	}
+	"""
+	animation_effects.clear()
+	
+	# フェードイン設定
+	if config.get("fade_in", {}).get("enabled", true):
+		var fade_duration = config.get("fade_in", {}).get("duration", 0.3)
+		var fade_effect = ArgodeSystem.MessageAnimationRegistry.create_effect("fade")
+		if fade_effect:
+			fade_effect.set_duration(fade_duration)
+			add_effect(fade_effect)
+	
+	# スライドダウン設定（slideエフェクトのY軸オフセット版）
+	if config.get("slide_down", {}).get("enabled", true):
+		var slide_duration = config.get("slide_down", {}).get("duration", 0.4)
+		var slide_offset = config.get("slide_down", {}).get("offset", -8.0)
+		var slide_effect = ArgodeSystem.MessageAnimationRegistry.create_effect("slide")
+		if slide_effect:
+			slide_effect.set_duration(slide_duration)
+			if slide_effect.has_method("set_offset"):
+				slide_effect.set_offset(0.0, slide_offset)
+			add_effect(slide_effect)
+	
+	# スケール設定
+	if config.get("scale", {}).get("enabled", false):
+		var scale_duration = config.get("scale", {}).get("duration", 0.25)
+		var scale_effect = ArgodeSystem.MessageAnimationRegistry.create_effect("scale")
+		if scale_effect:
+			scale_effect.set_duration(scale_duration)
+			add_effect(scale_effect)
+	
+	ArgodeSystem.log("🎨 Custom animation configuration applied: %s" % str(config))
 
 ## 文字数に応じてアニメーション配列を初期化
 func initialize_for_text(text_length: int):
@@ -110,7 +101,19 @@ func trigger_character_animation(char_index: int):
 		if not char_anim.is_triggered:
 			char_anim.is_triggered = true
 			char_anim.trigger_time = current_time
-			ArgodeSystem.log("🎭 Character animation triggered for char %d at time %.2f" % [char_index, current_time])
+			
+			# 即座にアニメーションの開始値を設定（1フレーム目の描画漏れを防ぐ）
+			char_anim.current_values.clear()
+			for effect_state in char_anim.effects:
+				effect_state.is_active = true
+				effect_state.progress = 0.0
+				
+				# 開始値（進捗0.0）を取得して即座に適用
+				var start_values = effect_state.effect.calculate_effect(0.0)
+				for key in start_values:
+					char_anim.current_values[key] = start_values[key]
+			
+			ArgodeSystem.log("🎭 Character animation triggered for char %d at time %.2f with initial values: %s" % [char_index, current_time, str(char_anim.current_values)])
 
 ## アニメーション更新（毎フレーム呼び出し）
 func update_animations(delta_time: float):
@@ -209,6 +212,10 @@ func get_character_animation_values(char_index: int) -> Dictionary:
 	
 	var char_anim = character_animations[char_index]
 	
+	# まだトリガーされていない文字は完全に透明にする
+	if not char_anim.is_triggered:
+		return {"alpha": 0.0}
+	
 	# スキップ時は最終値を返す
 	if is_skip_requested:
 		var final_values = {}
@@ -218,6 +225,20 @@ func get_character_animation_values(char_index: int) -> Dictionary:
 				final_values[key] = effect_final[key]
 		ArgodeSystem.log("⏭️ Returning final values for char %d during skip: %s" % [char_index, str(final_values)])
 		return final_values
+	
+	# トリガーされたばかりでアニメーション値がまだ計算されていない場合は開始値を返す
+	if char_anim.current_values.is_empty():
+		var start_values = {}
+		for effect_state in char_anim.effects:
+			var effect_start = effect_state.effect.calculate_effect(0.0)
+			for key in effect_start:
+				start_values[key] = effect_start[key]
+		ArgodeSystem.log("🎬 Returning start values for char %d (just triggered): %s" % [char_index, str(start_values)])
+		return start_values
+	
+	# デバッグ: アニメーション値をログ出力
+	if char_anim.current_values.has("alpha") and char_anim.current_values.alpha < 0.1:
+		ArgodeSystem.log("🔍 Char %d animation values: %s (triggered: %s, completed: %s)" % [char_index, str(char_anim.current_values), char_anim.is_triggered, char_anim.is_completed])
 	
 	return char_anim.current_values
 

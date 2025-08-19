@@ -21,6 +21,7 @@ var Controller:ArgodeController # コントローラーのインスタンス
 var CommandRegistry
 var DefinitionRegistry  
 var LabelRegistry
+var MessageAnimationRegistry
 
 # ローディング画面
 var loading_screen: Control
@@ -243,10 +244,12 @@ func _setup_registries():
 	var CommandRegistryClass = preload("res://addons/argode/services/registries/ArgodeCommandRegistry.gd")
 	var DefinitionRegistryClass = preload("res://addons/argode/services/registries/ArgodeDefinitionRegistry.gd")
 	var LabelRegistryClass = preload("res://addons/argode/services/registries/ArgodeLabelRegistry.gd")
+	var MessageAnimationRegistryClass = preload("res://addons/argode/services/registries/ArgodeMessageAnimationRegistry.gd")
 
 	CommandRegistry = CommandRegistryClass.new()
 	DefinitionRegistry = DefinitionRegistryClass.new()
 	LabelRegistry = LabelRegistryClass.new()
+	MessageAnimationRegistry = MessageAnimationRegistryClass.new()
 	
 	# シグナル接続
 	_connect_registry_signals()
@@ -273,6 +276,11 @@ func _run_registries_sequential():
 	if loading_screen:
 		loading_screen.on_registry_started("ArgodeCommandRegistry")
 	await CommandRegistry.start_registry()
+	
+	# 1.5. メッセージアニメーションレジストリ（コマンドと併行実行可能）
+	if loading_screen:
+		loading_screen.on_registry_started("ArgodeMessageAnimationRegistry")
+	await MessageAnimationRegistry.start_registry()
 	
 	# 2. 定義レジストリとラベルレジストリを順次実行（依存関係なし）
 	# 将来的に並行処理が可能な場合は、ここで並行実行を実装

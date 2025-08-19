@@ -38,6 +38,10 @@ var message_renderer: ArgodeMessageRenderer = null
 var typewriter_speed_stack: Array[float] = []  # 速度スタック（ネストした速度変更に対応）
 var typewriter_pause_count: int = 0  # 一時停止要求カウント（ネストした一時停止に対応）
 
+# メッセージアニメーション設定管理
+var current_animation_effects: Array[Dictionary] = []  # 現在のアニメーション効果リスト
+var animation_preset: String = "default"  # 現在のアニメーションプリセット
+
 # 入力コントローラーの参照
 var controller: ArgodeController = null
 
@@ -319,6 +323,9 @@ func _handle_say_command(args: Array):
 	var display_text = processed_data.display_text
 	var position_commands = processed_data.position_commands
 	
+	# 現在のアニメーション設定をレンダラーに適用
+	apply_current_animations_to_renderer()
+	
 	# MessageRendererに表示用テキストと位置ベースコマンドを渡して表示
 	if message_renderer:
 		message_renderer.render_message_with_position_commands(
@@ -557,3 +564,71 @@ func is_typewriter_active() -> bool:
 	if message_renderer and message_renderer.typewriter_service:
 		return message_renderer.typewriter_service.is_typing
 	return false
+
+# =============================================================================
+# メッセージアニメーション管理機能 (SetMessageAnimationCommandから使用)
+# =============================================================================
+
+## アニメーション効果をクリア
+func clear_message_animations():
+	current_animation_effects.clear()
+	ArgodeSystem.log("🧹 StatementManager: Message animation effects cleared")
+
+## アニメーション効果を追加
+func add_message_animation_effect(effect_data: Dictionary):
+	current_animation_effects.append(effect_data)
+	var effect_type = effect_data.get("type", "unknown")
+	ArgodeSystem.log("✨ StatementManager: Animation effect added: %s" % effect_type)
+
+## アニメーションプリセットを設定
+func set_message_animation_preset(preset_name: String):
+	animation_preset = preset_name
+	ArgodeSystem.log("🎭 StatementManager: Animation preset set: %s" % preset_name)
+
+## 現在のアニメーション設定をメッセージレンダラーに適用
+func apply_current_animations_to_renderer():
+	if not message_renderer:
+		return
+	
+	# アニメーション効果をクリア
+	if message_renderer.animation_coordinator and message_renderer.animation_coordinator.character_animation:
+		message_renderer.animation_coordinator.character_animation.animation_effects.clear()
+		
+		# 現在の効果を追加
+		for effect_data in current_animation_effects:
+			_create_and_add_animation_effect(effect_data)
+		
+		# プリセットを適用
+		if animation_preset != "default":
+			message_renderer.set_animation_preset(animation_preset)
+		
+		ArgodeSystem.log("🎨 StatementManager: Applied %d animation effects to renderer" % current_animation_effects.size())
+
+## アニメーション効果データからエフェクトインスタンスを作成して追加
+func _create_and_add_animation_effect(effect_data: Dictionary):
+	if not message_renderer or not message_renderer.animation_coordinator or not message_renderer.animation_coordinator.character_animation:
+		return
+	
+	var character_animation = message_renderer.animation_coordinator.character_animation
+	var effect_type = effect_data.get("type", "")
+	
+	# MessageAnimationRegistryを使用してエフェクトを作成
+	var animation_effect = ArgodeSystem.MessageAnimationRegistry.create_effect(effect_type)
+	if not animation_effect:
+		ArgodeSystem.log("⚠️ Unknown animation effect type: %s" % effect_type, 2)
+		return
+	
+	# パラメータを設定
+	var duration = effect_data.get("duration", 0.3)
+	animation_effect.set_duration(duration)
+	
+	# エフェクト固有のパラメータを設定
+	match effect_type:
+		"slide":
+			var offset_x = effect_data.get("offset_x", 0.0)
+			var offset_y = effect_data.get("offset_y", 0.0)
+			if animation_effect.has_method("set_offset"):
+				animation_effect.set_offset(offset_x, offset_y)
+	
+	# エフェクトを追加
+	character_animation.add_effect(animation_effect)
