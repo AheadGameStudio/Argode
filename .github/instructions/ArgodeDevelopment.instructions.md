@@ -59,9 +59,5 @@ applyTo: '**'
 * ユーザーがテスト完了を報告した時点で、該当Stageを完了済みに更新してください。
 * 段階的リファクタリングを実施中は、**既存機能の互換性維持を最優先**としてください。
 * 各Stage完了時には必ずユーザーテストを実施し、承認を得てから次のStageに進行してください。
-* **現在Stage1（MessageRenderer分割）実行中**: 
-  - Task1-1~1-4完了: 専門レンダラークラス作成済み（ArgodeTextRenderer, ArgodeRubyRenderer, ArgodeDecorationRenderer, ArgodeAnimationCoordinator）
-  - Task1-5実行中: ArgodeMessageRenderer（697行）をコーディネーター（100行程度）に簡素化中
-  - 次のテスト項目: タイプライター効果、ルビ表示、文字装飾、アニメーション動作確認
 
 これらの指示を遵守することで、より効率的で質の高いコラボレーションが可能になります。

@@ -7,7 +7,6 @@
 # 3. トークンを一つずつループ処理する。
 # 4. トークンが特殊タグであれば、TagRegistryに問い合わせ、対応するコマンドクラス（RubyCommandなど）を取得する。
 # 5. そのコマンドを実行し、RichTextConverterに処理を委譲する。
-# 6. RichTextConverterが返したBBCodeを結合して、最終的なRichTextLabel用のテキストを返す。
 
 extends RefCounted
 class_name ArgodeInlineCommandManager
@@ -15,7 +14,6 @@ class_name ArgodeInlineCommandManager
 var _raw_text: String
 var tag_tokenizer: ArgodeTagTokenizer
 var tag_registry: ArgodeTagRegistry
-var rich_text_converter: ArgodeRichTextConverter
 var variable_resolver: ArgodeVariableResolver
 
 # 位置ベース処理のためのデータ構造

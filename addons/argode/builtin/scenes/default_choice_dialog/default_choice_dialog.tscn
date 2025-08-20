@@ -17,7 +17,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_cnh5j")
-choice_container_path = NodePath("ChoiceContainer")
+buttons_container_path = NodePath("ChoiceContainer/VBoxContainer")
 
 [node name="ChoiceContainer" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(300, 0)

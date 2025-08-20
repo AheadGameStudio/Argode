@@ -161,7 +161,6 @@ ui show "res://scenes/my_save_screen.tscn"
 | **サービス** | `ArgodeTypewriterService` | ・タイプライター演出のための文字分割とシグナル発行<br>・描画ロジックとは完全に分離 |
 |  | `ArgodeTagTokenizer` | ・テキストをトークン（単語、記号）に分解する |
 |  | `ArgodeTagRegistry` | ・タグ名と対応するコマンドクラスのマップを管理<br>・`ArgodeInlineCommandManager`に利用される |
-|  | `ArgodeRichTextConverter` | ・テキストとタグをBBCodeに変換する<br>・ルビなどの独自描画に必要な情報を抽出 |
 | **コマンド** | `ArgodeCommandBase` | ・フレームワークで使用するすべてのコマンドの抽象基底クラス |
 | **レンダラー** | `ArgodeMessageRenderer` | ・最終的なメッセージの描画処理（タイプライター演出など） |
 |  | `ArgodeRubyRenderer` | ・ルビの描画に特化したレンダラー |
