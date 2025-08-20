@@ -115,6 +115,88 @@ func trigger_character_animation(char_index: int):
 			
 			ArgodeSystem.log("🎭 Character animation triggered for char %d at time %.2f with initial values: %s" % [char_index, current_time, str(char_anim.current_values)])
 
+## カスタム設定で文字アニメーションをトリガー
+func trigger_character_animation_with_config(char_index: int, animation_config: Dictionary):
+	"""カスタムアニメーション設定で文字のアニメーションをトリガー"""
+	if char_index >= 0 and char_index < character_animations.size():
+		var char_anim = character_animations[char_index]
+		if not char_anim.is_triggered:
+			# 一時的に効果を置き換える
+			var original_effects = char_anim.effects.duplicate()
+			char_anim.effects.clear()
+			
+			# カスタム設定に基づいて効果を生成
+			_setup_custom_effects_for_character(char_anim, animation_config)
+			
+			# 通常のトリガー処理
+			char_anim.is_triggered = true
+			char_anim.trigger_time = current_time
+			
+			# 即座にアニメーションの開始値を設定
+			char_anim.current_values.clear()
+			for effect_state in char_anim.effects:
+				effect_state.is_active = true
+				effect_state.progress = 0.0
+				
+				# 開始値（進捗0.0）を取得して即座に適用
+				var start_values = effect_state.effect.calculate_effect(0.0)
+				for key in start_values:
+					char_anim.current_values[key] = start_values[key]
+			
+			ArgodeSystem.log("🎭 Character %d custom animation triggered with config: %s" % [char_index, str(animation_config)])
+
+## 文字用のカスタム効果を設定
+func _setup_custom_effects_for_character(char_anim: Dictionary, animation_config: Dictionary):
+	"""指定された文字にカスタムアニメーション効果を設定"""
+	# フェードイン設定
+	if animation_config.get("fade_in", {}).get("enabled", true):
+		var fade_duration = animation_config.get("fade_in", {}).get("duration", 0.3)
+		var fade_effect = ArgodeSystem.MessageAnimationRegistry.create_effect("fade")
+		if fade_effect:
+			fade_effect.set_duration(fade_duration)
+			var effect_state = {
+				"effect": fade_effect,
+				"is_active": false,
+				"progress": 0.0,
+				"is_completed": false
+			}
+			char_anim.effects.append(effect_state)
+	
+	# スライドダウン設定
+	if animation_config.get("slide_down", {}).get("enabled", true):
+		var slide_duration = animation_config.get("slide_down", {}).get("duration", 0.4)
+		var slide_offset = animation_config.get("slide_down", {}).get("offset", -8.0)
+		var slide_effect = ArgodeSystem.MessageAnimationRegistry.create_effect("slide")
+		if slide_effect:
+			slide_effect.set_duration(slide_duration)
+			if slide_effect.has_method("set_offset"):
+				slide_effect.set_offset(0.0, slide_offset)  # Y軸オフセット
+			var effect_state = {
+				"effect": slide_effect,
+				"is_active": false,
+				"progress": 0.0,
+				"is_completed": false
+			}
+			char_anim.effects.append(effect_state)
+	
+	# スケール設定
+	if animation_config.get("scale", {}).get("enabled", false):
+		var scale_duration = animation_config.get("scale", {}).get("duration", 0.2)
+		var scale_from = animation_config.get("scale", {}).get("from", 0.8)
+		var scale_to = animation_config.get("scale", {}).get("to", 1.0)
+		var scale_effect = ArgodeSystem.MessageAnimationRegistry.create_effect("scale")
+		if scale_effect:
+			scale_effect.set_duration(scale_duration)
+			if scale_effect.has_method("set_scale_range"):
+				scale_effect.set_scale_range(scale_from, scale_to)
+			var effect_state = {
+				"effect": scale_effect,
+				"is_active": false,
+				"progress": 0.0,
+				"is_completed": false
+			}
+			char_anim.effects.append(effect_state)
+
 ## アニメーション更新（毎フレーム呼び出し）
 func update_animations(delta_time: float):
 	current_time += delta_time

@@ -9,6 +9,9 @@ var character_animation = null  # ArgodeCharacterAnimationインスタンス
 var is_animation_enabled: bool = true  # アニメーション有効フラグ
 var message_canvas = null  # MessageCanvasの参照
 
+# 範囲別アニメーション設定
+var range_animation_configs: Array[Dictionary] = []  # 範囲別アニメーション設定
+
 # コールバック
 var on_animation_completed: Callable  # アニメーション完了時のコールバック
 
@@ -43,11 +46,48 @@ func initialize_for_text(text_length: int):
 		if message_canvas:
 			message_canvas.start_animation_updates(_update_character_animations)
 
+## 範囲別アニメーション設定を登録
+func set_range_animation_configs(decoration_renderer):
+	"""DecorationRendererから範囲別アニメーション設定を取得"""
+	range_animation_configs.clear()
+	
+	if not decoration_renderer:
+		return
+	
+	# アニメーション装飾を探して登録
+	for decoration in decoration_renderer.text_decorations:
+		if decoration.type == "animation":
+			var config_info = {
+				"start_position": decoration.start_position,
+				"end_position": decoration.end_position,
+				"animation_config": decoration.args.get("animation_config", {})
+			}
+			range_animation_configs.append(config_info)
+			ArgodeSystem.log("🎭 Range animation registered: pos %d-%d with config: %s" % [decoration.start_position, decoration.end_position, str(config_info.animation_config)])
+
+## 指定位置の範囲別アニメーション設定を取得
+func get_range_animation_config_for_position(position: int) -> Dictionary:
+	"""指定位置に適用される範囲別アニメーション設定を取得"""
+	for config in range_animation_configs:
+		if config.start_position <= position and position < config.end_position:
+			return config.animation_config
+	
+	return {}  # デフォルト設定を使用
+
 ## 文字アニメーションをトリガー
 func trigger_character_animation(char_index: int):
-	"""指定文字のアニメーションをトリガー"""
+	"""指定文字のアニメーションをトリガー（範囲別設定を考慮）"""
 	if character_animation and is_animation_enabled:
-		character_animation.trigger_character_animation(char_index)
+		# 範囲別アニメーション設定を取得
+		var range_config = get_range_animation_config_for_position(char_index)
+		
+		# 範囲別設定がある場合は適用
+		if not range_config.is_empty():
+			character_animation.trigger_character_animation_with_config(char_index, range_config)
+			ArgodeSystem.log("🎭 Character %d animated with range config: %s" % [char_index, str(range_config)])
+		else:
+			# デフォルト設定でアニメーション
+			character_animation.trigger_character_animation(char_index)
 
 ## アニメーション値を取得
 func get_character_animation_values(char_index: int) -> Dictionary:

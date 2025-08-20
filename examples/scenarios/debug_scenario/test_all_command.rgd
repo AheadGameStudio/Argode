@@ -5,6 +5,7 @@ label test_all_command:
 	akira "キャラクター定義したキャラクターでセリフを表示する"
 	set player.name = "テストキャラクター"
 	akira "[player.name]さん、こんにちは！（アニメーション効果つき）"
+	akira "アニメーションをテストします。{animation=dramatic}カスタム\n設定{/animation}で表示しています。"
 	akira "ルビのテストをします。【古今東西｜ここんとうざい】\nいかがですか？"
 	akira "ルビの表示が正しく行われていますか？\n【古今東西｜ここんとうざい】を【旅｜たび】するのは【楽｜たの】しいですね。"
 	akira "カラータグのテストです。{color=#ff0000}赤い文字{/color}と{color=blue}青い文字{/color}があります。"

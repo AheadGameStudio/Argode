@@ -257,6 +257,8 @@ func render_message_with_position_commands(character_name: String, display_text:
 	# アニメーションコーディネーターを初期化
 	if animation_coordinator:
 		animation_coordinator.initialize_for_text(display_text.length())
+		# 範囲別アニメーション設定を登録
+		animation_coordinator.set_range_animation_configs(decoration_renderer)
 	
 	# メッセージウィンドウを表示
 	if message_window:

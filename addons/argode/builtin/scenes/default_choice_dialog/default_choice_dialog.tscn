@@ -19,6 +19,7 @@ grow_vertical = 2
 script = ExtResource("1_cnh5j")
 buttons_container_path = NodePath("ChoiceContainer/VBoxContainer")
 is_sticky_front = true
+is_modal = true
 
 [node name="ChoiceContainer" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(300, 0)

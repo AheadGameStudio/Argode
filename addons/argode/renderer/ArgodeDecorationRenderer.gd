@@ -35,7 +35,7 @@ func extract_decoration_data(position_commands: Array):
 ## 装飾コマンドかどうか判定
 func _is_decoration_command(command_name: String) -> bool:
 	"""装飾コマンドかどうかを判定"""
-	var decoration_commands = ["color", "bold", "italic", "size", "underline"]
+	var decoration_commands = ["color", "bold", "italic", "size", "underline", "animation"]
 	return command_name in decoration_commands
 
 ## 装飾コマンドを処理
@@ -60,6 +60,11 @@ func _open_decoration(command_name: String, position: int, args: Dictionary):
 		"args": args,
 		"is_active": false
 	}
+	
+	# アニメーションコマンドの場合は設定を解析して保存
+	if command_name == "animation":
+		decoration_info.args["animation_config"] = _parse_animation_from_args(args)
+	
 	decoration_stack.append(decoration_info)
 	ArgodeSystem.log("🎨 Decoration opened: %s at position %d with args: %s" % [command_name, position, str(args)])
 
@@ -96,7 +101,8 @@ func calculate_char_render_info(char: String, base_font: Font, base_font_size: i
 	var render_info = {
 		"font": base_font,
 		"font_size": base_font_size,
-		"color": base_color
+		"color": base_color,
+		"animation_config": {}  # アニメーション設定を追加
 	}
 	
 	# 装飾を順次適用
@@ -109,6 +115,9 @@ func calculate_char_render_info(char: String, base_font: Font, base_font_size: i
 				var new_size = _parse_size_from_args(decoration.args, base_font_size)
 				render_info.font_size = new_size
 				ArgodeSystem.log("📏 Applied size decoration: %d -> %d" % [base_font_size, new_size])
+			"animation":
+				render_info.animation_config = _parse_animation_from_args(decoration.args)
+				ArgodeSystem.log("🎭 Applied animation decoration: %s" % str(render_info.animation_config))
 			# 他の装飾タイプ（bold, italic など）はフォント変更で対応予定
 	
 	return render_info
@@ -153,6 +162,122 @@ func _parse_size_from_args(args: Dictionary, base_size: int) -> int:
 	
 	# サイズの範囲制限
 	return max(8, min(48, size_value))
+
+## 装飾引数からアニメーション設定を解析
+func _parse_animation_from_args(args: Dictionary) -> Dictionary:
+	"""装飾引数からアニメーション設定を解析"""
+	var animation_config = {}
+	
+	if args.has("animation"):
+		animation_config = _parse_animation_string(args["animation"])
+	elif args.has("0"):  # 無名引数
+		animation_config = _parse_animation_string(args["0"])
+	
+	return animation_config
+
+## アニメーション文字列を解析
+func _parse_animation_string(animation_str: String) -> Dictionary:
+	"""アニメーション文字列をDictionaryに解析"""
+	# プリセット名かカスタム設定かを判定
+	if _is_animation_preset(animation_str):
+		return _get_animation_preset_config(animation_str)
+	else:
+		return _parse_custom_animation_config(animation_str)
+
+## アニメーションプリセット名かどうかを判定
+func _is_animation_preset(value: String) -> bool:
+	"""値がアニメーションプリセット名かどうかを判定"""
+	var presets = ["default", "fast", "dramatic", "simple", "none", "bounce", "shake", "glow"]
+	return value in presets
+
+## アニメーションプリセット設定を取得
+func _get_animation_preset_config(preset_name: String) -> Dictionary:
+	"""プリセット名に対応するアニメーション設定を取得"""
+	match preset_name:
+		"dramatic":
+			return {
+				"fade_in": {"duration": 0.8, "enabled": true},
+				"slide_down": {"duration": 1.0, "offset": -25.0, "enabled": true},
+				"scale": {"duration": 0.6, "from": 0.5, "to": 1.0, "enabled": true}
+			}
+		"fast":
+			return {
+				"fade_in": {"duration": 0.1, "enabled": true},
+				"slide_down": {"duration": 0.15, "offset": -3.0, "enabled": true}
+			}
+		"bounce":
+			return {
+				"fade_in": {"duration": 0.2, "enabled": true},
+				"scale": {"duration": 0.4, "from": 0.8, "to": 1.2, "bounce": true, "enabled": true}
+			}
+		"simple":
+			return {
+				"fade_in": {"duration": 0.15, "enabled": true}
+			}
+		"none":
+			return {}
+		_:
+			return {
+				"fade_in": {"duration": 0.3, "enabled": true},
+				"slide_down": {"duration": 0.4, "offset": -8.0, "enabled": true}
+			}
+
+## カスタムアニメーション設定を解析
+func _parse_custom_animation_config(config_string: String) -> Dictionary:
+	"""カスタムアニメーション設定文字列を解析"""
+	var config = {}
+	
+	# "fade_in:0.8,scale:true" 形式をパース
+	var parts = config_string.split(",")
+	
+	for part in parts:
+		var key_value = part.split(":")
+		if key_value.size() >= 2:
+			var key = key_value[0].strip_edges()
+			var value = key_value[1].strip_edges()
+			
+			# 値の型を推測して変換
+			var parsed_value = _parse_animation_value(value)
+			
+			# アニメーションタイプごとに設定を構築
+			match key:
+				"fade_in":
+					if typeof(parsed_value) == TYPE_FLOAT:
+						config["fade_in"] = {"duration": parsed_value, "enabled": true}
+					elif typeof(parsed_value) == TYPE_BOOL:
+						config["fade_in"] = {"enabled": parsed_value}
+				"scale":
+					if typeof(parsed_value) == TYPE_FLOAT:
+						config["scale"] = {"duration": parsed_value, "enabled": true}
+					elif typeof(parsed_value) == TYPE_BOOL:
+						config["scale"] = {"enabled": parsed_value}
+				"slide_down":
+					if typeof(parsed_value) == TYPE_FLOAT:
+						config["slide_down"] = {"duration": parsed_value, "offset": -10.0, "enabled": true}
+					elif typeof(parsed_value) == TYPE_BOOL:
+						config["slide_down"] = {"enabled": parsed_value}
+	
+	return config
+
+## アニメーション値をパース
+func _parse_animation_value(value: String):
+	"""アニメーション設定値を適切な型に変換"""
+	# Boolean
+	if value.to_lower() == "true":
+		return true
+	elif value.to_lower() == "false":
+		return false
+	
+	# Float
+	if value.is_valid_float():
+		return float(value)
+	
+	# Int
+	if value.is_valid_int():
+		return int(value)
+	
+	# String
+	return value
 
 ## 装飾データをクリア
 func clear_decoration_data():
