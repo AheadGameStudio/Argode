@@ -15,6 +15,7 @@ var DebugManager:ArgodeDebugManager # デバッグマネージャーのインス
 var StatementManager:ArgodeStatementManager # ステートメントマネージャーのインスタンス
 var LayerManager:ArgodeLayerManager # レイヤーマネージャーのインスタンス
 var VariableManager:ArgodeVariableManager # 変数マネージャーのインスタンス
+var UIManager:ArgodeUIManager # UIマネージャーのインスタンス
 var Controller:ArgodeController # コントローラーのインスタンス
 
 # レジストリのインスタンス
@@ -26,6 +27,13 @@ var MessageAnimationRegistry
 # ローディング画面
 var loading_screen: Control
 var loading_scene_path: String = "res://addons/argode/builtin/scenes/argode_loading/argode_loading_screen.tscn"
+
+# 組み込みUI（ランタイム・システム初期化前に指定しなおせばカスタマイズ可能）
+var built_in_ui_paths: Dictionary = {
+	"choice": "res://addons/argode/builtin/scenes/default_choice_dialog/default_choice_dialog.tscn",
+	"confirm": "res://addons/argode/builtin/scenes/default_confirm_dialog/default_confirm_dialog.tscn",
+	"notification_screen": "res://addons/argode/builtin/scenes/default_notification_screen/default_notification_screen.tscn"
+}
 
 # システム初期化状態
 var is_system_ready: bool = false
@@ -172,7 +180,8 @@ func _setup_basic_managers():
 	Controller = ArgodeController.new()
 	LayerManager = ArgodeLayerManager.new()
 	VariableManager = ArgodeVariableManager.new()
-	
+	UIManager = ArgodeUIManager.new()
+
 	# コントローラーをシーンツリーに追加（入力処理のため）
 	add_child(Controller)
 	Controller.name = "ArgodeController"

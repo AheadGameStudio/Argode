@@ -111,6 +111,27 @@ func get_optional_arg(args: Dictionary, key: String, default_value: Variant = ""
 	"""オプション引数を取得。存在しない場合はデフォルト値"""
 	return args.get(key, default_value)
 
+## サブコマンドがある場合、その引数を返す
+func get_subcommand_arg(args: Dictionary, subcommand: String) -> Variant:
+	for v in args.values():
+		if v == subcommand:
+			# subcommandが見つかった場合のキー名を取得
+			var key_name:String = args.find_key(v)
+			log_info("Found 'with' in args: %s" % key_name)
+			# subcommandのキー名の文字列の最後の1文字を取得
+			var _subcommand_key = "arg" + str(int(key_name[-1])+1)
+			if args.has(_subcommand_key):
+				# subcommandの後のキーが存在すれば、その値を取得
+				var _subcommand_value = args.get(_subcommand_key, "")
+				log_info("Subcommand value extracted: %s" % _subcommand_value)
+				return args.get(_subcommand_key, "")
+			else:
+				# subcommandの後の引数がない場合はエラー
+				log_error("サブコマンド '%s' の後の引数が必要です" % subcommand)
+				return null
+	log_info("サブコマンド '%s' が設定されていません" % subcommand)
+	return false
+
 # =============================================================================
 # タイプライター制御ヘルパー関数 (StatementManager経由)
 # =============================================================================

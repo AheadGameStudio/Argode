@@ -1,3 +1,4 @@
+@tool
 extends ArgodeViewBase
 class_name ArgodeDialogBase
 
@@ -6,6 +7,7 @@ signal button_pressed(_value: Dictionary)
 var buttons_container: BoxContainer # VboxContainer/HBoxContainer
 
 func _ready():
+	super._ready()
 	if buttons_container_path == null:
 		ArgodeSystem.log("⚠️ Buttons container path is not set.")
 		return

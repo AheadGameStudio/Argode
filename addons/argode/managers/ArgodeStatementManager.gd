@@ -38,6 +38,10 @@ var message_renderer: ArgodeMessageRenderer = null
 var typewriter_speed_stack: Array[float] = []  # 速度スタック（ネストした速度変更に対応）
 var typewriter_pause_count: int = 0  # 一時停止要求カウント（ネストした一時停止に対応）
 
+# UI一時停止機能
+var is_ui_paused: bool = false  # UI制御による一時停止フラグ
+var ui_pause_reason: String = ""  # 一時停止の理由
+
 # メッセージアニメーション設定管理
 var current_animation_effects: Array[Dictionary] = []  # 現在のアニメーション効果リスト
 var animation_preset: String = "default"  # 現在のアニメーションプリセット
@@ -73,6 +77,11 @@ func _setup_input_controller():
 func _on_input_action_pressed(action_name: String):
 	# Argode専用アクションのみを処理（Godotデフォルトアクションを無視）
 	if not action_name.begins_with("argode_"):
+		return
+	
+	# UI一時停止中は入力を無視
+	if is_ui_paused:
+		ArgodeSystem.log("⏸️ Input ignored due to UI pause: %s (reason: %s)" % [action_name, ui_pause_reason])
 		return
 	
 	# デバウンシング処理（ミリ秒単位で処理）
@@ -149,9 +158,14 @@ func _wait_for_user_input():
 	is_waiting_for_input = true
 	ArgodeSystem.log("⏸️ Waiting for user input... (is_waiting_for_input: %s)" % str(is_waiting_for_input))
 	
-	# 入力があるまで待機
-	while is_waiting_for_input and is_executing:
-		await Engine.get_main_loop().process_frame
+	# 入力があるまで待機（UI pause状態も考慮）
+	while (is_waiting_for_input or is_ui_paused) and is_executing:
+		if is_ui_paused:
+			# UI pause中は特別な待機状態
+			await Engine.get_main_loop().process_frame
+		else:
+			# 通常の入力待ち
+			await Engine.get_main_loop().process_frame
 	
 	ArgodeSystem.log("▶️ Input wait completed, continuing execution")
 
@@ -481,10 +495,51 @@ func _initialize_message_window():
 	# GUIレイヤーに追加
 	gui_layer.add_child(message_window)
 	
+	# アクティブ状態変更シグナルを接続
+	if message_window.has_signal("active_state_changed"):
+		message_window.active_state_changed.connect(_on_message_window_active_state_changed)
+	
 	# 初期状態では非表示
 	message_window.visible = false
 	
 	ArgodeSystem.log("✅ StatementManager: Message window initialized")
+
+## メッセージウィンドウのアクティブ状態変更時の処理
+func _on_message_window_active_state_changed(is_active: bool):
+	if is_active:
+		# メッセージウィンドウがアクティブになった場合、UI一時停止を解除
+		resume_ui_operations("メッセージウィンドウがアクティブになりました")
+	else:
+		# メッセージウィンドウが非アクティブになった場合、UI一時停止を実行
+		pause_ui_operations("メッセージウィンドウが非アクティブになりました")
+
+## UI操作による一時停止
+func pause_ui_operations(reason: String):
+	if is_ui_paused:
+		return  # 既に一時停止中
+	
+	is_ui_paused = true
+	ui_pause_reason = reason
+	
+	# タイプライターを一時停止
+	if message_renderer and message_renderer.typewriter_service:
+		message_renderer.typewriter_service.pause_typing()
+	
+	ArgodeSystem.log("⏸️ UI operations paused: %s" % reason)
+
+## UI操作による一時停止を解除
+func resume_ui_operations(reason: String):
+	if not is_ui_paused:
+		return  # 一時停止していない
+	
+	is_ui_paused = false
+	ui_pause_reason = ""
+	
+	# タイプライターを再開
+	if message_renderer and message_renderer.typewriter_service:
+		message_renderer.typewriter_service.resume_typing()
+	
+	ArgodeSystem.log("▶️ UI operations resumed: %s" % reason)
 
 ## メッセージレンダラーを初期化
 func _initialize_message_renderer():

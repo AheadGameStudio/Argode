@@ -17,6 +17,7 @@ content_margin_bottom = 5.0
 bg_color = Color(0.154876, 0.154876, 0.154876, 1)
 
 [node name="DefaultConfirmDialog" type="Control"]
+z_index = 1000
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -26,6 +27,8 @@ grow_vertical = 2
 script = ExtResource("1_x1hxy")
 button_labels = Array[String](["OK", "Cancel"])
 buttons_container_path = NodePath("DialogContainer/LayputContainer/Buttons")
+is_sticky_front = true
+is_modal = true
 metadata/_custom_type_script = "uid://d0atf36mlstee"
 
 [node name="DialogContainer" type="PanelContainer" parent="."]

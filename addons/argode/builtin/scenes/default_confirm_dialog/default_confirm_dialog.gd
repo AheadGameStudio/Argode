@@ -7,9 +7,11 @@ func _ready() -> void:
 	super._ready()
 	buttons_container = get_node_or_null(buttons_container_path)
 	if buttons_container == null:
-		ArgodeSystem.log("❌ Buttons container node not found at path: %s" % buttons_container_path, ArgodeSystem.DebugManager.LogLevel.ERROR)
+		if not Engine.is_editor_hint():
+			ArgodeSystem.log("❌ Buttons container node not found at path: %s" % buttons_container_path, ArgodeSystem.DebugManager.LogLevel.ERROR)
 		return
-	ArgodeSystem.log("✅ DefaultConfirmDialog is ready.", ArgodeSystem.DebugManager.LogLevel.INFO)
+	if not Engine.is_editor_hint():
+		ArgodeSystem.log("✅ DefaultConfirmDialog is ready.", ArgodeSystem.DebugManager.LogLevel.INFO)
 	set_button_labels(button_labels)
 
 func _clear_buttons_container() -> void:

@@ -11,6 +11,10 @@ var name_label: Label
 @export var character_name_font_size: int = 18 : set = set_character_name_font_size
 @export var use_bold_font_for_names: bool = true : set = set_use_bold_font_for_names
 
+# アクティブ状態監視
+var _last_active_state: bool = true
+signal active_state_changed(new_state: bool)
+
 func _ready():
 	# NodePathから実際のノードへの参照を取得
 	if message_container:
@@ -24,9 +28,40 @@ func _ready():
 		# 名前ラベルを取得
 		if name_plate and name_plate.get_child_count() > 0:
 			name_label = name_plate.get_child(0)
-	
+
 	# フォント設定を適用
 	_apply_font_settings()
+
+func _post_ready():
+	super._post_ready()
+	# 最前面に固定(Z-Index +1000)
+	is_sticky_front = true
+	
+	# アクティブ状態の初期化
+	_last_active_state = is_active
+	
+	# アクティブ状態監視の開始
+	_start_active_state_monitoring()
+
+## アクティブ状態の監視を開始
+func _start_active_state_monitoring():
+	# 定期的にis_activeの変化をチェック
+	var monitor_timer = Timer.new()
+	monitor_timer.wait_time = 0.1  # 100ms間隔でチェック
+	monitor_timer.timeout.connect(_check_active_state)
+	monitor_timer.autostart = true
+	add_child(monitor_timer)
+
+## アクティブ状態の変化をチェック
+func _check_active_state():
+	if is_active != _last_active_state:
+		_last_active_state = is_active
+		active_state_changed.emit(is_active)
+		
+		if is_active:
+			ArgodeSystem.log("✅ MessageWindow became active - resuming operations")
+		else:
+			ArgodeSystem.log("⏸️ MessageWindow became inactive - pausing operations")
 
 ## プロパティのセッター関数
 func set_character_name_font_size(value: int):

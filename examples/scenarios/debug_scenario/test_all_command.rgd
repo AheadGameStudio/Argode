@@ -1,6 +1,7 @@
 label test_all_command:
 	# すべてのコマンドをテストする
 	"コマンドをテストするためのシナリオを開始します。"
+	ui show confirm z_index 100 with fade
 	akira "キャラクター定義したキャラクターでセリフを表示する"
 	set player.name = "テストキャラクター"
 	akira "[player.name]さん、こんにちは！（アニメーション効果つき）"
