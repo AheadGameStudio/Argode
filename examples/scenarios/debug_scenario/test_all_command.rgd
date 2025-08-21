@@ -1,5 +1,5 @@
 label test_all_command:
-	jump affection_menu
+	jump commands
 
 label commands:
 	# すべてのコマンドをテストする
@@ -14,6 +14,7 @@ label commands:
 	akira "カラータグのテストです。{color=#ff0000}赤い文字{/color}と{color=blue}青い文字{/color}があります。"
 	akira "サイズタグのテストです。{size=24}大きな文字{/size}と{size=12}小さな文字{/size}があります。"
 	akira "タグのテストもします。{w=1.0}\n1秒の待機が発生したはずです。"
+	jump affection_menu
 
 label affection_menu:
 	"好感度メニューを表示します。"

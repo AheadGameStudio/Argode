@@ -40,7 +40,8 @@ func start_registry():
 	# ファイル総数をカウント
 	_count_gd_files()
 	
-	ArgodeSystem.log("🔄 ArgodeCommandRegistry started. Total files: %d" % total_files)
+	# 🎬 WORKFLOW: Registry開始（GitHub Copilot重要情報）
+	ArgodeSystem.log_workflow("CommandRegistry starting: %d files to process" % total_files)
 	
 	# コマンドファイルを処理
 	await _process_command_files()
@@ -48,7 +49,8 @@ func start_registry():
 	# コマンド辞書をArgodeSystemに登録
 	_register_commands_to_system()
 	
-	ArgodeSystem.log("✅ ArgodeCommandRegistry completed. Registered %d commands." % command_dictionary.size())
+	# 🎬 WORKFLOW: Registry完了（GitHub Copilot重要情報）
+	ArgodeSystem.log_workflow("CommandRegistry completed: %d commands registered" % command_dictionary.size())
 	registry_completed.emit("ArgodeCommandRegistry")
 
 ## 設定されたディレクトリからGDScriptファイルの総数をカウント
@@ -111,7 +113,8 @@ func _process_command_file(file_path: String):
 		}
 		var keywords_str = ", ".join(command_data.command_keywords)
 		var define_flag = " [DEFINE]" if command_data.is_define_command else ""
-		ArgodeSystem.log("📝 Command registered: %s -> %s [%s]%s" % [command_data.command_name, command_data.class_name, keywords_str, define_flag])
+		# 🔍 DEBUG: 詳細な登録情報（通常は非表示）
+		ArgodeSystem.log_debug_detail("Command registered: %s -> %s [%s]%s" % [command_data.command_name, command_data.class_name, keywords_str, define_flag])
 
 ## GDScriptファイルからコマンドクラス情報を抽出
 func _parse_command_class(file_path: String) -> Dictionary:

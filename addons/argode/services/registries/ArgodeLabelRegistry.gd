@@ -48,7 +48,8 @@ func start_registry():
 	# ファイル総数をカウント
 	_count_rgd_files()
 	
-	ArgodeSystem.log("🔄 ArgodeLabelRegistry started. Total files: %d" % total_files)
+	# 🎬 WORKFLOW: Registry開始（GitHub Copilot重要情報）
+	ArgodeSystem.log_workflow("LabelRegistry starting: %d scenario files to process" % total_files)
 	
 	# ファイルがない場合の進捗表示
 	if total_files == 0:
@@ -60,19 +61,23 @@ func start_registry():
 	# ラベル辞書をレジストリに登録
 	_register_labels_to_system()
 	
-	ArgodeSystem.log("✅ ArgodeLabelRegistry completed. Registered %d labels." % label_dictionary.size())
+	# 🎬 WORKFLOW: Registry完了（GitHub Copilot重要情報）  
+	ArgodeSystem.log_workflow("LabelRegistry completed: %d labels registered" % label_dictionary.size())
 	registry_completed.emit("ArgodeLabelRegistry")
 
 ## 設定されたディレクトリからRGDファイルの総数をカウント
 func _count_rgd_files():
 	for directory_path in search_directories:
-		ArgodeSystem.log("🔍 Checking directory: %s" % directory_path)
+		# 🔍 DEBUG: ディレクトリチェック詳細（通常は非表示）
+		ArgodeSystem.log_debug_detail("Checking directory: %s" % directory_path)
 		if DirAccess.dir_exists_absolute(directory_path):
 			var count = _count_rgd_files_recursive(directory_path)
 			total_files += count
-			ArgodeSystem.log("📁 Found %d .rgd files in %s" % [count, directory_path])
+			# 🔍 DEBUG: ファイル数詳細（通常は非表示）
+			ArgodeSystem.log_debug_detail("Found %d .rgd files in %s" % [count, directory_path])
 		else:
-			ArgodeSystem.log("❌ Directory does not exist: %s" % directory_path)
+			# 🚨 CRITICAL: 重要なエラー（GitHub Copilot重要情報）
+			ArgodeSystem.log_critical("Directory does not exist: %s" % directory_path)
 
 ## 再帰的にRGDファイルをカウント
 func _count_rgd_files_recursive(path: String) -> int:
@@ -114,7 +119,8 @@ func _process_scenario_file(file_path: String):
 	var progress = float(processed_files) / float(total_files)
 	progress_updated.emit("ラベル検索", progress, total_files, processed_files)
 	
-	ArgodeSystem.log("📄 Processing scenario file: %s" % file_path)
+	# 🔍 DEBUG: ファイル処理詳細（通常は非表示）
+	ArgodeSystem.log_debug_detail("Processing scenario file: %s" % file_path)
 	
 	# RGDファイルからラベルを抽出
 	_extract_labels_from_file(file_path)
@@ -123,7 +129,8 @@ func _process_scenario_file(file_path: String):
 func _extract_labels_from_file(file_path: String):
 	var file = FileAccess.open(file_path, FileAccess.READ)
 	if not file:
-		ArgodeSystem.log("❌ Failed to open scenario file: %s" % file_path, 2)
+		# 🚨 CRITICAL: 重要なエラー（GitHub Copilot重要情報）
+		ArgodeSystem.log_critical("Failed to open scenario file: %s" % file_path)
 		return
 	
 	var line_number = 0
@@ -152,13 +159,14 @@ func _extract_labels_from_file(file_path: String):
 func _register_label(label_name: String, file_path: String, line_number: int):
 	# ラベルの重複チェック
 	if label_dictionary.has(label_name):
-		ArgodeSystem.log("❌ Error: Label '%s' already exists at %s:%d. Duplicate found at %s:%d" % [
+		# 🚨 CRITICAL: 重要なエラー（GitHub Copilot重要情報）
+		ArgodeSystem.log_critical("Label '%s' already exists at %s:%d. Duplicate found at %s:%d" % [
 			label_name,
 			label_dictionary[label_name].path,
 			label_dictionary[label_name].line,
 			file_path,
 			line_number
-		], 2)
+		])
 		return
 		
 	# ラベル登録
@@ -171,12 +179,14 @@ func _register_label(label_name: String, file_path: String, line_number: int):
 	
 	label_dictionary[label_name] = label_data
 	
-	ArgodeSystem.log("🏷️ Label registered: %s at %s:%d" % [label_name, file_path, line_number])
+	# 🔍 DEBUG: ラベル発見詳細（通常は非表示）
+	ArgodeSystem.log_debug_detail("Label registered: %s at %s:%d" % [label_name, file_path, line_number])
 
 ## ラベル辞書をArgodeSystemに登録
 func _register_labels_to_system():
 	# ラベル辞書はRegistryが管理し、必要に応じて他のコンポーネントから参照される
-	ArgodeSystem.log("🔗 Label registry prepared with %d labels" % label_dictionary.size())
+	# 🔍 DEBUG: Registry準備詳細（通常は非表示）
+	ArgodeSystem.log_debug_detail("Label registry prepared with %d labels" % label_dictionary.size())
 
 ## ラベル辞書を取得
 func get_label_dictionary() -> Dictionary:

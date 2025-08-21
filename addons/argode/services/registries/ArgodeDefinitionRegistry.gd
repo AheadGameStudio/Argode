@@ -33,9 +33,9 @@ func _load_search_directories():
 	if definition_dir != "":
 		search_directories.append(definition_dir)
 	
-	# デバッグ情報を出力
-	ArgodeSystem.log("🔍 DefinitionRegistry search directories: %s" % str(search_directories))
-	ArgodeSystem.log("� Project setting definition_directory: '%s'" % definition_dir)
+	# 🔍 DEBUG: 設定読み込み詳細（通常は非表示）
+	ArgodeSystem.log_debug_detail("DefinitionRegistry search directories: %s" % str(search_directories))
+	ArgodeSystem.log_debug_detail("Project setting definition_directory: '%s'" % definition_dir)
 
 ## レジストリ処理を開始
 func start_registry():
@@ -46,7 +46,8 @@ func start_registry():
 	# ファイル総数をカウント
 	_count_rgd_files()
 	
-	ArgodeSystem.log("🔄 ArgodeDefinitionRegistry started. Total files: %d" % total_files)
+	# 🎬 WORKFLOW: Registry開始（GitHub Copilot重要情報）
+	ArgodeSystem.log_workflow("DefinitionRegistry starting: %d definition files to process" % total_files)
 	
 	# ファイルがない場合の進捗表示
 	if total_files == 0:
@@ -58,7 +59,8 @@ func start_registry():
 	# 定義辞書をレジストリに登録
 	_register_definitions_to_system()
 	
-	ArgodeSystem.log("✅ ArgodeDefinitionRegistry completed. Registered %d definitions." % definition_dictionary.size())
+	# 🎬 WORKFLOW: Registry完了（GitHub Copilot重要情報）
+	ArgodeSystem.log_workflow("DefinitionRegistry completed: %d definitions registered" % definition_dictionary.size())
 	registry_completed.emit("ArgodeDefinitionRegistry")
 
 ## 設定されたディレクトリからRGDファイルの総数をカウント
@@ -107,7 +109,8 @@ func _process_definition_file(file_path: String):
 	var progress = float(processed_files) / float(total_files)
 	progress_updated.emit("定義検索", progress, total_files, processed_files)
 	
-	ArgodeSystem.log("📄 Processing definition file: %s" % file_path)
+	# 🔍 DEBUG: ファイル処理詳細（通常は非表示）
+	ArgodeSystem.log_debug_detail("Processing definition file: %s" % file_path)
 	
 	# RGDファイルから定義コマンドを抽出して登録
 	_extract_definition_commands(file_path)
@@ -122,13 +125,15 @@ func _extract_definition_commands(file_path: String):
 	var statements = parser.parse_file(file_path)
 	
 	if statements.is_empty():
-		ArgodeSystem.log("⚠️ No statements found in definition file: %s" % file_path, 1)
+		# 🚨 CRITICAL: 重要なエラー（GitHub Copilot重要情報）
+		ArgodeSystem.log_critical("No statements found in definition file: %s" % file_path)
 		return
 	
 	# ArgodeCommandRegistryから定義コマンド名のリストを取得
 	var define_command_names = ArgodeSystem.CommandRegistry.get_define_command_names()
-	ArgodeSystem.log("🔍 Available define commands: %s" % str(define_command_names))
-	ArgodeSystem.log("📄 Parsed %d statements from %s" % [statements.size(), file_path])
+	# 🔍 DEBUG: コマンド情報詳細（通常は非表示）
+	ArgodeSystem.log_debug_detail("Available define commands: %s" % str(define_command_names))
+	ArgodeSystem.log_debug_detail("Parsed %d statements from %s" % [statements.size(), file_path])
 	
 	# 各ステートメントをチェックして定義コマンドのみを抽出
 	for statement in statements:
@@ -170,12 +175,14 @@ func _register_definition(command_name: String, line_content: String, file_path:
 	
 	definition_dictionary[definition_key] = definition_data
 	
-	ArgodeSystem.log("📝 Definition registered: %s at %s:%d" % [command_name, file_path, line_number])
+	# 🔍 DEBUG: 定義発見詳細（通常は非表示）
+	ArgodeSystem.log_debug_detail("Definition registered: %s at %s:%d" % [command_name, file_path, line_number])
 
 ## 定義辞書をArgodeSystemに登録
 func _register_definitions_to_system():
 	# 定義辞書はRegistryが管理し、必要に応じて他のコンポーネントから参照される
-	ArgodeSystem.log("🔗 Definition registry prepared with %d definitions" % definition_dictionary.size())
+	# 🔍 DEBUG: Registry準備詳細（通常は非表示）
+	ArgodeSystem.log_debug_detail("Definition registry prepared with %d definitions" % definition_dictionary.size())
 
 ## 定義辞書を取得
 func get_definition_dictionary() -> Dictionary:

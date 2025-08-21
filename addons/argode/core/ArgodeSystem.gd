@@ -387,9 +387,29 @@ func _load_rgd_file(file_path: String) -> Dictionary:
 	# 例: JSONやYAMLのようにパースし、辞書として返す
 	return {} # 仮の戻り値
 
-## 汎用的なログ関数
+## 汎用的なログ関数（従来互換性維持）
 func log(message: String, level: int = 1):
 	DebugManager.log(message, level)
+
+# =============================================================================
+# GitHub Copilot効率化ログAPI
+# =============================================================================
+
+## 🚨 CRITICAL: エラー・重大問題（GitHub Copilot最重要）
+func log_critical(message: String) -> void:
+	DebugManager.log_critical(message)
+
+## 🎬 WORKFLOW: ワークフロー重要ポイント（実行フロー把握用）
+func log_workflow(message: String) -> void:
+	DebugManager.log_workflow(message)
+
+## 🔍 DEBUG: 詳細情報（開発時のみ）
+func log_debug_detail(message: String) -> void:
+	DebugManager.log_debug_detail(message)
+
+## GitHub Copilot用ログレベル設定
+func set_copilot_log_level(level: int) -> void:
+	DebugManager.set_copilot_log_level(level)
 
 func play(_label:String = "start"):
 	# 指定されたラベルに基づいてゲームを開始する
@@ -443,23 +463,3 @@ func wait_for_system_ready():
 	while not is_system_ready:
 		await get_tree().process_frame
 
-## ラベルブロックパースのテスト用関数
-func test_label_block_parser(file_path: String, label_name: String):
-	ArgodeSystem.log("🧪 Testing label block parser...")
-	ArgodeSystem.log("📄 File: %s" % file_path)
-	ArgodeSystem.log("🏷️ Label: %s" % label_name)
-	
-	var parser = ArgodeRGDParser.new()
-	parser.set_command_registry(CommandRegistry)
-	
-	# 指定ラベルブロックのみをパース
-	var statements = parser.parse_label_block(file_path, label_name)
-	
-	ArgodeSystem.log("📊 Parse result: %d statements found" % statements.size())
-	
-	if statements.size() > 0:
-		parser.debug_print_statements(statements)
-	else:
-		ArgodeSystem.log("⚠️ No statements found in label block '%s'" % label_name, 1)
-	
-	ArgodeSystem.log("✅ Label block parser test completed")
