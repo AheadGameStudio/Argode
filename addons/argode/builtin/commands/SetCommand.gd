@@ -42,10 +42,40 @@ func execute_core(args: Dictionary) -> void:
 	
 	log_debug("target='%s', expression='%s'" % [target, value_expression])
 	
-	# 値を直接処理して設定（SetCommandでは変数名と値が既に分離されている）
-	var processed_value = variable_resolver._process_value(value_expression)
-	variable_resolver.set_variable(target, processed_value)
-	
-	log_info("変数設定完了: %s = %s" % [target, str(processed_value)])
+	# 複合演算子の処理（+= 10, -= 5等）
+	if value_expression.begins_with("+=") or value_expression.begins_with("-=") or value_expression.begins_with("*=") or value_expression.begins_with("/="):
+		# 演算子と値を分離
+		var operator = value_expression.substr(0, 2)  # +=, -=, *=, /=
+		var operand_str = value_expression.substr(2).strip_edges()
+		
+		# 現在の値を取得
+		var current_value = variable_resolver.variable_manager.get_variable(target)
+		if current_value == null:
+			current_value = 0  # デフォルト値
+		
+		# 演算値を処理
+		var operand = variable_resolver._process_value(operand_str)
+		
+		# 算術演算実行
+		var result
+		match operator:
+			"+=":
+				result = current_value + operand
+			"-=":
+				result = current_value - operand
+			"*=":
+				result = current_value * operand
+			"/=":
+				result = current_value / operand if operand != 0 else current_value
+			_:
+				result = current_value
+		
+		variable_resolver.set_variable(target, result)
+		log_info("変数設定完了: %s = %s" % [target, str(result)])
+	else:
+		# 通常の代入処理
+		var processed_value = variable_resolver._process_value(value_expression)
+		variable_resolver.set_variable(target, processed_value)
+		log_info("変数設定完了: %s = %s" % [target, str(processed_value)])
 
 

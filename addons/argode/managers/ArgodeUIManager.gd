@@ -42,6 +42,15 @@ func add_ui(path: String, alias:String ="", z_index:int = 0) -> void:
 	gui_layer.add_child(ui_instance)
 	ArgodeSystem.log("📥 Added UI: " + path + " as " + alias)
 
+func get_ui(alias:String) -> Control:
+	"""
+	Returns the UI instance with the given alias.
+	"""
+	if not ui_elements.has(alias):
+		ArgodeSystem.log("❌ UI not found: " + alias, 2)
+		return null
+	return ui_elements[alias]
+
 ## UIを削除。
 ## 完全にインスタンスごと解放するため、再度必要な場合はadd_uiが必要。
 func delete_ui(alias:String) -> void:

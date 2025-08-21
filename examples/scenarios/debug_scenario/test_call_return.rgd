@@ -1,0 +1,37 @@
+; Call/Returnコマンドのテストシナリオ
+
+## メイン開始
+「これはメイン処理の開始です」
+
+call helper_function
+
+「メイン処理に戻りました」
+
+call another_function  
+
+「すべての処理が完了しました」
+
+; エラーテスト（returnがないラベルへのCall）
+call no_return_function
+
+「このメッセージは表示されないはずです」
+
+*helper_function
+「ヘルパー関数が呼ばれました」
+「ヘルパー関数内の処理中...」
+return
+
+*another_function
+「別の関数が呼ばれました」
+call nested_function
+「別の関数に戻りました」
+return
+
+*nested_function
+「ネストした関数が呼ばれました」
+return
+
+; エラーテスト用（returnがないラベル）
+*no_return_function
+「returnがない関数です」
+「これはエラーになるはずです」

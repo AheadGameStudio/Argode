@@ -419,10 +419,11 @@ func _extract_args_from_tokens(tokens: Array, start_index: int) -> Array:
 			
 			# 複合演算子のチェック (+=, -=, など)
 			if equals_pos > 0 and arg_string[equals_pos - 1] in ["+", "-", "*", "/"]:
-				# 複合演算子の場合、演算子も含めて値部分に含める
+				# 複合演算子の場合、演算子部分も含めて処理
 				var operator_pos = equals_pos - 1
+				var operator_char = arg_string[operator_pos]
 				variable_part = arg_string.substr(0, operator_pos).strip_edges()
-				value_part = variable_part + " " + arg_string.substr(operator_pos).strip_edges()
+				value_part = operator_char + "= " + value_part  # 演算子と値を結合
 			
 			# クォートを除去
 			if value_part.begins_with('"') and value_part.ends_with('"'):

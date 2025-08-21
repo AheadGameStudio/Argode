@@ -1,7 +1,10 @@
 label test_all_command:
+	jump affection_menu
+
+label commands:
 	# すべてのコマンドをテストする
 	"コマンドをテストするためのシナリオを開始します。"
-	ui show confirm z_index 100 with fade
+	# ui show confirm z_index 100 with fade
 	akira "キャラクター定義したキャラクターでセリフを表示する"
 	set player.name = "テストキャラクター"
 	akira "[player.name]さん、こんにちは！（アニメーション効果つき）"
@@ -11,23 +14,29 @@ label test_all_command:
 	akira "カラータグのテストです。{color=#ff0000}赤い文字{/color}と{color=blue}青い文字{/color}があります。"
 	akira "サイズタグのテストです。{size=24}大きな文字{/size}と{size=12}小さな文字{/size}があります。"
 	akira "タグのテストもします。{w=1.0}\n1秒の待機が発生したはずです。"
+
+label affection_menu:
+	"好感度メニューを表示します。"
+	set player.affection = 0
 	menu:
 		"好感度を上げる":
+			"好感度を上げます"
 			set player.affection += 10
 		"好感度を下げる":
+			"好感度を下げます"
 			set player.affection -= 10
-		"好感度を確認する":
-			get player_affection
-			akira "現在の好感度は[player.affection]です。"
+	#いったんここで止めないといけない。
+			
+	akira "現在の好感度は[player.affection]です。"
 
 	if player.affection > 0:
-		akira "好感度が高いです！"
+		akira "好感度が高いです！[player.affection]"
 		jump high_affection
 	elif player.affection < 0:
-		akira "好感度が低いです。"
+		akira "好感度が低いです。[player.affection]"
 		jump low_affection
 	else:
-		akira "好感度が普通です。"
+		akira "好感度が普通です。[player.affection]"
 		jump normal_affection
 
 label high_affection:
@@ -39,15 +48,18 @@ label high_affection:
 label low_affection:
 	akira "悪い印象です"
 	"このキャラクターはあなたに好意を持っていません。"
+	call callable
 	jump end
 
 label normal_affection:
 	akira "普通です"
 	"このキャラクターはあなたに特別な感情を持っていません。"
+	call callable
 	jump end
 
 label callable:
 	akira "このキャラクターはあなたに呼びかけています。"
+	set player.response = false
 	menu:
 		"応答する":
 			akira "あなたは応答しました。"

@@ -310,6 +310,7 @@ func _run_registries_sequential():
 ## 定義コマンドを実行
 func _execute_definition_commands():
 	ArgodeSystem.log("🔧 Starting definition commands execution...")
+	ArgodeSystem.log("🔍 StatementManager execution state: executing=%s, paused=%s" % [StatementManager.is_executing, StatementManager.is_paused])
 	
 	if not DefinitionRegistry.has_definitions():
 		ArgodeSystem.log("ℹ️ No definitions to execute", 1)
@@ -321,6 +322,10 @@ func _execute_definition_commands():
 	if definition_statements.is_empty():
 		ArgodeSystem.log("⚠️ No definition statements created", 1)
 		return
+	
+	# StatementManagerが既に実行中の場合は警告
+	if StatementManager.is_executing:
+		ArgodeSystem.log("⚠️ StatementManager is already executing! This may cause conflicts.", 1)
 	
 	# StatementManagerを使用して定義コマンドを実行
 	var success = await StatementManager.execute_definition_statements(definition_statements)

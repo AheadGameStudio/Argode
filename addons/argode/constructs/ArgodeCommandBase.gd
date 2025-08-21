@@ -45,8 +45,8 @@ func execute_safe(args: Dictionary) -> void:
 	# ログ出力（開始）
 	log_debug("コマンド開始: %s" % command_execute_name)
 	
-	# 実際の処理実行
-	execute_core(args)
+	# 実際の処理実行（非同期対応）
+	await execute_core(args)
 	
 	# ログ出力（完了）
 	log_debug("コマンド完了: %s" % command_execute_name)
@@ -59,7 +59,7 @@ func execute_core(args: Dictionary) -> void:
 ## 従来のexecuteメソッド（互換性維持）
 func execute(args: Dictionary) -> void:
 	"""下位互換のためのexecuteメソッド"""
-	execute_safe(args)
+	await execute_safe(args)
 
 ## エラーハンドリングの統一
 func handle_error(message: String) -> void:
