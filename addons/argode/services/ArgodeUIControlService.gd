@@ -37,6 +37,11 @@ func _init():
 
 func ensure_message_system_ready() -> void:
 	"""メッセージシステムの初期化を確認する"""
+	# UIManagerの準備状態を確認
+	if not _ensure_ui_manager_ready():
+		ArgodeSystem.log_critical("🚨 UIControlService: UIManager not available, cannot setup message system")
+		return
+	
 	if not message_window:
 		_create_default_message_window()
 	if not message_renderer:
@@ -48,24 +53,31 @@ func _create_default_message_window() -> void:
 	"""デフォルトのメッセージウィンドウを作成"""
 	ArgodeSystem.log_debug_detail("🎮 UIControlService: デフォルトメッセージウィンドウ作成")
 	
-	# 既存のメッセージウィンドウがあるかUI Managerで確認
-	if ui_manager and ui_manager.has_method("get_ui"):
-		message_window = ui_manager.get_ui("message")
+	# UIManagerの準備状態を再確認
+	if not _ensure_ui_manager_ready():
+		ArgodeSystem.log_critical("❌ UIControlService: UIManager not available for window creation")
+		return
 	
-	if not message_window:
-		# メッセージウィンドウが存在しない場合は新規作成
-		ArgodeSystem.log_debug_detail("🎮 UIControlService: 新しいメッセージウィンドウを作成します")
-		var message_window_path = "res://addons/argode/builtin/scenes/default_message_window/default_message_window.tscn"
-		
-		# メッセージウィンドウをUIManagerに追加
-		if ui_manager and ui_manager.has_method("add_ui"):
-			if ui_manager.add_ui(message_window_path, "message", 100):
-				message_window = ui_manager.get_ui("message")
-				ArgodeSystem.log_workflow("✅ UIControlService: Default message window created and added")
-			else:
-				ArgodeSystem.log_critical("❌ UIControlService: Failed to create default message window")
+	# 既存のメッセージウィンドウがあるかUI Managerで確認
+	message_window = ui_manager.get_ui("message")
+	if message_window:
+		ArgodeSystem.log_debug_detail("🎮 UIControlService: 既存のメッセージウィンドウを発見")
+		return
+	
+	# メッセージウィンドウが存在しない場合は新規作成
+	ArgodeSystem.log_debug_detail("🎮 UIControlService: 新しいメッセージウィンドウを作成します")
+	var message_window_path = "res://addons/argode/builtin/scenes/default_message_window/default_message_window.tscn"
+	
+	# メッセージウィンドウをUIManagerに追加
+	var add_result = ui_manager.add_ui(message_window_path, "message", 100)
+	if add_result:
+		message_window = ui_manager.get_ui("message")
+		if message_window:
+			ArgodeSystem.log_workflow("✅ UIControlService: Default message window created and added")
 		else:
-			ArgodeSystem.log_critical("❌ UIControlService: UIManager not available for window creation")
+			ArgodeSystem.log_critical("❌ UIControlService: Window created but retrieval failed")
+	else:
+		ArgodeSystem.log_critical("❌ UIControlService: Failed to create default message window - add_ui returned false")
 func _create_message_renderer() -> void:
 	"""メッセージレンダラーを作成"""
 	ArgodeSystem.log_debug_detail("🎮 UIControlService: メッセージレンダラー作成")
@@ -83,13 +95,16 @@ func show_message(text: String, character: String = "") -> void:
 	"""メッセージを表示する（StatementManagerから移譲された機能）"""
 	ensure_message_system_ready()
 	
-	ArgodeSystem.log_debug_detail("🎮 UIControlService: show_message - renderer=%s, window=%s" % [message_renderer, message_window])
+	ArgodeSystem.log_debug_detail("🎮 UIControlService: show_message - renderer=%s, window=%s, inline_manager=%s" % [message_renderer, message_window, inline_command_manager])
 	
 	if message_renderer and inline_command_manager:
 		# InlineCommandManagerでテキストを前処理（変数展開・タグ処理）
+		ArgodeSystem.log_debug_detail("🔍 UIControlService: Processing text with inline commands: '%s'" % text)
 		var processed_result = inline_command_manager.process_text(text)
 		var display_text = processed_result.get("display_text", text)
 		var position_commands = processed_result.get("position_commands", [])
+		
+		ArgodeSystem.log_debug_detail("🔍 UIControlService: Processed result - display_text='%s', commands=%d" % [display_text, position_commands.size()])
 		
 		# 位置ベースコマンド付きメッセージレンダリング
 		message_renderer.render_message_with_position_commands(character, display_text, position_commands, inline_command_manager)
@@ -99,7 +114,10 @@ func show_message(text: String, character: String = "") -> void:
 		message_rendering_completed.emit()
 		
 	else:
-		ArgodeSystem.log_critical("🚨 UIControlService: メッセージシステムの準備ができていません")
+		var missing_components = []
+		if not message_renderer: missing_components.append("message_renderer")
+		if not inline_command_manager: missing_components.append("inline_command_manager")
+		ArgodeSystem.log_critical("🚨 UIControlService: メッセージシステムの準備ができていません - missing: %s" % str(missing_components))
 
 func create_message_renderer() -> ArgodeMessageRenderer:
 	"""メッセージレンダラーを作成"""
@@ -107,31 +125,58 @@ func create_message_renderer() -> ArgodeMessageRenderer:
 		ArgodeSystem.log_critical("🚨 UIControlService: メッセージウィンドウが必要です")
 		return null
 	
+	ArgodeSystem.log_debug_detail("🎮 UIControlService: メッセージレンダラー作成開始")
+	
 	# ArgodeMessageRendererクラスを動的に読み込み
-	var RendererClass = load("res://addons/argode/renderer/ArgodeMessageRenderer.gd")
+	var renderer_path = "res://addons/argode/renderer/ArgodeMessageRenderer.gd"
+	if not ResourceLoader.exists(renderer_path):
+		ArgodeSystem.log_critical("❌ UIControlService: ArgodeMessageRenderer not found at: %s" % renderer_path)
+		return null
+	
+	var RendererClass = load(renderer_path)
 	if not RendererClass:
-		ArgodeSystem.log_critical("❌ UIControlService: ArgodeMessageRenderer class not found")
+		ArgodeSystem.log_critical("❌ UIControlService: Failed to load ArgodeMessageRenderer class")
 		return null
 
 	var renderer = RendererClass.new()
-	if renderer and message_window:
+	if not renderer:
+		ArgodeSystem.log_critical("❌ UIControlService: Failed to instantiate ArgodeMessageRenderer")
+		return null
+	
+	# メッセージウィンドウを設定
+	if renderer.has_method("set_message_window"):
 		renderer.set_message_window(message_window)
 		ArgodeSystem.log_debug_detail("🎮 UIControlService: メッセージレンダラー作成完了")
-		return renderer
 	else:
-		ArgodeSystem.log_critical("🚨 UIControlService: メッセージレンダラー作成失敗")
+		ArgodeSystem.log_critical("🚨 UIControlService: Renderer missing set_message_window method")
 		return null
+		
+	return renderer
 
 ## タイプライター制御 ==================================
 func _setup_ui_manager_connection():
+	"""UIManagerへの接続を確立（遅延初期化対応）"""
 	ui_manager = ArgodeSystem.UIManager
 	
 	if ui_manager:
 		# 🎬 WORKFLOW: UI制御システム初期化（GitHub Copilot重要情報）
 		ArgodeSystem.log_workflow("UIControlService connected to ArgodeUIManager")
 	else:
-		# 🚨 CRITICAL: 重要なエラー（GitHub Copilot重要情報）
-		ArgodeSystem.log_critical("ArgodeUIManager not found - UI control disabled")
+		# UIManagerがまだ初期化されていない場合は、遅延初期化を試行
+		ArgodeSystem.log_debug_detail("� UIManager not ready, will retry during message system setup")
+
+func _ensure_ui_manager_ready() -> bool:
+	"""UIManagerの準備状態を確認し、必要に応じて再接続"""
+	if not ui_manager:
+		ui_manager = ArgodeSystem.UIManager
+		
+		if ui_manager:
+			ArgodeSystem.log_workflow("✅ UIControlService: UIManager connection established (delayed)")
+		else:
+			ArgodeSystem.log_critical("❌ UIControlService: UIManager still not available")
+			return false
+	
+	return true
 
 ## UI操作を一時停止
 func pause_ui_operations(reason: String):

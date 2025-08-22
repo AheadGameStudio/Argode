@@ -25,6 +25,13 @@ func _init():
 	tag_tokenizer = ArgodeTagTokenizer.new()
 	tag_registry = ArgodeTagRegistry.new()
 	
+	# TagRegistryをCommandRegistryから初期化
+	if ArgodeSystem and ArgodeSystem.CommandRegistry:
+		tag_registry.initialize_from_command_registry(ArgodeSystem.CommandRegistry)
+		ArgodeSystem.log_debug_detail("🏷️ InlineCommandManager: TagRegistry initialized with %d tags" % tag_registry.get_tag_names().size())
+	else:
+		ArgodeSystem.log_critical("🚨 InlineCommandManager: CommandRegistry not available for tag initialization")
+	
 	# VariableResolverを初期化
 	if ArgodeSystem and ArgodeSystem.VariableManager:
 		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
@@ -34,6 +41,11 @@ func process_text(raw_text: String) -> Dictionary:
 	# VariableResolverが初期化されていない場合の保険
 	if not variable_resolver and ArgodeSystem and ArgodeSystem.VariableManager:
 		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
+	
+	# TagRegistryが初期化されていない場合の保険
+	if tag_registry.get_tag_names().is_empty() and ArgodeSystem and ArgodeSystem.CommandRegistry:
+		tag_registry.initialize_from_command_registry(ArgodeSystem.CommandRegistry)
+		ArgodeSystem.log_debug_detail("🏷️ InlineCommandManager: TagRegistry late-initialized with %d tags" % tag_registry.get_tag_names().size())
 	
 	# エスケープされた改行文字を実際の改行文字に前処理で変換
 	_raw_text = raw_text.replace("\\n", "\n")

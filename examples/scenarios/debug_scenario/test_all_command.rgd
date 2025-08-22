@@ -1,5 +1,5 @@
 label test_all_command:
-	jump commands
+	jump test_text_decoration
 
 label commands:
 	# すべてのコマンドをテストする
