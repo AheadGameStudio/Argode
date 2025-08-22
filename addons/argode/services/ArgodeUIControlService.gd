@@ -291,3 +291,53 @@ func debug_print_ui_state():
 	ArgodeSystem.log_debug_detail("  typewriter_pause_count: %d" % typewriter_pause_count)
 	ArgodeSystem.log_debug_detail("  typewriter_speed_stack: %s" % str(typewriter_speed_stack))
 	ArgodeSystem.log_debug_detail("  ui_manager: %s" % ("connected" if ui_manager != null else "not connected"))
+
+## メッセージウィンドウを通してメッセージを表示（StatementManagerから移譲）
+func display_message_via_window(text: String, character: String, message_window, execution_service: RefCounted = null):
+	"""
+	メッセージウィンドウを通してメッセージを表示
+	
+	Args:
+		text: 表示するメッセージテキスト
+		character: キャラクター名（オプション）
+		message_window: メッセージウィンドウインスタンス
+		execution_service: ExecutionServiceインスタンス（入力待ち設定用）
+	"""
+	if not message_window:
+		ArgodeSystem.log_workflow("❌ Message window is not available")
+		return
+	
+	# メッセージウィンドウを表示
+	if ui_manager:
+		ui_manager.show_ui("message")
+	else:
+		ArgodeSystem.UIManager.show_ui("message")
+	
+	# メッセージウィンドウにメッセージを設定
+	if message_window.has_method("set_message_text"):
+		message_window.set_message_text(text)
+		ArgodeSystem.log_debug_detail("✅ Message text set via set_message_text")
+	else:
+		ArgodeSystem.log_workflow("❌ Message window does not have set_message_text method")
+	
+	# キャラクター名を設定（空でない場合）
+	if character != "":
+		if message_window.has_method("set_character_name"):
+			message_window.set_character_name(character)
+			ArgodeSystem.log_debug_detail("✅ Character name set via set_character_name: %s" % character)
+		else:
+			ArgodeSystem.log_workflow("❌ Message window does not have set_character_name method")
+	else:
+		# キャラクター名が無い場合は名前プレートを隠す
+		if message_window.has_method("hide_character_name"):
+			message_window.hide_character_name()
+			ArgodeSystem.log_debug_detail("✅ Character name hidden")
+	
+	ArgodeSystem.log_workflow("📺 Message displayed via window: %s: %s" % [character, text])
+	
+	# ウィンドウパス使用時も入力待ち状態を設定
+	if execution_service and execution_service.has_method("set_waiting_for_input"):
+		execution_service.set_waiting_for_input(true)
+		ArgodeSystem.log_debug_detail("⏳ Set waiting for user input to continue (via window)")
+	else:
+		ArgodeSystem.log_workflow("❌ ExecutionService not available for input waiting")

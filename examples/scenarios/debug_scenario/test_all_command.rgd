@@ -1,5 +1,5 @@
 label test_all_command:
-	jump test_text_decoration
+	jump affection_menu
 
 label commands:
 	# すべてのコマンドをテストする

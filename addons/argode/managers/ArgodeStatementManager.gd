@@ -6,10 +6,10 @@ class_name ArgodeStatementManager
 ## 内部実装はServiceクラスに分離、カスタムコマンド向け統一インターフェース維持
 
 # 内部Service層（ユーザー非公開）
-var execution_service: ArgodeExecutionService
-var call_stack_service: ArgodeCallStackService
-var context_service: ArgodeContextService
-var input_handler_service: ArgodeInputHandlerService
+var execution_service: RefCounted  # ArgodeExecutionService
+var call_stack_service: RefCounted  # ArgodeCallStackService
+var context_service: RefCounted  # ArgodeContextService
+var input_handler_service: RefCounted  # ArgodeInputHandlerService
 var ui_control_service: ArgodeUIControlService
 var definition_service: RefCounted  # 動的読み込みのため一時的にRefCountedとして宣言
 
@@ -33,6 +33,9 @@ func _init():
 
 ## 初期化準備完了フラグ
 var _is_ready: bool = false
+
+## 子コンテキスト実行中フラグ（再帰防止）
+var _is_executing_child_context: bool = false
 
 ## StatementManagerが使用できる状態かチェック
 func ensure_ready():
@@ -168,6 +171,10 @@ func _parse_label_block(file_path: String, label_name: String) -> Array:
 	
 	return statements
 
+## パブリックなラベルブロックパースメソッド（Callコマンド用）
+func parse_label_block(file_path: String, label_name: String) -> Array:
+	return await _parse_label_block(file_path, label_name)
+
 ## フォールバック実行（Service Layer Pattern不使用）
 func _fallback_play_from_label(label_name: String, file_path: String, label_line: int) -> bool:
 	"""Service Layerが使用できない場合のフォールバック実行"""
@@ -298,6 +305,9 @@ func push_call_context(file_path: String, statement_index: int):
 func pop_call_context() -> Dictionary:
 	return call_stack_service.pop_return()
 
+func calculate_return_index() -> int:
+	return execution_service.calculate_return_index()
+
 func _execute_child_statements(statements: Array):
 	context_service.execute_child_statements(statements)
 
@@ -313,17 +323,84 @@ func _handle_child_context_execution() -> bool:
 		var child_context = context_service.get_current_context()
 		var child_statements = child_context.get("statements", [])
 		if not child_statements.is_empty():
-			ArgodeSystem.log_workflow("🔧 Executing child context statements (%d statements)..." % child_statements.size())
-			# 子ステートメントを直接実行
-			for child_statement in child_statements:
-				ArgodeSystem.log_workflow("🔧 Executing child statement: %s" % child_statement.get("name", "unknown"))
-				await execution_service.execute_single_statement(child_statement, self)
+			ArgodeSystem.log_critical("🎯 CHILD_CONTEXT_DEBUG: Executing child context statements (%d statements)..." % child_statements.size())
+			ArgodeSystem.log_critical("🎯 CHILD_CONTEXT_DEBUG: Context name: %s" % child_context.get("context_name", "unknown"))
+			
+			# 子ステートメントの詳細をログ出力
+			for i in range(child_statements.size()):
+				var stmt = child_statements[i]
+				ArgodeSystem.log_critical("🎯 CHILD_CONTEXT_DEBUG: Statement %d: Type=%s, Name=%s" % [i, stmt.get("type", "unknown"), stmt.get("name", "unknown")])
+			
+			# 子コンテキスト専用の実行ループを開始
+			var child_execution_success = await _execute_child_context_loop(child_statements)
+			
 			ArgodeSystem.log_workflow("🔧 Child context execution completed")
+			
+			# � CALL CONTEXT FIX: Call先コンテキストの重複実行を防ぐ
+			var current_context = context_service.get_current_context()
+			if current_context and current_context.get("context_name", "").begins_with("call_"):
+				ArgodeSystem.log_critical("🚨 CALL_CONTEXT_COMPLETED: Removing call context to prevent re-execution: %s" % current_context.get("context_name"))
+				# Call先コンテキストを強制削除
+				context_service.pop_context()
+			
+			# �🚨 CRITICAL FIX: 子コンテキスト実行完了後に入力待ち状態をリセット
+			if execution_service.is_waiting_for_input:
+				ArgodeSystem.log_workflow("🔧 Child context completed - clearing input wait state")
+				execution_service.set_waiting_for_input(false)
+			
 			# コンテキストをポップ
 			context_service.pop_context()
 			executed_child_context = true
 	
 	return executed_child_context
+
+## 子コンテキスト専用実行ループ
+func _execute_child_context_loop(statements: Array) -> bool:
+	"""子コンテキストの文を順次実行（入力待ちを尊重）"""
+	
+	# 🔧 CRITICAL FIX: 再帰呼び出し防止
+	if _is_executing_child_context:
+		ArgodeSystem.log_critical("🚨 RECURSION_PREVENTION: Child context loop already running - skipping")
+		return true
+	
+	_is_executing_child_context = true
+	ArgodeSystem.log_critical("🎯 LOOP_START_DEBUG: _execute_child_context_loop STARTED with %d statements" % statements.size())
+	var current_index = 0
+	
+	while current_index < statements.size():
+		var statement = statements[current_index]
+		ArgodeSystem.log_critical("🎯 CHILD_CONTEXT_DEBUG: Executing child statement %d: Type=%s, Name=%s" % [current_index, statement.get("type", "unknown"), statement.get("name", "unknown")])
+		ArgodeSystem.log_critical("🎯 INDEX_DEBUG: Before execution - current_index=%d, statements.size()=%d" % [current_index, statements.size()])
+		
+		# 子コンテキスト用にexecuting_statementを設定
+		execution_service.executing_statement = statement
+		
+		# ステートメントを実行
+		await execution_service.execute_single_statement(statement, self)
+		
+		# Return命令の場合は子コンテキストを終了
+		if statement.get("name") == "return":
+			ArgodeSystem.log_workflow("🔧 Return detected in child context - terminating")
+			break
+		
+		# Menu実行後にCall先コンテキストが深度1の場合、自動的に終了
+		if statement.get("name") == "menu" and context_service.get_context_depth() == 1:
+			ArgodeSystem.log_critical("🎯 MENU_COMPLETION_FIX: Menu completed in Call context - auto-terminating")
+			break
+		
+		# 入力待ち状態の場合は一時停止
+		if execution_service.is_waiting_for_input:
+			ArgodeSystem.log_workflow("🔧 Child context waiting for input...")
+			while execution_service.is_waiting_for_input:
+				await Engine.get_main_loop().process_frame
+			ArgodeSystem.log_workflow("🔧 Child context input received - continuing")
+		
+		current_index += 1
+		ArgodeSystem.log_critical("🎯 INDEX_DEBUG: After increment - current_index=%d" % current_index)
+	
+	_is_executing_child_context = false
+	ArgodeSystem.log_critical("🎯 LOOP_END_DEBUG: _execute_child_context_loop COMPLETED")
+	return true
 
 func _handle_text_statement(statement: Dictionary):
 	var text = statement.get("content", "")
@@ -380,20 +457,85 @@ func _handle_call_via_services(result_data: Dictionary):
 	if label_name == "":
 		ArgodeSystem.log_critical("Call command missing label name")
 		return
-	call_stack_service.push_call(
-		execution_service.current_file_path,
-		execution_service.current_statement_index + 1
-	)
-	_handle_jump_via_services(result_data)
+	
+	ArgodeSystem.log_workflow("📞 Call: Creating sub-execution context for label: %s" % label_name)
+	
+	# CallはJumpではなく、新しい実行コンテキストを作成
+	# 1. LabelRegistryからラベル情報を取得
+	var label_registry = ArgodeSystem.LabelRegistry
+	if not label_registry:
+		ArgodeSystem.log_critical("LabelRegistry not found for call")
+		return
+	
+	var label_info = label_registry.get_label(label_name)
+	if label_info.is_empty():
+		ArgodeSystem.log_critical("Label not found for call: %s" % label_name)
+		return
+	
+	# 2. Call先のラベルブロックをパースして文を取得
+	var label_file_path = label_info.get("path", "")
+	var label_line = label_info.get("line", -1)
+	
+	if label_file_path.is_empty() or label_line == -1:
+		ArgodeSystem.log_critical("Invalid label info for call: %s" % str(label_info))
+		return
+	
+	# 3. RGDParserでCall先ラベルの文を取得
+	var statements = rgd_parser.parse_label_block(label_file_path, label_name)
+	
+	if statements.is_empty():
+		ArgodeSystem.log_critical("No statements found in call label: %s" % label_name)
+		return
+	
+	# 4. ContextServiceでCall先の文を子コンテキストとして実行
+	ArgodeSystem.log_workflow("📞 Call: Executing %d statements from label %s as child context" % [statements.size(), label_name])
+	context_service.execute_child_statements(statements)
 
 func _handle_return_via_services(result_data: Dictionary):
-	var call_frame = call_stack_service.pop_return()
-	if call_frame.is_empty():
-		ArgodeSystem.log_critical("Return called but no call stack frame")
+	# 新しい設計：Returnは子コンテキストの終了マーカー
+	# ContextServiceが子コンテキストの完了を検知して自動的に元の実行に戻る
+	ArgodeSystem.log_workflow("🔙 Return: Marking child context for completion - parent execution will resume automatically")
+	
+	# Call context cleanup: 現在のコンテキスト(menu_choice)を確認し、その親がCallコンテキストかチェック
+	if context_service:
+		var current_context = context_service.get_current_context()
+		ArgodeSystem.log_critical("🎯 RETURN_CONTEXT_CHECK: Current context='%s', depth=%d" % [current_context.get("context_name", ""), context_service.get_context_depth()])
+		
+		# 現在のコンテキストがmenu_choiceで、その下にCallコンテキストがある場合
+		if current_context.get("context_name", "").begins_with("menu_choice"):
+			# 一時的にmenu_choiceコンテキストをpopして親のCallコンテキストを確認
+			context_service.pop_context()
+			var parent_context = context_service.get_current_context()
+			ArgodeSystem.log_critical("🎯 RETURN_PARENT_CHECK: Parent context='%s'" % parent_context.get("context_name", ""))
+			
+			if parent_context.get("context_name", "").begins_with("call_"):
+				ArgodeSystem.log_critical("🎯 CALL_CONTEXT_CLEANUP: Removing completed Call context '%s'" % parent_context.get("context_name", ""))
+				context_service.pop_context()
+			else:
+				ArgodeSystem.log_critical("🎯 RETURN_DEBUG: Parent context '%s' is not a Call context" % parent_context.get("context_name", ""))
+		elif current_context.get("context_name", "").begins_with("call_"):
+			ArgodeSystem.log_critical("🎯 CALL_CONTEXT_CLEANUP: Removing completed Call context '%s'" % current_context.get("context_name", ""))
+			context_service.pop_context()
+		else:
+			ArgodeSystem.log_critical("🎯 RETURN_DEBUG: Current context '%s' is not a Call context" % current_context.get("context_name", ""))
+
+## Return後の実行再開処理
+func _restart_execution_from_index(index: int):
+	"""Return後に指定インデックスから実行を再開"""
+	ArgodeSystem.log_workflow("🔙 Restarting execution from index %d" % index)
+	
+	# 現在のステートメントリストで指定インデックスから実行再開
+	if execution_service.current_statements.is_empty():
+		ArgodeSystem.log_critical("No statements available for restart")
 		return
-	var return_file = call_frame.get("file_path", "")
-	var return_index = call_frame.get("statement_index", 0)
-	ArgodeSystem.log_workflow("Returning to %s[%d]" % [return_file, return_index])
+	
+	# インデックスを設定して実行再開
+	execution_service.current_statement_index = index
+	execution_service.is_executing = true
+	execution_service.is_paused = false
+	
+	# 実行再開
+	await execution_service.execute_main_loop(self)
 
 func _handle_statements_via_services(result_data: Dictionary):
 	var child_statements = result_data.get("statements", [])
@@ -574,47 +716,12 @@ func _on_message_rendering_completed():
 
 func _display_message_via_window(text: String, character: String):
 	"""
-	メッセージウィンドウを通してメッセージを表示
-	
-	Args:
-		text: 表示するメッセージテキスト
-		character: キャラクター名（オプション）
+	メッセージウィンドウを通してメッセージを表示（UIControlServiceに委譲）
 	"""
-	if not message_window:
-		ArgodeSystem.log("❌ Message window is not available", ArgodeSystem.LOG_LEVEL.CRITICAL)
-		return
-	
-	# メッセージウィンドウを表示
-	ArgodeSystem.UIManager.show_ui("message")
-	
-	# メッセージウィンドウにメッセージを設定
-	if message_window.has_method("set_message_text"):
-		message_window.set_message_text(text)
-		ArgodeSystem.log("✅ Message text set via set_message_text", ArgodeSystem.LOG_LEVEL.DEBUG)
+	if ui_control_service:
+		ui_control_service.display_message_via_window(text, character, message_window, execution_service)
 	else:
-		ArgodeSystem.log("❌ Message window does not have set_message_text method", ArgodeSystem.LOG_LEVEL.CRITICAL)
-	
-	# キャラクター名を設定（空でない場合）
-	if character != "":
-		if message_window.has_method("set_character_name"):
-			message_window.set_character_name(character)
-			ArgodeSystem.log("✅ Character name set via set_character_name: %s" % character, ArgodeSystem.LOG_LEVEL.DEBUG)
-		else:
-			ArgodeSystem.log("❌ Message window does not have set_character_name method", ArgodeSystem.LOG_LEVEL.CRITICAL)
-	else:
-		# キャラクター名が無い場合は名前プレートを隠す
-		if message_window.has_method("hide_character_name"):
-			message_window.hide_character_name()
-			ArgodeSystem.log("✅ Character name hidden", ArgodeSystem.LOG_LEVEL.DEBUG)
-	
-	ArgodeSystem.log("📺 Message displayed via window: %s: %s" % [character, text], ArgodeSystem.LOG_LEVEL.WORKFLOW)
-	
-	# ウィンドウパス使用時も入力待ち状態を設定
-	if execution_service:
-		execution_service.set_waiting_for_input(true)
-		ArgodeSystem.log("⏳ Set waiting for user input to continue (via window)", ArgodeSystem.LOG_LEVEL.DEBUG)
-	else:
-		ArgodeSystem.log("❌ ExecutionService not available for input waiting", ArgodeSystem.LOG_LEVEL.CRITICAL)
+		ArgodeSystem.log_workflow("❌ UIControlService not available for window message display")
 
 # ===========================
 # 実行状態管理API

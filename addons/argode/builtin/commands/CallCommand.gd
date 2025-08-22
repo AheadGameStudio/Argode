@@ -20,10 +20,12 @@ func execute(args: Dictionary) -> void:
 		return
 	
 	var label_name = parsed_line[0]  # 最初の要素がラベル名
-	log_info("Calling label '%s'" % label_name)
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: ===== CALL EXECUTION START =====")
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: Calling label '%s'" % label_name)
 	
 	# ラベルレジストリからラベル情報を取得
 	var label_info = ArgodeSystem.LabelRegistry.get_label(label_name)
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: Label '%s' info: %s" % [label_name, str(label_info)])
 	
 	if label_info.is_empty():
 		log_error("Label '%s' not found" % label_name)
@@ -41,38 +43,46 @@ func execute(args: Dictionary) -> void:
 		log_error("No 'return' command found in label block '%s' - Call requires Return" % label_name)
 		return
 	
-	# 現在の実行コンテキストに基づいて正しい戻り位置を計算
-	var current_index = statement_manager.current_statement_index
-	var current_file = statement_manager.current_file_path
-	var return_index = statement_manager.calculate_return_index()
+	# 新しい設計：現在の実行位置を保存（子コンテキスト完了後の復帰用）
+	var current_index = statement_manager.execution_service.current_statement_index
+	var current_file = statement_manager.execution_service.current_file_path
 	
-	# 子ステートメント実行中の場合は特別処理
-	if return_index == -1:  # 子ステートメント実行中
-		# 子ステートメント実行コンテキストに戻る必要がある
-		# Return時に子ステートメント実行を継続するための情報を保存
-		var child_context = {
-			"type": "child_statement_return",
-			"parent_context": statement_manager.execution_context_stack.back() if statement_manager.execution_context_stack.size() > 0 else {},
-			"return_to_child_execution": true
-		}
-		statement_manager.push_call_context(-2, current_file)  # -2は子ステートメント実行復帰の特別値
-		log_debug("CallCommand: Child statement context - will return to child execution")
-	else:
-		# 通常のCall/Return処理
-		statement_manager.push_call_context(return_index, current_file)
-		log_debug("CallCommand: current_index=%d, return_index=%d, file=%s" % [current_index, return_index, current_file])
+	# Call/Returnスタックに現在位置を保存（次のstatementから実行再開するため+1）
+	statement_manager.push_call_context(current_file, current_index + 1)
+	log_debug("CallCommand: Call stack pushed - next_index=%d, file=%s" % [current_index + 1, current_file])
 	
 	
-	# 指定されたラベルにジャンプ
-	log_info("Call jumping to label '%s' at line %d" % [label_name, label_line])
+	# Call先のラベルブロックをパースして子コンテキストとして実行
+	log_info("Call parsing label block '%s' at line %d" % [label_name, label_line])
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: Parsing label block '%s' at %s:%d" % [label_name, label_file_path, label_line])
 	
-	# JumpCommandと同様にjump結果を返す
-	statement_manager.command_result = {
-		"result": "jump",
-		"label": label_name,
-		"file_path": label_file_path,
-		"line": label_line
-	}
+	# StatementManagerのparse_label_blockメソッドを使用してCall先のラベルブロックをパース
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: About to call StatementManager.parse_label_block(%s, %s)" % [label_file_path, label_name])
+	var call_statements = await statement_manager.parse_label_block(label_file_path, label_name)
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: parse_label_block returned %d statements" % call_statements.size())
+	
+	if call_statements.is_empty():
+		log_error("Failed to parse label block '%s'" % label_name)
+		ArgodeSystem.log_critical("🎯 CALL_DEBUG: ❌ PARSE FAILED - No statements found for '%s'" % label_name)
+		return
+	
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: ✅ PARSE SUCCESS - Parsed %d statements from '%s'" % [call_statements.size(), label_name])
+	
+	# ContextServiceを使用して子コンテキストとしてCall先を実行
+	var context_service = statement_manager.context_service
+	if not context_service:
+		log_error("ContextService not available")
+		ArgodeSystem.log_critical("🎯 CALL_DEBUG: ❌ CONTEXT SERVICE NOT FOUND")
+		return
+	
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: About to push context for '%s'" % label_name)
+	
+	# Call先のステートメントを子コンテキストにプッシュ
+	context_service.push_context(call_statements, "call_" + label_name)
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: Call context pushed for '%s' (%d statements)" % [label_name, call_statements.size()])
+	ArgodeSystem.log_critical("🎯 CALL_DEBUG: ===== CALL EXECUTION COMPLETE =====")
+
+	log_info("Call command completed for label: %s" % label_name)
 
 func _check_return_in_label_block(file_path: String, label_line: int) -> bool:
 	"""指定されたラベルブロック内にreturnコマンドが存在するかチェック"""

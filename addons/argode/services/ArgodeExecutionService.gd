@@ -158,8 +158,21 @@ func execute_main_loop(statement_manager: RefCounted):
 		if statement.is_empty():
 			ArgodeSystem.log_workflow("🔧 ExecutionService: no more statements")
 			break
+		
+		# デバッグ: 実行ステートメントの詳細
+		ArgodeSystem.log_critical("🚨 🎯 STMT_DEBUG: Type=%s, Name=%s, Args=%s" % [
+			statement.get("type", "unknown"),
+			statement.get("name", "unknown"),
+			str(statement.get("args", []))
+		])
 			
 		ArgodeSystem.log_workflow("🔧 Executing statement %d: %s" % [current_statement_index, statement.get("name", "unknown")])
+		
+		# 実行前のステートメント詳細ログ
+		ArgodeSystem.log_critical("🚨 🎯 EXEC_DEBUG: About to execute: Type=%s, Name=%s" % [
+			statement.get("type", "unknown"),
+			statement.get("name", "unknown")
+		])
 		await execute_single_statement(statement, statement_manager)
 		
 		# 入力待ち状態の処理
@@ -182,14 +195,14 @@ func execute_main_loop(statement_manager: RefCounted):
 		if statement_manager.has_method("_handle_child_context_execution"):
 			executed_child_context = await statement_manager._handle_child_context_execution()
 		
-		# 子コンテキスト実行後は次のステートメントに進む
+		# 子コンテキスト実行後は次のステートメントに進む（重複advance防止）
 		if executed_child_context:
 			if not advance_to_next_statement():
 				ArgodeSystem.log_workflow("🔧 ExecutionService: cannot advance after child context")
 				break
 			# フレーム待機を追加して無限ループを防止
 			await Engine.get_main_loop().process_frame
-			continue
+			continue  # continueで通常のadvance_to_next_statementをスキップ
 		
 		if not advance_to_next_statement():
 			ArgodeSystem.log_workflow("🔧 ExecutionService: cannot advance to next statement")
@@ -204,6 +217,10 @@ func execute_main_loop(statement_manager: RefCounted):
 
 ## 単一ステートメントを実行（StatementManagerから移譲）
 func execute_single_statement(statement: Dictionary, statement_manager: RefCounted):
+	# 🔧 CRITICAL FIX: 実行中の文を正しく設定（子コンテキスト対応）
+	executing_statement = statement
+	ArgodeSystem.log_critical("🎯 EXECUTION_SERVICE_FIX: Set executing_statement to name=%s type=%s" % [statement.get("name", "unknown"), statement.get("type", "unknown")])
+	
 	var statement_type = statement.get("type", "")
 	var command_name = statement.get("name", "")
 	var args = statement.get("args", [])
@@ -236,11 +253,24 @@ func execute_command_via_services(command_name: String, args: Array, statement_m
 		ArgodeSystem.log_workflow("🔍 Actual instance: %s" % str(actual_instance))
 		
 		if actual_instance:
-			executing_statement = get_current_statement()
 			var args_dict = statement_manager._convert_args_to_dict(args)
 			args_dict["statement_manager"] = statement_manager
+			# CallCommand/ReturnCommand等のために元の配列も保持
+			args_dict["parsed_line"] = args
+			# MenuCommand等で現在実行中のstatementを参照できるように追加
+			args_dict["_current_statement"] = executing_statement
 			ArgodeSystem.log_workflow("🔍 Calling execute with args: %s" % str(args_dict))
+			
+			# ReturnCommand実行前の状態を記録
+			var was_executing_before = is_executing
+			
 			await actual_instance.execute(args_dict)
+			
+			# ReturnCommandによって実行が停止された場合の検出
+			if command_name == "return" and was_executing_before and not is_executing:
+				ArgodeSystem.log_workflow("🔍 Return command detected - execution stopped by Return")
+				return  # Return処理はStatementManagerが担当
+			
 			if actual_instance.has_method("is_async") and actual_instance.is_async():
 				await actual_instance.execution_completed
 		else:
@@ -255,3 +285,16 @@ func debug_print_state():
 	ArgodeSystem.log_debug_detail("  executing: %s, paused: %s" % [str(is_executing), str(is_paused)])
 	ArgodeSystem.log_debug_detail("  waiting_input: %s, waiting_command: %s" % [str(is_waiting_for_input), str(is_waiting_for_command)])
 	ArgodeSystem.log_debug_detail("  statement: %d/%d" % [current_statement_index, current_statements.size()])
+
+## Call/Return用戻り位置計算（StatementManagerから移譲）
+func calculate_return_index() -> int:
+	"""Call時の戻り先インデックスを計算"""
+	# 🎬 WORKFLOW: Call戻り位置計算（GitHub Copilot重要情報）
+	ArgodeSystem.log_workflow("🔧 ExecutionService: Calculating return index from current position %d" % current_statement_index)
+	
+	# TODO: 子ステートメント実行中の特別処理は将来ContextServiceと連携
+	# 現在は基本的な戻り位置計算のみ実装
+	var return_index = current_statement_index + 1
+	
+	ArgodeSystem.log_workflow("🔧 Return index calculated: %d" % return_index)
+	return return_index

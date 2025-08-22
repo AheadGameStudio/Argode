@@ -12,36 +12,21 @@ func execute(args: Dictionary) -> void:
 		log_error("StatementManager not provided")
 		return
 	
-	log_info("Return command executed")
+	ArgodeSystem.log_critical("🎯 RETURN_DEBUG: Return command executed - terminating child context")
 	
-	# Call/Returnスタックから戻り先を取得
-	var return_context = statement_manager.pop_call_context()
+	# コンテキスト情報の詳細ログ
+	var context_service = statement_manager.context_service
+	if context_service:
+		var depth = context_service.get_context_depth()
+		ArgodeSystem.log_critical("🎯 RETURN_DEBUG: Current context depth=%d" % depth)
 	
-	if return_context.is_empty():
-		log_error("No call context to return to - Return without Call")
-		return
+	# 新しい設計：Returnは子コンテキストを終了するためのマーカー
+	# 実際の復帰処理はContextServiceが自動的に行う
+	# Call/Returnスタックはネストした呼び出しのために保持
 	
-	var return_index = return_context.get("return_index", -1)
-	var return_file_path = return_context.get("return_file_path", "")
+	# Service Layer Pattern準拠: handle_command_result()で終了通知
+	statement_manager.handle_command_result({
+		"type": "return"
+	})
 	
-	# 子ステートメント実行復帰の特別処理
-	if return_index == -2:  # 子ステートメント実行復帰の特別値
-		log_info("Returning to child statement execution context")
-		# 子ステートメント実行を継続するための特別な戻り値
-		statement_manager.command_result = {
-			"result": "return_to_child_execution"
-		}
-		return
-	
-	if return_index == -1 or return_file_path.is_empty():
-		log_error("Invalid return context")
-		return
-	
-	log_info("Returning to index %d in file %s" % [return_index, return_file_path])
-	
-	# Returnはジャンプ結果として戻り先情報を設定
-	statement_manager.command_result = {
-		"result": "return",
-		"return_index": return_index,
-		"return_file_path": return_file_path
-	}
+	ArgodeSystem.log_critical("🎯 RETURN_DEBUG: Return handled, context should pop")

@@ -29,34 +29,34 @@ func validate_args(args: Dictionary) -> bool:
 
 ## コマンド中核処理
 func execute_core(args: Dictionary) -> void:
-	# ログ出力を一時的に無効化してスタックオーバーフロー原因を特定
-	# log_info("IfCommand: 条件分岐開始")
+	# If文のデバッグログを追加
+	ArgodeSystem.log_critical("🎯 IF_DEBUG: Starting if condition evaluation")
 	
 	# VariableResolverが初期化されていない場合の保険
 	if not variable_resolver and ArgodeSystem and ArgodeSystem.VariableManager:
 		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
 	
 	if not variable_resolver:
-		# log_error("VariableResolver not available")
+		ArgodeSystem.log_critical("🎯 IF_DEBUG: VariableResolver not available")
 		return
 	
 	# StatementManagerから現在のステートメント情報を取得
 	var statement_manager = ArgodeSystem.StatementManager
 	if not statement_manager:
-		# log_error("StatementManager not found")
+		ArgodeSystem.log_critical("🎯 IF_DEBUG: StatementManager not found")
 		return
 	
 	# 現在のif文のステートメント構造を取得
 	var current_statement = statement_manager.get_current_statement()
 	if current_statement.is_empty():
-		# log_error("Could not get current if statement")
+		ArgodeSystem.log_critical("🎯 IF_DEBUG: Could not get current if statement")
 		return
 	
-	# log_info("🔍 Processing if statement structure")
+	ArgodeSystem.log_critical("🎯 IF_DEBUG: Processing if statement structure")
 	
 	# if条件を評価
 	var condition_result = _evaluate_condition(args)
-	# log_info("🔍 If condition result: %s" % str(condition_result))
+	ArgodeSystem.log_critical("🎯 IF_DEBUG: Condition result: %s" % str(condition_result))
 	
 	# 実行するステートメントブロックを決定
 	var statements_to_execute = []
@@ -64,7 +64,7 @@ func execute_core(args: Dictionary) -> void:
 	if condition_result:
 		# if条件が真の場合、ifブロックを実行
 		statements_to_execute = current_statement.get("statements", [])
-		# log_info("✅ If condition true, executing if block (%d statements)" % statements_to_execute.size())
+		ArgodeSystem.log_critical("🎯 IF_DEBUG: Condition TRUE, executing if block (%d statements)" % statements_to_execute.size())
 	else:
 		# elif/else条件をチェック
 		statements_to_execute = _find_matching_elif_else_block(current_statement)

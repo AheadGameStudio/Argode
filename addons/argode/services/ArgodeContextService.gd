@@ -34,6 +34,9 @@ func push_context(statements: Array, context_name: String = "", context_data: Di
 		context_stack.size()
 	])
 	
+	# 特定キーワードでのログ出力（フィルタリング用）
+	ArgodeSystem.log_critical("🎯 CONTEXT_DEBUG: PUSH %s depth=%d" % [context_name, context_stack.size()])
+	
 	return true
 
 ## コンテキストスタックから復帰
@@ -50,6 +53,9 @@ func pop_context() -> Dictionary:
 		context.get("context_name", "unnamed"),
 		context_stack.size()
 	])
+	
+	# 特定キーワードでのログ出力（フィルタリング用）
+	ArgodeSystem.log_critical("🎯 CONTEXT_DEBUG: POP %s depth=%d" % [context.get("context_name", "unnamed"), context_stack.size()])
 	
 	return context
 

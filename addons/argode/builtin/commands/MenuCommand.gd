@@ -21,6 +21,10 @@ func validate_args(args: Dictionary) -> bool:
 func execute_core(args: Dictionary) -> void:
 	log_info("MenuCommand: 選択肢メニューを表示開始")
 	
+	# 🔧 状態変数リセット（複数回実行対応）
+	is_waiting_for_choice = false
+	selected_choice_index = -1
+	
 	# StatementManagerから現在のステートメント情報を取得
 	var statement_manager = ArgodeSystem.StatementManager
 	if not statement_manager:
@@ -30,19 +34,63 @@ func execute_core(args: Dictionary) -> void:
 	# StatementManagerの実行を一時停止
 	statement_manager.set_waiting_for_command(true, "MenuCommand choice dialog")
 	
-	# 実行開始時に現在のステートメント情報を保存
-	current_menu_statement = statement_manager.get_current_statement()
+	# 実行開始時に現在のステートメント情報を保存（Call先コンテキスト対応強化）
+	var execution_service = statement_manager.execution_service
+	var context_service = statement_manager.context_service
+	
+	current_menu_statement = {}
+	
+	# 最優先: argsに含まれる現在実行中のstatement（最も正確）
+	if args.has("_current_statement") and args["_current_statement"] is Dictionary:
+		current_menu_statement = args["_current_statement"]
+		ArgodeSystem.log_critical("🎯 ARGS_STATEMENT_FIX: Using _current_statement from args")
+	# Call先（子コンテキスト）での実行の場合の特別処理
+	elif context_service and context_service.get_context_depth() > 0:
+		# 🚨 修正: 子コンテキスト実行中でもexecuting_statementを優先使用
+		if execution_service and execution_service.executing_statement:
+			current_menu_statement = execution_service.executing_statement
+			ArgodeSystem.log_critical("🎯 CALL_CONTEXT_FIX: Using executing_statement for depth=%d (CORRECTED)" % context_service.get_context_depth())
+		else:
+			current_menu_statement = statement_manager.get_current_statement()
+			ArgodeSystem.log_critical("🎯 CALL_CONTEXT_FALLBACK: Using get_current_statement() for depth=%d" % context_service.get_context_depth())
+	elif execution_service and execution_service.executing_statement:
+		# 通常の実行（depth=0）ではexecuting_statementを使用
+		current_menu_statement = execution_service.executing_statement
+		ArgodeSystem.log_critical("🎯 NORMAL_CONTEXT: Using executing_statement for depth=0")
+	else:
+		# フォールバック
+		current_menu_statement = statement_manager.get_current_statement()
+		ArgodeSystem.log_critical("🎯 FALLBACK_CONTEXT: Using get_current_statement() as fallback")
+	
 	if current_menu_statement.is_empty():
 		log_error("Could not get current statement from StatementManager")
 		statement_manager.set_waiting_for_command(false, "MenuCommand failed")
 		return
 	
-	# ステートメント構造の検証とデバッグ出力
-	log_info("🔍 Statement debug - Type: %s, Name: %s, Keys: %s" % [
-		current_menu_statement.get("type", "unknown"),
-		current_menu_statement.get("name", "unknown"), 
-		str(current_menu_statement.keys())
+	# デバッグログ出力（Call先でのMenu実行を明確に識別）
+	var context_depth = context_service.get_context_depth() if context_service else 0
+	var exec_stmt = execution_service.executing_statement if execution_service else {}
+	var get_stmt = statement_manager.get_current_statement()
+	var context_type = "MAIN_MENU" if context_depth == 0 else "CALL_MENU"
+	
+	# 🚨 詳細デバッグ: 両方のステートメント情報を比較
+	ArgodeSystem.log_critical("🎯 MENU_DEBUG: %s depth=%d" % [context_type, context_depth])
+	ArgodeSystem.log_critical("🎯 MENU_DEBUG: executing_stmt name=%s type=%s" % [
+		exec_stmt.get("name", "unknown") if exec_stmt else "none",
+		exec_stmt.get("type", "unknown") if exec_stmt else "none"
 	])
+	ArgodeSystem.log_critical("🎯 MENU_DEBUG: get_current_stmt name=%s type=%s" % [
+		get_stmt.get("name", "unknown"),
+		get_stmt.get("type", "unknown")
+	])
+	ArgodeSystem.log_critical("🎯 MENU_DEBUG: selected_stmt name=%s type=%s" % [
+		current_menu_statement.get("name", "unknown"),
+		current_menu_statement.get("type", "unknown")
+	])
+	
+	# Call先でのMenu実行を特別にログ出力
+	if context_depth > 0:
+		ArgodeSystem.log_critical("🎯 CALL_MENU_EXECUTION: Menu executing in Call context depth=%d" % context_depth)
 	
 	# menuコマンドの検証
 	if current_menu_statement.get("type") != "command" or current_menu_statement.get("name") != "menu":
@@ -89,7 +137,6 @@ func execute_core(args: Dictionary) -> void:
 		# 選択肢のステートメントをContextServiceにプッシュして実行
 		if choice_statements.size() > 0:
 			log_info("🎯 Pushing choice statements to ContextService...")
-			var context_service = ArgodeSystem.StatementManager.context_service
 			if context_service:
 				context_service.push_context(choice_statements, "menu_choice_" + str(selected_choice_index))
 				log_info("✅ Choice statements pushed to context")

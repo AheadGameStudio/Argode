@@ -26,26 +26,28 @@ func execute_core(args: Dictionary) -> void:
 	if label_name == null:
 		return
 	
-	log_info("Jumping to label: %s" % label_name)
+	ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Jumping to label: %s" % label_name)
 	
 	# ラベルの存在確認
 	var label_info = ArgodeSystem.LabelRegistry.get_label(label_name)
 	if label_info.is_empty():
+		ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Label '%s' NOT FOUND" % label_name)
 		log_error("ラベル '%s' が見つかりません" % label_name)
 		return
 	
 	var file_path = label_info.get("path", "")
 	var label_line = label_info.get("line", 0)
 	
-	log_info("Label found: %s at %s (line %d)" % [label_name, file_path, label_line])
+	ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Label found: %s at %s (line %d)" % [label_name, file_path, label_line])
 	
 	# StatementManagerの汎用インターフェースを使用してジャンプを実行
 	var statement_manager = ArgodeSystem.StatementManager
 	if not statement_manager:
+		ArgodeSystem.log_critical("🎯 JUMP_DEBUG: StatementManager not found")
 		log_error("StatementManager not found")
 		return
 	
-	log_info("🔄 JumpCommand: Deferring jump execution to avoid context stack issues")
+	ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Executing jump to %s" % label_name)
 	
 	# 次のフレームでジャンプを実行（コンテキストスタックの問題を回避）
 	statement_manager.call_deferred("handle_command_result", {
@@ -55,4 +57,4 @@ func execute_core(args: Dictionary) -> void:
 		"line": label_line
 	})
 	
-	log_info("🔄 JumpCommand: Jump request deferred to StatementManager")
+	ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Jump request deferred to StatementManager")
