@@ -40,6 +40,7 @@ func start_typing(text: String, speed: float = 0.05):
 	display_text = ""
 	current_index = 0
 	is_typing = true
+	ArgodeSystem.log_workflow("🔧 TypewriterService: is_typing set to TRUE (start_typing)")
 	is_paused = false
 	was_skipped = false  # スキップフラグをリセット
 	pending_inline_waits.clear()  # インライン待機をクリア
@@ -67,6 +68,7 @@ func complete_typing():
 		display_text = current_text
 		current_index = current_text.length()
 		is_typing = false
+		ArgodeSystem.log_workflow("🔧 TypewriterService: is_typing set to FALSE (complete_typing - SKIPPED)")
 		is_paused = false
 		was_skipped = true  # スキップフラグを設定
 		
@@ -85,6 +87,7 @@ func complete_typing():
 ## タイプライター処理を停止
 func stop_typing():
 	is_typing = false
+	ArgodeSystem.log_workflow("🔧 TypewriterService: is_typing set to FALSE (stop_typing)")
 	is_paused = false
 	was_skipped = false  # スキップフラグをリセット
 	display_text = ""
@@ -132,6 +135,7 @@ func _process_typing():
 	# タイプライター完了
 	if is_typing and current_index >= current_text.length():
 		is_typing = false
+		ArgodeSystem.log_workflow("🔧 TypewriterService: is_typing set to FALSE (natural completion)")
 		is_paused = false
 		# was_skipped はそのまま（自然完了の場合は false のまま）
 		
@@ -179,6 +183,7 @@ func set_callbacks(character_callback: Callable, finish_callback: Callable):
 
 ## 現在の状態を取得
 func is_currently_typing() -> bool:
+	ArgodeSystem.log_workflow("🔍 TypewriterService.is_currently_typing() → %s" % is_typing)
 	return is_typing
 
 func was_typewriter_skipped() -> bool:

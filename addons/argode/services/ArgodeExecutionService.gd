@@ -103,6 +103,7 @@ func is_running() -> bool:
 
 ## 入力待ち状態を設定
 func set_waiting_for_input(waiting: bool):
+	ArgodeSystem.log_workflow("🔧 ExecutionService.set_waiting_for_input: %s → %s" % [is_waiting_for_input, waiting])
 	is_waiting_for_input = waiting
 	if waiting:
 		# 🔍 DEBUG: 入力待ち状態詳細（通常は非表示）

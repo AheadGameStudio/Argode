@@ -11,6 +11,7 @@ var call_stack_service: ArgodeCallStackService
 var context_service: ArgodeContextService
 var input_handler_service: ArgodeInputHandlerService
 var ui_control_service: ArgodeUIControlService
+var definition_service: RefCounted  # 動的読み込みのため一時的にRefCountedとして宣言
 
 # RGDパーサー・システム参照
 var rgd_parser: ArgodeRGDParser
@@ -59,10 +60,14 @@ func _initialize_services():
 	input_handler_service = ArgodeInputHandlerService.new()
 	ui_control_service = ArgodeUIControlService.new()
 	
+	# DefinitionServiceを動的読み込み
+	var DefinitionServiceClass = load("res://addons/argode/services/ArgodeDefinitionService.gd")
+	definition_service = DefinitionServiceClass.new()
+	
 	# InputHandlerServiceとの連携は遅延実行（Controllerの初期化完了を待つ）
 	call_deferred("_connect_controller_services")
 	
-	ArgodeSystem.log_debug_detail("All internal services initialized")
+	ArgodeSystem.log_debug_detail("All internal services initialized (including DefinitionService)")
 
 ## ArgodeControllerとの連携を設定（遅延実行）
 func _connect_controller_services():
@@ -397,19 +402,71 @@ func _handle_statements_via_services(result_data: Dictionary):
 func _on_valid_input_received(action_name: String):
 	ArgodeSystem.log_workflow("🎮 StatementManager received input: %s" % action_name)
 	
+	# 【デバッグ】現在の状態を詳細ログ出力
+	# UIControlService経由でメッセージレンダラーを取得
+	var current_message_renderer = null
+	if ui_control_service and ui_control_service.has_method("get_message_renderer"):
+		current_message_renderer = ui_control_service.get_message_renderer()
+	elif ui_control_service and "message_renderer" in ui_control_service:
+		current_message_renderer = ui_control_service.message_renderer
+	
+	var debug_info = {
+		"execution_service_waiting": execution_service.is_waiting_for_input if execution_service else "null",
+		"message_renderer_active": current_message_renderer.is_typewriter_active() if current_message_renderer and current_message_renderer.has_method("is_typewriter_active") else "null",
+		"ui_control_service_active": ui_control_service.is_typewriter_active() if ui_control_service and ui_control_service.has_method("is_typewriter_active") else "null"
+	}
+	ArgodeSystem.log_workflow("🔍 Input Debug State: %s" % str(debug_info))
+	
 	match action_name:
 		"argode_advance", "argode_skip":
-			# タイプライター効果が進行中かチェック
+			# 詳細なタイプライター状態判定ログ追加
+			ArgodeSystem.log_workflow("🔍 === Detailed typewriter status check ===")
+			
+			# タイプライター効果が進行中かチェック（複数ソースから確認）
 			var is_typewriter_active = false
-			if message_renderer and message_renderer.has_method("is_typewriter_active"):
-				is_typewriter_active = message_renderer.is_typewriter_active()
+			
+			# Method 1: UIControlService経由でメッセージレンダラーから確認
+			if current_message_renderer and current_message_renderer.has_method("is_typewriter_active"):
+				is_typewriter_active = current_message_renderer.is_typewriter_active()
+				ArgodeSystem.log_workflow("🔍 UIControlService.MessageRenderer.is_typewriter_active(): %s" % is_typewriter_active)
+			else:
+				ArgodeSystem.log_workflow("🔍 UIControlService.MessageRenderer: null or no method")
+			
+			# Method 2: UIControlService直接確認（フォールバック）
+			if not is_typewriter_active and ui_control_service and ui_control_service.has_method("is_typewriter_active"):
+				is_typewriter_active = ui_control_service.is_typewriter_active()
+				ArgodeSystem.log_workflow("🔍 UIControlService.is_typewriter_active(): %s" % is_typewriter_active)
+			else:
+				ArgodeSystem.log_workflow("🔍 UIControlService: %s" % ("checked already" if is_typewriter_active else "null or no method"))
+			
+			ArgodeSystem.log_workflow("🎮 Typewriter status check: active=%s" % is_typewriter_active)
 			
 			if is_typewriter_active:
 				# タイプライター進行中の場合：全文表示に切り替え
 				ArgodeSystem.log_workflow("🎮 Typewriter active - completing typewriter effect")
-				if message_renderer.has_method("complete_typewriter"):
-					message_renderer.complete_typewriter()
-				# ここでは入力待ち状態は変更しない（タイプライター完了後に入力待ちになる）
+				ArgodeSystem.log_workflow("🔍 Pre-complete state: waiting_for_input=%s" % (execution_service.is_waiting_for_input if execution_service else "null"))
+				
+				if current_message_renderer and current_message_renderer.has_method("complete_typewriter"):
+					current_message_renderer.complete_typewriter()
+				elif ui_control_service and ui_control_service.has_method("complete_typewriter"):
+					ui_control_service.complete_typewriter()
+				
+				ArgodeSystem.log_workflow("🔍 Post-complete state: waiting_for_input=%s" % (execution_service.is_waiting_for_input if execution_service else "null"))
+				
+				# タイプライター完了後、明示的に入力待ち状態を設定
+				# フレーム待機してコールバック処理を確実に実行
+				ArgodeSystem.log_workflow("🔍 Waiting for frame to ensure callback completion...")
+				await Engine.get_main_loop().process_frame
+				
+				ArgodeSystem.log_workflow("🔍 After frame wait: waiting_for_input=%s" % (execution_service.is_waiting_for_input if execution_service else "null"))
+				
+				# ExecutionServiceの状態を確認し、必要に応じて入力待ち状態を設定
+				if execution_service and not execution_service.is_waiting_for_input:
+					execution_service.set_waiting_for_input(true)
+					ArgodeSystem.log_workflow("🎮 Set waiting for input after typewriter completion")
+				
+				# ここでreturnして、この入力イベントは次のステートメント進行には使わない
+				ArgodeSystem.log_workflow("🎮 Typewriter completion handled - consuming this input event")
 				return
 			
 			# タイプライターが非アクティブの場合：次のステートメントに進む
@@ -500,14 +557,20 @@ func _create_message_renderer(window: ArgodeMessageWindow) -> ArgodeMessageRende
 ## メッセージレンダリング完了時のコールバック
 func _on_message_rendering_completed():
 	"""メッセージレンダリング完了時に呼ばれるコールバック"""
-	ArgodeSystem.log("✅ Message rendering completed - waiting for user input", ArgodeSystem.LOG_LEVEL.WORKFLOW)
+	ArgodeSystem.log_workflow("✅ StatementManager._on_message_rendering_completed called")
+	ArgodeSystem.log_workflow("🔍 Current execution state: waiting_for_input=%s" % (execution_service.is_waiting_for_input if execution_service else "null"))
 	
-	# ExecutionServiceに入力待機状態を設定
+	# ExecutionServiceに入力待機状態を設定（重複設定を防ぐ）
 	if execution_service:
-		execution_service.set_waiting_for_input(true)
-		ArgodeSystem.log("⏳ Set waiting for user input to continue", ArgodeSystem.LOG_LEVEL.DEBUG)
+		if not execution_service.is_waiting_for_input:
+			execution_service.set_waiting_for_input(true)
+			ArgodeSystem.log_workflow("⏳ Set waiting for user input to continue")
+		else:
+			ArgodeSystem.log_workflow("ℹ️ Already waiting for user input")
 	else:
-		ArgodeSystem.log("❌ ExecutionService not available for input waiting", ArgodeSystem.LOG_LEVEL.CRITICAL)
+		ArgodeSystem.log_workflow("❌ ExecutionService not available for input waiting")
+	
+	ArgodeSystem.log_workflow("✅ Message rendering completion handling finished")
 
 func _display_message_via_window(text: String, character: String):
 	"""
@@ -581,6 +644,7 @@ func get_execution_state() -> Dictionary:
 func execute_definition_statements(statements: Array) -> bool:
 	"""
 	Execute definition statements during system initialization.
+	Delegates to DefinitionService for specialized handling.
 	
 	Args:
 		statements: Array of definition statements to execute
@@ -588,11 +652,23 @@ func execute_definition_statements(statements: Array) -> bool:
 	Returns:
 		bool: True if all statements executed successfully
 	"""
+	if not definition_service:
+		ArgodeSystem.log_critical("DefinitionService not available - using fallback execution")
+		return await _execute_definition_statements_fallback(statements)
+	
+	# DefinitionServiceに委譲
+	return await definition_service.execute_definition_statements(statements, self)
+
+## フォールバック: DefinitionService不使用時の定義実行
+func _execute_definition_statements_fallback(statements: Array) -> bool:
+	"""
+	Fallback execution when DefinitionService is not available.
+	"""
 	if statements.is_empty():
-		ArgodeSystem.log_workflow("No definition statements to execute")
+		ArgodeSystem.log_workflow("No definition statements to execute (fallback)")
 		return true
 	
-	ArgodeSystem.log_workflow("Executing %d definition statements..." % statements.size())
+	ArgodeSystem.log_workflow("Executing %d definition statements (fallback)..." % statements.size())
 	# 実行状態を設定
 	is_executing = true
 	is_paused = false
@@ -601,12 +677,12 @@ func execute_definition_statements(statements: Array) -> bool:
 	
 	for i in range(statements.size()):
 		var statement = statements[i]
-		ArgodeSystem.log_debug_detail("Executing definition statement %d: %s" % [i + 1, statement.get("command", "unknown")])
+		ArgodeSystem.log_debug_detail("Executing definition statement %d (fallback): %s" % [i + 1, statement.get("command", "unknown")])
 		
-		# 直接コマンド実行（定義文は初期化時のみなのでservice層をバイパス）
+		# 直接コマンド実行
 		var command_result = await _execute_definition_statement_fallback(statement)
 		if not command_result:
-			ArgodeSystem.log_critical("Definition statement %d failed" % [i + 1])
+			ArgodeSystem.log_critical("Definition statement %d failed (fallback)" % [i + 1])
 			success = false
 	
 	# 実行状態をリセット
@@ -614,9 +690,9 @@ func execute_definition_statements(statements: Array) -> bool:
 	is_paused = false
 	
 	if success:
-		ArgodeSystem.log_workflow("All definition statements executed successfully")
+		ArgodeSystem.log_workflow("All definition statements executed successfully (fallback)")
 	else:
-		ArgodeSystem.log_critical("Some definition statements failed during execution")
+		ArgodeSystem.log_critical("Some definition statements failed during execution (fallback)")
 	
 	return success
 

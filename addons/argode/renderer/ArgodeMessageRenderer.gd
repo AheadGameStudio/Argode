@@ -193,21 +193,23 @@ func _on_character_typed(character: String, current_display: String):
 
 ## タイプライター効果完了時のコールバック
 func _on_typing_finished(final_text: String):
-	ArgodeSystem.log("✅ Typewriter effect completed: %s" % final_text.substr(0, 30) + ("..." if final_text.length() > 30 else ""))
+	ArgodeSystem.log_workflow("✅ MessageRenderer._on_typing_finished called: %s" % final_text.substr(0, 30) + ("..." if final_text.length() > 30 else ""))
+	ArgodeSystem.log_workflow("🔍 Typewriter skipped: %s" % (typewriter_service.was_typewriter_skipped() if typewriter_service else "null"))
 	
 	# アニメーションコーディネーターに完了を通知
 	if animation_coordinator:
 		# スキップされた場合のみアニメーションも強制完了
 		if typewriter_service and typewriter_service.was_typewriter_skipped():
-			ArgodeSystem.log("⏭️ Typewriter was skipped - forcing animation completion")
+			ArgodeSystem.log_workflow("⏭️ Typewriter was skipped - forcing animation completion")
 			animation_coordinator.skip_all_animations()
 			_notify_message_completion()
 		else:
 			# 自然完了の場合はアニメーション完了を待つ
-			ArgodeSystem.log("⏳ Typewriter completed naturally - waiting for animations...")
+			ArgodeSystem.log_workflow("⏳ Typewriter completed naturally - waiting for animations...")
 			animation_coordinator.wait_for_animations_completion()
 	else:
 		# アニメーションコーディネーターが無効な場合は即座に完了通知
+		ArgodeSystem.log_workflow("⚠️ No animation coordinator - immediate completion notification")
 		ArgodeSystem.log("🔄 No animation coordinator, completing immediately")
 		_notify_message_completion()
 
@@ -219,11 +221,14 @@ func _on_animation_completed():
 ## メッセージ表示完了を通知
 func _notify_message_completion():
 	# StatementManagerに完了を通知
+	ArgodeSystem.log_workflow("📢 MessageRenderer._notify_message_completion called")
+	ArgodeSystem.log_workflow("🔍 Callback valid: %s" % on_typewriter_completed.is_valid())
 	if on_typewriter_completed.is_valid():
-		ArgodeSystem.log("📢 Notifying typewriter completion to StatementManager")
+		ArgodeSystem.log_workflow("📢 Calling typewriter completion callback to StatementManager")
 		on_typewriter_completed.call()
+		ArgodeSystem.log_workflow("📢 Typewriter completion callback executed")
 	else:
-		ArgodeSystem.log("⚠️ Typewriter completion callback not set")
+		ArgodeSystem.log_workflow("⚠️ Typewriter completion callback not set")
 
 ## メッセージをレンダリング
 func render_message(character_name: String, text: String):
@@ -354,9 +359,13 @@ func clear_message():
 
 ## タイプライター効果が動作中かチェック
 func is_typewriter_active() -> bool:
+	var result = false
 	if typewriter_service:
-		return typewriter_service.is_currently_typing()
-	return false
+		result = typewriter_service.is_currently_typing()
+		ArgodeSystem.log_workflow("🔍 MessageRenderer.is_typewriter_active() → %s (from TypewriterService)" % result)
+	else:
+		ArgodeSystem.log_workflow("🔍 MessageRenderer.is_typewriter_active() → false (no TypewriterService)")
+	return result
 
 ## タイプライター効果を即座に完了
 func complete_typewriter():
