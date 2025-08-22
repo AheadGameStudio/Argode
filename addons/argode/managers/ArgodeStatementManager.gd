@@ -414,7 +414,10 @@ func _execute_command_via_services(command_name: String, args: Array):
 func _handle_text_statement(statement: Dictionary):
 	var text = statement.get("content", "")
 	var character = statement.get("character", "")
-	show_message(text, character)
+	
+	# Phase 1 Step 1-1B: UIControlServiceへの段階的移行開始
+	# まずは委譲メソッドを試し、フォールバックで従来方式
+	show_message_via_service(text, character)
 	# 入力待ち状態は show_message → message_renderer の完了コールバックで設定される
 
 func _convert_args_to_dict(args: Array) -> Dictionary:
@@ -863,3 +866,13 @@ func ensure_ui_message_system_ready() -> void:
 		ui_control_service.ensure_message_system_ready()
 	else:
 		ArgodeSystem.log_critical("🚨 UIControlService not available for message system initialization")
+
+## UIControlServiceのメッセージ表示を委譲
+func show_message_via_service(text: String, character: String = "") -> void:
+	"""UIControlServiceでメッセージを表示（新しい委譲メソッド）"""
+	if ui_control_service:
+		ui_control_service.show_message(text, character)
+	else:
+		ArgodeSystem.log_critical("🚨 UIControlService not available for message display")
+		# フォールバック: 既存のshow_messageを使用
+		show_message(text, character)

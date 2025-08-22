@@ -31,9 +31,9 @@ func execute_core(args: Dictionary) -> void:
 	
 	# StatementManagerを通じてメッセージを表示
 	var statement_manager = args.get("statement_manager")
-	if statement_manager and statement_manager.has_method("show_message"):
-		log_info("SayCommand calling show_message")
-		statement_manager.show_message(message_text, character_name)
+	if statement_manager and statement_manager.has_method("show_message_via_service"):
+		log_info("SayCommand calling show_message_via_service (Phase 1 Step 1-1B)")
+		statement_manager.show_message_via_service(message_text, character_name)
 		log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
 		
 		# ExecutionServiceの入力待ち状態を設定
@@ -51,5 +51,19 @@ func execute_core(args: Dictionary) -> void:
 				execution_service.set_waiting_for_input(true)
 				log_info("SayCommand: 入力待ち状態に設定しました")
 		
+	elif statement_manager and statement_manager.has_method("show_message"):
+		log_info("SayCommand calling show_message (fallback)")
+		statement_manager.show_message(message_text, character_name)
+		log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
+		
+		# ExecutionServiceの入力待ち状態を設定（フォールバック時も同様処理）
+		var execution_service = statement_manager.execution_service
+		if execution_service:
+			var is_auto_play = ArgodeSystem.is_auto_play_mode()
+			if is_auto_play:
+				await Engine.get_main_loop().create_timer(0.1).timeout
+			else:
+				execution_service.set_waiting_for_input(true)
+		
 	else:
-		log_error("StatementManagerが取得できないか、show_messageメソッドがありません")
+		log_error("StatementManagerのメッセージ表示メソッドが見つかりません")

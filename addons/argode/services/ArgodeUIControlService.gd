@@ -46,25 +46,65 @@ func ensure_message_system_ready() -> void:
 
 func _create_default_message_window() -> void:
 	"""デフォルトのメッセージウィンドウを作成"""
-	ArgodeSystem.log_debug("🎮 UIControlService: デフォルトメッセージウィンドウ作成")
+	ArgodeSystem.log_debug_detail("🎮 UIControlService: デフォルトメッセージウィンドウ作成")
 	# 既存のメッセージウィンドウがあるかUI Managerで確認
 	if ui_manager and ui_manager.has_method("get_message_window"):
 		message_window = ui_manager.get_message_window()
 	if not message_window:
-		ArgodeSystem.log_debug("🎮 UIControlService: UIManagerからメッセージウィンドウを取得できませんでした")
+		ArgodeSystem.log_debug_detail("🎮 UIControlService: UIManagerからメッセージウィンドウを取得できませんでした")
 
 func _create_message_renderer() -> void:
 	"""メッセージレンダラーを作成"""
-	ArgodeSystem.log_debug("🎮 UIControlService: メッセージレンダラー作成")
-	message_renderer = ArgodeMessageRenderer.new()
-	# メッセージウィンドウの設定は後で行う
+	ArgodeSystem.log_debug_detail("🎮 UIControlService: メッセージレンダラー作成")
+	message_renderer = create_message_renderer()
+	# メッセージウィンドウの設定は create_message_renderer() 内で実行
 
 func _create_inline_command_manager() -> void:
 	"""インラインコマンドマネージャーを作成"""
-	ArgodeSystem.log_debug("🎮 UIControlService: インラインコマンドマネージャー作成")
+	ArgodeSystem.log_debug_detail("🎮 UIControlService: インラインコマンドマネージャー作成")
 	inline_command_manager = ArgodeInlineCommandManager.new()
 
-## ArgodeUIManagerとの連携設定 =========================
+## メッセージ表示機能（StatementManagerから移譲）================
+
+func show_message(text: String, character: String = "") -> void:
+	"""メッセージを表示する（StatementManagerから移譲された機能）"""
+	ensure_message_system_ready()
+	
+	ArgodeSystem.log_debug_detail("🎮 UIControlService: show_message - renderer=%s, window=%s" % [message_renderer, message_window])
+	
+	if message_renderer and inline_command_manager:
+		# InlineCommandManagerでテキストを前処理（変数展開・タグ処理）
+		var processed_result = inline_command_manager.process_text(text)
+		var display_text = processed_result.get("display_text", text)
+		var position_commands = processed_result.get("position_commands", [])
+		
+		# 位置ベースコマンド付きメッセージレンダリング
+		message_renderer.render_message_with_position_commands(character, display_text, position_commands, inline_command_manager)
+		ArgodeSystem.log_workflow("📺 Message displayed via UIControlService: %s: %s" % [character, display_text])
+		
+		# レンダリング完了シグナルを送信
+		message_rendering_completed.emit()
+		
+	else:
+		ArgodeSystem.log_critical("🚨 UIControlService: メッセージシステムの準備ができていません")
+
+func create_message_renderer() -> ArgodeMessageRenderer:
+	"""メッセージレンダラーを作成"""
+	if not message_window:
+		ArgodeSystem.log_critical("🚨 UIControlService: メッセージウィンドウが必要です")
+		return null
+	
+	# ArgodeMessageRendererクラスを読み込み
+	var renderer = ArgodeMessageRenderer.new()
+	if renderer and message_window:
+		renderer.set_message_window(message_window)
+		ArgodeSystem.log_debug_detail("🎮 UIControlService: メッセージレンダラー作成完了")
+		return renderer
+	else:
+		ArgodeSystem.log_critical("🚨 UIControlService: メッセージレンダラー作成失敗")
+		return null
+
+## タイプライター制御 ==================================
 func _setup_ui_manager_connection():
 	ui_manager = ArgodeSystem.UIManager
 	
