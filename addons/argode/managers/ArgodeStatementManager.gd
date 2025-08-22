@@ -106,7 +106,7 @@ func start_execution() -> bool:
 		return false
 	_ensure_message_system_ready()
 	ArgodeSystem.log_workflow("Scenario execution started")
-	_execute_main_loop()
+	await execution_service.execute_main_loop(self)  # ExecutionServiceに委譲
 	return true
 
 func play_from_label(label_name: String) -> bool:
@@ -144,7 +144,7 @@ func play_from_label(label_name: String) -> bool:
 		ArgodeSystem.log_critical("Failed to start execution session for label: %s" % label_name)
 		return false
 	
-	await _execute_main_loop()
+	await execution_service.execute_main_loop(self)  # ExecutionServiceに委譲
 	
 	return true
 
@@ -207,8 +207,8 @@ func continue_execution():
 		return
 	
 	ArgodeSystem.log("▶️ StatementManager: Executing next statement")
-	# メインループを再開
-	_execute_main_loop()
+	# メインループを再開（ExecutionServiceに委譲）
+	await execution_service.execute_main_loop(self)
 
 func get_current_statement() -> Dictionary:
 	return execution_service.get_current_statement()
@@ -298,118 +298,27 @@ func _execute_child_statements(statements: Array):
 
 # === 内部実装層 ===
 
-func _execute_main_loop():
-	ArgodeSystem.log_workflow("🔧 Main execution loop started")
-	while execution_service.is_running():
-		ArgodeSystem.log_debug_detail("🔍 Loop: is_running=%s, can_execute=%s" % [execution_service.is_running(), execution_service.can_execute()])
-		
-		if not execution_service.can_execute():
-			await Engine.get_main_loop().process_frame
-			continue
-			
-		var statement = execution_service.get_current_statement()
-		if statement.is_empty():
-			ArgodeSystem.log_workflow("🔧 Main loop: no more statements")
-			break
-			
-		ArgodeSystem.log_workflow("🔧 Executing statement %d: %s" % [execution_service.current_statement_index, statement.get("name", "unknown")])
-		await _execute_single_statement(statement)
-		
-		# 入力待ち状態の場合は、入力を待って次に進む
-		if execution_service.is_waiting_for_input:
-			ArgodeSystem.log_workflow("🔧 Waiting for user input to continue...")
-			while execution_service.is_waiting_for_input:
-				await Engine.get_main_loop().process_frame
-			ArgodeSystem.log_workflow("🔧 Input received, continuing execution...")
-			ArgodeSystem.log_workflow("🔧 Current statement index after input: %d" % execution_service.current_statement_index)
-		
-		# コマンド待ち状態の場合は、コマンド完了を待って次に進む
-		if execution_service.is_waiting_for_command:
-			ArgodeSystem.log_workflow("🔧 Waiting for command to complete...")
-			while execution_service.is_waiting_for_command:
-				await Engine.get_main_loop().process_frame
-			ArgodeSystem.log_workflow("🔧 Command completed, continuing execution...")
-		
-		# ContextServiceで子コンテキストがプッシュされているかチェック
-		var executed_child_context = false
-		if not context_service.is_context_stack_empty():
-			var child_context = context_service.get_current_context()
-			var child_statements = child_context.get("statements", [])
-			if not child_statements.is_empty():
-				ArgodeSystem.log_workflow("🔧 Executing child context statements (%d statements)..." % child_statements.size())
-				# 子ステートメントを直接実行
-				for child_statement in child_statements:
-					ArgodeSystem.log_workflow("🔧 Executing child statement: %s" % child_statement.get("name", "unknown"))
-					await _execute_single_statement(child_statement)
-				ArgodeSystem.log_workflow("🔧 Child context execution completed")
-				# コンテキストをポップ
-				context_service.pop_context()
-				executed_child_context = true
-		
-		# 子コンテキストを実行した場合は、ステートメントを進めて次のループへ
-		if executed_child_context:
-			# 子コンテキスト実行後はメインステートメントを次に進める
-			if not execution_service.advance_to_next_statement():
-				ArgodeSystem.log_workflow("🔧 Main loop: cannot advance after child context")
-				break
-			# ExecutionServiceの状態をチェック
-			ArgodeSystem.log_workflow("🎯 After child context: is_running=%s, is_executing=%s, is_paused=%s" % [execution_service.is_running(), execution_service.is_executing, execution_service.is_paused])
-			# フレーム待機を追加して無限ループを防止
-			await Engine.get_main_loop().process_frame
-			continue
-		
-		if not execution_service.advance_to_next_statement():
-			ArgodeSystem.log_workflow("🔧 Main loop: cannot advance to next statement")
-			break
-		
-		ArgodeSystem.log_workflow("🔧 Advanced to next statement: index=%d" % execution_service.current_statement_index)
-		
-		# フレーム待機を追加して無限ループを防止
-		await Engine.get_main_loop().process_frame
+## 子コンテキスト実行処理（ExecutionServiceから呼ばれるヘルパー）
+func _handle_child_context_execution() -> bool:
+	"""子コンテキスト実行を処理し、実行されたかを返す"""
+	var executed_child_context = false
 	
-	ArgodeSystem.log_workflow("🔧 Main execution loop ended")
-
-func _execute_single_statement(statement: Dictionary):
-	var statement_type = statement.get("type", "")
-	var command_name = statement.get("name", "")
-	var args = statement.get("args", [])
+	# ContextServiceで子コンテキストがプッシュされているかチェック
+	if not context_service.is_context_stack_empty():
+		var child_context = context_service.get_current_context()
+		var child_statements = child_context.get("statements", [])
+		if not child_statements.is_empty():
+			ArgodeSystem.log_workflow("🔧 Executing child context statements (%d statements)..." % child_statements.size())
+			# 子ステートメントを直接実行
+			for child_statement in child_statements:
+				ArgodeSystem.log_workflow("🔧 Executing child statement: %s" % child_statement.get("name", "unknown"))
+				await execution_service.execute_single_statement(child_statement, self)
+			ArgodeSystem.log_workflow("🔧 Child context execution completed")
+			# コンテキストをポップ
+			context_service.pop_context()
+			executed_child_context = true
 	
-	match statement_type:
-		"command": await _execute_command_via_services(command_name, args)
-		"say": 
-			await _execute_command_via_services(command_name, args)
-			# sayコマンドの場合は入力待ち状態になるまで待機
-			if execution_service.is_waiting_for_input:
-				ArgodeSystem.log_workflow("🔧 Say command set input waiting - waiting for user input...")
-		"text": await _handle_text_statement(statement)
-
-func _execute_command_via_services(command_name: String, args: Array):
-	ArgodeSystem.log_workflow("🔍 Executing command: %s with args: %s" % [command_name, str(args)])
-	
-	var command_registry = ArgodeSystem.CommandRegistry
-	if not command_registry or not command_registry.has_command(command_name):
-		ArgodeSystem.log_critical("Command not found: %s" % command_name)
-		return
-	
-	var command_instance = command_registry.get_command(command_name)
-	ArgodeSystem.log_workflow("🔍 Retrieved command instance: %s" % str(command_instance))
-	
-	if command_instance and not command_instance.is_empty():
-		var actual_instance = command_instance.get("instance")
-		ArgodeSystem.log_workflow("🔍 Actual instance: %s" % str(actual_instance))
-		
-		if actual_instance:
-			execution_service.executing_statement = execution_service.get_current_statement()
-			var args_dict = _convert_args_to_dict(args)
-			args_dict["statement_manager"] = self
-			ArgodeSystem.log_workflow("🔍 Calling execute with args: %s" % str(args_dict))
-			await actual_instance.execute(args_dict)
-			if actual_instance.has_method("is_async") and actual_instance.is_async():
-				await actual_instance.execution_completed
-		else:
-			ArgodeSystem.log_critical("Command instance not found in registry data: %s" % command_name)
-	else:
-		ArgodeSystem.log_critical("Command registry data not found: %s" % command_name)
+	return executed_child_context
 
 func _handle_text_statement(statement: Dictionary):
 	var text = statement.get("content", "")
