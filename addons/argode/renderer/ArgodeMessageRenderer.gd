@@ -6,7 +6,7 @@ class_name ArgodeMessageRenderer
 
 # メッセージウィンドウの参照
 var message_window: ArgodeMessageWindow = null
-var message_canvas: ArgodeMessageCanvas = null
+var message_canvas: Control = null
 
 # 専門レンダラー
 var text_renderer: ArgodeTextRenderer = null
@@ -119,12 +119,20 @@ func _find_message_canvas():
 	message_canvas = message_window.get_node_or_null("%MessageCanvas")
 	
 	if not message_canvas:
+		# ノード名で直接検索
+		message_canvas = message_window.get_node_or_null("MessageContainer/MessageCanvas")
+	
+	if not message_canvas:
 		# クラス名で走査
 		message_canvas = _find_node_by_class(message_window, "ArgodeMessageCanvas")
 	
 	if message_canvas:
-		# 描画コールバックを設定
-		message_canvas.set_draw_callback(_draw_message_content)
+		# ArgodeMessageCanvasかどうかを確認
+		if message_canvas.has_method("set_draw_callback"):
+			# 描画コールバックを設定
+			message_canvas.set_draw_callback(_draw_message_content)
+		else:
+			ArgodeSystem.log("⚠️ MessageCanvas found but doesn't have set_draw_callback method", 1)
 		
 		# タイプライターサービスを初期化
 		_initialize_typewriter_service()
@@ -132,6 +140,8 @@ func _find_message_canvas():
 		# AnimationCoordinatorにcanvasを設定
 		if animation_coordinator:
 			animation_coordinator.set_message_canvas(message_canvas)
+		
+		ArgodeSystem.log("✅ MessageCanvas found and configured")
 	else:
 		ArgodeSystem.log("❌ MessageCanvas not found in message window", 2)
 
@@ -157,6 +167,10 @@ func _initialize_typewriter_service():
 	
 	# コールバックを設定
 	typewriter_service.set_callbacks(_on_character_typed, _on_typing_finished)
+	
+	# ArgodeSystemにサービスを登録
+	ArgodeSystem.register_service("ArgodeTypewriterService", typewriter_service)
+	ArgodeSystem.register_service("TypewriterService", typewriter_service)  # 別名も登録
 	
 	ArgodeSystem.log("✅ MessageRenderer: Typewriter service initialized")
 
@@ -231,6 +245,9 @@ func render_message(character_name: String, text: String):
 	current_text = text
 	current_display_length = 0
 	
+	# StatementManagerから登録済みアニメーション効果を取得して適用
+	_apply_statement_manager_animations()
+	
 	# アニメーションシステムを初期化
 	if animation_coordinator:
 		animation_coordinator.initialize_for_text(text.length())
@@ -253,6 +270,9 @@ func render_message_with_position_commands(character_name: String, display_text:
 	# 各レンダラーにデータを設定
 	ruby_renderer.extract_ruby_data(position_commands)
 	decoration_renderer.extract_decoration_data(position_commands)
+	
+	# StatementManagerから登録済みアニメーション効果を取得して適用
+	_apply_statement_manager_animations()
 	
 	# アニメーションコーディネーターを初期化
 	if animation_coordinator:
@@ -332,6 +352,12 @@ func clear_message():
 	current_display_length = 0
 	ArgodeSystem.log("🧹 Message cleared")
 
+## タイプライター効果が動作中かチェック
+func is_typewriter_active() -> bool:
+	if typewriter_service:
+		return typewriter_service.is_currently_typing()
+	return false
+
 ## タイプライター効果を即座に完了
 func complete_typewriter():
 	if typewriter_service and typewriter_service.is_currently_typing():
@@ -362,3 +388,63 @@ func set_typewriter_completion_callback(callback: Callable):
 func add_ruby_display(base_text: String, ruby_text: String):
 	if ruby_renderer:
 		ruby_renderer.add_ruby_display(base_text, ruby_text, current_text, current_display_length)
+
+## StatementManagerからアニメーション効果を取得して適用
+func _apply_statement_manager_animations():
+	"""StatementManagerの登録済みアニメーション効果をCharacterAnimationに適用"""
+	ArgodeSystem.log("🎭 _apply_statement_manager_animations called")
+	
+	var statement_manager = ArgodeSystem.StatementManager
+	if not statement_manager:
+		ArgodeSystem.log("⚠️ StatementManager not found")
+		return
+	
+	if not statement_manager.has_method("get_message_animation_effects"):
+		ArgodeSystem.log("⚠️ StatementManager doesn't have get_message_animation_effects method")
+		return
+	
+	var animation_effects = statement_manager.get_message_animation_effects()
+	ArgodeSystem.log("🎭 Retrieved %d animation effects from StatementManager" % animation_effects.size())
+	
+	if animation_effects.is_empty():
+		ArgodeSystem.log("🎭 No animation effects registered in StatementManager")
+		return
+	
+	# AnimationCoordinatorのCharacterAnimationに効果を適用
+	if animation_coordinator and animation_coordinator.character_animation:
+		ArgodeSystem.log("🎭 Applying effects to CharacterAnimation")
+		var config = {}
+		
+		# StatementManagerの効果をCharacterAnimation設定に変換
+		for effect in animation_effects:
+			ArgodeSystem.log("🎭 Processing effect: %s" % str(effect))
+			match effect.get("type", ""):
+				"fade":
+					config["fade_in"] = {
+						"duration": effect.get("duration", 0.3),
+						"enabled": true
+					}
+					ArgodeSystem.log("🎭 Added fade_in config: %s" % str(config["fade_in"]))
+				"slide":
+					config["slide_down"] = {
+						"duration": effect.get("duration", 0.4),
+						"offset": effect.get("offset_y", -4.0),
+						"enabled": true
+					}
+					ArgodeSystem.log("🎭 Added slide_down config: %s" % str(config["slide_down"]))
+				"scale":
+					config["scale"] = {
+						"duration": effect.get("duration", 0.2),
+						"enabled": true
+					}
+					ArgodeSystem.log("🎭 Added scale config: %s" % str(config["scale"]))
+		
+		# 設定を適用
+		if not config.is_empty():
+			ArgodeSystem.log("🎭 Calling setup_custom_animation with config: %s" % str(config))
+			animation_coordinator.character_animation.setup_custom_animation(config)
+			ArgodeSystem.log("🎭 Applied %d animation effects from StatementManager" % animation_effects.size())
+		else:
+			ArgodeSystem.log("⚠️ No valid animation effects could be converted")
+	else:
+		ArgodeSystem.log("⚠️ AnimationCoordinator or CharacterAnimation not available")

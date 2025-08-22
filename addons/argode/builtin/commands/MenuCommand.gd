@@ -86,11 +86,15 @@ func execute_core(args: Dictionary) -> void:
 			var stmt = choice_statements[i]
 			log_info("📋 Statement %d: Type=%s, Name=%s" % [i, stmt.get("type", "unknown"), stmt.get("name", "unknown")])
 		
-		# 選択肢のステートメントを直接実行（insertではなく直接実行で継続性を保つ）
+		# 選択肢のステートメントをContextServiceにプッシュして実行
 		if choice_statements.size() > 0:
-			log_info("🎯 Executing choice statements directly...")
-			await statement_manager._execute_child_statements(choice_statements)
-			log_info("✅ Choice statements execution completed")
+			log_info("🎯 Pushing choice statements to ContextService...")
+			var context_service = ArgodeSystem.StatementManager.context_service
+			if context_service:
+				context_service.push_context(choice_statements, "menu_choice_" + str(selected_choice_index))
+				log_info("✅ Choice statements pushed to context")
+			else:
+				log_error("ContextService not found")
 		
 		# 実行完了後は通常通り継続（何も特別な処理は不要）
 		log_info("🔄 MenuCommand execution completed, proceeding to next statement")
@@ -102,30 +106,24 @@ func execute_core(args: Dictionary) -> void:
 
 ## 選択肢ダイアログを表示
 func _show_choice_dialog():
-	"""選択肢ダイアログを表示し、ユーザーの選択を待つ"""
-	
-	# UIManagerを取得
+	"""選択肢ダイアログを表示して選択結果を待機"""
+	# UIManagerからchoiceシーンを取得
 	var ui_manager = ArgodeSystem.UIManager
 	if not ui_manager:
 		log_error("UIManager not found")
 		return
 	
-	# choiceシーンがまだ管理されていない場合は追加
-	if not ui_manager.get_all_ui().has("choice"):
-		var choice_scene_path = ArgodeSystem.built_in_ui_paths.get("choice", "")
-		if choice_scene_path.is_empty():
-			log_error("Choice scene path not found in built_in_ui_paths")
-			return
-		
-		if not ResourceLoader.exists(choice_scene_path):
-			log_error("Choice scene file does not exist: %s" % choice_scene_path)
-			return
-		
-		# choiceシーンをUIManagerに追加
-		ui_manager.add_ui(choice_scene_path, "choice", 50)  # Z-Index 50で表示
-		log_info("Choice scene added to UIManager")
+	# ダイアログシーンを追加
+	# TODO: パスをカスタマイズ可能にする（設定ファイルやプロジェクト設定から取得）
+	var choice_scene_path = "res://addons/argode/builtin/scenes/default_choice_dialog/default_choice_dialog.tscn"
+	var added_successfully = ui_manager.add_ui(choice_scene_path, "choice", 100)
+	if not added_successfully:
+		log_error("Failed to add choice dialog scene")
+		return
 	
-	# 選択肢ダイアログのインスタンスを取得
+	log_info("Choice scene added to UIManager")
+	
+	# ダイアログインスタンスを取得
 	choice_dialog = ui_manager.get_ui("choice")
 	if not choice_dialog:
 		log_error("Failed to get choice dialog instance")
@@ -134,61 +132,60 @@ func _show_choice_dialog():
 	log_info("Choice dialog instance obtained: %s" % choice_dialog.get_class())
 	
 	# 選択肢データを設定
-	if choice_dialog.has_method("setup_choices"):
-		log_info("Calling setup_choices with %d options" % choice_options.size())
-		choice_dialog.setup_choices(choice_options)
-		log_info("Choice options set up in dialog")
-	else:
-		log_error("Choice dialog does not have setup_choices method")
-		return
+	log_info("Calling setup_choices with %d options" % choice_options.size())
+	choice_dialog.setup_choices(choice_options)
+	log_info("Choice options set up in dialog")
 	
 	# 選択完了シグナルを接続
 	if choice_dialog.has_signal("choice_selected"):
 		if not choice_dialog.choice_selected.is_connected(_on_choice_selected):
 			choice_dialog.choice_selected.connect(_on_choice_selected)
-			log_info("Choice selection signal connected")
-		else:
-			log_info("Choice selection signal was already connected")
+		log_info("Choice selection signal connected")
 	else:
-		log_error("Choice dialog does not have choice_selected signal")
-		return
+		log_warning("Choice dialog does not have choice_selected signal")
 	
-	# choiceシーンを表示
-	log_info("Showing choice dialog...")
+	# ダイアログを表示
 	ui_manager.show_ui("choice")
+	log_info("Showing choice dialog...")
 	log_info("Choice dialog displayed")
 	
-	# StatementManagerを一時停止してユーザー入力を無効化
+	# StatementManagerを一時停止してMenuCommandの選択待ちに移行
 	var statement_manager = ArgodeSystem.StatementManager
-	if statement_manager:
-		statement_manager.pause_ui_operations("MenuCommand choice dialog displayed")
+	if statement_manager.execution_service:
+		statement_manager.execution_service.pause_execution()
+		log_info("ExecutionService paused for choice dialog")
 	
-	# 選択を待機
+	# 選択待機開始
+	log_info("Starting choice wait loop...")
 	is_waiting_for_choice = true
 	selected_choice_index = -1
 	
-	log_info("Starting choice wait loop...")
-	# 選択完了まで待機（StatementManagerの実行状態を考慮）
-	while is_waiting_for_choice:
-		# 実行が停止された場合は待機終了
-		if not ArgodeSystem.StatementManager or not ArgodeSystem.StatementManager.is_executing:
-			log_warning("Execution stopped during choice wait")
-			break
-		await Engine.get_main_loop().process_frame
+	# 選択肢が表示されるまで待機
+	await Engine.get_main_loop().process_frame
 	
+	# ヘッドレスモードまたはオートプレイモードの場合は自動選択
+	if ArgodeSystem.is_auto_play_mode():
+		log_info("🧪 AUTO-PLAY MODE: Auto-selecting first choice")
+		await Engine.get_main_loop().process_frame
+		# 最初の選択肢を自動選択
+		selected_choice_index = 0
+		is_waiting_for_choice = false
+	else:
+		# 通常モードでは入力待ち
+		while selected_choice_index == -1:
+			await Engine.get_main_loop().process_frame
+	
+	log_info("Choice selected by user: %d" % selected_choice_index)
 	log_info("Choice wait completed, selected index: %d" % selected_choice_index)
 	
-	# StatementManagerの一時停止を解除
-	if statement_manager:
-		statement_manager.resume_ui_operations("MenuCommand choice dialog completed")
+	# StatementManagerの実行を再開
+	if statement_manager.execution_service:
+		statement_manager.execution_service.resume_execution()
+		log_info("ExecutionService resumed after choice completion")
 	
 	# ダイアログを非表示
 	ui_manager.hide_ui("choice")
 	log_info("Choice dialog hidden")
-	
-	# シグナル接続を解除
-	if choice_dialog and choice_dialog.choice_selected.is_connected(_on_choice_selected):
-		choice_dialog.choice_selected.disconnect(_on_choice_selected)
 
 ## 選択肢選択時のコールバック
 func _on_choice_selected(choice_index: int):

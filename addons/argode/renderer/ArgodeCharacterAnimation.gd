@@ -315,12 +315,13 @@ func get_character_animation_values(char_index: int) -> Dictionary:
 			var effect_start = effect_state.effect.calculate_effect(0.0)
 			for key in effect_start:
 				start_values[key] = effect_start[key]
-		ArgodeSystem.log("🎬 Returning start values for char %d (just triggered): %s" % [char_index, str(start_values)])
+		# 無限ログを防ぐためコメントアウト
+		# ArgodeSystem.log("🎬 Returning start values for char %d (just triggered): %s" % [char_index, str(start_values)])
 		return start_values
 	
 	# デバッグ: アニメーション値をログ出力
-	if char_anim.current_values.has("alpha") and char_anim.current_values.alpha < 0.1:
-		ArgodeSystem.log("🔍 Char %d animation values: %s (triggered: %s, completed: %s)" % [char_index, str(char_anim.current_values), char_anim.is_triggered, char_anim.is_completed])
+	# if char_anim.current_values.has("alpha") and char_anim.current_values.alpha < 0.1:
+	# 	ArgodeSystem.log("🔍 Char %d animation values: %s (triggered: %s, completed: %s)" % [char_index, str(char_anim.current_values), char_anim.is_triggered, char_anim.is_completed])
 	
 	return char_anim.current_values
 

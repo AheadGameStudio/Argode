@@ -76,6 +76,8 @@ func parse_label_block_from_text(text: String, label_name: String) -> Array:
 	lines = text.split("\n")
 	current_line_index = 0
 	
+	ArgodeSystem.log_workflow("🔧 RGDParser: Searching for label '%s' in %d lines" % [label_name, lines.size()])
+	
 	# 指定されたラベルを探す
 	var label_start_line = -1
 	var label_indent = -1
@@ -83,6 +85,8 @@ func parse_label_block_from_text(text: String, label_name: String) -> Array:
 	while current_line_index < lines.size():
 		var line = lines[current_line_index]
 		var clean_line = line.strip_edges()
+		
+		ArgodeSystem.log_debug_detail("  Line %d: '%s'" % [current_line_index + 1, clean_line])
 		
 		# ラベル行をチェック
 		if clean_line.begins_with("label "):
@@ -93,10 +97,13 @@ func parse_label_block_from_text(text: String, label_name: String) -> Array:
 			if label_line.ends_with(":"):
 				found_label_name = label_line.substr(0, label_line.length() - 1).strip_edges()
 			
+			ArgodeSystem.log_workflow("🔧 Found label '%s' at line %d" % [found_label_name, current_line_index + 1])
+			
 			if found_label_name == label_name:
 				label_start_line = current_line_index
 				label_indent = _get_line_indent(line)
 				current_line_index += 1
+				ArgodeSystem.log_workflow("🔧 Target label found! Start line: %d, indent: %d" % [label_start_line + 1, label_indent])
 				break
 		
 		current_line_index += 1
@@ -108,30 +115,46 @@ func parse_label_block_from_text(text: String, label_name: String) -> Array:
 	
 	# ラベルブロックの終端を探す（同じインデントレベルの次のラベルまで）
 	var block_end_line = lines.size() - 1
+	var last_content_line = -1  # 最後の有効なコンテンツ行を記録
+	
+	ArgodeSystem.log_workflow("🔧 Searching for block end from line %d" % (current_line_index + 1))
 	
 	while current_line_index < lines.size():
 		var line = lines[current_line_index]
 		var line_indent = _get_line_indent(line)
 		var clean_line = line.strip_edges()
 		
-		# 空行やコメント行はスキップ
+		ArgodeSystem.log_debug_detail("  Block scan line %d: indent=%d, content='%s'" % [current_line_index + 1, line_indent, clean_line])
+		
+		# 空行やコメント行はスキップするが、その前に有効なコンテンツがあったことを記録
 		if clean_line.is_empty() or clean_line.begins_with("#"):
 			current_line_index += 1
 			continue
 		
 		# 同じインデントレベルで別のラベルが見つかったら終了
 		if line_indent <= label_indent and clean_line.begins_with("label "):
-			block_end_line = current_line_index - 1
+			# 最後の有効なコンテンツ行を終端とする
+			block_end_line = last_content_line if last_content_line != -1 else current_line_index - 1
+			ArgodeSystem.log_workflow("🔧 Block end found at line %d (next label found, last content at line %d)" % [block_end_line + 1, last_content_line + 1])
 			break
 		
+		# 有効なコンテンツ行を記録
+		last_content_line = current_line_index
 		current_line_index += 1
+	
+	# ファイル終端の場合、最後の有効なコンテンツ行を使用
+	if current_line_index >= lines.size() and last_content_line != -1:
+		block_end_line = last_content_line
+		ArgodeSystem.log_workflow("🔧 Block end at file end: line %d" % (block_end_line + 1))
 	
 	# ラベルブロック部分のテキストを抽出
 	var block_lines = []
 	for i in range(label_start_line, block_end_line + 1):
 		block_lines.append(lines[i])
+		ArgodeSystem.log_debug_detail("  Block content line %d: '%s'" % [i + 1, lines[i]])
 	
 	var block_text = "\n".join(block_lines)
+	ArgodeSystem.log_workflow("🔧 Extracted block text (%d lines):\n%s" % [block_lines.size(), block_text])
 	
 	# ブロック部分をパース
 	return parse_text(block_text)
@@ -143,10 +166,33 @@ func parse_text(text: String) -> Array:
 	
 	var statements = []
 	
+	# ラベルブロック内では最初のラベル行をスキップして、その子ステートメントを処理する
+	var skip_first_label = false
+	if lines.size() > 0:
+		var first_line = lines[0].strip_edges()
+		if first_line.begins_with("label "):
+			skip_first_label = true
+			# ラベル自体をステートメントとして追加
+			var label_tokens = _tokenize_line(first_line)
+			if label_tokens.size() >= 2:
+				var label_statement = {
+					STATEMENT_TYPE: TYPE_COMMAND,
+					STATEMENT_NAME: label_tokens[0],
+					STATEMENT_ARGS: [label_tokens[1].rstrip(":")],
+					STATEMENT_LINE: 1
+				}
+				statements.append(label_statement)
+			current_line_index = 1
+	
 	while current_line_index < lines.size():
-		var statement = _parse_next_statement(0)  # トップレベルインデント
+		# ラベルブロック内では、インデントレベル1以上の行を処理
+		var target_indent = 1 if skip_first_label else 0
+		var statement = _parse_next_statement(target_indent)
 		if statement and not statement.is_empty():
 			statements.append(statement)
+		elif current_line_index < lines.size():
+			# インデントが合わない場合は次の行へ
+			current_line_index += 1
 	
 	return statements
 
@@ -163,9 +209,15 @@ func _parse_next_statement(expected_indent: int) -> Dictionary:
 	var actual_indent = _get_line_indent(line)
 	var clean_line = line.strip_edges()
 	
-	# インデントレベルが一致しない場合は終了
-	if actual_indent != expected_indent:
-		return {}
+	# ラベルブロック内では、期待されるインデント以上であれば処理を続行
+	# ただし、より深いインデントは子ブロックとして扱う
+	if expected_indent > 0:  # ラベルブロック内の場合
+		if actual_indent < expected_indent:
+			return {}  # インデントが足りない場合は終了
+		# actual_indent >= expected_indent の場合は処理続行
+	else:  # トップレベルの場合
+		if actual_indent != expected_indent:
+			return {}
 	
 	current_line_index += 1
 	
@@ -192,6 +244,17 @@ func _parse_next_statement(expected_indent: int) -> Dictionary:
 	# 登録されているコマンドかチェック（コロン記法も含む）
 	if command_registry and (command_registry.has_command(first_token) or command_registry.has_command(potential_command)):
 		return _parse_command_statement(tokens, line_number, expected_indent)
+	
+	# デバッグ: labelコマンド検出の問題をデバッグ
+	if first_token == "label" or potential_command == "label":
+		if not command_registry:
+			push_warning("🔧 RGDParser Debug: command_registry is null")
+		else:
+			var has_label = command_registry.has_command("label")
+			push_warning("🔧 RGDParser Debug: label command registered = %s" % has_label)
+			if has_label:
+				# labelが登録されているなら強制的にコマンドとして処理
+				return _parse_command_statement(tokens, line_number, expected_indent)
 	
 	# キャラクターエイリアス + セリフの形式をチェック
 	if tokens.size() >= 2:
@@ -402,15 +465,15 @@ func _tokenize_line(line: String) -> Array:
 func _extract_args_from_tokens(tokens: Array, start_index: int) -> Array:
 	var args = []
 	
-	# トークンを結合して引数文字列を作成
-	var arg_string = ""
-	for i in range(start_index, tokens.size()):
-		if i > start_index:
-			arg_string += " "
-		arg_string += tokens[i]
-	
 	# set文の特別な処理（= 演算子で分割）
 	if tokens.size() > start_index and tokens[0] == "set":
+		# トークンを結合して引数文字列を作成
+		var arg_string = ""
+		for i in range(start_index, tokens.size()):
+			if i > start_index:
+				arg_string += " "
+			arg_string += tokens[i]
+		
 		# "set player.name = value" や "set player.affection += 10" の形式
 		var equals_pos = arg_string.find("=")
 		if equals_pos != -1:
@@ -433,7 +496,7 @@ func _extract_args_from_tokens(tokens: Array, start_index: int) -> Array:
 			args.append(value_part)
 			return args
 	
-	# 通常の引数抽出
+	# 通常の引数抽出（トークンを個別に処理）
 	for i in range(start_index, tokens.size()):
 		var token = tokens[i]
 		# クォートを除去して引数として追加

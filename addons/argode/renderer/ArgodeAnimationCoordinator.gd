@@ -8,6 +8,8 @@ class_name ArgodeAnimationCoordinator
 var character_animation = null  # ArgodeCharacterAnimationインスタンス
 var is_animation_enabled: bool = true  # アニメーション有効フラグ
 var message_canvas = null  # MessageCanvasの参照
+var animation_timeout_timer: float = 0.0  # アニメーションタイムアウト用タイマー
+var max_animation_wait_time: float = 3.0  # 最大3秒でアニメーションを強制完了
 
 # 範囲別アニメーション設定
 var range_animation_configs: Array[Dictionary] = []  # 範囲別アニメーション設定
@@ -105,9 +107,10 @@ func skip_all_animations():
 
 ## アニメーション完了を待つ
 func wait_for_animations_completion():
-	"""アニメーション完了を待つ（シグナルベース）"""
+	"""アニメーション完了を待つ（シグナルベース＋タイムアウト）"""
 	if character_animation and is_animation_enabled:
 		ArgodeSystem.log("⏳ Waiting for animations completion via signal...")
+		animation_timeout_timer = 0.0  # タイマーリセット
 		# 完了時に_on_all_animations_completed()が自動的に呼ばれる
 	else:
 		# アニメーションが無効な場合は即座に完了通知
@@ -117,6 +120,7 @@ func wait_for_animations_completion():
 func _on_all_animations_completed():
 	"""全アニメーション完了シグナルを受信"""
 	ArgodeSystem.log("✅ All character animations completed via signal")
+	animation_timeout_timer = -1.0  # タイマー無効化
 	_notify_animation_completion()
 
 ## アニメーション完了を通知
@@ -138,6 +142,15 @@ func _update_character_animations(delta: float):
 	"""アニメーション更新処理"""
 	if character_animation and is_animation_enabled:
 		character_animation.update_animations(delta)
+		
+		# タイムアウトチェック（アニメーション待機中の場合）
+		if animation_timeout_timer >= 0.0:
+			animation_timeout_timer += delta
+			if animation_timeout_timer >= max_animation_wait_time:
+				ArgodeSystem.log("⏰ Animation timeout reached (%.1fs) - forcing completion" % max_animation_wait_time)
+				animation_timeout_timer = -1.0  # タイマー無効化
+				character_animation.skip_all_animations()
+				_notify_animation_completion()
 
 ## アニメーション完了コールバックを設定
 func set_animation_completion_callback(callback: Callable):

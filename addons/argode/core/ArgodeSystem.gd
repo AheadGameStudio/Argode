@@ -6,6 +6,13 @@ class_name ArgodeSystemCore
 ## Argodeフレームワーク全体のコアシステム
 ## オートロード・シングルトンとして機能し、マネージャーやレジストリを統括する。
 
+# GitHub Copilot最適化: ログレベル定数
+enum LOG_LEVEL {
+	DEBUG = 0,
+	WORKFLOW = 1,
+	CRITICAL = 2
+}
+
 ## CommandLineから受け取った引数を格納する
 var command_line_args: Dictionary = {}
 
@@ -37,9 +44,15 @@ var built_in_ui_paths: Dictionary = {
 
 # システム初期化状態
 var is_system_ready: bool = false
+var is_headless_mode: bool = false  # ヘッドレスモード検出
 signal system_ready
 
 func _ready():
+	# ヘッドレスモードを検出
+	is_headless_mode = DisplayServer.get_name() == "headless"
+	if is_headless_mode:
+		print("🤖 Headless mode detected - auto-play enabled")
+	
 	# まず生のコマンドライン引数を確認
 	var raw_args = OS.get_cmdline_args()
 	print("🔍 Raw command line args: " + str(raw_args))
@@ -411,6 +424,31 @@ func log_debug_detail(message: String) -> void:
 func set_copilot_log_level(level: int) -> void:
 	DebugManager.set_copilot_log_level(level)
 
+# サービスレジストリ
+var _services: Dictionary = {}
+
+## Service Layer Pattern: サービス取得（将来の拡張用）
+func get_service(service_name: String) -> RefCounted:
+	"""
+	Get a service instance by name.
+	Returns null for non-existent services in current implementation.
+	This method is prepared for future Service Layer Pattern expansion.
+	"""
+	if _services.has(service_name):
+		return _services[service_name]
+	
+	log_debug_detail("Service requested: %s (not found)" % service_name)
+	return null
+
+## サービスを登録する
+func register_service(service_name: String, service_instance: RefCounted):
+	_services[service_name] = service_instance
+	log_debug_detail("Service registered: %s" % service_name)
+
+## 登録されているサービス名の一覧を取得
+func get_all_services() -> Dictionary:
+	return _services.duplicate()
+
 func play(_label:String = "start"):
 	# 指定されたラベルに基づいてゲームを開始する
 	# もしcommand_line_argsにstart_labelキーがあれば、それを優先する
@@ -462,4 +500,12 @@ func get_command_dictionary() -> Dictionary:
 func wait_for_system_ready():
 	while not is_system_ready:
 		await get_tree().process_frame
+
+## ヘッドレスモードかどうかを判定
+static func is_headless() -> bool:
+	return DisplayServer.get_name() == "headless"
+
+## オートプレイモードかどうかを判定（ヘッドレスモード or テストフラグ）
+static func is_auto_play_mode() -> bool:
+	return is_headless() or OS.has_feature("debug") and OS.get_cmdline_args().has("--auto-play")
 

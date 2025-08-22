@@ -9,14 +9,14 @@ func _ready():
 ## コマンド実行
 func execute(args: Dictionary) -> void:
 	# RGDパーサーから来る引数形式を解析
-	# args = {"arg0": "clear"} または {"arg0": "add", "arg1": "slide", "arg2": "0.5", "arg3": "offset_y", "arg4": "-15", ...}
+	# args = {"0": "clear"} または {"0": "add", "1": "slide", "2": "0.5", "3": "offset_y", "4": "-15", ...}
 	
 	var arg_array = []
 	
-	# arg0, arg1, arg2... の形式で順番に取得
+	# "0", "1", "2"... の形式で順番に取得
 	var i = 0
-	while args.has("arg" + str(i)):
-		arg_array.append(args["arg" + str(i)])
+	while args.has(str(i)):
+		arg_array.append(args[str(i)])
 		i += 1
 	
 	# 最低限のチェック
@@ -74,7 +74,8 @@ func _add_animation_effect(effect_type: String, params: Array):
 			var i = 0
 			while i < params.size():
 				if i + 1 < params.size():
-					match params[i].to_lower():
+					var param_name = str(params[i]).to_lower()
+					match param_name:
 						"offset_y":
 							offset_y = float(params[i + 1])
 							i += 2
@@ -125,6 +126,7 @@ func _clear_animations():
 		return
 	
 	statement_manager.clear_message_animations()
+	ArgodeSystem.log("🔄 全メッセージアニメーション効果をクリアしました")
 
 ## プリセット適用
 func _apply_preset(preset_name: String):
@@ -134,6 +136,7 @@ func _apply_preset(preset_name: String):
 		return
 	
 	statement_manager.set_message_animation_preset(preset_name)
+	ArgodeSystem.log("🎭 メッセージアニメーションプリセットを適用: %s" % preset_name)
 
 ## ヘルプ表示
 func get_help_text() -> String:

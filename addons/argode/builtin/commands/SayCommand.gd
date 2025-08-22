@@ -7,24 +7,49 @@ func _ready():
 	command_description = "キャラクターのセリフまたはナレーションを表示します"
 	command_help = "say [キャラクター名] メッセージ"
 
-## 引数検証（Stage 3共通基盤）
+## 引数検証
 func validate_args(args: Dictionary) -> bool:
-	# Sayコマンドは最低限1つの引数（メッセージ）が必要
-	if not args.has("arg0"):
-		log_error("メッセージが指定されていません")
+	# 最低限1つの引数が必要（メッセージテキスト）
+	if not args.has("0"):
+		log_error("メッセージテキストが指定されていません")
 		return false
 	return true
 
-## コマンド中核処理（Stage 3共通基盤）
+## コマンド中核処理
 func execute_core(args: Dictionary) -> void:
-	var character_name = get_optional_arg(args, "arg0", "")
-	var message_text = get_optional_arg(args, "arg1", "")
+	log_info("SayCommand execute_core started with args: %s" % str(args))
 	
-	# arg1がない場合、arg0がメッセージテキスト
-	if not args.has("arg1"):
+	var character_name = get_optional_arg(args, "0", "")
+	var message_text = get_optional_arg(args, "1", "")
+	
+	# "1"がない場合、"0"がメッセージテキスト
+	if not args.has("1"):
 		message_text = character_name
 		character_name = ""
 	
-	log_info("Say実行: [%s] %s" % [character_name, message_text])
+	log_info("SayCommand parsed - character: '%s', message: '%s'" % [character_name, message_text])
 	
-	# 実際の表示処理はStatementManagerに委譲される
+	# StatementManagerを通じてメッセージを表示
+	var statement_manager = args.get("statement_manager")
+	if statement_manager and statement_manager.has_method("show_message"):
+		log_info("SayCommand calling show_message")
+		statement_manager.show_message(message_text, character_name)
+		log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
+		
+		# ExecutionServiceの入力待ち状態を設定
+		var execution_service = statement_manager.execution_service
+		if execution_service:
+			var is_auto_play = ArgodeSystem.is_auto_play_mode()
+			log_info("SayCommand: Auto-play mode check: %s" % is_auto_play)
+			
+			if is_auto_play:
+				log_info("SayCommand: AUTO-PLAY MODE - スキップして自動進行")
+				# ヘッドレスモードでは少し待ってから自動進行
+				await Engine.get_main_loop().create_timer(0.1).timeout
+			else:
+				# 通常モードでは入力待ち
+				execution_service.set_waiting_for_input(true)
+				log_info("SayCommand: 入力待ち状態に設定しました")
+		
+	else:
+		log_error("StatementManagerが取得できないか、show_messageメソッドがありません")

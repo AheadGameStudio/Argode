@@ -11,7 +11,7 @@ func _ready():
 
 ## 引数検証（Stage 3共通基盤）
 func validate_args(args: Dictionary) -> bool:
-	var variable_name = get_optional_arg(args, "arg0", "")
+	var variable_name = get_optional_arg(args, "0", "")
 	if variable_name.is_empty():
 		log_error("変数名が指定されていません")
 		return false
@@ -19,7 +19,7 @@ func validate_args(args: Dictionary) -> bool:
 
 ## コマンド中核処理（Stage 3共通基盤）
 func execute_core(args: Dictionary) -> void:
-	var variable_name = get_required_arg(args, "arg0", "変数名")
+	var variable_name = get_required_arg(args, "0", "変数名")
 	
 	if variable_name == null:
 		return  # エラーは既にログ出力済み

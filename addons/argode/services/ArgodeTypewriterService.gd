@@ -16,6 +16,9 @@ var current_index: int = 0
 # 動的速度制御
 var base_speed: float = 0.05  # 基本速度（リセット時に使用）
 
+# インライン待機制御
+var pending_inline_waits: Array[Dictionary] = []  # {position: int, wait_time: float}の配列
+
 # コールバック
 var on_character_typed: Callable  # 1文字表示されるたびに呼ばれる
 var on_typing_finished: Callable  # タイプライター完了時に呼ばれる
@@ -39,6 +42,7 @@ func start_typing(text: String, speed: float = 0.05):
 	is_typing = true
 	is_paused = false
 	was_skipped = false  # スキップフラグをリセット
+	pending_inline_waits.clear()  # インライン待機をクリア
 	
 	ArgodeSystem.log("⌨️ Starting typewriter effect: '%s'" % current_text.substr(0, 20) + ("..." if current_text.length() > 20 else ""))
 	
@@ -207,6 +211,11 @@ func start_typing_with_position_commands(text: String, position_commands: Array,
 
 ## 位置ベースコマンドの監視
 func _monitor_position_commands(position_commands: Array, inline_command_manager: ArgodeInlineCommandManager):
+	ArgodeSystem.log("🎯 TypewriterService: Starting position command monitoring with %d commands" % position_commands.size())
+	for i in range(position_commands.size()):
+		var cmd = position_commands[i]
+		ArgodeSystem.log("🎯   Command %d: %s at position %d" % [i, cmd.get("command_name", "unknown"), cmd.get("display_position", -1)])
+	
 	# タイプライター進行中に位置をチェック
 	while is_typing:
 		var current_position = display_text.length()
@@ -215,8 +224,10 @@ func _monitor_position_commands(position_commands: Array, inline_command_manager
 		for command_info in position_commands:
 			if command_info.display_position <= current_position and not command_info.get("executed", false):
 				# コマンドを実行
+				ArgodeSystem.log("🎯 TypewriterService: Executing inline command at position %d (current_position: %d)" % [command_info.display_position, current_position])
 				inline_command_manager.execute_commands_at_position(command_info.display_position)
 				command_info["executed"] = true  # 実行済みマーク
+				ArgodeSystem.log("✅ TypewriterService: Inline command executed and marked")
 		
 		# 少し待機してから次のチェック
 		await _wait_frame()
@@ -254,3 +265,12 @@ func get_base_speed() -> float:
 ## フレーム待機ヘルパー
 func _wait_frame():
 	await ArgodeSystem.get_tree().process_frame
+
+## インライン待機を追加（{w=1.0}タグ用）
+func add_inline_wait(wait_time: float):
+	var wait_info = {
+		"position": current_index,  # 現在のタイピング位置
+		"wait_time": wait_time
+	}
+	pending_inline_waits.append(wait_info)
+	ArgodeSystem.log("📝 Inline wait added at position %d: %.1f seconds" % [current_index, wait_time])

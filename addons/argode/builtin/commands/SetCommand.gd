@@ -16,7 +16,7 @@ func _ready():
 
 ## 引数検証（Stage 3共通基盤）
 func validate_args(args: Dictionary) -> bool:
-	var target = get_optional_arg(args, "arg0", "")
+	var target = get_optional_arg(args, "0", "")
 	if target.is_empty():
 		log_error("変数名が指定されていません")
 		return false
@@ -34,19 +34,22 @@ func execute_core(args: Dictionary) -> void:
 		return
 	
 	# 引数を解析
-	var target = get_required_arg(args, "arg0", "変数名")
-	var value_expression = get_optional_arg(args, "arg1", "")
+	var target = get_required_arg(args, "0", "変数名")
+	var value_expression = get_optional_arg(args, "1", "")
 	
 	if target == null:
 		return  # エラーは既にログ出力済み
 	
 	log_debug("target='%s', expression='%s'" % [target, value_expression])
 	
+	# value_expressionを文字列として扱う
+	var value_expr_str = str(value_expression)
+	
 	# 複合演算子の処理（+= 10, -= 5等）
-	if value_expression.begins_with("+=") or value_expression.begins_with("-=") or value_expression.begins_with("*=") or value_expression.begins_with("/="):
+	if value_expr_str.begins_with("+=") or value_expr_str.begins_with("-=") or value_expr_str.begins_with("*=") or value_expr_str.begins_with("/="):
 		# 演算子と値を分離
-		var operator = value_expression.substr(0, 2)  # +=, -=, *=, /=
-		var operand_str = value_expression.substr(2).strip_edges()
+		var operator = value_expr_str.substr(0, 2)  # +=, -=, *=, /=
+		var operand_str = value_expr_str.substr(2).strip_edges()
 		
 		# 現在の値を取得
 		var current_value = variable_resolver.variable_manager.get_variable(target)
@@ -74,7 +77,7 @@ func execute_core(args: Dictionary) -> void:
 		log_info("変数設定完了: %s = %s" % [target, str(result)])
 	else:
 		# 通常の代入処理
-		var processed_value = variable_resolver._process_value(value_expression)
+		var processed_value = variable_resolver._process_value(value_expr_str)
 		variable_resolver.set_variable(target, processed_value)
 		log_info("変数設定完了: %s = %s" % [target, str(processed_value)])
 

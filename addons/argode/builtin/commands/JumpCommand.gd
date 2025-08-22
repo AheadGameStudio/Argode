@@ -9,7 +9,11 @@ func _ready():
 
 ## 引数検証
 func validate_args(args: Dictionary) -> bool:
-	var label_name = get_optional_arg(args, "arg0", "")
+	# デバッグ: 引数を出力
+	ArgodeSystem.log_workflow("🔧 JumpCommand args received: %s" % str(args))
+	# 位置引数は "0", "1", "2" キーで格納される
+	var label_name = get_optional_arg(args, "0", "")
+	ArgodeSystem.log_workflow("🔧 JumpCommand extracted label_name: '%s'" % label_name)
 	if label_name.is_empty():
 		log_error("ジャンプ先のラベル名が指定されていません")
 		return false
@@ -17,7 +21,7 @@ func validate_args(args: Dictionary) -> bool:
 
 ## コマンド中核処理
 func execute_core(args: Dictionary) -> void:
-	var label_name = get_required_arg(args, "arg0", "ジャンプ先ラベル名")
+	var label_name = get_required_arg(args, "0", "ジャンプ先ラベル名")
 	
 	if label_name == null:
 		return
@@ -41,18 +45,14 @@ func execute_core(args: Dictionary) -> void:
 		log_error("StatementManager not found")
 		return
 	
-	# StatementManagerの実行を一時停止してジャンプ処理を実行
-	statement_manager.set_waiting_for_command(true, "JumpCommand executing")
+	log_info("🔄 JumpCommand: Deferring jump execution to avoid context stack issues")
 	
-	# ジャンプ結果をStatementManagerに送信
-	statement_manager.handle_command_result({
+	# 次のフレームでジャンプを実行（コンテキストスタックの問題を回避）
+	statement_manager.call_deferred("handle_command_result", {
 		"type": "jump",
 		"label": label_name,
 		"file_path": file_path,
 		"line": label_line
 	})
 	
-	# ジャンプ完了後、StatementManagerの実行を再開
-	statement_manager.set_waiting_for_command(false, "JumpCommand completed")
-	
-	log_info("Jump command executed successfully")
+	log_info("🔄 JumpCommand: Jump request deferred to StatementManager")

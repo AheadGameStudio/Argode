@@ -226,7 +226,14 @@ func _execute_command(command_info: Dictionary) -> Dictionary:
 	
 	# コマンドを実行
 	if command_instance:
-		command_instance.execute(command_info.args)
+		# WaitCommandのような待機を伴うコマンドの場合は軽量な待機処理
+		if command_info.command_name == "wait" or command_info.command_name == "w":
+			ArgodeSystem.log("⏸️ Executing inline wait: %s" % command_info.command_name)
+			# インライン用の軽量な待機処理（ログのみ）
+			_execute_inline_wait(command_info.args)
+		else:
+			# 通常のインラインコマンド（色、サイズなど）は同期実行
+			command_instance.execute(command_info.args)
 		ArgodeSystem.log("✅ Command executed successfully: %s" % command_info.command_name)
 	else:
 		ArgodeSystem.log("❌ Command instance is null for: %s" % command_info.command_name)
@@ -236,6 +243,56 @@ func _execute_command(command_info: Dictionary) -> Dictionary:
 		"command_name": command_info.command_name,
 		"position": command_info.display_position
 	}
+
+## Wait系のコマンドを非同期実行
+func _execute_wait_command_async(command_instance: ArgodeCommandBase, args: Dictionary):
+	ArgodeSystem.log("⏱️ Starting async wait command execution")
+	# WaitCommandを非同期で実行
+	await command_instance.execute(args)
+	ArgodeSystem.log("⏱️ Async wait command completed")
+
+## インライン用の軽量な待機処理（ログのみ）
+func _execute_inline_wait(args: Dictionary):
+	var wait_time: float = 1.0
+	
+	# 引数から待機時間を取得
+	if args.has("w"):
+		wait_time = float(args["w"])
+	elif args.has("value"):
+		wait_time = float(args["value"])
+	elif args.has("0"):
+		wait_time = float(args["0"])
+	
+	ArgodeSystem.log("⏸️ Inline wait: %.1f seconds - pausing typewriter" % wait_time)
+	
+	# ヘッドレスモードでは短縮
+	if ArgodeSystem.is_auto_play_mode():
+		wait_time = 0.1
+	
+	# TypewriterServiceを一時停止
+	var typewriter_service = ArgodeSystem.get_service("TypewriterService")
+	if not typewriter_service:
+		# 別の名前で試行
+		typewriter_service = ArgodeSystem.get_service("ArgodeTypewriterService")
+	
+	if typewriter_service:
+		typewriter_service.pause_typing()
+		ArgodeSystem.log("⏸️ Typewriter paused for inline wait")
+		
+		# 指定時間待機
+		await Engine.get_main_loop().create_timer(wait_time).timeout
+		
+		# TypewriterServiceを再開
+		typewriter_service.resume_typing()
+		ArgodeSystem.log("▶️ Typewriter resumed after %.1f seconds" % wait_time)
+	else:
+		ArgodeSystem.log("⚠️ TypewriterService not found for inline wait - checking available services")
+		var services = ArgodeSystem.get_all_services()
+		for service_name in services:
+			ArgodeSystem.log("📋 Available service: " + service_name)
+		await Engine.get_main_loop().create_timer(wait_time).timeout
+	
+	ArgodeSystem.log("⏱️ Inline wait completed: %.1f seconds" % wait_time)
 
 ## TagRegistryの初期化（CommandRegistryから）
 func initialize_tag_registry(command_registry: ArgodeCommandRegistry):

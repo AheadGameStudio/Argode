@@ -29,6 +29,11 @@ func _ready():
 		if name_plate and name_plate.get_child_count() > 0:
 			name_label = name_plate.get_child(0)
 
+	# MessageCanvasの場合はdraw_callbackを設定
+	if message_label is ArgodeMessageCanvas:
+		message_label.draw_callback = _draw_message_callback
+		ArgodeSystem.log("✅ MessageCanvas draw_callback set", ArgodeSystem.LOG_LEVEL.DEBUG)
+
 	# フォント設定を適用
 	_apply_font_settings()
 
@@ -146,7 +151,28 @@ func _try_load_resource(path: String) -> Resource:
 
 # TypewriterServiceから受け取ったメッセージを純粋に表示するだけの関数
 func set_message_text(text: String):
-	message_label.text = text
+	if not is_instance_valid(message_label):
+		ArgodeSystem.log("❌ Error: Message label node is not valid or does not exist.", ArgodeSystem.LOG_LEVEL.CRITICAL)
+		return
+	
+	# ArgodeMessageCanvasの場合（専用メソッド使用）
+	if message_label is ArgodeMessageCanvas:
+		if message_label.has_method("set_message_text"):
+			message_label.set_message_text(text)
+			ArgodeSystem.log("✅ Message text set via ArgodeMessageCanvas.set_message_text", ArgodeSystem.LOG_LEVEL.DEBUG)
+		else:
+			message_label.current_text = text
+			message_label.queue_redraw()  # 再描画を要求
+			ArgodeSystem.log("✅ Message text set via ArgodeMessageCanvas.current_text", ArgodeSystem.LOG_LEVEL.DEBUG)
+	# 通常のLabelの場合
+	elif message_label.has_method("set_text"):
+		message_label.set_text(text)
+		ArgodeSystem.log("✅ Message text set via set_text method", ArgodeSystem.LOG_LEVEL.DEBUG)
+	elif "text" in message_label:
+		message_label.text = text
+		ArgodeSystem.log("✅ Message text set via text property", ArgodeSystem.LOG_LEVEL.DEBUG)
+	else:
+		ArgodeSystem.log("❌ Error: Message label does not support text setting. Type: %s" % message_label.get_class(), ArgodeSystem.LOG_LEVEL.CRITICAL)
 
 # 名前のテキストを設定
 func set_name_text(name: String):
@@ -185,3 +211,18 @@ func show_name_plate():
 # 名前プレートを非表示にする
 func hide_name_plate():
 	name_plate.visible = false
+
+## MessageCanvas用の描画コールバック関数
+func _draw_message_callback(canvas: ArgodeMessageCanvas, character_name: String):
+	if not is_instance_valid(canvas):
+		return
+	
+	# キャラクター名が指定されている場合は名前プレートに表示
+	if not character_name.is_empty():
+		set_character_name(character_name)
+		show_name_plate()
+	else:
+		hide_name_plate()
+	
+	# メッセージテキストの描画は ArgodeMessageCanvas で行われる
+	ArgodeSystem.log("✅ Message callback executed for character: '%s'" % character_name, ArgodeSystem.LOG_LEVEL.DEBUG)

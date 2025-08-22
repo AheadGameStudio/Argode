@@ -1,5 +1,0 @@
-label test_size_tag
-
-say "通常サイズの文字です。{size=30}大きな文字です。{/size}通常に戻ったはずです。"
-
-return

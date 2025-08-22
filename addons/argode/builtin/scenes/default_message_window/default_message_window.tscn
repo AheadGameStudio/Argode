@@ -45,8 +45,9 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MessageCanvas" type="Control" parent="MessageContainer"]
-editor_description = "ArgodeMessageCanvasはArgodeMessageRendererが実際に描画する範囲を知り計算するためのコンテナです。"
+editor_description = "draw関数でメッセージを直接描画するための領域です。"
 layout_mode = 1
+script = ExtResource("2_ieviq")
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -58,8 +59,6 @@ offset_right = 481.0
 offset_bottom = 72.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("2_ieviq")
-metadata/_custom_type_script = "uid://2un6iwec15u"
 
 [node name="ContinuePrompt" type="Control" parent="MessageContainer"]
 layout_mode = 1

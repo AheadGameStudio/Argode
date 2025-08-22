@@ -29,8 +29,8 @@ func _ready():
 
 func validate_args(args: Dictionary) -> bool:
 
-	var ui_action = args.get("arg0", "")	# show/hide/delete
-	var ui_alias = args.get("arg1", "")
+	var ui_action = args.get("0", "")	# show/hide/delete
+	var ui_alias = args.get("1", "")
 
 	# 1. RegExオブジェクトを作成
 	var regex = RegEx.new()
@@ -85,9 +85,9 @@ func execute_core(args: Dictionary) -> void:
 	# 引数を受け取って処理を行う
 
 	# UIアクションの取得
-	var ui_action = args.get("arg0", "")
+	var ui_action = args.get("0", "")
 	# UIのエイリアス（または変数名）
-	var ui_alias = args.get("arg1", "")
+	var ui_alias = args.get("1", "")
 	# UIのZ-Index
 	var ui_z_index = z_index_value
 	# UIのトランジション
