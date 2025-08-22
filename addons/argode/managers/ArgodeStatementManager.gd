@@ -851,3 +851,15 @@ func get_message_animation_effects() -> Array[Dictionary]:
 ## メッセージアニメーション効果が設定されているかチェック
 func has_message_animation_effects() -> bool:
 	return not message_animation_effects.is_empty()
+
+# =============================================================================
+# UIControlService委譲メソッド（Phase 1, Step 1-1A 新規追加）
+# =============================================================================
+
+## UIControlServiceのメッセージシステム初期化を委譲
+func ensure_ui_message_system_ready() -> void:
+	"""UIControlServiceでメッセージシステムの初期化を確認"""
+	if ui_control_service:
+		ui_control_service.ensure_message_system_ready()
+	else:
+		ArgodeSystem.log_critical("🚨 UIControlService not available for message system initialization")

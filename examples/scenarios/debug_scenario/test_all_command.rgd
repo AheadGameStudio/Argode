@@ -1,5 +1,5 @@
 label test_all_command:
-	jump test_inline_wait
+	jump commands
 
 label commands:
 	# すべてのコマンドをテストする

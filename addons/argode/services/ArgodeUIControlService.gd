@@ -4,7 +4,7 @@ extends RefCounted
 class_name ArgodeUIControlService
 
 ## タイプライター・UI制御サービス（ArgodeUIManagerと連携）
-## 責任: タイプライター制御、UI一時停止管理、UIとの協調制御
+## 責任: タイプライター制御、UI一時停止管理、UIとの協調制御、メッセージシステム管理
 
 # UI一時停止制御
 var is_ui_paused: bool = false
@@ -17,13 +17,54 @@ var typewriter_pause_count: int = 0
 # ArgodeUIManagerの参照
 var ui_manager: ArgodeUIManager = null
 
+# メッセージシステム管理（新規追加）
+var message_window: ArgodeMessageWindow = null
+var message_renderer: ArgodeMessageRenderer = null
+var inline_command_manager: ArgodeInlineCommandManager = null
+
+# 実行制御参照（入力待ちコールバック用）
+var execution_service: ArgodeExecutionService = null
+
 # シグナル: タイプライター完了時
 signal typewriter_completed()
+# シグナル: メッセージレンダリング完了時
+signal message_rendering_completed()
 
 func _init():
 	_setup_ui_manager_connection()
 
-## ArgodeUIManagerとの連携を設定
+## メッセージシステム初期化 ============================
+
+func ensure_message_system_ready() -> void:
+	"""メッセージシステムの初期化を確認する"""
+	if not message_window:
+		_create_default_message_window()
+	if not message_renderer:
+		_create_message_renderer()
+	if not inline_command_manager:
+		_create_inline_command_manager()
+
+func _create_default_message_window() -> void:
+	"""デフォルトのメッセージウィンドウを作成"""
+	ArgodeSystem.log_debug("🎮 UIControlService: デフォルトメッセージウィンドウ作成")
+	# 既存のメッセージウィンドウがあるかUI Managerで確認
+	if ui_manager and ui_manager.has_method("get_message_window"):
+		message_window = ui_manager.get_message_window()
+	if not message_window:
+		ArgodeSystem.log_debug("🎮 UIControlService: UIManagerからメッセージウィンドウを取得できませんでした")
+
+func _create_message_renderer() -> void:
+	"""メッセージレンダラーを作成"""
+	ArgodeSystem.log_debug("🎮 UIControlService: メッセージレンダラー作成")
+	message_renderer = ArgodeMessageRenderer.new()
+	# メッセージウィンドウの設定は後で行う
+
+func _create_inline_command_manager() -> void:
+	"""インラインコマンドマネージャーを作成"""
+	ArgodeSystem.log_debug("🎮 UIControlService: インラインコマンドマネージャー作成")
+	inline_command_manager = ArgodeInlineCommandManager.new()
+
+## ArgodeUIManagerとの連携設定 =========================
 func _setup_ui_manager_connection():
 	ui_manager = ArgodeSystem.UIManager
 	
