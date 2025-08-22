@@ -47,12 +47,25 @@ func ensure_message_system_ready() -> void:
 func _create_default_message_window() -> void:
 	"""デフォルトのメッセージウィンドウを作成"""
 	ArgodeSystem.log_debug_detail("🎮 UIControlService: デフォルトメッセージウィンドウ作成")
+	
 	# 既存のメッセージウィンドウがあるかUI Managerで確認
-	if ui_manager and ui_manager.has_method("get_message_window"):
-		message_window = ui_manager.get_message_window()
+	if ui_manager and ui_manager.has_method("get_ui"):
+		message_window = ui_manager.get_ui("message")
+	
 	if not message_window:
-		ArgodeSystem.log_debug_detail("🎮 UIControlService: UIManagerからメッセージウィンドウを取得できませんでした")
-
+		# メッセージウィンドウが存在しない場合は新規作成
+		ArgodeSystem.log_debug_detail("🎮 UIControlService: 新しいメッセージウィンドウを作成します")
+		var message_window_path = "res://addons/argode/builtin/scenes/default_message_window/default_message_window.tscn"
+		
+		# メッセージウィンドウをUIManagerに追加
+		if ui_manager and ui_manager.has_method("add_ui"):
+			if ui_manager.add_ui(message_window_path, "message", 100):
+				message_window = ui_manager.get_ui("message")
+				ArgodeSystem.log_workflow("✅ UIControlService: Default message window created and added")
+			else:
+				ArgodeSystem.log_critical("❌ UIControlService: Failed to create default message window")
+		else:
+			ArgodeSystem.log_critical("❌ UIControlService: UIManager not available for window creation")
 func _create_message_renderer() -> void:
 	"""メッセージレンダラーを作成"""
 	ArgodeSystem.log_debug_detail("🎮 UIControlService: メッセージレンダラー作成")
@@ -94,8 +107,13 @@ func create_message_renderer() -> ArgodeMessageRenderer:
 		ArgodeSystem.log_critical("🚨 UIControlService: メッセージウィンドウが必要です")
 		return null
 	
-	# ArgodeMessageRendererクラスを読み込み
-	var renderer = ArgodeMessageRenderer.new()
+	# ArgodeMessageRendererクラスを動的に読み込み
+	var RendererClass = load("res://addons/argode/renderer/ArgodeMessageRenderer.gd")
+	if not RendererClass:
+		ArgodeSystem.log_critical("❌ UIControlService: ArgodeMessageRenderer class not found")
+		return null
+
+	var renderer = RendererClass.new()
 	if renderer and message_window:
 		renderer.set_message_window(message_window)
 		ArgodeSystem.log_debug_detail("🎮 UIControlService: メッセージレンダラー作成完了")
