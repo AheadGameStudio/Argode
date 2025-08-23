@@ -10,7 +10,7 @@ func _ready():
 	
 	
 	# ArgodeSystem.play()でシナリオを開始（ラベル名を指定）
-	ArgodeSystem.play("test_glyph_system")
+	ArgodeSystem.play("test_start")
 	# print("✅ Scenario started successfully")
 	
 	# # テスト完了まで少し待つ

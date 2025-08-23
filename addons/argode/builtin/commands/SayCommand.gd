@@ -40,3 +40,10 @@ func execute_core(args: Dictionary) -> void:
 	
 	# オートプレイ対応の統一入力待ち
 	await wait_for_input_with_autoplay()  # ヘルパー関数使用
+	
+	# Phase 3.5: Say完了時にContinuePromptを非表示
+	if ui_manager:
+		var message_window = ui_manager.get_message_window()
+		if message_window and message_window.has_method("hide_continue_prompt"):
+			message_window.hide_continue_prompt()
+			log_info("Continue prompt hidden at SayCommand completion")

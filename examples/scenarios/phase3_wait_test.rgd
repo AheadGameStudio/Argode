@@ -1,0 +1,20 @@
+## Phase 3 Wait Command Position Test
+## waitコマンドの位置問題テスト用RGDファイル
+
+# キャラクター定義（必要最小限）
+character test_char "テストキャラ" color "#FFFFFF"
+
+label test_start:
+    test_char "こ{w=1.0}んにちは！これは{w=0.5}テストです。"
+    test_char "1{w=0.3}2{w=0.3}3{w=0.3}4{w=0.3}5文字のテスト"
+    test_char "最初{w=2.0}に長い待機、そして{w=0.1}短い待機です。"
+    test_char "Position{w=1.5}Test{w=1.0}Completed."
+
+label multi_wait_test:
+    "複数{w=0.5}の{w=0.5}待機{w=0.5}コマンド{w=0.5}テスト"
+    "A{w=0.2}B{w=0.2}C{w=0.2}D{w=0.2}E"
+
+label edge_case_test:
+    "{w=1.0}最初から待機"
+    "最後に待機{w=2.0}"
+    "{w=0.5}両端{w=0.5}"

@@ -28,6 +28,15 @@ func initialize_services() -> void:
 	# ExecutionServiceはcontextを必要としない単純な初期化
 	execution_service.initialize(self, null)
 	
+	# Phase 1: UIControlServiceを手動登録（動的読み込み）
+	var ui_control_service_script = load("res://addons/argode/services/ArgodeUIControlService.gd")
+	if ui_control_service_script:
+		var ui_control_service = ui_control_service_script.new()
+		ArgodeSystem.register_service("UIControlService", ui_control_service)
+		ArgodeSystem.log_workflow("🎬 [Phase 1] UIControlService registered")
+	else:
+		ArgodeSystem.log_critical("❌ Failed to load UIControlService")
+	
 	ArgodeSystem.log_workflow("🎬 StatementManager: 実行サービスが初期化されました")
 
 # ====================================================================================

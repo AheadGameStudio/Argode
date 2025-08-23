@@ -215,24 +215,30 @@ func get_message_renderer():
 		message_renderer_instance = ArgodeSystem.MessageRenderer
 		return message_renderer_instance
 	
-	# Create new MessageRenderer instance if not found
-	var renderer_script = load("res://addons/argode/renderer/ArgodeMessageRenderer.gd")
-	if renderer_script:
-		message_renderer_instance = renderer_script.new()
-		
-		# Set message window to the renderer
-		var message_window = get_message_window()
-		if message_window and message_renderer_instance.has_method("set_message_window"):
-			message_renderer_instance.set_message_window(message_window)
-			ArgodeSystem.log("✅ MessageRenderer created and linked to window", ArgodeSystem.LOG_LEVEL.DEBUG)
-		else:
-			ArgodeSystem.log("⚠️ MessageRenderer created but window not available", ArgodeSystem.LOG_LEVEL.WORKFLOW)
-		
-		return message_renderer_instance
+	# Phase 1: ArgodeMessageRenderer削除済みのため一時コメントアウト
+	# var renderer_script = load("res://addons/argode/renderer/ArgodeMessageRenderer.gd")
+	# if renderer_script:
+	#	message_renderer_instance = renderer_script.new()
+	#	
+	#	# Set message window to the renderer
+	#	var message_window = get_message_window()
+	#	if message_window and message_renderer_instance.has_method("set_message_window"):
 	
-	# If not found, log debug info
-	ArgodeSystem.log("❌ Message renderer not found - メッセージレンダラーが見つかりません", ArgodeSystem.LOG_LEVEL.DEBUG)
+	# Phase 1: 一時的にnullを返す
+	ArgodeSystem.log_workflow("⚠️ [Phase 1] MessageRenderer temporarily disabled")
 	return null
+	
+	# Phase 1: 以下をコメントアウト
+	#		message_renderer_instance.set_message_window(message_window)
+	#		ArgodeSystem.log("✅ MessageRenderer created and linked to window", ArgodeSystem.LOG_LEVEL.DEBUG)
+	#	else:
+	#		ArgodeSystem.log("⚠️ MessageRenderer created but window not available", ArgodeSystem.LOG_LEVEL.WORKFLOW)
+	#	
+	#	return message_renderer_instance
+	#
+	## If not found, log debug info
+	#ArgodeSystem.log("❌ Message renderer not found - メッセージレンダラーが見つかりません", ArgodeSystem.LOG_LEVEL.DEBUG)
+	#return null
 
 func get_ui_state(alias: String) -> Dictionary:
 	"""
@@ -835,7 +841,14 @@ func show_message(text: String, character_name: String = "", properties: Diction
 	var message_renderer = get_message_renderer()
 	ArgodeSystem.log("🔍 Message renderer: %s" % str(message_renderer), ArgodeSystem.LOG_LEVEL.DEBUG)
 	
-	if message_renderer and message_renderer.has_method("display_message"):
+	# Phase 1: UIControlServiceを使用した新しいメッセージ表示
+	var ui_control_service = ArgodeSystem.get_service("UIControlService")
+	ArgodeSystem.log_workflow("🔍 [Phase 1] UIControlService lookup: %s" % str(ui_control_service))
+	
+	if ui_control_service and ui_control_service.has_method("show_message"):
+		ArgodeSystem.log_workflow("🎬 [Phase 1] Using UIControlService.show_message()")
+		ui_control_service.show_message(text, character_name)
+	elif message_renderer and message_renderer.has_method("display_message"):
 		ArgodeSystem.log("🔍 Calling MessageRenderer.display_message()", ArgodeSystem.LOG_LEVEL.DEBUG)
 		message_renderer.display_message(text, character_name, properties)
 	elif message_window.has_method("display_message"):
@@ -898,6 +911,16 @@ func wait_for_input() -> void:
 	Compatible with SayCommand requirements.
 	Uses ArgodeController for unified input management.
 	"""
+	ArgodeSystem.log_workflow("🎬 [Phase 3.5] wait_for_input() called - checking prompt control")
+	
+	# ContinuePromptを表示
+	var message_window = get_message_window()
+	if message_window and message_window.has_method("show_continue_prompt"):
+		message_window.show_continue_prompt()
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt shown")
+	else:
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Message window not found or missing method")
+	
 	# Use ArgodeController directly from ArgodeSystem
 	var controller = ArgodeSystem.Controller
 	
@@ -906,10 +929,15 @@ func wait_for_input() -> void:
 		ArgodeSystem.log("🎮 Waiting for input via ArgodeController...", ArgodeSystem.LOG_LEVEL.DEBUG)
 		await controller.input_received
 		ArgodeSystem.log("🎮 Input received via ArgodeController - continuing", ArgodeSystem.LOG_LEVEL.DEBUG)
+		
+		# ContinuePromptを隠す
+		if message_window and message_window.has_method("hide_continue_prompt"):
+			message_window.hide_continue_prompt()
+			ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt hidden")
+		
 		return
 	
 	# Fallback: Try message-specific input methods
-	var message_window = get_message_window()
 	if not message_window:
 		ArgodeSystem.log("❌ Cannot wait for input: No message window or controller found", ArgodeSystem.LOG_LEVEL.CRITICAL)
 		return
@@ -920,12 +948,20 @@ func wait_for_input() -> void:
 	if message_renderer and message_renderer.has_method("wait_for_input"):
 		ArgodeSystem.log("🎮 Waiting for input via message renderer...", ArgodeSystem.LOG_LEVEL.DEBUG)
 		await message_renderer.wait_for_input()
+		# ContinuePromptを隠す
+		if message_window and message_window.has_method("hide_continue_prompt"):
+			message_window.hide_continue_prompt()
+			ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt hidden (renderer)")
 		return
 	
 	# Try message window's input waiting method
 	if message_window.has_method("wait_for_input"):
 		ArgodeSystem.log("🎮 Waiting for input via message window...", ArgodeSystem.LOG_LEVEL.DEBUG)
 		await message_window.wait_for_input()
+		# ContinuePromptを隠す
+		if message_window and message_window.has_method("hide_continue_prompt"):
+			message_window.hide_continue_prompt()
+			ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt hidden (window)")
 		return
 	
 	# Last resort: Generic input waiting
@@ -937,6 +973,11 @@ func wait_for_input() -> void:
 			if Input.is_action_just_pressed("argode_advance") or Input.is_action_just_pressed("ui_accept"):
 				input_received = true
 			await ArgodeSystem.get_tree().process_frame
+	
+	# ContinuePromptを隠す
+	if message_window and message_window.has_method("hide_continue_prompt"):
+		message_window.hide_continue_prompt()
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt hidden (fallback)")
 	
 	ArgodeSystem.log("🎮 Input received - continuing", ArgodeSystem.LOG_LEVEL.DEBUG)
 

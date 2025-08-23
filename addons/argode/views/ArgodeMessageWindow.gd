@@ -23,11 +23,15 @@ func _ready():
 		message_label = get_node(message_label)
 	if continue_prompt:
 		continue_prompt = get_node(continue_prompt)
+		# 初期状態でContinuePromptを非表示に設定
+		continue_prompt.visible = false
 	if name_plate:
 		name_plate = get_node(name_plate)
 		# 名前ラベルを取得
 		if name_plate and name_plate.get_child_count() > 0:
 			name_label = name_plate.get_child(0)
+		# 初期状態でNamePlateを非表示に設定
+		name_plate.visible = false
 
 	# MessageCanvasの場合はdraw_callbackを設定
 	if message_label is ArgodeMessageCanvas:
@@ -176,16 +180,20 @@ func set_message_text(text: String):
 
 # 名前のテキストを設定
 func set_name_text(name: String):
+	ArgodeSystem.log_workflow("🎬 [Phase 3.5] Setting name text: '%s'" % name)
 	if is_instance_valid(name_label):
 		name_label.text = name
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Name text set to existing label: '%s'" % name)
 	else:
 		# 名前ラベルがnullの場合は新規に取得
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Name label not found, searching...")
 		name_label = name_plate.get_child(0) if name_plate.get_child_count() > 0 else null
 		if not is_instance_valid(name_label):
 			ArgodeSystem.log("❌ Error: Name label node is not valid or does not exist.", ArgodeSystem.DebugManager.LogLevel.ERROR)
 			return
 	if name_label:
 		name_label.text = name
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Name text finally set: '%s'" % name)
 
 # キャラクター名を設定（名前プレートも表示）
 func set_character_name(character_name: String):
@@ -198,19 +206,31 @@ func hide_character_name():
 
 # 続行プロンプトを表示
 func show_continue_prompt():
-	continue_prompt.visible = true
+	if continue_prompt:
+		continue_prompt.visible = true
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt SHOWN")
 
 # 続行プロンプトを非表示にする
 func hide_continue_prompt():
-	continue_prompt.visible = false
+	if continue_prompt:
+		continue_prompt.visible = false
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt HIDDEN")
 
 # 名前プレートを表示
 func show_name_plate():
-	name_plate.visible = true
+	if name_plate:
+		name_plate.visible = true
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Name plate SHOWN")
+	else:
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Name plate not found!")
 
 # 名前プレートを非表示にする
 func hide_name_plate():
-	name_plate.visible = false
+	if name_plate:
+		name_plate.visible = false
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Name plate HIDDEN")
+	else:
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Name plate not found!")
 
 ## MessageCanvas用の描画コールバック関数
 func _draw_message_callback(canvas: ArgodeMessageCanvas, character_name: String):

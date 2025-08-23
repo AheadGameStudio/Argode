@@ -135,9 +135,19 @@ func set_message_text(text: String):
 
 ## 描画処理 - Rendererのコールバックを呼び出す
 func _draw():
+	# Phase 2: 直接的なテキスト描画を追加
+	if current_text and current_text.length() > 0:
+		var font = get_argode_font()
+		if font:
+			var text_position = Vector2(10, 30)  # 基本的な位置
+			var text_color = Color.WHITE
+			draw_string(font, text_position, current_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
+			ArgodeSystem.log_workflow("[Phase 2] Canvas drew text: '%s'" % current_text)
+	
+	# 従来のコールバック処理も維持
 	if draw_callback.is_valid():
-		# MessageRenderer._draw_message_contentは3つの引数を期待している
-		draw_callback.call(self, "", current_text)
+		# Phase 1: ArgodeMessageTypewriter._draw_message_contentは2つの引数を期待
+		draw_callback.call(self, "")
 
 ## Canvasの描画領域サイズを取得
 func get_canvas_size() -> Vector2:

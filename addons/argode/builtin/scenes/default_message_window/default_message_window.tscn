@@ -61,6 +61,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ContinuePrompt" type="Control" parent="MessageContainer"]
+visible = false
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0

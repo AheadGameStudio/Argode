@@ -8,6 +8,9 @@ character narator color "#cccccc"
 character ayane "彩音" prefix "ayane" path "res://examples/assets/character/ayane" color "#FF69B4"
 character akari "アカリ" prefix "akari" path "res://examples/assets/character/akari" color "#ffb769ff"
 character akira "アキラ" prefix "akira" path "res://examples/assets/character/akira" color "#69B4FF"
+# テスト用キャラクター
+character test_char "テストキャラ" prefix "test" path "" color "#00FF00"
+
 # character <alias> <name> <prefix> <path> <color>
 # <alias>: Sayコマンドで必要なキャラクター定義を呼び出すためのエイリアス
 # <name>: キャラクターの表示名
