@@ -784,3 +784,85 @@ func hide_multiple_ui(aliases: Array, transition_type: String = "none", stagger_
 			success = false
 	
 	return success
+
+# ===========================
+# Message Display Functions (for SayCommand compatibility)
+# ===========================
+func show_message(text: String, character_name: String = "", properties: Dictionary = {}) -> void:
+	"""
+	Display a message in the message window.
+	Compatible with SayCommand requirements.
+	
+	Args:
+		text: The message text to display
+		character_name: Optional character name
+		properties: Additional display properties
+	"""
+	var message_window = get_message_window()
+	if not message_window:
+		ArgodeSystem.log("❌ Cannot show message: Message window not found", ArgodeSystem.LOG_LEVEL.CRITICAL)
+		return
+	
+	var message_renderer = get_message_renderer()
+	if message_renderer and message_renderer.has_method("display_message"):
+		message_renderer.display_message(text, character_name, properties)
+	elif message_window.has_method("display_message"):
+		message_window.display_message(text, character_name, properties)
+	elif message_window.has_method("set_text"):
+		# Basic text display fallback
+		message_window.set_text(text)
+	else:
+		ArgodeSystem.log("❌ Message window lacks display capabilities", ArgodeSystem.LOG_LEVEL.CRITICAL)
+	
+	# Ensure message window is visible
+	show_ui("message")
+	
+	ArgodeSystem.log("📝 Message displayed: %s" % text, ArgodeSystem.LOG_LEVEL.DEBUG)
+
+func wait_for_input() -> void:
+	"""
+	Wait for user input to continue.
+	Compatible with SayCommand requirements.
+	Uses ArgodeController for unified input management.
+	"""
+	# Check if ArgodeController is available for unified input management
+	var controller = ArgodeSystem.Controller if ArgodeSystem.has_method("get_property") and "Controller" in ArgodeSystem else null
+	
+	if controller and controller.has_signal("input_received"):
+		# Use unified input management through ArgodeController
+		ArgodeSystem.log("🎮 Waiting for input via ArgodeController...", ArgodeSystem.LOG_LEVEL.DEBUG)
+		await controller.input_received
+		ArgodeSystem.log("🎮 Input received via ArgodeController - continuing", ArgodeSystem.LOG_LEVEL.DEBUG)
+		return
+	
+	# Fallback: Try message-specific input methods
+	var message_window = get_message_window()
+	if not message_window:
+		ArgodeSystem.log("❌ Cannot wait for input: No message window or controller found", ArgodeSystem.LOG_LEVEL.CRITICAL)
+		return
+	
+	var message_renderer = get_message_renderer()
+	
+	# Try to use renderer's input waiting method
+	if message_renderer and message_renderer.has_method("wait_for_input"):
+		ArgodeSystem.log("🎮 Waiting for input via message renderer...", ArgodeSystem.LOG_LEVEL.DEBUG)
+		await message_renderer.wait_for_input()
+		return
+	
+	# Try message window's input waiting method
+	if message_window.has_method("wait_for_input"):
+		ArgodeSystem.log("🎮 Waiting for input via message window...", ArgodeSystem.LOG_LEVEL.DEBUG)
+		await message_window.wait_for_input()
+		return
+	
+	# Last resort: Generic input waiting
+	ArgodeSystem.log("🎮 Using fallback input waiting...", ArgodeSystem.LOG_LEVEL.DEBUG)
+	if ArgodeSystem.tree:
+		await ArgodeSystem.tree.process_frame
+		var input_received = false
+		while not input_received:
+			if Input.is_action_just_pressed("argode_advance") or Input.is_action_just_pressed("ui_accept"):
+				input_received = true
+			await ArgodeSystem.tree.process_frame
+	
+	ArgodeSystem.log("🎮 Input received - continuing", ArgodeSystem.LOG_LEVEL.DEBUG)

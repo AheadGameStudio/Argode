@@ -1,0 +1,23 @@
+# Call/Return シンプル設計テスト用シナリオ
+
+# まずキャラクターとUIの基本定義
+character tester "テスター" prefix "t" color="#00FF00"
+
+label start:
+    t "Call/Return の新しいシンプル設計をテストします"
+    t "call test で簡素版をテストします"
+    call test
+    t "戻ってきました！シンプル設計は成功です"
+    t "テスト完了"
+
+label test:
+    t "Call先に到着しました"
+    t "ここでは簡単な処理を実行"
+	menu:
+		"テスト":
+			"テストを実行"
+		"戻る":
+			"前のステップに戻る"
+			return
+    t "return で戻ります"
+    return

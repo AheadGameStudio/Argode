@@ -7,54 +7,48 @@ func _ready():
 	command_description = "指定されたラベルにジャンプします"
 	command_help = "jump label_name"
 
-## 引数検証
+## 引数検証（シンプル版）
 func validate_args(args: Dictionary) -> bool:
-	# デバッグ: 引数を出力
-	ArgodeSystem.log_workflow("🔧 JumpCommand args received: %s" % str(args))
-	# 位置引数は "0", "1", "2" キーで格納される
 	var label_name = get_optional_arg(args, "0", "")
-	ArgodeSystem.log_workflow("🔧 JumpCommand extracted label_name: '%s'" % label_name)
 	if label_name.is_empty():
 		log_error("ジャンプ先のラベル名が指定されていません")
 		return false
 	return true
 
-## コマンド中核処理
+## Universal Block Execution対応のコマンド中核処理
 func execute_core(args: Dictionary) -> void:
 	var label_name = get_required_arg(args, "0", "ジャンプ先ラベル名")
-	
 	if label_name == null:
 		return
 	
-	ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Jumping to label: %s" % label_name)
+	print("🎯 JUMP: Jumping to label: %s" % label_name)
 	
 	# ラベルの存在確認
 	var label_info = ArgodeSystem.LabelRegistry.get_label(label_name)
 	if label_info.is_empty():
-		ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Label '%s' NOT FOUND" % label_name)
 		log_error("ラベル '%s' が見つかりません" % label_name)
 		return
 	
 	var file_path = label_info.get("path", "")
 	var label_line = label_info.get("line", 0)
 	
-	ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Label found: %s at %s (line %d)" % [label_name, file_path, label_line])
+	print("🎯 JUMP: Label found at %s (line %d)" % [file_path, label_line])
 	
-	# StatementManagerの汎用インターフェースを使用してジャンプを実行
+	# StatementManagerを取得
 	var statement_manager = ArgodeSystem.StatementManager
 	if not statement_manager:
-		ArgodeSystem.log_critical("🎯 JUMP_DEBUG: StatementManager not found")
 		log_error("StatementManager not found")
 		return
 	
-	ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Executing jump to %s" % label_name)
+	# 効率的なラベルステートメント取得（StatementManager活用）
+	var label_statements = statement_manager.get_label_statements(label_name)
+	if label_statements.is_empty():
+		log_error("ラベル '%s' にステートメントが見つかりません" % label_name)
+		return
 	
-	# 次のフレームでジャンプを実行（コンテキストスタックの問題を回避）
-	statement_manager.call_deferred("handle_command_result", {
-		"type": "jump",
-		"label": label_name,
-		"file_path": file_path,
-		"line": label_line
-	})
+	print("🎯 JUMP: Found %d statements in label '%s'" % [label_statements.size(), label_name])
 	
-	ArgodeSystem.log_critical("🎯 JUMP_DEBUG: Jump request deferred to StatementManager")
+	# Universal Block Execution: ラベルブロックを直接実行
+	await statement_manager.execute_block(label_statements)
+	
+	print("🎯 JUMP: Jump execution completed")

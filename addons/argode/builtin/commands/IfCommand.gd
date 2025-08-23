@@ -27,10 +27,9 @@ func validate_args(args: Dictionary) -> bool:
 		return false
 	return true
 
-## コマンド中核処理
+## コマンド中核処理 - Universal Block Execution対応
 func execute_core(args: Dictionary) -> void:
-	# If文のデバッグログを追加
-	ArgodeSystem.log_critical("🎯 IF_DEBUG: Starting if condition evaluation")
+	ArgodeSystem.log_critical("🎯 IF_DEBUG: Starting if condition evaluation (Universal Block Execution)")
 	
 	# VariableResolverが初期化されていない場合の保険
 	if not variable_resolver and ArgodeSystem and ArgodeSystem.VariableManager:
@@ -46,8 +45,12 @@ func execute_core(args: Dictionary) -> void:
 		ArgodeSystem.log_critical("🎯 IF_DEBUG: StatementManager not found")
 		return
 	
-	# 現在のif文のステートメント構造を取得
-	var current_statement = statement_manager.get_current_statement()
+	# ExecutionServiceから現在実行中のステートメントを取得
+	if not statement_manager.execution_service:
+		ArgodeSystem.log_critical("🎯 IF_DEBUG: ExecutionService not available")
+		return
+	
+	var current_statement = statement_manager.execution_service.get_executing_statement()
 	if current_statement.is_empty():
 		ArgodeSystem.log_critical("🎯 IF_DEBUG: Could not get current if statement")
 		return
@@ -69,32 +72,19 @@ func execute_core(args: Dictionary) -> void:
 		# elif/else条件をチェック
 		statements_to_execute = _find_matching_elif_else_block(current_statement)
 		if statements_to_execute.size() > 0:
-			# log_info("✅ Found matching elif/else block (%d statements)" % statements_to_execute.size())
-			pass
+			ArgodeSystem.log_critical("🎯 IF_DEBUG: Found matching elif/else block (%d statements)" % statements_to_execute.size())
 		else:
-			# log_info("ℹ️ No matching conditions, skipping all blocks")
-			pass
+			ArgodeSystem.log_critical("🎯 IF_DEBUG: No matching conditions, skipping all blocks")
 	
-	# 選択されたブロックを実行
+	# Universal Block Execution: 選択されたブロックを直接実行
 	if statements_to_execute.size() > 0:
-		# log_info("🎯 Pushing if block statements to ContextService...")
-		
-		# ContextServiceを取得
-		var context_service = statement_manager.context_service
-		if context_service:
-			# 子ステートメントをContextServiceにプッシュ
-			context_service.push_context(statements_to_execute, "if_block")
-			# log_info("✅ If block statements pushed to context")
-		else:
-			# log_error("ContextService not found")
-			pass
-		
-		# log_info("✅ If block execution setup completed")
+		ArgodeSystem.log_critical("🎯 IF_DEBUG: Executing block via Universal Block Execution")
+		await statement_manager.execute_block(statements_to_execute)
+		ArgodeSystem.log_critical("🎯 IF_DEBUG: Block execution completed")
 	else:
-		# log_info("ℹ️ No statements to execute, continuing to next statement")
-		pass
+		ArgodeSystem.log_critical("🎯 IF_DEBUG: No statements to execute, continuing")
 	
-	# log_info("IfCommand: 条件分岐完了")
+	ArgodeSystem.log_critical("🎯 IF_DEBUG: If command completed")
 
 ## 条件を評価
 func _evaluate_condition(args: Dictionary) -> bool:

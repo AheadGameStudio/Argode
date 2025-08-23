@@ -20,15 +20,26 @@ GDScript による記述を中心とし、RGD（Rule-based Game Description）�
 - **Registry Layer**: コマンド・ラベル・定義の高速検索インデックス
 - **Command Pattern**: 全命令の独立実装による拡張性確保
 
-### 2. Service Layer Pattern による内部アーキテクチャ
+### 2. Universal Block Execution と Execution Path Management
 
-実装の複雑性を隠蔽しつつ、内部的には高度に専門化された Service 層で処理：
+実行制御の複雑性を排除し、シンプルで追跡可能な実行モデルを採用：
 
-- **ExecutionService**: 実行フロー制御・状態管理
-- **ContextService**: ネストした実行コンテキスト管理
-- **CallStackService**: Call/Return スタック専用処理
-- **InputHandlerService**: 入力制御・待機状態管理
-- **UIControlService**: UI 制御とメッセージウィンドウ管理
+- **Universal Block Execution**: すべての実行（main/label/call/menu）が同一の`execute_block()`ロジック
+- **Execution Path Management**: LabelRegistryベースの軽量パス追跡システム
+- **Command Self-Management**: 各コマンドが自己完結型で実行・UI制御を担当
+- **Structured Debugging**: 階層化されたデバッグ出力による実行フローの可視化
+
+#### 従来サービス層からの脱却
+
+**削除対象**:
+- **ContextService**: 複雑なネストコンテキスト管理 → シンプルなパススタックに統合
+- **CallStackService**: 専用スタック管理 → ExecutionPathManagerに統合
+- **InputHandlerService**: 複雑な入力状態管理 → UIManager直接制御に簡略化
+
+**新設計**:
+- **ExecutionPathManager**: LabelRegistry互換の軽量パス管理（push/pop操作のみ）
+- **Command Direct UI Control**: SayCommand/MenuCommandが直接ArgodeSystem.UIManagerを使用
+- **Unified Input Management**: ArgodeController.input_receivedシグナルによる一元化
 
 ### 3. 遅延パースとパフォーマンス最適化
 
@@ -45,7 +56,7 @@ GDScript による記述を中心とし、RGD（Rule-based Game Description）�
 
 **v1.2.0の最重要事項**: ADVエンジンとしての最低限機能を**コマンドとして**実装可能な状態を実現し、ユーザーが容易にカスタムコマンドを追加できる基盤を確立する。
 
-## 完全アーキテクチャ図
+## Universal Block Execution アーキテクチャ図
 
 ```mermaid
 graph TB
@@ -56,27 +67,23 @@ graph TB
     
     subgraph "ArgodeSystem Core"
         AS[ArgodeSystem<br/>統括・初期化・ログ]
+        CTRL[ArgodeController<br/>統一入力管理]
     end
     
     subgraph "Manager Layer (統一API)"
-        SM[StatementManager<br/>実行司令塔]
+        SM[StatementManager<br/>汎用ブロック実行インフラ]
         DM[DebugManager<br/>デバッグ制御]
         LM[LayerManager<br/>表示レイヤー管理]
         VM[VariableManager<br/>変数管理]
-        UM[UIManager<br/>UI統括]
+        UM[UIManager<br/>UI統括・入力待機]
         AM[AssetManager<br/>リソース管理]
         TM[TransitionManager<br/>場面転換]
         IM[InlineCommandManager<br/>インラインタグ]
     end
     
-    subgraph "Service Layer (内部実装)"
-        ES[ExecutionService<br/>実行制御]
-        CS[ContextService<br/>コンテキスト管理]
-        CSS[CallStackService<br/>Call/Return]
-        IHS[InputHandlerService<br/>入力制御]
-        UICS[UIControlService<br/>UI制御]
-        VR[VariableResolver<br/>変数解決]
-        TS[TypewriterService<br/>タイプライター]
+    subgraph "Execution Layer (シンプル化)"
+        ES[ExecutionService<br/>Universal Block Execution]
+        EPM[ExecutionPathManager<br/>軽量パス追跡]
     end
     
     subgraph "Registry Layer (高速検索)"
@@ -88,7 +95,6 @@ graph TB
     
     subgraph "Parser Layer (データ変換)"
         RP[RGDParser<br/>階層パース]
-        
     end
     
     subgraph "Renderer Layer (表示制御)"
@@ -101,10 +107,13 @@ graph TB
         ACO[AnimationCoordinator<br/>アニメ統括]
     end
     
-    subgraph "Command Layer (拡張可能)"
+    subgraph "Command Layer (自己管理型)"
         CB[ArgodeCommandBase<br/>基底クラス]
-        BC[BuiltinCommands<br/>組み込みコマンド]
-        CC[CustomCommands<br/>カスタムコマンド]
+        SC[SayCommand<br/>直接UI制御]
+        MC[MenuCommand<br/>直接UI制御]
+        CC[CallCommand<br/>パス管理]
+        JC[JumpCommand<br/>ブロック実行]
+        CUSTOM[CustomCommands<br/>カスタムコマンド]
     end
     
     subgraph "View Layer (UI コンポーネント)"
@@ -116,6 +125,7 @@ graph TB
     API --> AS
     
     AS --> SM
+    AS --> CTRL
     AS --> DM
     AS --> LM
     AS --> VM
@@ -125,18 +135,23 @@ graph TB
     AS --> IM
     
     SM --> ES
-    SM --> CS
-    SM --> CSS
-    SM --> IHS
-    SM --> UICS
-    
-    SM --> RP
-    VM --> VR
+    ES --> EPM
+    ES --> RP
     
     AS --> CR
     AS --> LR
     AS --> DR
     AS --> MAR
+    
+    SC --> UM
+    MC --> UM
+    CC --> EPM
+    JC --> ES
+    
+    CTRL --> UM
+    
+    UM --> MR
+    UM --> MW
     
     SM --> MR
     SM --> CHR

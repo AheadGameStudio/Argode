@@ -1,0 +1,1017 @@
+# ArgodeStatementManager.gd (Service Layer Pattern)
+extends RefCounted
+class_name ArgodeStatementManager
+
+## 統一API提供のStatementManager (200行以下)
+## 内部実装はServiceクラスに分離、カスタムコマンド向け統一インターフェース維持
+
+# 内部Service層（ユーザー非公開）
+var execution_service: RefCounted  # ArgodeExecutionService
+# call_stack_service: 廃止（CallCommandが静的スタックで管理）
+var context_service: RefCounted  # ArgodeContextService
+var input_handler_service: RefCounted  # ArgodeInputHandlerService
+var ui_control_service: ArgodeUIControlService
+var definition_service: RefCounted  # 動的読み込みのため一時的にRefCountedとして宣言
+
+# RGDパーサー・システム参照
+var rgd_parser: ArgodeRGDParser
+var inline_command_manager: ArgodeInlineCommandManager
+var message_window: ArgodeMessageWindow = null
+var message_renderer: ArgodeMessageRenderer = null
+
+# 実行状態管理（公開プロパティ）
+var is_executing: bool = false
+var is_paused: bool = false
+
+func _init():
+	ArgodeSystem.log_workflow("StatementManager initializing with Service Layer Pattern")
+	_initialize_services()
+	rgd_parser = ArgodeRGDParser.new()
+	inline_command_manager = ArgodeInlineCommandManager.new()
+	if input_handler_service:
+		input_handler_service.valid_input_received.connect(_on_valid_input_received)
+
+## 初期化準備完了フラグ
+var _is_ready: bool = false
+
+## 子コンテキスト実行中フラグ（再帰防止）
+var _is_executing_child_context: bool = false
+
+## StatementManagerが使用できる状態かチェック
+func ensure_ready():
+	if not _is_ready:
+		_setup_parser_registry()
+		_is_ready = true
+
+## パーサーにCommandRegistryを設定（遅延実行）
+func _setup_parser_registry():
+	if rgd_parser and ArgodeSystem and ArgodeSystem.CommandRegistry:
+		rgd_parser.set_command_registry(ArgodeSystem.CommandRegistry)
+		ArgodeSystem.log_workflow("🔧 RGDParser CommandRegistry configured")
+	
+	# InlineCommandManagerのTagRegistryを初期化
+	if inline_command_manager and ArgodeSystem and ArgodeSystem.CommandRegistry:
+		inline_command_manager.initialize_tag_registry(ArgodeSystem.CommandRegistry)
+		ArgodeSystem.log_workflow("🔧 InlineCommandManager TagRegistry configured")
+	
+	ArgodeSystem.log_workflow("StatementManager initialization completed")
+
+func _initialize_services():
+	execution_service = ArgodeExecutionService.new()
+	# call_stack_service: 廃止（CallCommandが静的スタックで管理）
+	context_service = ArgodeContextService.new()
+	input_handler_service = ArgodeInputHandlerService.new()
+	ui_control_service = ArgodeUIControlService.new()
+	
+	# DefinitionServiceを動的読み込み
+	var DefinitionServiceClass = load("res://addons/argode/services/ArgodeDefinitionService.gd")
+	definition_service = DefinitionServiceClass.new()
+	
+	# CallStackServiceは廃止：CallCommandの静的スタック使用
+	
+	# InputHandlerServiceとの連携は遅延実行（Controllerの初期化完了を待つ）
+	call_deferred("_connect_controller_services")
+	
+	ArgodeSystem.log_debug_detail("All internal services initialized (CallStackService removed - using CallCommand static stack)")
+
+## ArgodeControllerとの連携を設定（遅延実行）
+func _connect_controller_services():
+	# ArgodeControllerとの連携を設定
+	var controller = ArgodeSystem.Controller
+	if controller and controller.has_method("connect_input_handler_service"):
+		controller.connect_input_handler_service(input_handler_service)
+		ArgodeSystem.log_workflow("InputHandlerService connected to ArgodeController via StatementManager")
+	else:
+		# まだControllerが準備されていない場合は再試行
+		call_deferred("_connect_controller_services")
+
+# === カスタムコマンド向け統一API ===
+
+func load_scenario_file(file_path: String) -> bool:
+	if not FileAccess.file_exists(file_path):
+		ArgodeSystem.log_critical("Scenario file not found: %s" % file_path)
+		return false
+	
+	# パーサーのCommandRegistry設定を確認・再設定
+	if rgd_parser and not rgd_parser.command_registry and ArgodeSystem.CommandRegistry:
+		rgd_parser.set_command_registry(ArgodeSystem.CommandRegistry)
+		ArgodeSystem.log_workflow("🔧 RGDParser CommandRegistry configured in load_scenario_file")
+	
+	var statements = rgd_parser.parse_file(file_path)
+	if statements.is_empty():
+		ArgodeSystem.log_critical("Failed to parse scenario file: %s" % file_path)
+		return false
+	
+	# デバッグ: パース結果を表示
+	ArgodeSystem.log_workflow("🔧 Parsed %d statements from %s:" % [statements.size(), file_path])
+	for i in range(statements.size()):
+		var stmt = statements[i]
+		ArgodeSystem.log_workflow("  [%d] type=%s, name=%s, args=%s" % [i, stmt.get("type", ""), stmt.get("name", ""), stmt.get("args", [])])
+	
+	return execution_service.start_execution_session(statements, file_path)
+
+func start_execution() -> bool:
+	ensure_ready()  # 初期化を確実に実行
+	if not execution_service.is_executing:
+		ArgodeSystem.log_critical("No execution session active")
+		return false
+	_ensure_message_system_ready()
+	ArgodeSystem.log_workflow("Scenario execution started")
+	# 新しい設計: start_execution_sessionで既に非同期実行が開始されているため、何もしない
+	# execute_blockは内部で非同期実行されている
+	return true
+
+func play_from_label(label_name: String) -> bool:
+	ensure_ready()  # 初期化を確実に実行
+	var label_registry = ArgodeSystem.LabelRegistry
+	if not label_registry:
+		ArgodeSystem.log_critical("LabelRegistry not found")
+		return false
+	
+	# ラベル情報を取得
+	var label_info = label_registry.get_label(label_name)
+	if label_info.is_empty():
+		ArgodeSystem.log_critical("Label not found: %s" % label_name)
+		return false
+	
+	var file_path = label_info.get("path", "")
+	var label_line = label_info.get("line", 0)
+	
+	ArgodeSystem.log_workflow("Playing from label: %s at %s:%d" % [label_name, file_path, label_line])
+	
+	# execution_serviceの存在確認
+	if not execution_service:
+		ArgodeSystem.log_critical("⚠️ CRITICAL: execution_service is null - initializing fallback execution")
+		# フォールバック: 直接実行
+		return await _fallback_play_from_label(label_name, file_path, label_line)
+	
+	# 指定されたラベルのブロック内容をパース
+	var label_statements = await _parse_label_block(file_path, label_name)
+	if label_statements.is_empty():
+		ArgodeSystem.log_critical("No statements found in label block: %s" % label_name)
+		return false
+	
+	# ラベルブロックのステートメントで実行セッションを開始
+	if not execution_service.start_execution_session(label_statements, file_path):
+		ArgodeSystem.log_critical("Failed to start execution session for label: %s" % label_name)
+		return false
+	
+	# 新しい設計: start_execution_sessionで既に非同期実行が開始されているため、待機は不要
+	# execute_blockは内部で非同期実行されている
+	
+	return true
+
+## 指定されたラベルのブロック内容をパース
+func _parse_label_block(file_path: String, label_name: String) -> Array:
+	if rgd_parser and not rgd_parser.command_registry and ArgodeSystem.CommandRegistry:
+		rgd_parser.set_command_registry(ArgodeSystem.CommandRegistry)
+	
+	var statements = rgd_parser.parse_label_block(file_path, label_name)
+	
+	# デバッグ: ラベルブロックのパース結果を表示
+	ArgodeSystem.log_workflow("🔧 Parsed %d statements from label '%s':" % [statements.size(), label_name])
+	for i in range(statements.size()):
+		var stmt = statements[i]
+		ArgodeSystem.log_workflow("  [%d] type=%s, name=%s, args=%s" % [i, stmt.get("type", ""), stmt.get("name", ""), stmt.get("args", [])])
+	
+	return statements
+
+## パブリックなラベルブロックパースメソッド（Callコマンド用）
+func parse_label_block(file_path: String, label_name: String) -> Array:
+	return await _parse_label_block(file_path, label_name)
+
+## フォールバック実行（Service Layer Pattern不使用）
+func _fallback_play_from_label(label_name: String, file_path: String, label_line: int) -> bool:
+	"""Service Layerが使用できない場合のフォールバック実行"""
+	ArgodeSystem.log_workflow("🔧 Using fallback execution for label: %s" % label_name)
+	
+	# 従来の実行方式を使用
+	# ここに既存のラベル実行ロジックを実装
+	# 現在は簡単なログ出力のみ
+	ArgodeSystem.log_workflow("📜 Would execute scenario from %s:%d" % [file_path, label_line])
+	
+	return true
+
+func pause_execution(reason: String = ""):
+	execution_service.pause_execution()
+	if reason != "":
+		ArgodeSystem.log_workflow("Execution paused: %s" % reason)
+
+func resume_execution():
+	execution_service.resume_execution()
+	ArgodeSystem.log_workflow("🔄 Execution service resumed - main loop will continue naturally")
+
+func stop_execution():
+	execution_service.stop_execution()
+	# CallStackServiceは廃止：CallCommandの静的スタックを直接クリア
+	CallCommand.call_stack.clear()
+	context_service.clear_context_stack()
+	ui_control_service.reset_ui_state()
+
+func set_waiting_for_command(waiting: bool, reason: String = ""):
+	# 新しい設計: 汎用ブロック実行エンジンではコマンド待ち状態は不要
+	# 後方互換性のためログ出力のみ
+	if waiting:
+		ArgodeSystem.log_workflow("🎯 COMPAT: Command waiting requested: %s" % reason)
+	else:
+		ArgodeSystem.log_workflow("🎯 COMPAT: Command waiting cleared: %s" % reason)
+
+
+func continue_execution():
+	ArgodeSystem.log("🔄 StatementManager: continue_execution() called")
+	
+	# 新しい設計では、ExecutionServiceは汎用ブロック実行エンジンであり
+	# 個別の状態管理やメインループは持たない
+	# continue_executionは実際には新しいブロック実行を開始することになる
+	
+	ArgodeSystem.log("⚠️ StatementManager: continue_execution() not implemented in new block execution design")
+	ArgodeSystem.log("� StatementManager: Use execute_block() or start_execution_session() instead")
+
+func get_current_statement() -> Dictionary:
+	# 新しい設計: ExecutionServiceから実行中ステートメントを取得
+	if execution_service and execution_service.has_method("get_executing_statement"):
+		return execution_service.get_executing_statement()
+	elif execution_service and "executing_statement" in execution_service:
+		return execution_service.executing_statement
+	else:
+		ArgodeSystem.log_critical("🚨 get_current_statement: ExecutionService not available or no executing statement")
+		return {}
+
+func is_running() -> bool:
+	return execution_service.is_running()
+
+func get_variable(name: String):
+	return ArgodeSystem.VariableManager.get_variable(name)
+
+func set_variable(name: String, value):
+	ArgodeSystem.VariableManager.set_variable(name, value)
+
+func evaluate_expression(expression: String):
+	var variable_manager = ArgodeSystem.VariableManager
+	if variable_manager and variable_manager.has_method("evaluate_expression"):
+		return variable_manager.evaluate_expression(expression)
+	return null
+
+func show_message(text: String, character: String = ""):
+	_ensure_message_system_ready()
+	
+	ArgodeSystem.log("🔍 show_message: message_renderer=%s, message_window=%s" % [message_renderer, message_window])
+	
+	if message_renderer:
+		# InlineCommandManagerでテキストを前処理（変数展開・タグ処理）
+		var processed_result = inline_command_manager.process_text(text)
+		var display_text = processed_result.get("display_text", text)
+		var position_commands = processed_result.get("position_commands", [])
+		
+		# 位置ベースコマンド付きメッセージレンダリング
+		message_renderer.render_message_with_position_commands(character, display_text, position_commands, inline_command_manager)
+		ArgodeSystem.log("📺 Message displayed via renderer: %s: %s" % [character, display_text], ArgodeSystem.LOG_LEVEL.WORKFLOW)
+		
+		# レンダリング完了後に入力待ち状態になるまで待機
+		# 完了コールバックで set_waiting_for_input(true) が呼ばれる
+		
+	else:
+		ArgodeSystem.log("⚠️ show_message: using fallback window path")
+		# メッセージウィンドウが無い場合は動的に作成
+		if not message_window:
+			_create_default_message_window()
+			# 作成後に再度レンダラーが利用可能かをチェック
+			if message_renderer:
+				ArgodeSystem.log("✅ Renderer now available, using renderer path")
+				# InlineCommandManagerでテキストを前処理（変数展開・タグ処理）
+				var processed_result = inline_command_manager.process_text(text)
+				var display_text = processed_result.get("display_text", text)
+				var position_commands = processed_result.get("position_commands", [])
+				
+				# 位置ベースコマンド付きメッセージレンダリング
+				message_renderer.render_message_with_position_commands(character, display_text, position_commands, inline_command_manager)
+				ArgodeSystem.log("📺 Message displayed via renderer (after creation): %s: %s" % [character, display_text], ArgodeSystem.LOG_LEVEL.WORKFLOW)
+				return
+		
+		# メッセージウィンドウを使って表示
+		if message_window:
+			_display_message_via_window(text, character)
+		else:
+			# 代替処理：メッセージレンダラーが無い場合はコンソールログに出力
+			var display_text = ""
+			if character != "":
+				display_text = "%s: %s" % [character, text]
+			else:
+				display_text = text
+			
+			ArgodeSystem.log("📺 Message Display: %s" % display_text, ArgodeSystem.LOG_LEVEL.WORKFLOW)
+			
+			# 今後のために：簡単なメッセージウィンドウまたはレンダラーの初期化を試みる
+			_try_fallback_message_display(display_text)
+
+func handle_command_result(result_data: Dictionary):
+	match result_data.get("type", ""):
+		"jump": _handle_jump_via_services(result_data)
+		"jump_to_position": _handle_jump_to_position_via_services(result_data)
+		"call": _handle_call_via_services(result_data)
+		"return": _handle_return_via_services(result_data)
+		"statements": _handle_statements_via_services(result_data)
+
+func push_call_context(file_path: String, statement_index: int):
+	# CallStackServiceは廃止：CallCommandが直接管理
+	var return_info = {
+		"return_file": file_path,
+		"return_index": statement_index
+	}
+	CallCommand.call_stack.push_back(return_info)
+
+func pop_call_context() -> Dictionary:
+	# CallStackServiceは廃止：CallCommandが直接管理
+	return CallCommand.pop_call_stack()
+
+func calculate_return_index() -> int:
+	return execution_service.calculate_return_index()
+
+func _execute_child_statements(statements: Array):
+	context_service.execute_child_statements(statements)
+
+# === 内部実装層 ===
+
+## 子コンテキスト実行処理（ExecutionServiceから呼ばれるヘルパー）
+func _handle_child_context_execution() -> bool:
+	"""子コンテキスト実行を処理し、実行されたかを返す"""
+	var executed_child_context = false
+	
+	# ContextServiceで子コンテキストがプッシュされているかチェック
+	if not context_service.is_context_stack_empty():
+		var child_context = context_service.get_current_context()
+		var child_statements = child_context.get("statements", [])
+		if not child_statements.is_empty():
+			ArgodeSystem.log_critical("🎯 CHILD_CONTEXT_DEBUG: Executing child context statements (%d statements)..." % child_statements.size())
+			ArgodeSystem.log_critical("🎯 CHILD_CONTEXT_DEBUG: Context name: %s" % child_context.get("context_name", "unknown"))
+			
+			# 子ステートメントの詳細をログ出力
+			for i in range(child_statements.size()):
+				var stmt = child_statements[i]
+				ArgodeSystem.log_critical("🎯 CHILD_CONTEXT_DEBUG: Statement %d: Type=%s, Name=%s" % [i, stmt.get("type", "unknown"), stmt.get("name", "unknown")])
+			
+			# 子コンテキスト専用の実行ループを開始
+			var child_execution_success = await _execute_child_context_loop(child_statements)
+			
+			ArgodeSystem.log_workflow("🔧 Child context execution completed")
+			
+			# � CALL CONTEXT FIX: Call先コンテキストの重複実行を防ぐ
+			var current_context = context_service.get_current_context()
+			if current_context and current_context.get("context_name", "").begins_with("call_"):
+				ArgodeSystem.log_critical("🚨 CALL_CONTEXT_COMPLETED: Removing call context to prevent re-execution: %s" % current_context.get("context_name"))
+				# Call先コンテキストを強制削除
+				context_service.pop_context()
+			
+			# �🚨 CRITICAL FIX: 子コンテキスト実行完了後に入力待ち状態をリセット
+			if execution_service.is_waiting_for_input:
+				ArgodeSystem.log_workflow("🔧 Child context completed - clearing input wait state")
+				execution_service.set_waiting_for_input(false)
+			# 🚨 MENU CONTEXT FIX: 子コンテキスト完了後にコマンド待ち状態もリセット
+			ArgodeSystem.log_critical("🎯 MENU_COMPLETION_FIX: Child context completed (no command wait state in new design)")
+			# コンテキストをポップ
+			context_service.pop_context()
+			executed_child_context = true
+	
+	return executed_child_context
+
+## 子コンテキスト専用実行ループ
+func _execute_child_context_loop(statements: Array) -> bool:
+	"""子コンテキストの文を順次実行（入力待ちを尊重）"""
+	
+	# 🔧 CRITICAL FIX: 再帰呼び出し防止
+	if _is_executing_child_context:
+		ArgodeSystem.log_critical("🚨 RECURSION_PREVENTION: Child context loop already running - skipping")
+		return true
+	
+	_is_executing_child_context = true
+	ArgodeSystem.log_critical("🎯 LOOP_START_DEBUG: _execute_child_context_loop STARTED with %d statements" % statements.size())
+	var current_index = 0
+	
+	while current_index < statements.size():
+		var statement = statements[current_index]
+		ArgodeSystem.log_critical("🎯 CHILD_CONTEXT_DEBUG: Executing child statement %d: Type=%s, Name=%s" % [current_index, statement.get("type", "unknown"), statement.get("name", "unknown")])
+		ArgodeSystem.log_critical("🎯 INDEX_DEBUG: Before execution - current_index=%d, statements.size()=%d" % [current_index, statements.size()])
+		
+		# 子コンテキスト用にexecuting_statementを設定
+		execution_service.executing_statement = statement
+		
+		# ステートメントを実行
+		await execution_service.execute_single_statement(statement, self)
+		
+		# Return命令の場合は子コンテキストを終了
+		if statement.get("name") == "return":
+			ArgodeSystem.log_workflow("🔧 Return detected in child context - terminating")
+			break
+		
+		# Menu実行後にCall先コンテキストが深度1の場合、自動的に終了
+		if statement.get("name") == "menu" and context_service.get_context_depth() == 1:
+			ArgodeSystem.log_critical("🎯 MENU_COMPLETION_FIX: Menu completed in Call context - auto-terminating")
+			break
+		
+		# 入力待ち状態の場合は一時停止
+		if execution_service.is_waiting_for_input:
+			ArgodeSystem.log_workflow("🔧 Child context waiting for input...")
+			while execution_service.is_waiting_for_input:
+				await Engine.get_main_loop().process_frame
+			ArgodeSystem.log_workflow("🔧 Child context input received - continuing")
+		
+		current_index += 1
+		ArgodeSystem.log_critical("🎯 INDEX_DEBUG: After increment - current_index=%d" % current_index)
+	
+	_is_executing_child_context = false
+	ArgodeSystem.log_critical("🎯 LOOP_END_DEBUG: _execute_child_context_loop COMPLETED")
+	return true
+
+func _handle_text_statement(statement: Dictionary):
+	var text = statement.get("content", "")
+	var character = statement.get("character", "")
+	
+	# Phase 1 Step 1-1B: UIControlServiceへの段階的移行開始
+	# まずは委譲メソッドを試し、フォールバックで従来方式
+	show_message_via_service(text, character)
+	# 入力待ち状態は show_message → message_renderer の完了コールバックで設定される
+
+func _convert_args_to_dict(args: Array) -> Dictionary:
+	# フォールバック: 安全な処理を優先
+	var result_dict = {}
+	for i in range(args.size()):
+		result_dict[str(i)] = args[i]  # "0", "1", "2" 形式（既存コマンドとの互換性）
+	return result_dict
+
+func _is_keyword_argument(arg: String) -> bool:
+	return arg.contains("=") and not arg.begins_with("=") and not arg.ends_with("=")
+
+func _handle_jump_via_services(result_data: Dictionary):
+	var label_name = result_data.get("label", "")
+	if label_name == "":
+		ArgodeSystem.log_critical("Jump command missing label name")
+		return
+	var label_registry = ArgodeSystem.LabelRegistry
+	if not label_registry:
+		ArgodeSystem.log_critical("LabelRegistry not found for jump")
+		return
+	var label_info = label_registry.get_label(label_name)
+	if label_info.is_empty():
+		ArgodeSystem.log_critical("Label not found: %s" % label_name)
+		return
+	
+	var file_path = label_info.get("path", "")
+	var line = label_info.get("line", 0)
+	ArgodeSystem.log_workflow("Jumping to label: %s at %s:%d" % [label_name, file_path, line])
+	
+	# execution_serviceの存在確認
+	if not execution_service:
+		ArgodeSystem.log_critical("⚠️ CRITICAL: execution_service is null - cannot execute jump")
+		ArgodeSystem.log_critical("🔧 Service Layer Pattern not properly initialized")
+		return
+	
+	# 現在の実行を停止してジャンプ先のラベルから開始
+	execution_service.stop_execution()
+	ArgodeSystem.log_workflow("🔧 Jump: Stopped current execution, starting from label: %s" % label_name)
+	
+	# 新しいラベルから実行を開始（call_deferredで非同期実行）
+	call_deferred("play_from_label", label_name)
+
+func _handle_jump_to_position_via_services(result_data: Dictionary):
+	"""位置指定でのJump処理 - Return処理で使用"""
+	var file_path = result_data.get("file_path", "")
+	var statement_index = result_data.get("statement_index", -1)
+	
+	if file_path.is_empty() or statement_index < 0:
+		ArgodeSystem.log_critical("Jump to position: Invalid arguments - file: %s, index: %d" % [file_path, statement_index])
+		return
+	
+	ArgodeSystem.log_workflow("🎯 Jump to position: %s[%d]" % [file_path, statement_index])
+	
+	# execution_serviceの存在確認
+	if not execution_service:
+		ArgodeSystem.log_critical("⚠️ CRITICAL: execution_service is null - cannot execute jump to position")
+		return
+	
+	# 現在の実行を停止
+	execution_service.stop_execution()
+	ArgodeSystem.log_workflow("🔧 Jump to position: Stopped current execution")
+	
+	# 指定位置から実行を再開（call_deferredで非同期実行）
+	call_deferred("resume_from_position", file_path, statement_index)
+
+func resume_from_position(file_path: String, statement_index: int):
+	"""指定位置から実行を再開"""
+	ArgodeSystem.log_workflow("🔧 Resuming execution from %s[%d]" % [file_path, statement_index])
+	
+	# 実行サービスで指定位置から再開
+	if execution_service:
+		execution_service.resume_execution_from_position(file_path, statement_index)
+	else:
+		ArgodeSystem.log_critical("ExecutionService not available for position resume")
+
+func _handle_call_via_services(result_data: Dictionary):
+	var label_name = result_data.get("label", "")
+	if label_name == "":
+		ArgodeSystem.log_critical("Call command missing label name")
+		return
+	
+	ArgodeSystem.log_workflow("📞 Call: Creating sub-execution context for label: %s" % label_name)
+	
+	# CallはJumpではなく、新しい実行コンテキストを作成
+	# 1. LabelRegistryからラベル情報を取得
+	var label_registry = ArgodeSystem.LabelRegistry
+	if not label_registry:
+		ArgodeSystem.log_critical("LabelRegistry not found for call")
+		return
+	
+	var label_info = label_registry.get_label(label_name)
+	if label_info.is_empty():
+		ArgodeSystem.log_critical("Label not found for call: %s" % label_name)
+		return
+	
+	# 2. Call先のラベルブロックをパースして文を取得
+	var label_file_path = label_info.get("path", "")
+	var label_line = label_info.get("line", -1)
+	
+	if label_file_path.is_empty() or label_line == -1:
+		ArgodeSystem.log_critical("Invalid label info for call: %s" % str(label_info))
+		return
+	
+	# 3. RGDParserでCall先ラベルの文を取得
+	var statements = rgd_parser.parse_label_block(label_file_path, label_name)
+	
+	if statements.is_empty():
+		ArgodeSystem.log_critical("No statements found in call label: %s" % label_name)
+		return
+	
+	# 4. ContextServiceでCall先の文を子コンテキストとして実行
+	ArgodeSystem.log_workflow("📞 Call: Executing %d statements from label %s as child context" % [statements.size(), label_name])
+	context_service.execute_child_statements(statements)
+
+func _handle_return_via_services(result_data: Dictionary):
+	# 新しい設計：Returnは子コンテキストの終了マーカー
+	# ContextServiceが子コンテキストの完了を検知して自動的に元の実行に戻る
+	ArgodeSystem.log_workflow("🔙 Return: Marking child context for completion - parent execution will resume automatically")
+	
+	# Call context cleanup: 現在のコンテキスト(menu_choice)を確認し、その親がCallコンテキストかチェック
+	if context_service:
+		var current_context = context_service.get_current_context()
+		ArgodeSystem.log_critical("🎯 RETURN_CONTEXT_CHECK: Current context='%s', depth=%d" % [current_context.get("context_name", ""), context_service.get_context_depth()])
+		
+		# 現在のコンテキストがmenu_choiceで、その下にCallコンテキストがある場合
+		if current_context.get("context_name", "").begins_with("menu_choice"):
+			# 一時的にmenu_choiceコンテキストをpopして親のCallコンテキストを確認
+			context_service.pop_context()
+			var parent_context = context_service.get_current_context()
+			ArgodeSystem.log_critical("🎯 RETURN_PARENT_CHECK: Parent context='%s'" % parent_context.get("context_name", ""))
+			
+			if parent_context.get("context_name", "").begins_with("call_"):
+				ArgodeSystem.log_critical("🎯 CALL_CONTEXT_CLEANUP: Removing completed Call context '%s'" % parent_context.get("context_name", ""))
+				context_service.pop_context()
+			else:
+				ArgodeSystem.log_critical("🎯 RETURN_DEBUG: Parent context '%s' is not a Call context" % parent_context.get("context_name", ""))
+		elif current_context.get("context_name", "").begins_with("call_"):
+			ArgodeSystem.log_critical("🎯 CALL_CONTEXT_CLEANUP: Removing completed Call context '%s'" % current_context.get("context_name", ""))
+			context_service.pop_context()
+		else:
+			ArgodeSystem.log_critical("🎯 RETURN_DEBUG: Current context '%s' is not a Call context" % current_context.get("context_name", ""))
+
+## Return後の実行再開処理
+func _restart_execution_from_index(index: int):
+	"""Return後に指定インデックスから実行を再開"""
+	ArgodeSystem.log_workflow("🔙 Restarting execution from index %d" % index)
+	
+	# 新しい設計では、ExecutionServiceは汎用ブロック実行エンジンであり
+	# インデックスベースの実行再開は行わない
+	# 代わりに適切なラベルブロックから再実行する必要がある
+	
+	ArgodeSystem.log_workflow("⚠️ _restart_execution_from_index not supported in new block execution design")
+	ArgodeSystem.log_workflow("💡 Use play_from_label() or execute_block() with appropriate statements instead")
+
+func _handle_statements_via_services(result_data: Dictionary):
+	var child_statements = result_data.get("statements", [])
+	context_service.execute_child_statements(child_statements)
+
+func _on_valid_input_received(action_name: String):
+	ArgodeSystem.log_workflow("🎮 StatementManager received input: %s" % action_name)
+	
+	# 【デバッグ】現在の状態を詳細ログ出力
+	# UIControlService経由でメッセージレンダラーを取得
+	var current_message_renderer = null
+	if ui_control_service and ui_control_service.has_method("get_message_renderer"):
+		current_message_renderer = ui_control_service.get_message_renderer()
+	elif ui_control_service and "message_renderer" in ui_control_service:
+		current_message_renderer = ui_control_service.message_renderer
+	
+	var debug_info = {
+		"execution_service_waiting": execution_service.is_waiting_for_input if execution_service else "null",
+		"message_renderer_active": current_message_renderer.is_typewriter_active() if current_message_renderer and current_message_renderer.has_method("is_typewriter_active") else "null",
+		"ui_control_service_active": ui_control_service.is_typewriter_active() if ui_control_service and ui_control_service.has_method("is_typewriter_active") else "null"
+	}
+	ArgodeSystem.log_workflow("🔍 Input Debug State: %s" % str(debug_info))
+	
+	match action_name:
+		"argode_advance", "argode_skip":
+			# 詳細なタイプライター状態判定ログ追加
+			ArgodeSystem.log_workflow("🔍 === Detailed typewriter status check ===")
+			
+			# タイプライター効果が進行中かチェック（複数ソースから確認）
+			var is_typewriter_active = false
+			
+			# Method 1: UIControlService経由でメッセージレンダラーから確認
+			if current_message_renderer and current_message_renderer.has_method("is_typewriter_active"):
+				is_typewriter_active = current_message_renderer.is_typewriter_active()
+				ArgodeSystem.log_workflow("🔍 UIControlService.MessageRenderer.is_typewriter_active(): %s" % is_typewriter_active)
+			else:
+				ArgodeSystem.log_workflow("🔍 UIControlService.MessageRenderer: null or no method")
+			
+			# Method 2: UIControlService直接確認（フォールバック）
+			if not is_typewriter_active and ui_control_service and ui_control_service.has_method("is_typewriter_active"):
+				is_typewriter_active = ui_control_service.is_typewriter_active()
+				ArgodeSystem.log_workflow("🔍 UIControlService.is_typewriter_active(): %s" % is_typewriter_active)
+			else:
+				ArgodeSystem.log_workflow("🔍 UIControlService: %s" % ("checked already" if is_typewriter_active else "null or no method"))
+			
+			ArgodeSystem.log_workflow("🎮 Typewriter status check: active=%s" % is_typewriter_active)
+			
+			if is_typewriter_active:
+				# タイプライター進行中の場合：全文表示に切り替え
+				ArgodeSystem.log_workflow("🎮 Typewriter active - completing typewriter effect")
+				ArgodeSystem.log_workflow("🔍 Pre-complete state: waiting_for_input=%s" % (execution_service.is_waiting_for_input if execution_service else "null"))
+				
+				if current_message_renderer and current_message_renderer.has_method("complete_typewriter"):
+					current_message_renderer.complete_typewriter()
+				elif ui_control_service and ui_control_service.has_method("complete_typewriter"):
+					ui_control_service.complete_typewriter()
+				
+				ArgodeSystem.log_workflow("🔍 Post-complete state: waiting_for_input=%s" % (execution_service.is_waiting_for_input if execution_service else "null"))
+				
+				# タイプライター完了後、明示的に入力待ち状態を設定
+				# フレーム待機してコールバック処理を確実に実行
+				ArgodeSystem.log_workflow("🔍 Waiting for frame to ensure callback completion...")
+				await Engine.get_main_loop().process_frame
+				
+				ArgodeSystem.log_workflow("🔍 After frame wait: waiting_for_input=%s" % (execution_service.is_waiting_for_input if execution_service else "null"))
+				
+				# ExecutionServiceの状態を確認し、必要に応じて入力待ち状態を設定
+				if execution_service and not execution_service.is_waiting_for_input:
+					execution_service.set_waiting_for_input(true)
+					ArgodeSystem.log_workflow("🎮 Set waiting for input after typewriter completion")
+				
+				# ここでreturnして、この入力イベントは次のステートメント進行には使わない
+				ArgodeSystem.log_workflow("🎮 Typewriter completion handled - consuming this input event")
+				return
+			
+			# タイプライターが非アクティブの場合：次のステートメントに進む
+			if execution_service and execution_service.is_waiting_for_input:
+				ArgodeSystem.log_workflow("🎮 Advancing execution due to input: %s" % action_name)
+				ArgodeSystem.log_workflow("🎮 Before: is_waiting_for_input=%s" % execution_service.is_waiting_for_input)
+				execution_service.set_waiting_for_input(false)
+				ArgodeSystem.log_workflow("🎮 After: is_waiting_for_input=%s" % execution_service.is_waiting_for_input)
+				ArgodeSystem.log_workflow("🎮 Input processing completed - execution should resume")
+				
+				# 実行ループを再開するためのシグナルを送信（必要に応じて）
+				# 実行ループは既に入力待ち状態をチェックしているので、フラグの変更だけで十分
+				
+			else:
+				ArgodeSystem.log_workflow("🎮 Input ignored (not waiting): %s" % action_name)
+		_:
+			ArgodeSystem.log_workflow("🎮 Unknown input action: %s" % action_name)
+
+func _ensure_message_system_ready():
+	ArgodeSystem.log("🔍 _ensure_message_system_ready: before - message_window=%s, message_renderer=%s" % [message_window, message_renderer])
+	
+	if not message_window:
+		message_window = ArgodeSystem.UIManager.get_message_window()
+		ArgodeSystem.log("🔍 Got message_window from UIManager: %s" % message_window)
+	if not message_renderer:
+		message_renderer = ArgodeSystem.UIManager.get_message_renderer()
+		ArgodeSystem.log("🔍 Got message_renderer from UIManager: %s" % message_renderer)
+	
+	ArgodeSystem.log("🔍 _ensure_message_system_ready: after - message_window=%s, message_renderer=%s" % [message_window, message_renderer])
+
+func _try_fallback_message_display(display_text: String):
+	"""
+	代替メッセージ表示処理：レンダラーが無い場合の簡単な表示
+	
+	Args:
+		display_text: 表示するテキスト
+	"""
+	# 将来的には簡単なメッセージウィンドウを動的に作成する処理を追加可能
+	# 現在はコンソールログのみ
+	pass
+
+func _create_default_message_window():
+	"""
+	デフォルトのメッセージウィンドウを動的に作成
+	"""
+	var message_window_path = "res://addons/argode/builtin/scenes/default_message_window/default_message_window.tscn"
+	
+	# メッセージウィンドウをUIManagerに追加
+	if ArgodeSystem.UIManager.add_ui(message_window_path, "message", 100):
+		message_window = ArgodeSystem.UIManager.get_ui("message")
+		ArgodeSystem.log("✅ Default message window created and added", ArgodeSystem.LOG_LEVEL.WORKFLOW)
+		
+		# メッセージレンダラーを作成してキャッシュ
+		message_renderer = _create_message_renderer(message_window)
+		if message_renderer:
+			ArgodeSystem.log("✅ Message renderer created and configured", ArgodeSystem.LOG_LEVEL.DEBUG)
+		else:
+			ArgodeSystem.log("❌ Failed to create message renderer", ArgodeSystem.LOG_LEVEL.CRITICAL)
+	else:
+		ArgodeSystem.log("❌ Failed to create default message window", ArgodeSystem.LOG_LEVEL.CRITICAL)
+
+## メッセージレンダラーを作成
+func _create_message_renderer(window: ArgodeMessageWindow) -> ArgodeMessageRenderer:
+	if not window:
+		return null
+	
+	# ArgodeMessageRendererクラスを動的に読み込み
+	var RendererClass = load("res://addons/argode/renderer/ArgodeMessageRenderer.gd")
+	if not RendererClass:
+		ArgodeSystem.log("❌ ArgodeMessageRenderer class not found", ArgodeSystem.LOG_LEVEL.CRITICAL)
+		return null
+	
+	# レンダラーインスタンスを作成
+	var renderer = RendererClass.new(window)
+	
+	# レンダラーをウィンドウに関連付け
+	if renderer.has_method("set_message_window"):
+		renderer.set_message_window(window)
+		ArgodeSystem.log("✅ Message renderer created and linked to window", ArgodeSystem.LOG_LEVEL.DEBUG)
+	
+	# タイプライター完了コールバックを設定
+	if renderer.has_method("set_typewriter_completion_callback"):
+		renderer.set_typewriter_completion_callback(_on_message_rendering_completed)
+		ArgodeSystem.log("✅ Message renderer completion callback set", ArgodeSystem.LOG_LEVEL.DEBUG)
+	
+	return renderer
+
+## メッセージレンダリング完了時のコールバック
+func _on_message_rendering_completed():
+	"""メッセージレンダリング完了時に呼ばれるコールバック"""
+	ArgodeSystem.log_workflow("✅ StatementManager._on_message_rendering_completed called")
+	ArgodeSystem.log_workflow("🔍 Current execution state: waiting_for_input=%s" % (execution_service.is_waiting_for_input if execution_service else "null"))
+	
+	# ExecutionServiceに入力待機状態を設定（重複設定を防ぐ）
+	if execution_service:
+		if not execution_service.is_waiting_for_input:
+			execution_service.set_waiting_for_input(true)
+			ArgodeSystem.log_workflow("⏳ Set waiting for user input to continue")
+		else:
+			ArgodeSystem.log_workflow("ℹ️ Already waiting for user input")
+	else:
+		ArgodeSystem.log_workflow("❌ ExecutionService not available for input waiting")
+	
+	ArgodeSystem.log_workflow("✅ Message rendering completion handling finished")
+
+func _display_message_via_window(text: String, character: String):
+	"""
+	メッセージウィンドウを通してメッセージを表示（UIControlServiceに委譲）
+	"""
+	if ui_control_service:
+		ui_control_service.display_message_via_window(text, character, message_window, execution_service)
+	else:
+		ArgodeSystem.log_workflow("❌ UIControlService not available for window message display")
+
+# ===========================
+# 実行状態管理API
+# ===========================
+
+## 実行状態を設定
+func set_execution_state(executing: bool, paused: bool = false):
+	is_executing = executing
+	is_paused = paused
+	if execution_service:
+		execution_service.set_execution_state(executing, paused)
+	ArgodeSystem.log_debug_detail("Execution state: executing=%s, paused=%s" % [executing, paused])
+
+## 実行状態を取得
+func get_execution_state() -> Dictionary:
+	return {
+		"executing": is_executing,
+		"paused": is_paused,
+		"waiting_for_input": execution_service.is_waiting_for_input if execution_service else false
+	}
+
+# ===========================
+# 定義ステートメント実行API
+# ===========================
+
+## 定義ステートメントを実行（ArgodeSystem._execute_definition_commands用）
+func execute_definition_statements(statements: Array) -> bool:
+	"""
+	Execute definition statements during system initialization.
+	Delegates to DefinitionService for specialized handling.
+	
+	Args:
+		statements: Array of definition statements to execute
+		
+	Returns:
+		bool: True if all statements executed successfully
+	"""
+	if not definition_service:
+		ArgodeSystem.log_critical("DefinitionService not available - using fallback execution")
+		return await _execute_definition_statements_fallback(statements)
+	
+	# DefinitionServiceに委譲
+	return await definition_service.execute_definition_statements(statements, self)
+
+## フォールバック: DefinitionService不使用時の定義実行
+func _execute_definition_statements_fallback(statements: Array) -> bool:
+	"""
+	Fallback execution when DefinitionService is not available.
+	"""
+	if statements.is_empty():
+		ArgodeSystem.log_workflow("No definition statements to execute (fallback)")
+		return true
+	
+	ArgodeSystem.log_workflow("Executing %d definition statements (fallback)..." % statements.size())
+	# 実行状態を設定
+	is_executing = true
+	is_paused = false
+	
+	var success = true
+	
+	for i in range(statements.size()):
+		var statement = statements[i]
+		ArgodeSystem.log_debug_detail("Executing definition statement %d (fallback): %s" % [i + 1, statement.get("command", "unknown")])
+		
+		# 直接コマンド実行
+		var command_result = await _execute_definition_statement_fallback(statement)
+		if not command_result:
+			ArgodeSystem.log_critical("Definition statement %d failed (fallback)" % [i + 1])
+			success = false
+	
+	# 実行状態をリセット
+	is_executing = false
+	is_paused = false
+	
+	if success:
+		ArgodeSystem.log_workflow("All definition statements executed successfully (fallback)")
+	else:
+		ArgodeSystem.log_critical("Some definition statements failed during execution (fallback)")
+	
+	return success
+
+## 単一定義ステートメントを実行（フォールバック用）
+func _execute_definition_statement_fallback(statement: Dictionary) -> bool:
+	"""
+	Execute a single definition statement as fallback when service layer is not available.
+	"""
+	var command_name = statement.get("command", "")
+	var name = statement.get("name", "")  # nameフィールドも確認
+	var args = statement.get("args", [])
+	
+	# commandかnameのどちらかを使用
+	var actual_command = command_name if not command_name.is_empty() else name
+	
+	if actual_command.is_empty():
+		ArgodeSystem.log_critical("Statement has no command name")
+		return false
+	
+	# ArgodeSystemのCommandRegistryを使用してコマンドを実行
+	if not ArgodeSystem.CommandRegistry:
+		ArgodeSystem.log_critical("CommandRegistry not available")
+		return false
+	
+	var command_data = ArgodeSystem.CommandRegistry.get_command(actual_command)
+	if command_data.is_empty():
+		ArgodeSystem.log_critical("Command not found: %s" % actual_command)
+		return false
+	
+	# Dictionaryからインスタンスを取得
+	var command_instance = command_data.get("instance")
+	if not command_instance:
+		ArgodeSystem.log_critical("Command instance not available: %s" % actual_command)
+		return false
+	
+	# 引数をDictionary形式に変換（通常のexecute_commandと同じ形式）
+	var args_dict = _convert_args_to_dict(args)
+	args_dict["statement_manager"] = self
+	
+	# コマンドを実行（エラーハンドリング付き）
+	var execution_result = await command_instance.execute(args_dict)
+	
+	# 実行結果を確認（コマンドによって戻り値の形式が異なる可能性がある）
+	if execution_result == false:
+		ArgodeSystem.log_critical("Command execution failed: %s" % actual_command)
+		return false
+	
+	ArgodeSystem.log_debug_detail("Definition command executed successfully: %s" % command_name)
+	return true
+
+# =============================================================================
+# タイプライター制御メソッド (ArgodeCommandBase用)
+# =============================================================================
+
+## タイプライターを一時停止
+func pause_typewriter():
+	if ui_control_service:
+		ui_control_service.pause_typewriter()
+
+## タイプライターを再開
+func resume_typewriter():
+	if ui_control_service:
+		ui_control_service.resume_typewriter()
+
+## タイプライター速度を変更
+func push_typewriter_speed(new_speed: float):
+	if ui_control_service:
+		ui_control_service.push_typewriter_speed(new_speed)
+
+## タイプライター速度を復元
+func pop_typewriter_speed():
+	if ui_control_service:
+		ui_control_service.pop_typewriter_speed()
+
+## 現在のタイプライター速度を取得
+func get_current_typewriter_speed() -> float:
+	if ui_control_service:
+		return ui_control_service.get_current_typewriter_speed()
+	return 0.05
+
+## タイプライターの状態チェック
+func is_typewriter_paused() -> bool:
+	if ui_control_service:
+		return ui_control_service.is_typewriter_paused()
+	return false
+
+func is_typewriter_active() -> bool:
+	if ui_control_service:
+		return ui_control_service.is_typewriter_active()
+	return false
+
+## タイプライターを即座に完了
+func complete_typewriter():
+	if ui_control_service:
+		ui_control_service.complete_typewriter()
+
+# =============================================================================
+# メッセージアニメーション制御メソッド (SetMessageAnimationCommand用)
+# =============================================================================
+
+# メッセージアニメーション効果のリスト
+var message_animation_effects: Array[Dictionary] = []
+
+## メッセージアニメーション効果を追加
+func add_message_animation_effect(effect_data: Dictionary):
+	message_animation_effects.append(effect_data)
+	ArgodeSystem.log("✨ Message animation effect added: %s" % effect_data.get("type", "unknown"))
+
+## 全メッセージアニメーション効果をクリア
+func clear_message_animations():
+	message_animation_effects.clear()
+	ArgodeSystem.log("🔄 All message animation effects cleared")
+
+## メッセージアニメーションプリセットを適用
+func set_message_animation_preset(preset_name: String):
+	clear_message_animations()
+	
+	match preset_name.to_lower():
+		"default":
+			add_message_animation_effect({"type": "fade", "duration": 0.3})
+			add_message_animation_effect({"type": "slide", "duration": 0.4, "offset_x": 0.0, "offset_y": -4.0})
+		"fast":
+			add_message_animation_effect({"type": "fade", "duration": 0.1})
+			add_message_animation_effect({"type": "scale", "duration": 0.15})
+		"dramatic":
+			add_message_animation_effect({"type": "fade", "duration": 0.5})
+			add_message_animation_effect({"type": "slide", "duration": 0.6, "offset_x": 0.0, "offset_y": -8.0})
+			add_message_animation_effect({"type": "scale", "duration": 0.4})
+		"simple":
+			add_message_animation_effect({"type": "fade", "duration": 0.2})
+		"none":
+			# 何も追加しない（アニメーション無し）
+			pass
+		_:
+			ArgodeSystem.log("⚠️ Unknown message animation preset: %s" % preset_name)
+			return
+	
+	ArgodeSystem.log("🎭 Message animation preset applied: %s (%d effects)" % [preset_name, message_animation_effects.size()])
+
+## 現在のメッセージアニメーション効果を取得
+func get_message_animation_effects() -> Array[Dictionary]:
+	return message_animation_effects.duplicate()
+
+## メッセージアニメーション効果が設定されているかチェック
+func has_message_animation_effects() -> bool:
+	return not message_animation_effects.is_empty()
+
+# =============================================================================
+# UIControlService委譲メソッド（Phase 1, Step 1-1A 新規追加）
+# =============================================================================
+
+## UIControlServiceのメッセージシステム初期化を委譲
+func ensure_ui_message_system_ready() -> void:
+	"""UIControlServiceでメッセージシステムの初期化を確認"""
+	if ui_control_service:
+		ui_control_service.ensure_message_system_ready()
+	else:
+		ArgodeSystem.log_critical("🚨 UIControlService not available for message system initialization")
+
+## UIControlServiceのメッセージ表示を委譲
+func show_message_via_service(text: String, character: String = "") -> void:
+	"""UIControlServiceでメッセージを表示（新しい委譲メソッド）"""
+	if ui_control_service:
+		ui_control_service.show_message(text, character)
+	else:
+		ArgodeSystem.log_critical("🚨 UIControlService not available for message display")
+		# フォールバック: 既存のshow_messageを使用
+		show_message(text, character)

@@ -15,7 +15,7 @@ func validate_args(args: Dictionary) -> bool:
 		return false
 	return true
 
-## コマンド中核処理
+## Universal Block Execution対応のコマンド中核処理
 func execute_core(args: Dictionary) -> void:
 	log_info("SayCommand execute_core started with args: %s" % str(args))
 	
@@ -29,41 +29,26 @@ func execute_core(args: Dictionary) -> void:
 	
 	log_info("SayCommand parsed - character: '%s', message: '%s'" % [character_name, message_text])
 	
-	# StatementManagerを通じてメッセージを表示
-	var statement_manager = args.get("statement_manager")
-	if statement_manager and statement_manager.has_method("show_message_via_service"):
-		log_info("SayCommand calling show_message_via_service (Phase 1 Step 1-1B)")
-		statement_manager.show_message_via_service(message_text, character_name)
-		log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
-		
-		# ExecutionServiceの入力待ち状態を設定
-		var execution_service = statement_manager.execution_service
-		if execution_service:
-			var is_auto_play = ArgodeSystem.is_auto_play_mode()
-			log_info("SayCommand: Auto-play mode check: %s" % is_auto_play)
-			
-			if is_auto_play:
-				log_info("SayCommand: AUTO-PLAY MODE - スキップして自動進行")
-				# ヘッドレスモードでは少し待ってから自動進行
-				await Engine.get_main_loop().create_timer(0.1).timeout
-			else:
-				# 通常モードでは入力待ち
-				execution_service.set_waiting_for_input(true)
-				log_info("SayCommand: 入力待ち状態に設定しました")
-		
-	elif statement_manager and statement_manager.has_method("show_message"):
-		log_info("SayCommand calling show_message (fallback)")
-		statement_manager.show_message(message_text, character_name)
-		log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
-		
-		# ExecutionServiceの入力待ち状態を設定（フォールバック時も同様処理）
-		var execution_service = statement_manager.execution_service
-		if execution_service:
-			var is_auto_play = ArgodeSystem.is_auto_play_mode()
-			if is_auto_play:
-				await Engine.get_main_loop().create_timer(0.1).timeout
-			else:
-				execution_service.set_waiting_for_input(true)
-		
+	# Universal Block Execution: 直接UIManagerにメッセージ表示を依頼
+	var ui_manager = ArgodeSystem.UIManager
+	if not ui_manager:
+		log_error("UIManager not available")
+		return
+	
+	log_info("SayCommand calling UIManager.show_message directly")
+	ui_manager.show_message(character_name, message_text)
+	log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
+	
+	# 入力待ちの処理
+	var is_auto_play = ArgodeSystem.is_auto_play_mode()
+	log_info("SayCommand: Auto-play mode check: %s" % is_auto_play)
+	
+	if is_auto_play:
+		log_info("SayCommand: AUTO-PLAY MODE - スキップして自動進行")
+		# ヘッドレスモードでは少し待ってから自動進行
+		await Engine.get_main_loop().create_timer(0.1).timeout
 	else:
-		log_error("StatementManagerのメッセージ表示メソッドが見つかりません")
+		# 通常モードでは入力待ち
+		log_info("SayCommand: Waiting for user input")
+		await ui_manager.wait_for_input()
+		log_info("SayCommand: User input received, continuing")
