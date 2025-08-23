@@ -11,8 +11,14 @@ class_name ArgodeController
 # 入力が現在許可されているかどうか
 var _is_input_enabled: bool = true
 
-# Service Layer Pattern: InputHandlerService統合
-var input_handler_service: ArgodeInputHandlerService = null
+# Universal Block Execution: 直接入力制御（InputHandlerService不要）
+# 入力デバウンス制御
+var input_debounce_timer: float = 0.0
+var last_input_time: int = 0
+const INPUT_DEBOUNCE_TIME: float = 0.1  # 100ms
+
+# 入力状態管理
+var input_disable_reason: String = ""
 
 # 入力アクションが押されたときに送信されるシグナル（InputHandlerService連携）
 signal input_action_pressed(action_name)
@@ -22,38 +28,8 @@ signal input_action_released(action_name)
 signal input_received(action_name)
 
 func _ready():
-	_initialize_service_integration()
 	setup_argode_default_bindings()
-	ArgodeSystem.log_workflow("ArgodeController initialized with Service Layer integration")
-
-## Service層統合の初期化
-func _initialize_service_integration():
-	# InputHandlerServiceとの連携を後から設定（循環参照回避）
-	# StatementManagerが初期化されたときに設定される
-	pass
-
-## InputHandlerServiceとの連携を設定（StatementManagerから呼び出し）
-func connect_input_handler_service(service: ArgodeInputHandlerService):
-	input_handler_service = service
-	if input_handler_service:
-		# Service層からの有効入力シグナルを中継
-		if not input_handler_service.valid_input_received.is_connected(_on_valid_input_from_service):
-			input_handler_service.valid_input_received.connect(_on_valid_input_from_service)
-		
-		# InputHandlerServiceにControllerを設定
-		input_handler_service.controller = self
-		
-		# 入力アクションシグナルを接続
-		if not input_action_pressed.is_connected(input_handler_service._on_controller_input):
-			input_action_pressed.connect(input_handler_service._on_controller_input)
-		
-		ArgodeSystem.log_workflow("InputHandlerService connected to ArgodeController")
-
-## Service層からの有効入力を受信
-func _on_valid_input_from_service(action_name: String):
-	# 他のシステムに入力を通知
-	input_received.emit(action_name)
-	ArgodeSystem.log_debug_detail("Valid input processed: %s" % action_name)
+	ArgodeSystem.log_workflow("ArgodeController initialized with Universal Block Execution")
 
 # Godotの入力イベントシステムを使用（キー＋マウス統合処理）
 func _input(event: InputEvent):
@@ -111,13 +87,14 @@ func _process_input_event(event: InputEvent):
 		print("❌ No matching action found for event")
 
 func _on_action_just_pressed(action_name: String):
-	# 特定のアクションが押されたときの処理
-	# 例: "ui_accept"アクションが押された場合、対話マネージャーに通知
-	# ArgodeSystem.get_manager("DialogueManager").process_input("accept")
-	
-	# input_action_pressedシグナルを送信（Service層で処理される）
+	# Universal Block Execution: 直接入力処理（InputHandlerService統合）
 	ArgodeSystem.log_debug_detail("Input action pressed: %s" % action_name)
-	ArgodeSystem.log_workflow("🎮 INPUT PRESSED: %s" % action_name)  # より目立つログ
+	ArgodeSystem.log_workflow("🎮 INPUT PRESSED: %s" % action_name)
+	
+	# 統合された入力処理を実行
+	_process_argode_input(action_name)
+	
+	# 従来のシグナルも送信（互換性維持）
 	input_action_pressed.emit(action_name)
 
 func _on_action_just_released(action_name: String):
@@ -126,21 +103,55 @@ func _on_action_just_released(action_name: String):
 	# input_action_releasedシグナルを送信
 	input_action_released.emit(action_name)
 
-## 入力を有効にする（Service層統合）
+## Universal Block Execution: 直接入力制御（InputHandlerService統合）
 func enable_input(reason: String = ""):
 	_is_input_enabled = true
-	if input_handler_service:
-		input_handler_service.enable_input()
+	input_disable_reason = ""
 	if reason != "":
 		ArgodeSystem.log_workflow("Input enabled: %s" % reason)
 
-## 入力を無効にする（Service層統合）
+## Universal Block Execution: 直接入力制御（InputHandlerService統合）
 func disable_input(reason: String = ""):
 	_is_input_enabled = false
-	if input_handler_service:
-		input_handler_service.disable_input(reason)
+	input_disable_reason = reason
 	if reason != "":
 		ArgodeSystem.log_workflow("Input disabled: %s" % reason)
+
+## 入力デバウンシング処理（InputHandlerService統合）
+func _process_input_debouncing() -> bool:
+	var current_time_ms = Time.get_ticks_msec()
+	var time_since_last = (current_time_ms - last_input_time) / 1000.0
+	
+	if time_since_last < INPUT_DEBOUNCE_TIME:
+		return false  # デバウンス中
+	
+	last_input_time = current_time_ms
+	return true
+
+## 入力処理（InputHandlerServiceロジック統合）
+func _process_argode_input(action_name: String):
+	"""ArgodeInputHandlerServiceの機能を統合した入力処理"""
+	
+	ArgodeSystem.log_workflow("🎮 Controller received: %s" % action_name)
+	
+	# Argode専用アクションのみを処理
+	if not action_name.begins_with("argode_"):
+		ArgodeSystem.log_workflow("🎮 Input ignored (not argode): %s" % action_name)
+		return
+	
+	# 入力が無効化されている場合はスキップ
+	if not _is_input_enabled:
+		ArgodeSystem.log_workflow("🎮 Input ignored (disabled): %s - reason: %s" % [action_name, input_disable_reason])
+		return
+	
+	# デバウンシング処理
+	if not _process_input_debouncing():
+		ArgodeSystem.log_workflow("🎮 Input debounced: %s" % action_name)
+		return
+	
+	# 有効な入力として処理・通知
+	ArgodeSystem.log_workflow("🎮 Valid input processed: %s" % action_name)
+	input_received.emit(action_name)
 
 ## === InputMap動的管理機能 ===
 
@@ -268,10 +279,11 @@ func debug_print_input_map():
 func is_input_enabled() -> bool:
 	return _is_input_enabled
 
-## 入力処理の詳細状態を取得
+## 入力処理の詳細状態を取得（Universal Block Execution対応）
 func get_input_status() -> Dictionary:
 	return {
 		"enabled": _is_input_enabled,
-		"input_handler_service": input_handler_service != null,
+		"disable_reason": input_disable_reason,
+		"debounce_time": INPUT_DEBOUNCE_TIME,
 		"argode_system": ArgodeSystem != null
 	}

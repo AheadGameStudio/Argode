@@ -136,7 +136,7 @@ func set_message_text(text: String):
 ## 描画処理 - Rendererのコールバックを呼び出す
 func _draw():
 	if draw_callback.is_valid():
-		# Rendererの描画メソッドを呼び出し、メッセージテキストのみを渡す
+		# MessageRenderer._draw_message_contentは3つの引数を期待している
 		draw_callback.call(self, "", current_text)
 
 ## Canvasの描画領域サイズを取得

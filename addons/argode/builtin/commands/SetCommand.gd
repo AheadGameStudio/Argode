@@ -10,9 +10,8 @@ func _ready():
 	command_description = "変数に値を設定します"
 	command_help = "set variable_name = value または set variable_name += value"
 	
-	# VariableResolverを初期化
-	if ArgodeSystem and ArgodeSystem.VariableManager:
-		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
+	# VariableResolverを初期化（ヘルパー関数使用）
+	variable_resolver = create_variable_resolver()
 
 ## 引数検証（Stage 3共通基盤）
 func validate_args(args: Dictionary) -> bool:
@@ -24,9 +23,9 @@ func validate_args(args: Dictionary) -> bool:
 
 ## コマンド中核処理（Stage 3共通基盤）
 func execute_core(args: Dictionary) -> void:
-	# VariableResolverが初期化されていない場合の保険
-	if not variable_resolver and ArgodeSystem and ArgodeSystem.VariableManager:
-		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
+	# VariableResolverが初期化されていない場合の保険（ヘルパー関数使用）
+	if not variable_resolver:
+		variable_resolver = create_variable_resolver()
 		log_info("VariableResolver initialized")
 	
 	if not variable_resolver:

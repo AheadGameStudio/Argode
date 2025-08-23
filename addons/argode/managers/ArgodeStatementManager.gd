@@ -36,12 +36,13 @@ func initialize_services() -> void:
 
 ## ステートメントブロックを実行（汎用エントリーポイント）
 ## すべての実行フローが使用する主要API
-func execute_block(statements: Array) -> void:
+func execute_block(statements: Array, source_label: String = "") -> void:
 	if not execution_service:
 		ArgodeSystem.log_critical("🚨 StatementManager: ExecutionServiceが初期化されていません")
 		return
 	
-	execution_service.execute_block(statements)
+	# ExecutionServiceに source_label を渡して連続ラベル実行を有効化
+	execution_service.execute_block(statements, "main_execution", source_label)
 
 ## RGDコンテンツからラベルブロックを解析・抽出
 ## 指定されたラベルのステートメント配列を返す（非推奨：get_label_statementsを使用）

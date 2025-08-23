@@ -23,10 +23,12 @@ func execute_core(args: Dictionary) -> void:
 	
 	print("🎯 JUMP: Jumping to label: %s" % label_name)
 	
-	# ラベルの存在確認
-	var label_info = ArgodeSystem.LabelRegistry.get_label(label_name)
+	# ExecutionPathManager統合確認（ログ用のみ）
+	debug_execution_path(args)  # ヘルパー関数使用
+	
+	# ラベルの存在確認（ヘルパー関数使用）
+	var label_info = get_label_info(label_name)
 	if label_info.is_empty():
-		log_error("ラベル '%s' が見つかりません" % label_name)
 		return
 	
 	var file_path = label_info.get("path", "")
@@ -34,21 +36,7 @@ func execute_core(args: Dictionary) -> void:
 	
 	print("🎯 JUMP: Label found at %s (line %d)" % [file_path, label_line])
 	
-	# StatementManagerを取得
-	var statement_manager = ArgodeSystem.StatementManager
-	if not statement_manager:
-		log_error("StatementManager not found")
-		return
-	
-	# 効率的なラベルステートメント取得（StatementManager活用）
-	var label_statements = statement_manager.get_label_statements(label_name)
-	if label_statements.is_empty():
-		log_error("ラベル '%s' にステートメントが見つかりません" % label_name)
-		return
-	
-	print("🎯 JUMP: Found %d statements in label '%s'" % [label_statements.size(), label_name])
-	
-	# Universal Block Execution: ラベルブロックを直接実行
-	await statement_manager.execute_block(label_statements)
+	# Universal Block Execution: ラベルジャンプ実行（ヘルパー関数使用）
+	await jump_to_label(label_name)
 	
 	print("🎯 JUMP: Jump execution completed")

@@ -16,6 +16,9 @@ enum LOG_LEVEL {
 ## CommandLineから受け取った引数を格納する
 var command_line_args: Dictionary = {}
 
+## 詳細ログモード（文字単位のデバッグログ制御）
+var verbose_mode: bool = false
+
 # ArgodeSystemから参照するためのマネージャー定義
 
 var DebugManager:ArgodeDebugManager # デバッグマネージャーのインスタンス
@@ -30,6 +33,7 @@ var CommandRegistry
 var DefinitionRegistry  
 var LabelRegistry
 var MessageAnimationRegistry
+var TagRegistry
 
 # ローディング画面
 var loading_screen: Control
@@ -48,6 +52,9 @@ var is_headless_mode: bool = false  # ヘッドレスモード検出
 signal system_ready
 
 func _ready():
+	# 詳細ログモードをデフォルトで無効化（パフォーマンス向上）
+	verbose_mode = false
+	
 	# ヘッドレスモードを検出
 	is_headless_mode = DisplayServer.get_name() == "headless"
 	if is_headless_mode:
@@ -73,6 +80,11 @@ func _ready():
 	
 	# デバッグ: コマンドライン引数を表示
 	print("🔍 Parsed command line args: " + str(command_line_args))
+	
+	# verboseフラグでverbose_modeを有効化
+	if command_line_args.has("verbose"):
+		verbose_mode = true
+		print("🔧 Verbose mode enabled via command line")
 	
 	# ヘルプが指定されている場合はヘルプを表示
 	if command_line_args.has("help") or command_line_args.has("h"):
@@ -199,6 +211,9 @@ func _setup_basic_managers():
 	add_child(Controller)
 	Controller.name = "ArgodeController"
 	
+	# StatementManagerのサービス初期化
+	StatementManager.initialize_services()
+	
 	ArgodeSystem.log("🎮 ArgodeController initialized and added to scene tree")
 
 ## ラベルパーサーをテストする
@@ -267,11 +282,13 @@ func _setup_registries():
 	var DefinitionRegistryClass = preload("res://addons/argode/services/registries/ArgodeDefinitionRegistry.gd")
 	var LabelRegistryClass = preload("res://addons/argode/services/registries/ArgodeLabelRegistry.gd")
 	var MessageAnimationRegistryClass = preload("res://addons/argode/services/registries/ArgodeMessageAnimationRegistry.gd")
+	var TagRegistryClass = preload("res://addons/argode/services/tags/ArgodeTagRegistry.gd")
 
 	CommandRegistry = CommandRegistryClass.new()
 	DefinitionRegistry = DefinitionRegistryClass.new()
 	LabelRegistry = LabelRegistryClass.new()
 	MessageAnimationRegistry = MessageAnimationRegistryClass.new()
+	TagRegistry = TagRegistryClass.new()
 	
 	# シグナル接続
 	_connect_registry_signals()
@@ -299,6 +316,11 @@ func _run_registries_sequential():
 		loading_screen.on_registry_started("ArgodeCommandRegistry")
 	await CommandRegistry.start_registry()
 	
+	# 1.2. TagRegistry（CommandRegistryに依存するため、直後に実行）
+	if loading_screen:
+		loading_screen.on_registry_started("ArgodeTagRegistry")
+	TagRegistry.initialize_from_command_registry(CommandRegistry)
+	
 	# 1.5. メッセージアニメーションレジストリ（コマンドと併行実行可能）
 	if loading_screen:
 		loading_screen.on_registry_started("ArgodeMessageAnimationRegistry")
@@ -323,7 +345,6 @@ func _run_registries_sequential():
 ## 定義コマンドを実行
 func _execute_definition_commands():
 	ArgodeSystem.log("🔧 Starting definition commands execution...")
-	ArgodeSystem.log("🔍 StatementManager execution state: executing=%s, paused=%s" % [StatementManager.is_executing, StatementManager.is_paused])
 	
 	if not DefinitionRegistry.has_definitions():
 		ArgodeSystem.log("ℹ️ No definitions to execute", 1)
@@ -336,21 +357,13 @@ func _execute_definition_commands():
 		ArgodeSystem.log("⚠️ No definition statements created", 1)
 		return
 	
-	# StatementManagerが既に実行中の場合は警告
-	if StatementManager.is_executing:
-		ArgodeSystem.log("⚠️ StatementManager is already executing! This may cause conflicts.", 1)
-	
-	# StatementManagerを使用して定義コマンドを実行
-	var success = await StatementManager.execute_definition_statements(definition_statements)
+	# DefinitionServiceを使用して定義コマンドを実行
+	var definition_service = ArgodeDefinitionService.new()
+	var success = await definition_service.execute_definition_statements(definition_statements, StatementManager)
 	if success:
 		ArgodeSystem.log("✅ Definition commands execution completed")
 	else:
 		ArgodeSystem.log("❌ Definition commands execution failed", 2)
-
-## 定義辞書からステートメント形式に変換（廃止予定：DefinitionRegistryに移行）
-func _convert_definitions_to_statements() -> Array:
-	# この機能はDefinitionRegistry.get_definition_statements()に移行
-	return DefinitionRegistry.get_definition_statements()
 
 ## レジストリ進捗更新時のコールバック
 func _on_registry_progress_updated(task_name: String, progress: float, total: int, current: int):
@@ -367,38 +380,6 @@ func _on_registry_completed(registry_name: String):
 	if loading_screen:
 		loading_screen.on_registry_completed(registry_name)
 	# 重複ログを削除（レジストリ自体が既にログを出力しているため）
-
-## 各マネージャーとサービスをセットアップする（廃止予定）
-func _setup_managers_and_services():
-	# マネージャーの生成と登録
-	DebugManager = ArgodeDebugManager.new()
-	StatementManager = ArgodeStatementManager.new()
-
-## 指定されたパス内のRGDファイルを再帰的に読み込み、辞書として返す
-func load_rgd_recursive(path: String) -> Dictionary:
-	var result: Dictionary = {}
-	var dir = DirAccess.open(path)
-	if dir:
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-		while file_name != "":
-			if dir.current_is_dir():
-				# ディレクトリなら再帰的に呼び出す
-				var sub_dir_result = load_rgd_recursive(path.path_join(file_name))
-				result.merge(sub_dir_result, true)
-			elif file_name.ends_with(".rgd"):
-				# RGDファイルなら読み込む
-				var file_path = path.path_join(file_name)
-				var file_data = _load_rgd_file(file_path)
-				result.merge(file_data, true)
-			file_name = dir.get_next()
-	return result
-
-## RGDファイルを読み込み、辞書としてパースするプライベート関数
-func _load_rgd_file(file_path: String) -> Dictionary:
-	# ここにRGDファイルのパースロジックを実装する
-	# 例: JSONやYAMLのようにパースし、辞書として返す
-	return {} # 仮の戻り値
 
 ## 汎用的なログ関数（従来互換性維持）
 func log(message: String, level: int = 1):
@@ -424,7 +405,7 @@ func log_debug_detail(message: String) -> void:
 func set_copilot_log_level(level: int) -> void:
 	DebugManager.set_copilot_log_level(level)
 
-# サービスレジストリ
+# サービスレジストリ（最小限実装）
 var _services: Dictionary = {}
 
 ## Service Layer Pattern: サービス取得（将来の拡張用）
@@ -440,13 +421,35 @@ func get_service(service_name: String) -> RefCounted:
 	log_debug_detail("Service requested: %s (not found)" % service_name)
 	return null
 
-## サービスを登録する
-func register_service(service_name: String, service_instance: RefCounted):
+## Service Layer Pattern: サービス登録
+func register_service(service_name: String, service_instance: RefCounted) -> void:
+	"""
+	Register a service instance with a name.
+	This enables get_service() to retrieve the service later.
+	"""
 	_services[service_name] = service_instance
 	log_debug_detail("Service registered: %s" % service_name)
 
-## 登録されているサービス名の一覧を取得
+## Service Layer Pattern: サービス削除
+func unregister_service(service_name: String) -> bool:
+	"""
+	Unregister a service by name.
+	Returns true if the service was found and removed, false otherwise.
+	"""
+	if _services.has(service_name):
+		_services.erase(service_name)
+		log_debug_detail("Service unregistered: %s" % service_name)
+		return true
+	else:
+		log_debug_detail("Service unregister failed: %s (not found)" % service_name)
+		return false
+
+## Service Layer Pattern: 全サービス取得（デバッグ用）
 func get_all_services() -> Dictionary:
+	"""
+	Get all registered services.
+	Returns a copy of the services dictionary for debugging purposes.
+	"""
 	return _services.duplicate()
 
 func play(_label:String = "start"):
@@ -461,12 +464,15 @@ func play(_label:String = "start"):
 
 	ArgodeSystem.log("🎬 Play label: " + _label, 1)
 	
-	# ArgodeStatementManagerを使用してラベルから実行を開始
-	var success = await StatementManager.play_from_label(_label)
-	if success:
-		ArgodeSystem.log("✅ Successfully started playing from label: " + _label, 1)
-	else:
-		ArgodeSystem.log("❌ Failed to start playing from label: " + _label, 2)
+	# ラベルのステートメントを取得
+	var label_statements = StatementManager.get_label_statements(_label)
+	if label_statements.is_empty():
+		ArgodeSystem.log("❌ No statements found in label: " + _label, 2)
+		return
+	
+	# StatementManagerでブロック実行（ラベル名を渡して連続実行を有効化）
+	StatementManager.execute_block(label_statements, _label)
+	ArgodeSystem.log("✅ Successfully started playing from label: " + _label, 1)
 
 func add_message_window_scene(_path:String):
 	ArgodeSystem.log("🪄Adding message window scene: " + _path, 1)
@@ -508,4 +514,13 @@ static func is_headless() -> bool:
 ## オートプレイモードかどうかを判定（ヘッドレスモード or テストフラグ）
 static func is_auto_play_mode() -> bool:
 	return is_headless() or OS.has_feature("debug") and OS.get_cmdline_args().has("--auto-play")
+
+## 詳細ログモードを設定
+func set_verbose_mode(enabled: bool):
+	verbose_mode = enabled
+	ArgodeSystem.log("🔧 Verbose mode: %s" % ("ON" if enabled else "OFF"))
+
+## 詳細ログモードかどうかを判定
+func is_verbose_mode() -> bool:
+	return verbose_mode
 

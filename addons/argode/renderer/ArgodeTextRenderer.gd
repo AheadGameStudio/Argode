@@ -79,15 +79,34 @@ func draw_character_by_character(canvas, text: String, start_pos: Vector2, max_w
 		# 描画情報を取得（装飾情報を含む）
 		var render_info = base_color
 		var current_font_size = font_size  # 元のフォントサイズを保持
+		var decoration_scale = 1.0  # 装飾による拡大倍率
+		var decoration_offset = Vector2.ZERO  # 装飾による移動オフセット
+		
 		if get_char_render_info_callback.is_valid():
 			var info = get_char_render_info_callback.call(char, font, font_size, base_color, current_position)
 			render_info = info.get("color", base_color)
 			current_font_size = info.get("font_size", font_size)
+			
+			# スケール情報を取得
+			if info.has("scale"):
+				var scale_vector = info.scale
+				if scale_vector is Vector2:
+					decoration_scale = max(scale_vector.x, scale_vector.y)  # より大きい方の値を使用
+				else:
+					decoration_scale = float(scale_vector)
+			
+			# オフセット情報を取得
+			if info.has("offset"):
+				decoration_offset = info.offset
 		
 		# アニメーション効果を適用
 		var final_position = Vector2(current_x, current_y)
 		var final_color = render_info
+		var final_scale = decoration_scale  # 装飾スケールを適用
 		var should_render = true  # 描画フラグ
+		
+		# 装飾オフセットを適用
+		final_position += decoration_offset
 		
 		if get_animation_values_callback.is_valid():
 			var animation_values = get_animation_values_callback.call(current_position)
@@ -107,10 +126,17 @@ func draw_character_by_character(canvas, text: String, start_pos: Vector2, max_w
 		
 		# 文字を描画（アニメーション効果適用後）
 		if should_render and final_color.a >= 0.01:  # アニメーション開始値を描画できるよう調整
-			canvas.draw_text_at(char, final_position, font, current_font_size, final_color)
+			# スケール適用：フォントサイズとして適用
+			var scaled_font_size = int(current_font_size * final_scale)
+			canvas.draw_text_at(char, final_position, font, scaled_font_size, final_color)
+			
+			# 詳細ログモードでのみ装飾適用ログ出力
+			if (decoration_scale != 1.0 or decoration_offset != Vector2.ZERO) and ArgodeSystem.is_verbose_mode():
+				ArgodeSystem.log("🎨 Applied decorations to '%s': scale=%.2f, offset=%s" % [char, final_scale, decoration_offset])
 		
-		# 次の文字位置を計算
-		var char_width = font.get_string_size(char, HORIZONTAL_ALIGNMENT_LEFT, -1, current_font_size).x
+		# 次の文字位置を計算（スケール後のサイズで）
+		var scaled_font_size_for_spacing = int(current_font_size * final_scale)
+		var char_width = font.get_string_size(char, HORIZONTAL_ALIGNMENT_LEFT, -1, scaled_font_size_for_spacing).x
 		current_x += char_width
 		current_position += 1
 		

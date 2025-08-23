@@ -1,0 +1,52 @@
+# GlyphSystem統合テスト用RGDファイル
+# Stage 6 新メッセージエフェクトシステムの動作確認
+
+# 基本メッセージ（新システムテスト）
+label test_glyph_system:
+    "新しいGlyphSystemのテストです"
+    
+    # カラーエフェクトテスト
+    "これは{color=#ff0000}赤い文字{/color}のテストです"
+    
+    # スケールエフェクトテスト  
+    "文字が{scale=1.5,0.3}大きく{/scale}なります"
+    
+    # 移動エフェクトテスト
+    "文字が{move=10,5,0.5}移動{/move}します"
+    
+    # 複合エフェクトテスト
+    "複合エフェクト：{color=#00ff00}{scale=1.2,0.2}緑色で大きく{/scale}{/color}"
+    
+    # 基本メッセージ（比較用）
+    "通常のメッセージ表示"
+    
+    jump test_legacy_system
+
+# 既存システムテスト（比較用）
+label test_legacy_system:
+    "既存システムでの表示テスト"
+    
+    # 既存の色タグ
+    "既存の{color=#ff0000}色タグ{/color}テスト"
+    
+    # 既存の待機タグ（修正版）
+    "待機{w=1.0}テスト"
+    
+    # 待機位置テスト
+    "{w=0.5}最初で待機"
+    "終了{w=0.5}最後で待機"
+    
+    jump test_performance
+
+# パフォーマンステスト
+label test_performance:
+    "パフォーマンステスト用の長いテキストです。この文章は新しいGlyphSystemの性能を確認するためのものです。複数のエフェクトが同時に適用された場合の動作を検証します。"
+    
+    # 大量エフェクトテスト
+    "{color=#ff0000}赤{/color}{color=#00ff00}緑{/color}{color=#0000ff}青{/color}{scale=1.5,0.2}大{/scale}{scale=0.8,0.2}小{/scale}{move=5,5,0.3}移動{/move}"
+    
+    jump test_complete
+
+label test_complete:
+    "GlyphSystemテスト完了！"
+    "結果を確認してください。"

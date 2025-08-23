@@ -17,6 +17,10 @@ var executing_statement: Dictionary = {}
 var statement_manager: RefCounted
 var context_service: RefCounted
 
+# ラベルリストキャッシュ（最適化）
+var file_label_cache: Dictionary = {}  # {file_path: Array[String]}
+var cache_timestamp: Dictionary = {}   # {file_path: int}
+
 ## 初期化
 func initialize(stmt_manager: RefCounted, ctx_service: RefCounted):
 	statement_manager = stmt_manager
@@ -64,6 +68,10 @@ func execute_block(statements: Array, context_name: String = "", source_label: S
 	
 	print("🎯 BLOCK: Completed execution of block '%s'" % context_name)
 	
+	# ラベル実行完了後、次のラベルを自動継続実行
+	if source_label and not source_label.is_empty() and is_executing:
+		await continue_to_next_label(source_label)
+	
 	# ExecutionPathManagerからパス削除（main_executionは除外）
 	if not execution_label.is_empty() and execution_label != "main_execution":
 		ArgodeExecutionPathManager.pop_execution_point()
@@ -87,13 +95,21 @@ func execute_statement(statement: Dictionary) -> void:
 			# Say文の実行
 			await execute_text_statement(statement)
 		
+		"say":
+			# Say文もSayCommandとして統一実行（Universal Block Execution）
+			await execute_command_statement(statement)
+		
 		"command":
 			# コマンド実行（menu, call, return, jump等）
 			await execute_command_statement(statement)
 			
-			# 制御フローコマンドで実行が中断された場合のチェック
-			if statement_name in ["jump", "return"] and not is_executing:
-				print("🎯 STATEMENT: Control flow command interrupted execution")
+			# JumpCommandの場合は実行継続（Universal Block Execution対応）
+			# returnコマンドのみ実行中断として扱う
+			if statement_name == "return" and not is_executing:
+				print("🎯 STATEMENT: Return command interrupted execution")
+			elif statement_name == "jump":
+				# JumpCommandは実行を継続する（Phase 5対応）
+				print("🎯 STATEMENT: Jump command completed, continuing execution")
 		
 		"label":
 			# ラベルブロック実行（独立ブロック処理）
@@ -106,7 +122,9 @@ func execute_statement(statement: Dictionary) -> void:
 
 ## Text文実行（Say文）
 func execute_text_statement(statement: Dictionary) -> void:
-	var text_content = statement.get("content", "")
+	# RGDParserはSay文のテキストをargs[0]に格納
+	var args = statement.get("args", [])
+	var text_content = args[0] if args.size() > 0 else ""
 	print("🎯 TEXT: Displaying message: %s" % text_content)
 	
 	# UIControlServiceでメッセージ表示
@@ -125,11 +143,14 @@ func execute_command_statement(statement: Dictionary) -> void:
 	# Universal Block Execution: 各コマンドが独立してexecute_blockを制御
 	await execute_regular_command(command_name, args)
 	
-	# 制御フローコマンド後の実行状態チェック
-	if command_name in ["jump", "return"]:
-		# Jump/Returnは実行を完全に停止
+	# Phase 5: JumpCommandは連続実行を継続、Returnのみ停止
+	if command_name == "return":
+		# Returnは実行を完全に停止
 		is_executing = false
-		print("🎯 COMMAND: '%s' command terminated current block execution" % command_name)
+		print("🎯 COMMAND: 'return' command terminated current block execution")
+	elif command_name == "jump":
+		# JumpCommandは実行継続（Universal Block Execution Phase 5対応）
+		print("🎯 COMMAND: 'jump' command completed, execution continues")
 
 ## Universal Command Execution Core（新設計）
 func execute_regular_command(command_name: String, args: Array) -> void:
@@ -196,276 +217,6 @@ func get_executing_statement() -> Dictionary:
 	"""現在実行中のステートメントを取得"""
 	return executing_statement
 
-## 実行を再開 ※削除予定
-# func resume_execution():
-# 	if not is_executing:
-# 		return
-		
-# 	is_paused = false
-# 	# 🎬 WORKFLOW: 実行再開（GitHub Copilot重要情報）
-# 	ArgodeSystem.log_workflow("ExecutionService resumed")
-
-# ## 指定位置から実行を再開（Return処理用）
-# func resume_execution_from_position(file_path: String, statement_index: int):
-# 	"""指定されたファイルと位置から実行を再開"""
-# 	ArgodeSystem.log_workflow("🎯 ExecutionService: Resuming from %s[%d]" % [file_path, statement_index])
-	
-# 	# ファイルが変わる場合の処理
-# 	if current_file_path != file_path:
-# 		current_file_path = file_path
-# 		# 新しいファイルの読み込みが必要な場合の処理
-# 		# (現在はStatementManagerで事前に読み込み済みを想定)
-	
-# 	# 実行位置をセット
-# 	current_statement_index = statement_index
-	
-# 	# 実行状態を設定
-# 	is_executing = true
-# 	is_paused = false
-# 	is_waiting_for_input = false
-# 	is_waiting_for_command = false
-	
-# 	ArgodeSystem.log_workflow("🎯 ExecutionService: Position set, ready to resume execution")
-
-## 実行を停止　※削除予定
-# func stop_execution():
-# 	is_executing = false
-# 	is_paused = false
-# 	is_waiting_for_input = false
-# 	is_waiting_for_command = false
-# 	current_statements.clear()
-# 	current_statement_index = 0
-# 	current_file_path = ""
-	
-# 	# 🎬 WORKFLOW: 実行停止（GitHub Copilot重要情報）
-# 	ArgodeSystem.log_workflow("ExecutionService stopped")
-
-## 次のステートメントに進む
-# func advance_to_next_statement() -> bool:
-# 	if not is_executing or current_statements.is_empty():
-# 		ArgodeSystem.log_critical("🚨 advance_to_next_statement failed: is_executing=%s, statements_empty=%s" % [is_executing, current_statements.is_empty()])
-# 		return false
-	
-# 	if not skip_index_increment:
-# 		current_statement_index += 1
-# 	else:
-# 		skip_index_increment = false
-	
-# 	# 🔍 DEBUG: ステートメント進行詳細（通常は非表示）
-# 	ArgodeSystem.log_workflow("🎯 Advanced to statement %d/%d" % [current_statement_index, current_statements.size()])
-	
-# 	var result = current_statement_index < current_statements.size()
-# 	ArgodeSystem.log_workflow("🎯 advance_to_next_statement result: %s" % result)
-# 	return result
-
-## 現在のステートメントを取得
-# func get_current_statement() -> Dictionary:
-# 	if current_statement_index < current_statements.size():
-# 		return current_statements[current_statement_index]
-# 	return {}
-
-## 実行状態を確認
-# func is_running() -> bool:
-# 	return is_executing and not is_paused
-
-## 入力待ち状態を設定
-# func set_waiting_for_input(waiting: bool):
-# 	ArgodeSystem.log_workflow("🔧 ExecutionService.set_waiting_for_input: %s → %s" % [is_waiting_for_input, waiting])
-# 	is_waiting_for_input = waiting
-# 	if waiting:
-# 		# 🔍 DEBUG: 入力待ち状態詳細（通常は非表示）
-# 		ArgodeSystem.log_debug_detail("ExecutionService waiting for input")
-
-## コマンド待ち状態を設定
-# func set_waiting_for_command(waiting: bool, reason: String = ""):
-# 	is_waiting_for_command = waiting
-# 	if waiting:
-# 		# 🔍 DEBUG: コマンド待ち状態詳細（通常は非表示）
-# 		ArgodeSystem.log_debug_detail("ExecutionService waiting for command: %s" % reason)
-
-# ## 実行可能かチェック
-# func can_execute() -> bool:
-# 	return is_executing and not is_paused and not is_waiting_for_input and not is_waiting_for_command
-
-# ## 指定された行（ステートメントインデックス）にジャンプ
-# func jump_to_label_line(line_index: int):
-# 	if not is_executing or current_statements.is_empty():
-# 		ArgodeSystem.log_critical("Cannot jump: execution not active")
-# 		return
-	
-# 	# 行番号をステートメントインデックスに変換（簡単な実装）
-# 	var target_index = line_index - 1  # 1-based indexから0-basedに変換
-	
-# 	if target_index >= 0 and target_index < current_statements.size():
-# 		current_statement_index = target_index
-# 		skip_index_increment = true  # 次の進行時にインデックスをスキップ
-# 		jump_executed = true
-# 		ArgodeSystem.log_workflow("Jumped to statement %d (line %d)" % [target_index, line_index])
-# 	else:
-# 		ArgodeSystem.log_critical("Jump target out of range: line %d (statements: %d)" % [line_index, current_statements.size()])
-
-# ## 実行状態を設定
-# func set_execution_state(executing: bool, paused: bool = false):
-# 	is_executing = executing
-# 	is_paused = paused
-# 	ArgodeSystem.log_debug_detail("ExecutionService state set: executing=%s, paused=%s" % [executing, paused])
-
-# ## メイン実行ループを実行（StatementManagerから移譲）
-# func execute_main_loop(statement_manager: RefCounted):
-# 	ArgodeSystem.log_workflow("🔧 ExecutionService: Main execution loop started")
-	
-# 	while is_running():
-# 		ArgodeSystem.log_debug_detail("🔍 Loop: is_running=%s, can_execute=%s" % [is_running(), can_execute()])
-		
-# 		if not can_execute():
-# 			await Engine.get_main_loop().process_frame
-# 			continue
-			
-# 		var statement = get_current_statement()
-# 		if statement.is_empty():
-# 			ArgodeSystem.log_workflow("🔧 ExecutionService: no more statements")
-# 			break
-		
-# 		# デバッグ: 実行ステートメントの詳細
-# 		ArgodeSystem.log_critical("🚨 🎯 STMT_DEBUG: Type=%s, Name=%s, Args=%s" % [
-# 			statement.get("type", "unknown"),
-# 			statement.get("name", "unknown"),
-# 			str(statement.get("args", []))
-# 		])
-			
-# 		ArgodeSystem.log_workflow("🔧 Executing statement %d: %s" % [current_statement_index, statement.get("name", "unknown")])
-		
-# 		# 実行前のステートメント詳細ログ
-# 		ArgodeSystem.log_critical("🚨 🎯 EXEC_DEBUG: About to execute: Type=%s, Name=%s" % [
-# 			statement.get("type", "unknown"),
-# 			statement.get("name", "unknown")
-# 		])
-# 		await execute_single_statement(statement, statement_manager)
-		
-# 		# 入力待ち状態の処理
-# 		if is_waiting_for_input:
-# 			ArgodeSystem.log_workflow("🔧 Waiting for user input to continue...")
-# 			while is_waiting_for_input:
-# 				await Engine.get_main_loop().process_frame
-# 			ArgodeSystem.log_workflow("🔧 Input received, continuing execution...")
-# 			ArgodeSystem.log_workflow("🔧 Current statement index after input: %d" % current_statement_index)
-		
-# 		# コマンド待ち状態の処理
-# 		if is_waiting_for_command:
-# 			ArgodeSystem.log_workflow("🔧 Waiting for command to complete...")
-# 			while is_waiting_for_command:
-# 				await Engine.get_main_loop().process_frame
-# 			ArgodeSystem.log_workflow("🔧 Command completed, continuing execution...")
-		
-# 		# 子コンテキスト実行の処理
-# 		var executed_child_context = false
-# 		if statement_manager.has_method("_handle_child_context_execution"):
-# 			executed_child_context = await statement_manager._handle_child_context_execution()
-		
-# 		# 子コンテキスト実行後は次のステートメントに進む（重複advance防止）
-# 		if executed_child_context:
-# 			if not advance_to_next_statement():
-# 				ArgodeSystem.log_workflow("🔧 ExecutionService: cannot advance after child context")
-# 				break
-# 			# フレーム待機を追加して無限ループを防止
-# 			await Engine.get_main_loop().process_frame
-# 			continue  # continueで通常のadvance_to_next_statementをスキップ
-		
-# 		if not advance_to_next_statement():
-# 			ArgodeSystem.log_workflow("🔧 ExecutionService: cannot advance to next statement")
-# 			break
-		
-# 		ArgodeSystem.log_workflow("🔧 Advanced to next statement: index=%d" % current_statement_index)
-		
-# 		# フレーム待機を追加して無限ループを防止
-# 		await Engine.get_main_loop().process_frame
-	
-# 	ArgodeSystem.log_workflow("🔧 ExecutionService: Main execution loop ended")
-
-# ## 単一ステートメントを実行（StatementManagerから移譲）
-# func execute_single_statement(statement: Dictionary, statement_manager: RefCounted):
-# 	# 🔧 CRITICAL FIX: 実行中の文を正しく設定（子コンテキスト対応）
-# 	executing_statement = statement
-# 	ArgodeSystem.log_critical("🎯 EXECUTION_SERVICE_FIX: Set executing_statement to name=%s type=%s" % [statement.get("name", "unknown"), statement.get("type", "unknown")])
-	
-# 	var statement_type = statement.get("type", "")
-# 	var command_name = statement.get("name", "")
-# 	var args = statement.get("args", [])
-	
-# 	match statement_type:
-# 		"command": 
-# 			await execute_command_via_services(command_name, args, statement_manager)
-# 		"say": 
-# 			await execute_command_via_services(command_name, args, statement_manager)
-# 			# sayコマンドの場合は入力待ち状態になるまで待機
-# 			if is_waiting_for_input:
-# 				ArgodeSystem.log_workflow("🔧 Say command set input waiting - waiting for user input...")
-# 		"text": 
-# 			await statement_manager._handle_text_statement(statement)
-
-## コマンドを実行（StatementManagerから移譲）
-# func execute_command_via_services(command_name: String, args: Array, statement_manager: RefCounted):
-# 	ArgodeSystem.log_workflow("🔍 ExecutionService: Executing command: %s with args: %s" % [command_name, str(args)])
-	
-# 	var command_registry = ArgodeSystem.CommandRegistry
-# 	if not command_registry or not command_registry.has_command(command_name):
-# 		ArgodeSystem.log_critical("Command not found: %s" % command_name)
-# 		return
-	
-# 	var command_instance = command_registry.get_command(command_name)
-# 	ArgodeSystem.log_workflow("🔍 Retrieved command instance: %s" % str(command_instance))
-	
-# 	if command_instance and not command_instance.is_empty():
-# 		var actual_instance = command_instance.get("instance")
-# 		ArgodeSystem.log_workflow("🔍 Actual instance: %s" % str(actual_instance))
-		
-# 		if actual_instance:
-# 			var args_dict = statement_manager._convert_args_to_dict(args)
-# 			args_dict["statement_manager"] = statement_manager
-# 			# CallCommand/ReturnCommand等のために元の配列も保持
-# 			args_dict["parsed_line"] = args
-# 			# MenuCommand等で現在実行中のstatementを参照できるように追加
-# 			args_dict["_current_statement"] = executing_statement
-# 			ArgodeSystem.log_workflow("🔍 Calling execute with args: %s" % str(args_dict))
-			
-# 			# ReturnCommand実行前の状態を記録
-# 			var was_executing_before = is_executing
-			
-# 			await actual_instance.execute(args_dict)
-			
-# 			# ReturnCommandによって実行が停止された場合の検出
-# 			if command_name == "return" and was_executing_before and not is_executing:
-# 				ArgodeSystem.log_workflow("🔍 Return command detected - execution stopped by Return")
-# 				return  # Return処理はStatementManagerが担当
-			
-# 			if actual_instance.has_method("is_async") and actual_instance.is_async():
-# 				await actual_instance.execution_completed
-# 		else:
-# 			ArgodeSystem.log_critical("Command instance not found in registry data: %s" % command_name)
-# 	else:
-# 		ArgodeSystem.log_critical("Command registry data not found: %s" % command_name)
-
-# ## デバッグ情報を出力
-# func debug_print_state():
-# 	# 🔍 DEBUG: 実行状態詳細（通常は非表示）
-# 	ArgodeSystem.log_debug_detail("ExecutionService State:")
-# 	ArgodeSystem.log_debug_detail("  executing: %s, paused: %s" % [str(is_executing), str(is_paused)])
-# 	ArgodeSystem.log_debug_detail("  waiting_input: %s, waiting_command: %s" % [str(is_waiting_for_input), str(is_waiting_for_command)])
-# 	ArgodeSystem.log_debug_detail("  statement: %d/%d" % [current_statement_index, current_statements.size()])
-
-# ## Call/Return用戻り位置計算（StatementManagerから移譲）
-# func calculate_return_index() -> int:
-# 	"""Call時の戻り先インデックスを計算"""
-# 	# 🎬 WORKFLOW: Call戻り位置計算（GitHub Copilot重要情報）
-# 	ArgodeSystem.log_workflow("🔧 ExecutionService: Calculating return index from current position %d" % current_statement_index)
-	
-# 	# TODO: 子ステートメント実行中の特別処理は将来ContextServiceと連携
-# 	# 現在は基本的な戻り位置計算のみ実装
-# 	var return_index = current_statement_index + 1
-	
-# 	ArgodeSystem.log_workflow("🔧 Return index calculated: %d" % return_index)
-# 	return return_index
-
 ## Return用：指定インデックスから実行継続
 func execute_block_from_index(label_name: String, start_index: int, debug_source: String = "") -> void:
 	"""Return時の実行継続：指定されたラベルブロックの指定インデックスから実行"""
@@ -494,3 +245,162 @@ func execute_block_from_index(label_name: String, start_index: int, debug_source
 	print("🎬 RETURN: Executing %d remaining statements from index %d" % [remaining_statements.size(), start_index])
 	
 	await execute_block(remaining_statements, debug_source + "_from_" + str(start_index), label_name)
+
+## ラベル実行完了後の自動継続処理
+func continue_to_next_label(current_label: String) -> void:
+	"""
+	現在のラベル実行完了後、同一ファイル内の次のラベルに自動継続
+	Universal Block Execution: 連続ラベル実行機能
+	"""
+	print("🎯 CONTINUE: Searching for next label after '%s'" % current_label)
+	
+	# 現在のラベル情報を取得
+	var current_label_info = ArgodeSystem.LabelRegistry.get_label(current_label)
+	if current_label_info.is_empty():
+		print("🎯 CONTINUE: Current label not found in registry")
+		return
+	
+	var current_file_path = current_label_info.get("path", "")
+	if current_file_path.is_empty():
+		print("🎯 CONTINUE: Invalid file path for current label")
+		return
+	
+	print("🎯 CONTINUE: Current file path: '%s'" % current_file_path)
+	
+	# 同一ファイル内の次のラベルを検索（キャッシュ活用）
+	var next_label = get_next_label_optimized(current_file_path, current_label)
+	if next_label.is_empty():
+		print("🎯 CONTINUE: No next label found in file '%s'" % current_file_path)
+		print("🎯 CONTINUE: Script execution completed")
+		return
+	
+	print("🎯 CONTINUE: Found next label '%s', continuing execution..." % next_label)
+	
+	# 次のラベルのステートメントを取得・実行
+	var next_statements = statement_manager.get_label_statements(next_label)
+	if next_statements.is_empty():
+		print("🎯 CONTINUE: No statements found in next label '%s'" % next_label)
+		return
+	
+	print("🎯 CONTINUE: Next label '%s' has %d statements" % [next_label, next_statements.size()])
+	
+	# 次のラベルを実行（再帰的にcontinue_to_next_labelが呼ばれる）
+	await execute_block(next_statements, "auto_continue_" + next_label, next_label)
+
+## 同一ファイル内の次のラベルを検索（最適化版）
+func get_next_label_optimized(file_path: String, current_label: String) -> String:
+	"""
+	キャッシュを活用した最適化された次ラベル検索
+	"""
+	# キャッシュされたラベルリストを取得
+	var label_list = get_file_labels_cached(file_path)
+	if label_list.is_empty():
+		print("🎯 CONTINUE: No labels found in file cache for '%s'" % file_path)
+		return ""
+	
+	print("🎯 CONTINUE: File contains %d labels: %s" % [label_list.size(), str(label_list)])
+	
+	# 現在のラベルの位置を特定
+	var current_index = label_list.find(current_label)
+	if current_index == -1:
+		print("🎯 CONTINUE: Current label '%s' not found in label list" % current_label)
+		return ""
+	
+	print("🎯 CONTINUE: Current label '%s' is at index %d" % [current_label, current_index])
+	
+	# 次のラベルを返す
+	if current_index + 1 < label_list.size():
+		var next_label = label_list[current_index + 1]
+		print("🎯 CONTINUE: Next label found: '%s' (index %d)" % [next_label, current_index + 1])
+		return next_label
+	
+	print("🎯 CONTINUE: No next label available (current is last)")
+	return ""
+
+## ファイル内ラベルリストのキャッシュ取得
+func get_file_labels_cached(file_path: String) -> Array[String]:
+	"""
+	指定ファイルのラベルリストをキャッシュから取得（必要時に生成）
+	"""
+	# キャッシュが存在し、新しい場合はそれを返す
+	if file_label_cache.has(file_path):
+		var cached_time = cache_timestamp.get(file_path, 0)
+		var current_time = Time.get_ticks_msec()
+		
+		# 30秒以内のキャッシュは有効とする
+		if current_time - cached_time < 30000:
+			print("🎯 CACHE: Using cached label list for '%s'" % file_path)
+			return file_label_cache[file_path]
+	
+	# キャッシュが無効または存在しない場合は生成
+	print("🎯 CACHE: Generating new label list for '%s'" % file_path)
+	var label_list = generate_file_label_list(file_path)
+	
+	# キャッシュに保存
+	file_label_cache[file_path] = label_list
+	cache_timestamp[file_path] = Time.get_ticks_msec()
+	
+	return label_list
+
+## ファイル内ラベルリストの生成
+func generate_file_label_list(file_path: String) -> Array[String]:
+	"""
+	指定されたファイル内のラベルをライン番号順にソートしたリストを生成
+	"""
+	var all_labels_dict = ArgodeSystem.LabelRegistry.get_label_dictionary()
+	var file_labels = []
+	
+	# 同一ファイルのラベルを収集
+	for label_name in all_labels_dict.keys():
+		var label_info = all_labels_dict[label_name]
+		if label_info.get("path", "") == file_path:
+			file_labels.append({
+				"name": label_name,
+				"line": label_info.get("line", 0)
+			})
+	
+	# ライン番号順にソート
+	file_labels.sort_custom(func(a, b): return a.line < b.line)
+	
+	# ラベル名のみの配列を作成
+	var result: Array[String] = []
+	for label_data in file_labels:
+		result.append(label_data.name)
+	
+	print("🎯 CACHE: Generated label list for '%s': %s" % [file_path, str(result)])
+	return result
+
+## 同一ファイル内の次のラベルを検索（レガシー版）
+func find_next_label_in_file(file_path: String, current_label: String) -> String:
+	"""
+	指定されたファイル内で、現在のラベルの次に定義されているラベルを検索
+	※レガシー版：デバッグ用に残存、通常は get_next_label_optimized を使用
+	"""
+	# 全ラベルを取得してファイルパスでフィルタリング
+	var all_labels_dict = ArgodeSystem.LabelRegistry.get_label_dictionary()
+	var file_labels = []
+	
+	# 同一ファイルのラベルを収集
+	for label_name in all_labels_dict.keys():
+		var label_info = all_labels_dict[label_name]
+		if label_info.get("path", "") == file_path:
+			file_labels.append({
+				"name": label_name,
+				"line": label_info.get("line", 0)
+			})
+	
+	# ライン番号順にソート
+	file_labels.sort_custom(func(a, b): return a.line < b.line)
+	
+	# 現在のラベルの位置を特定
+	var current_index = -1
+	for i in range(file_labels.size()):
+		if file_labels[i].name == current_label:
+			current_index = i
+			break
+	
+	# 次のラベルを返す
+	if current_index >= 0 and current_index + 1 < file_labels.size():
+		return file_labels[current_index + 1].name
+	
+	return ""

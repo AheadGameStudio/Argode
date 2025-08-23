@@ -40,6 +40,9 @@ func set_message_canvas(canvas):
 ## テキスト長に応じてアニメーションを初期化
 func initialize_for_text(text_length: int):
 	"""テキスト長に応じてアニメーション配列を初期化"""
+	# 前のアニメーション状態を完全クリア
+	range_animation_configs.clear()
+	
 	if character_animation and is_animation_enabled:
 		character_animation.initialize_for_text(text_length)
 		ArgodeSystem.log("✨ Character animation initialized for text length: %d" % text_length)

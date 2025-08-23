@@ -16,6 +16,9 @@ var layer_manager: ArgodeLayerManager
 var gui_layer: Control
 var active_ui_alias: String = ""
 
+# MessageRenderer caching
+var message_renderer_instance: RefCounted
+
 # Service Layer Pattern: UI state tracking
 var ui_states: Dictionary = {}
 var ui_animations: Dictionary = {}
@@ -186,24 +189,46 @@ func get_message_window() -> Control:
 
 func get_message_renderer():
 	"""
-	Returns the message renderer instance.
+	Returns the message renderer instance, creating one if necessary.
 	
 	Returns:
-		The message renderer instance or null if not found
+		The message renderer instance or null if creation failed
 	"""
+	# Check if we have a cached renderer
+	if message_renderer_instance:
+		return message_renderer_instance
+	
 	# Try to get from ArgodeSystem if available
 	if ArgodeSystem.has_method("get_renderer"):
 		var renderer = ArgodeSystem.get_renderer("message")
 		if renderer:
+			message_renderer_instance = renderer
 			return renderer
 	
 	# Try direct property access
 	if ArgodeSystem.has_method("MessageRenderer"):
-		return ArgodeSystem.MessageRenderer
+		message_renderer_instance = ArgodeSystem.MessageRenderer
+		return message_renderer_instance
 	
 	# Check if there's a renderer property in ArgodeSystem
 	if "MessageRenderer" in ArgodeSystem:
-		return ArgodeSystem.MessageRenderer
+		message_renderer_instance = ArgodeSystem.MessageRenderer
+		return message_renderer_instance
+	
+	# Create new MessageRenderer instance if not found
+	var renderer_script = load("res://addons/argode/renderer/ArgodeMessageRenderer.gd")
+	if renderer_script:
+		message_renderer_instance = renderer_script.new()
+		
+		# Set message window to the renderer
+		var message_window = get_message_window()
+		if message_window and message_renderer_instance.has_method("set_message_window"):
+			message_renderer_instance.set_message_window(message_window)
+			ArgodeSystem.log("✅ MessageRenderer created and linked to window", ArgodeSystem.LOG_LEVEL.DEBUG)
+		else:
+			ArgodeSystem.log("⚠️ MessageRenderer created but window not available", ArgodeSystem.LOG_LEVEL.WORKFLOW)
+		
+		return message_renderer_instance
 	
 	# If not found, log debug info
 	ArgodeSystem.log("❌ Message renderer not found - メッセージレンダラーが見つかりません", ArgodeSystem.LOG_LEVEL.DEBUG)
@@ -750,8 +775,8 @@ func show_multiple_ui(aliases: Array, transition_type: String = "none", stagger_
 		var delay = stagger_delay * i
 		
 		if delay > 0.0:
-			if ArgodeSystem.tree:
-				await ArgodeSystem.tree.create_timer(delay).timeout
+			if ArgodeSystem.get_tree():
+				await ArgodeSystem.get_tree().create_timer(delay).timeout
 		
 		if not show_ui(alias, transition_type):
 			success = false
@@ -777,8 +802,8 @@ func hide_multiple_ui(aliases: Array, transition_type: String = "none", stagger_
 		var delay = stagger_delay * i
 		
 		if delay > 0.0:
-			if ArgodeSystem.tree:
-				await ArgodeSystem.tree.create_timer(delay).timeout
+			if ArgodeSystem.get_tree():
+				await ArgodeSystem.get_tree().create_timer(delay).timeout
 		
 		if not hide_ui(alias, transition_type):
 			success = false
@@ -798,17 +823,26 @@ func show_message(text: String, character_name: String = "", properties: Diction
 		character_name: Optional character name
 		properties: Additional display properties
 	"""
+	ArgodeSystem.log("🔍 UIManager.show_message called - text: '%s', character: '%s'" % [text, character_name], ArgodeSystem.LOG_LEVEL.DEBUG)
+	
 	var message_window = get_message_window()
 	if not message_window:
 		ArgodeSystem.log("❌ Cannot show message: Message window not found", ArgodeSystem.LOG_LEVEL.CRITICAL)
 		return
 	
+	ArgodeSystem.log("🔍 Message window found: %s" % message_window.name, ArgodeSystem.LOG_LEVEL.DEBUG)
+	
 	var message_renderer = get_message_renderer()
+	ArgodeSystem.log("🔍 Message renderer: %s" % str(message_renderer), ArgodeSystem.LOG_LEVEL.DEBUG)
+	
 	if message_renderer and message_renderer.has_method("display_message"):
+		ArgodeSystem.log("🔍 Calling MessageRenderer.display_message()", ArgodeSystem.LOG_LEVEL.DEBUG)
 		message_renderer.display_message(text, character_name, properties)
 	elif message_window.has_method("display_message"):
+		ArgodeSystem.log("🔍 Calling MessageWindow.display_message()", ArgodeSystem.LOG_LEVEL.DEBUG)
 		message_window.display_message(text, character_name, properties)
 	elif message_window.has_method("set_text"):
+		ArgodeSystem.log("🔍 Using fallback MessageWindow.set_text()", ArgodeSystem.LOG_LEVEL.DEBUG)
 		# Basic text display fallback
 		message_window.set_text(text)
 	else:
@@ -819,14 +853,53 @@ func show_message(text: String, character_name: String = "", properties: Diction
 	
 	ArgodeSystem.log("📝 Message displayed: %s" % text, ArgodeSystem.LOG_LEVEL.DEBUG)
 
+## SayCommand専用：メッセージウィンドウ自動作成付きshow_message
+func show_message_with_auto_create(text: String, character_name: String = "") -> void:
+	"""
+	Display a message with automatic message window creation if needed.
+	Universal Block Execution compatible version for SayCommand.
+	"""
+	var message_window = get_message_window()
+	
+	# メッセージウィンドウがない場合は自動作成
+	if not message_window:
+		ArgodeSystem.log("📝 Creating default message window for SayCommand", ArgodeSystem.LOG_LEVEL.WORKFLOW)
+		var success = create_default_message_window()
+		if not success:
+			ArgodeSystem.log("❌ Failed to create default message window", ArgodeSystem.LOG_LEVEL.CRITICAL)
+			return
+		message_window = get_message_window()
+	
+	# 通常のshow_messageを実行
+	show_message(text, character_name)
+
+## デフォルトメッセージウィンドウ作成
+func create_default_message_window() -> bool:
+	"""Create a default message window for Universal Block Execution"""
+	var default_message_path = "res://addons/argode/builtin/scenes/default_message_window/default_message_window.tscn"
+	
+	# デフォルトメッセージウィンドウが存在するかチェック
+	if not FileAccess.file_exists(default_message_path):
+		ArgodeSystem.log("❌ Default message window not found: %s" % default_message_path, ArgodeSystem.LOG_LEVEL.CRITICAL)
+		return false
+	
+	# メッセージウィンドウを追加
+	var success = add_ui(default_message_path, "message", 100)  # 高いz_index
+	if success:
+		ArgodeSystem.log("✅ Default message window created successfully", ArgodeSystem.LOG_LEVEL.WORKFLOW)
+	else:
+		ArgodeSystem.log("❌ Failed to add default message window", ArgodeSystem.LOG_LEVEL.CRITICAL)
+	
+	return success
+
 func wait_for_input() -> void:
 	"""
 	Wait for user input to continue.
 	Compatible with SayCommand requirements.
 	Uses ArgodeController for unified input management.
 	"""
-	# Check if ArgodeController is available for unified input management
-	var controller = ArgodeSystem.Controller if ArgodeSystem.has_method("get_property") and "Controller" in ArgodeSystem else null
+	# Use ArgodeController directly from ArgodeSystem
+	var controller = ArgodeSystem.Controller
 	
 	if controller and controller.has_signal("input_received"):
 		# Use unified input management through ArgodeController
@@ -857,12 +930,63 @@ func wait_for_input() -> void:
 	
 	# Last resort: Generic input waiting
 	ArgodeSystem.log("🎮 Using fallback input waiting...", ArgodeSystem.LOG_LEVEL.DEBUG)
-	if ArgodeSystem.tree:
-		await ArgodeSystem.tree.process_frame
+	if ArgodeSystem.get_tree():
+		await ArgodeSystem.get_tree().process_frame
 		var input_received = false
 		while not input_received:
 			if Input.is_action_just_pressed("argode_advance") or Input.is_action_just_pressed("ui_accept"):
 				input_received = true
-			await ArgodeSystem.tree.process_frame
+			await ArgodeSystem.get_tree().process_frame
 	
 	ArgodeSystem.log("🎮 Input received - continuing", ArgodeSystem.LOG_LEVEL.DEBUG)
+
+# ===========================
+# Message Animation Management (for SetMessageAnimationCommand)
+# ===========================
+
+# メッセージアニメーション効果のリスト
+var message_animation_effects: Array[Dictionary] = []
+
+## メッセージアニメーション効果を追加
+func add_message_animation_effect(effect_data: Dictionary):
+	message_animation_effects.append(effect_data)
+	ArgodeSystem.log("✨ Message animation effect added: %s" % effect_data.get("type", "unknown"))
+
+## 全メッセージアニメーション効果をクリア
+func clear_message_animations():
+	message_animation_effects.clear()
+	ArgodeSystem.log("🔄 All message animation effects cleared")
+
+## メッセージアニメーションプリセットを適用
+func set_message_animation_preset(preset_name: String):
+	clear_message_animations()
+	
+	match preset_name.to_lower():
+		"default":
+			add_message_animation_effect({"type": "fade", "duration": 0.3})
+			add_message_animation_effect({"type": "slide", "duration": 0.4, "offset_x": 0.0, "offset_y": -4.0})
+		"fast":
+			add_message_animation_effect({"type": "fade", "duration": 0.1})
+			add_message_animation_effect({"type": "scale", "duration": 0.15})
+		"dramatic":
+			add_message_animation_effect({"type": "fade", "duration": 0.5})
+			add_message_animation_effect({"type": "slide", "duration": 0.6, "offset_x": 0.0, "offset_y": -8.0})
+			add_message_animation_effect({"type": "scale", "duration": 0.4})
+		"simple":
+			add_message_animation_effect({"type": "fade", "duration": 0.2})
+		"none":
+			# 何も追加しない（アニメーション無し）
+			pass
+		_:
+			ArgodeSystem.log("⚠️ Unknown message animation preset: %s" % preset_name)
+			return
+	
+	ArgodeSystem.log("🎭 Message animation preset applied: %s (%d effects)" % [preset_name, message_animation_effects.size()])
+
+## 現在のメッセージアニメーション効果を取得
+func get_message_animation_effects() -> Array[Dictionary]:
+	return message_animation_effects.duplicate()
+
+## メッセージアニメーション効果が設定されているかチェック
+func has_message_animation_effects() -> bool:
+	return not message_animation_effects.is_empty()

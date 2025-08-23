@@ -9,9 +9,8 @@ func _ready():
 	command_description = "条件分岐を実行します"
 	command_help = "if variable operator value: の形式で使用し、条件に応じてブロックを実行します"
 	
-	# VariableResolverを初期化
-	if ArgodeSystem and ArgodeSystem.VariableManager:
-		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
+	# VariableResolverを初期化（ヘルパー関数使用）
+	variable_resolver = create_variable_resolver()
 
 ## 引数検証
 func validate_args(args: Dictionary) -> bool:
@@ -31,16 +30,16 @@ func validate_args(args: Dictionary) -> bool:
 func execute_core(args: Dictionary) -> void:
 	ArgodeSystem.log_critical("🎯 IF_DEBUG: Starting if condition evaluation (Universal Block Execution)")
 	
-	# VariableResolverが初期化されていない場合の保険
-	if not variable_resolver and ArgodeSystem and ArgodeSystem.VariableManager:
-		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
+	# VariableResolverが初期化されていない場合の保険（ヘルパー関数使用）
+	if not variable_resolver:
+		variable_resolver = create_variable_resolver()
 	
 	if not variable_resolver:
 		ArgodeSystem.log_critical("🎯 IF_DEBUG: VariableResolver not available")
 		return
 	
-	# StatementManagerから現在のステートメント情報を取得
-	var statement_manager = ArgodeSystem.StatementManager
+	# StatementManagerの取得（ヘルパー関数使用）
+	var statement_manager = get_statement_manager()
 	if not statement_manager:
 		ArgodeSystem.log_critical("🎯 IF_DEBUG: StatementManager not found")
 		return
@@ -76,10 +75,10 @@ func execute_core(args: Dictionary) -> void:
 		else:
 			ArgodeSystem.log_critical("🎯 IF_DEBUG: No matching conditions, skipping all blocks")
 	
-	# Universal Block Execution: 選択されたブロックを直接実行
+	# Universal Block Execution: 選択されたブロックを直接実行（ヘルパー関数使用）
 	if statements_to_execute.size() > 0:
 		ArgodeSystem.log_critical("🎯 IF_DEBUG: Executing block via Universal Block Execution")
-		await statement_manager.execute_block(statements_to_execute)
+		await execute_statements_block(statements_to_execute, "if_condition")
 		ArgodeSystem.log_critical("🎯 IF_DEBUG: Block execution completed")
 	else:
 		ArgodeSystem.log_critical("🎯 IF_DEBUG: No statements to execute, continuing")

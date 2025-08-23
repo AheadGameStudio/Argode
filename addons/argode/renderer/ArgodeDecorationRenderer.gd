@@ -26,16 +26,26 @@ func extract_decoration_data(position_commands: Array):
 		
 		ArgodeSystem.log("🔍 Processing command: %s at position %d with args: %s" % [command_name, position, str(args)])
 		
-		# 装飾タグかチェック（color, bold, italic, size など）
-		if _is_decoration_command(command_name):
+		# 装飾タグかチェック（コマンドのプロパティを使用）
+		if _is_decoration_command(command_info):
 			_process_decoration_command(command_name, position, args)
 		else:
 			ArgodeSystem.log("🔍 Command '%s' is not a decoration command" % command_name)
 
 ## 装飾コマンドかどうか判定
-func _is_decoration_command(command_name: String) -> bool:
+func _is_decoration_command(command_info: Dictionary) -> bool:
 	"""装飾コマンドかどうかを判定"""
-	var decoration_commands = ["color", "bold", "italic", "size", "underline", "animation"]
+	# command_dataからコマンドインスタンスを取得
+	var command_data = command_info.get("command_data", {})
+	var command_instance = command_data.get("instance", null)
+	
+	if command_instance != null:
+		# is_decoration_commandプロパティをチェック
+		return command_instance.is_decoration_command
+	
+	# フォールバック：従来の名前ベース判定
+	var command_name = command_info.get("command_name", "")
+	var decoration_commands = ["color", "bold", "italic", "size", "underline", "animation", "scale", "move"]
 	return command_name in decoration_commands
 
 ## 装飾コマンドを処理
@@ -102,7 +112,9 @@ func calculate_char_render_info(char: String, base_font: Font, base_font_size: i
 		"font": base_font,
 		"font_size": base_font_size,
 		"color": base_color,
-		"animation_config": {}  # アニメーション設定を追加
+		"animation_config": {},  # アニメーション設定を追加
+		"scale": Vector2.ONE,    # スケール情報を追加
+		"offset": Vector2.ZERO   # 移動オフセット情報を追加
 	}
 	
 	# 装飾を順次適用
@@ -110,14 +122,25 @@ func calculate_char_render_info(char: String, base_font: Font, base_font_size: i
 		match decoration.type:
 			"color":
 				render_info.color = _parse_color_from_args(decoration.args)
-				ArgodeSystem.log("🎨 Applied color decoration: %s" % str(render_info.color))
+				if ArgodeSystem.is_verbose_mode():
+					ArgodeSystem.log("🎨 Applied color decoration: %s" % str(render_info.color))
 			"size":
 				var new_size = _parse_size_from_args(decoration.args, base_font_size)
 				render_info.font_size = new_size
-				ArgodeSystem.log("📏 Applied size decoration: %d -> %d" % [base_font_size, new_size])
+				if ArgodeSystem.is_verbose_mode():
+					ArgodeSystem.log("📏 Applied size decoration: %d -> %d" % [base_font_size, new_size])
 			"animation":
 				render_info.animation_config = _parse_animation_from_args(decoration.args)
-				ArgodeSystem.log("🎭 Applied animation decoration: %s" % str(render_info.animation_config))
+				if ArgodeSystem.is_verbose_mode():
+					ArgodeSystem.log("🎭 Applied animation decoration: %s" % str(render_info.animation_config))
+			"scale":
+				render_info.scale = _parse_scale_from_args(decoration.args)
+				if ArgodeSystem.is_verbose_mode():
+					ArgodeSystem.log("📏 Applied scale decoration: %s" % str(render_info.scale))
+			"move":
+				render_info.offset = _parse_move_from_args(decoration.args)
+				if ArgodeSystem.is_verbose_mode():
+					ArgodeSystem.log("🎯 Applied move decoration: %s" % str(render_info.offset))
 			# 他の装飾タイプ（bold, italic など）はフォント変更で対応予定
 	
 	return render_info
@@ -293,6 +316,57 @@ func get_decoration_count() -> int:
 func get_pending_decoration_count() -> int:
 	"""未完了の装飾数を取得"""
 	return decoration_stack.size()
+
+## 装飾引数からスケール値を解析
+func _parse_scale_from_args(args: Dictionary) -> Vector2:
+	"""装飾引数からスケール値を解析"""
+	var scale_value = Vector2.ONE
+	
+	var scale_str = ""
+	if args.has("scale"):
+		scale_str = args["scale"]
+	elif args.has("value"):
+		scale_str = args["value"]
+	elif args.has("0"):  # 無名引数
+		scale_str = args["0"]
+	
+	if scale_str != "":
+		var parts = scale_str.split(",")
+		if parts.size() >= 2:
+			# "1.5,0.3" 形式 (X倍率, 時間)
+			scale_value.x = float(parts[0])
+			scale_value.y = float(parts[0])  # Y倍率もX倍率と同じにする
+		elif parts.size() == 1:
+			# "1.5" 形式 (統一倍率)
+			var scale_factor = float(parts[0])
+			scale_value = Vector2(scale_factor, scale_factor)
+	
+	return scale_value
+
+## 装飾引数から移動オフセットを解析
+func _parse_move_from_args(args: Dictionary) -> Vector2:
+	"""装飾引数から移動オフセットを解析"""
+	var move_offset = Vector2.ZERO
+	
+	var move_str = ""
+	if args.has("move"):
+		move_str = args["move"]
+	elif args.has("value"):
+		move_str = args["value"]
+	elif args.has("0"):  # 無名引数
+		move_str = args["0"]
+	
+	if move_str != "":
+		var parts = move_str.split(",")
+		if parts.size() >= 2:
+			# "10,5,0.5" 形式 (X移動, Y移動, 時間)
+			move_offset.x = float(parts[0])
+			move_offset.y = float(parts[1])
+		elif parts.size() == 1:
+			# "10" 形式 (X移動のみ)
+			move_offset.x = float(parts[0])
+	
+	return move_offset
 
 func debug_print_decorations():
 	"""装飾情報をデバッグ出力"""

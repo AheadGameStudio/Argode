@@ -29,26 +29,14 @@ func execute_core(args: Dictionary) -> void:
 	
 	log_info("SayCommand parsed - character: '%s', message: '%s'" % [character_name, message_text])
 	
-	# Universal Block Execution: 直接UIManagerにメッセージ表示を依頼
-	var ui_manager = ArgodeSystem.UIManager
+	# Universal Block Execution: 直接UIManagerを使用（メッセージウィンドウ自動作成）
+	var ui_manager = get_ui_manager()  # ヘルパー関数使用
 	if not ui_manager:
-		log_error("UIManager not available")
 		return
 	
-	log_info("SayCommand calling UIManager.show_message directly")
-	ui_manager.show_message(character_name, message_text)
+	log_info("SayCommand calling UIManager.show_message (auto-create window)")
+	await ui_manager.show_message_with_auto_create(message_text, character_name)
 	log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
 	
-	# 入力待ちの処理
-	var is_auto_play = ArgodeSystem.is_auto_play_mode()
-	log_info("SayCommand: Auto-play mode check: %s" % is_auto_play)
-	
-	if is_auto_play:
-		log_info("SayCommand: AUTO-PLAY MODE - スキップして自動進行")
-		# ヘッドレスモードでは少し待ってから自動進行
-		await Engine.get_main_loop().create_timer(0.1).timeout
-	else:
-		# 通常モードでは入力待ち
-		log_info("SayCommand: Waiting for user input")
-		await ui_manager.wait_for_input()
-		log_info("SayCommand: User input received, continuing")
+	# オートプレイ対応の統一入力待ち
+	await wait_for_input_with_autoplay()  # ヘルパー関数使用

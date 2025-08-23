@@ -5,6 +5,9 @@ class_name ArgodeCommandBase
 
 var is_define_command: bool = false
 
+# 装飾コマンドかどうかのフラグ（GlyphSystemで使用）
+var is_decoration_command: bool = false
+
 # コマンドの名前
 var command_execute_name: String
 var command_class_name: String
@@ -131,6 +134,173 @@ func get_subcommand_arg(args: Dictionary, subcommand: String) -> Variant:
 				return null
 	log_info("サブコマンド '%s' が設定されていません" % subcommand)
 	return false
+
+# =============================================================================
+# Universal Block Execution ヘルパー関数 (Phase 5 追加)
+# =============================================================================
+
+## ArgodeSystem統一アクセスヘルパー
+func get_ui_manager() -> ArgodeUIManager:
+	"""UIManagerの安全な取得"""
+	var ui_manager = ArgodeSystem.UIManager
+	if not ui_manager:
+		log_error("UIManager not available")
+	return ui_manager
+
+func get_statement_manager() -> ArgodeStatementManager:
+	"""StatementManagerの安全な取得"""
+	var statement_manager = ArgodeSystem.StatementManager
+	if not statement_manager:
+		log_error("StatementManager not available")
+	return statement_manager
+
+func get_variable_manager() -> ArgodeVariableManager:
+	"""VariableManagerの安全な取得"""
+	var variable_manager = ArgodeSystem.VariableManager
+	if not variable_manager:
+		log_error("VariableManager not available")
+	return variable_manager
+
+## Variable Resolverの統一作成
+func create_variable_resolver() -> ArgodeVariableResolver:
+	"""Variable Resolverの統一作成（IfCommand, SetCommandで共通使用）"""
+	var variable_manager = get_variable_manager()
+	if not variable_manager:
+		return null
+	
+	return ArgodeVariableResolver.new(variable_manager)
+
+## ラベル情報の安全な取得
+func get_label_info(label_name: String) -> Dictionary:
+	"""ラベル情報の取得（存在チェック付き）"""
+	if label_name.is_empty():
+		log_error("ラベル名が空です")
+		return {}
+	
+	var label_info = ArgodeSystem.LabelRegistry.get_label(label_name)
+	if label_info.is_empty():
+		log_error("ラベル '%s' が見つかりません" % label_name)
+		return {}
+	
+	return label_info
+
+## ラベルステートメントの安全な取得
+func get_label_statements(label_name: String) -> Array:
+	"""ラベルのステートメント配列を取得（JumpCommand, CallCommandで共通使用）"""
+	var statement_manager = get_statement_manager()
+	if not statement_manager:
+		return []
+	
+	var label_statements = statement_manager.get_label_statements(label_name)
+	if label_statements.is_empty():
+		log_error("ラベル '%s' にステートメントが見つかりません" % label_name)
+		return []
+	
+	return label_statements
+
+## ブロック実行のヘルパー
+func execute_statements_block(statements: Array, context_name: String = "", source_label: String = "") -> void:
+	"""ステートメントブロックの実行（MenuCommand, IfCommandで共通使用）"""
+	if statements.is_empty():
+		log_debug("実行するステートメントがありません")
+		return
+	
+	var statement_manager = get_statement_manager()
+	if not statement_manager:
+		return
+	
+	var execution_context = context_name if not context_name.is_empty() else command_execute_name
+	log_debug("ブロック実行開始: %s (%d statements)" % [execution_context, statements.size()])
+	
+	# source_labelが指定されている場合は連続実行を有効にする
+	if not source_label.is_empty():
+		await statement_manager.execute_block(statements, source_label)
+	else:
+		await statement_manager.execute_block(statements)
+	
+	log_debug("ブロック実行完了: %s" % execution_context)
+
+## ラベルジャンプのヘルパー
+func jump_to_label(label_name: String) -> void:
+	"""ラベルへのジャンプ実行（JumpCommand, CallCommandで共通使用）"""
+	var label_statements = get_label_statements(label_name)
+	if label_statements.is_empty():
+		return
+	
+	log_debug("ラベルジャンプ: %s (%d statements)" % [label_name, label_statements.size()])
+	
+	# ジャンプ先からの連続実行を有効にする
+	await execute_statements_block(label_statements, "jump_" + label_name, label_name)
+
+## オートプレイ対応の入力待ち
+func wait_for_input_with_autoplay(auto_delay: float = 0.1) -> void:
+	"""オートプレイ対応の統一入力待ち（SayCommand, MenuCommand, WaitCommandで共通使用）"""
+	if ArgodeSystem.is_auto_play_mode():
+		log_debug("AUTO-PLAY MODE - 自動進行 (delay: %s)" % auto_delay)
+		await Engine.get_main_loop().create_timer(auto_delay).timeout
+	else:
+		var ui_manager = get_ui_manager()
+		if ui_manager:
+			log_debug("入力待ち開始")
+			await ui_manager.wait_for_input()
+			log_debug("入力受信完了")
+
+## 変数値の安全な取得
+func get_variable_value(variable_name: String, default_value: Variant = null) -> Variant:
+	"""変数値の安全な取得（エラーハンドリング付き）"""
+	var variable_manager = get_variable_manager()
+	if not variable_manager:
+		return default_value
+	
+	return variable_manager.get_variable(variable_name, default_value)
+
+## 変数値の安全な設定
+func set_variable_value(variable_name: String, value: Variant) -> bool:
+	"""変数値の安全な設定（成功/失敗を返す）"""
+	var variable_manager = get_variable_manager()
+	if not variable_manager:
+		return false
+	
+	variable_manager.set_variable(variable_name, value)
+	log_debug("変数設定: %s = %s" % [variable_name, str(value)])
+	return true
+
+## 式評価のヘルパー
+func evaluate_expression(expression: String) -> Variant:
+	"""式評価のヘルパー（条件文等で使用）"""
+	var variable_resolver = create_variable_resolver()
+	if not variable_resolver:
+		log_error("Variable Resolverの作成に失敗しました")
+		return false
+	
+	# ArgodeVariableResolverが評価機能を持っているかチェック
+	if variable_resolver.has_method("evaluate_expression"):
+		return variable_resolver.evaluate_expression(expression)
+	
+	# 基本的な変数参照のみサポート
+	return variable_resolver._process_value(expression)
+
+## Definition取得のヘルパー
+func get_definition(definition_type: String, name: String) -> Dictionary:
+	"""定義情報の取得（character, image等で使用）"""
+	var definition = ArgodeSystem.DefinitionRegistry.get_definition(definition_type, name)
+	if definition.is_empty():
+		log_warning("定義が見つかりません: %s '%s'" % [definition_type, name])
+	return definition
+
+## ExecutionPathManager参照の取得
+func get_execution_path_manager(args: Dictionary):
+	"""ExecutionPathManagerの参照取得（デバッグ・ログ用）"""
+	return args.get("execution_path_manager", null)
+
+## 実行パスデバッグ出力
+func debug_execution_path(args: Dictionary) -> void:
+	"""実行パスのデバッグ出力"""
+	var execution_path_manager = get_execution_path_manager(args)
+	if execution_path_manager and execution_path_manager.has_method("debug_print_execution_stack"):
+		execution_path_manager.debug_print_execution_stack()
+	else:
+		log_debug("ExecutionPathManager not available for path debugging")
 
 # =============================================================================
 # タイプライター制御ヘルパー関数 (StatementManager経由)

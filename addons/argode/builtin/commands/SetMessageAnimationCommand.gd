@@ -47,9 +47,9 @@ func execute(args: Dictionary) -> void:
 
 ## アニメーション効果を追加
 func _add_animation_effect(effect_type: String, params: Array):
-	var statement_manager = ArgodeSystem.StatementManager
-	if not statement_manager:
-		ArgodeSystem.log("⚠️ StatementManager が取得できません")
+	var ui_manager = ArgodeSystem.UIManager
+	if not ui_manager:
+		ArgodeSystem.log("⚠️ UIManager が取得できません")
 		return
 	
 	match effect_type:
@@ -62,7 +62,7 @@ func _add_animation_effect(effect_type: String, params: Array):
 				"type": "fade",
 				"duration": duration
 			}
-			statement_manager.add_message_animation_effect(effect_data)
+			ui_manager.add_message_animation_effect(effect_data)
 			ArgodeSystem.log("✨ フェードイン効果を追加: 時間=%.2f秒" % duration)
 		
 		"slide":
@@ -98,7 +98,7 @@ func _add_animation_effect(effect_type: String, params: Array):
 					"offset_x": offset_x,
 					"offset_y": offset_y
 				}
-				statement_manager.add_message_animation_effect(effect_data)
+				ui_manager.add_message_animation_effect(effect_data)
 				ArgodeSystem.log("📐 スライド効果を追加: 時間=%.2f秒, X軸オフセット=%.1f, Y軸オフセット=%.1f" % [duration, offset_x, offset_y])
 			else:
 				ArgodeSystem.log("⚠️ スライド効果にはoffset_xまたはoffset_yの指定が必要です")
@@ -112,7 +112,7 @@ func _add_animation_effect(effect_type: String, params: Array):
 				"type": "scale",
 				"duration": duration
 			}
-			statement_manager.add_message_animation_effect(effect_data)
+			ui_manager.add_message_animation_effect(effect_data)
 			ArgodeSystem.log("🔍 スケール効果を追加: 時間=%.2f秒" % duration)
 		
 		_:
@@ -120,22 +120,22 @@ func _add_animation_effect(effect_type: String, params: Array):
 
 ## 全アニメーションをクリア
 func _clear_animations():
-	var statement_manager = ArgodeSystem.StatementManager
-	if not statement_manager:
-		ArgodeSystem.log("⚠️ StatementManager が取得できません")
+	var ui_manager = ArgodeSystem.UIManager
+	if not ui_manager:
+		ArgodeSystem.log("⚠️ UIManager が取得できません")
 		return
 	
-	statement_manager.clear_message_animations()
+	ui_manager.clear_message_animations()
 	ArgodeSystem.log("🔄 全メッセージアニメーション効果をクリアしました")
 
 ## プリセット適用
 func _apply_preset(preset_name: String):
-	var statement_manager = ArgodeSystem.StatementManager
-	if not statement_manager:
-		ArgodeSystem.log("⚠️ StatementManager が取得できません")
+	var ui_manager = ArgodeSystem.UIManager
+	if not ui_manager:
+		ArgodeSystem.log("⚠️ UIManager が取得できません")
 		return
 	
-	statement_manager.set_message_animation_preset(preset_name)
+	ui_manager.set_message_animation_preset(preset_name)
 	ArgodeSystem.log("🎭 メッセージアニメーションプリセットを適用: %s" % preset_name)
 
 ## ヘルプ表示

@@ -23,14 +23,19 @@ var character_positions: Array[int] = []      # 表示文字位置のマッピ�
 
 func _init():
 	tag_tokenizer = ArgodeTagTokenizer.new()
-	tag_registry = ArgodeTagRegistry.new()
 	
-	# TagRegistryをCommandRegistryから初期化
-	if ArgodeSystem and ArgodeSystem.CommandRegistry:
-		tag_registry.initialize_from_command_registry(ArgodeSystem.CommandRegistry)
-		ArgodeSystem.log_debug_detail("🏷️ InlineCommandManager: TagRegistry initialized with %d tags" % tag_registry.get_tag_names().size())
+	# ArgodeSystemのTagRegistryを直接使用（重複インスタンス作成を回避）
+	if ArgodeSystem and ArgodeSystem.TagRegistry:
+		tag_registry = ArgodeSystem.TagRegistry
+		ArgodeSystem.log_debug_detail("🏷️ InlineCommandManager: Using ArgodeSystem.TagRegistry with %d tags" % tag_registry.get_tag_names().size())
 	else:
-		ArgodeSystem.log_critical("🚨 InlineCommandManager: CommandRegistry not available for tag initialization")
+		# フォールバック: 独自インスタンス作成（初期化時のみ）
+		tag_registry = ArgodeTagRegistry.new()
+		if ArgodeSystem and ArgodeSystem.CommandRegistry:
+			tag_registry.initialize_from_command_registry(ArgodeSystem.CommandRegistry)
+			ArgodeSystem.log_debug_detail("🏷️ InlineCommandManager: Fallback TagRegistry initialized with %d tags" % tag_registry.get_tag_names().size())
+		else:
+			ArgodeSystem.log_critical("🚨 InlineCommandManager: CommandRegistry not available for tag initialization")
 	
 	# VariableResolverを初期化
 	if ArgodeSystem and ArgodeSystem.VariableManager:
@@ -42,10 +47,14 @@ func process_text(raw_text: String) -> Dictionary:
 	if not variable_resolver and ArgodeSystem and ArgodeSystem.VariableManager:
 		variable_resolver = ArgodeVariableResolver.new(ArgodeSystem.VariableManager)
 	
-	# TagRegistryが初期化されていない場合の保険
-	if tag_registry.get_tag_names().is_empty() and ArgodeSystem and ArgodeSystem.CommandRegistry:
-		tag_registry.initialize_from_command_registry(ArgodeSystem.CommandRegistry)
-		ArgodeSystem.log_debug_detail("🏷️ InlineCommandManager: TagRegistry late-initialized with %d tags" % tag_registry.get_tag_names().size())
+	# TagRegistryが初期化されていない場合の保険（ArgodeSystemから再取得を試行）
+	if tag_registry.get_tag_names().is_empty():
+		if ArgodeSystem and ArgodeSystem.TagRegistry and not ArgodeSystem.TagRegistry.get_tag_names().is_empty():
+			tag_registry = ArgodeSystem.TagRegistry
+			ArgodeSystem.log_debug_detail("🏷️ InlineCommandManager: Switched to ArgodeSystem.TagRegistry with %d tags" % tag_registry.get_tag_names().size())
+		elif ArgodeSystem and ArgodeSystem.CommandRegistry:
+			tag_registry.initialize_from_command_registry(ArgodeSystem.CommandRegistry)
+			ArgodeSystem.log_debug_detail("🏷️ InlineCommandManager: TagRegistry late-initialized with %d tags" % tag_registry.get_tag_names().size())
 	
 	# エスケープされた改行文字を実際の改行文字に前処理で変換
 	_raw_text = raw_text.replace("\\n", "\n")
@@ -96,7 +105,13 @@ func _build_display_text_and_commands(tokens: Array[ArgodeTagTokenizer.TokenData
 			
 			ArgodeTagTokenizer.TokenType.TAG:
 				# タグの場合、コマンドを位置に登録（表示位置はコマンド実行タイミング）
-				var command_info = _create_tag_command(token, current_display_pos)
+				var command_tag = token.command_data.get("command", "")
+				var adjusted_position = current_display_pos
+				if command_tag == "w":
+					# 待機コマンドは現在の表示位置で実行
+					# current_display_posが現在までに処理された表示テキストの長さ
+					adjusted_position = current_display_pos
+				var command_info = _create_tag_command(token, adjusted_position)
 				if not command_info.is_empty():
 					commands.append(command_info)
 			
@@ -158,6 +173,7 @@ func _create_tag_command(token: ArgodeTagTokenizer.TokenData, display_position: 
 	ArgodeSystem.log("🔍 Processing opening tag: %s" % tag_command)
 	if tag_registry.has_tag(tag_command):
 		var command_data = tag_registry.get_tag_command(tag_command)
+		
 		var result = {
 			"type": "tag",
 			"display_position": display_position,

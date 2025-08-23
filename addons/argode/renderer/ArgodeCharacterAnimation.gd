@@ -113,7 +113,9 @@ func trigger_character_animation(char_index: int):
 				for key in start_values:
 					char_anim.current_values[key] = start_values[key]
 			
-			ArgodeSystem.log("🎭 Character animation triggered for char %d at time %.2f with initial values: %s" % [char_index, current_time, str(char_anim.current_values)])
+			# 詳細ログモードでのみ文字ごとのアニメーションログ出力
+			if ArgodeSystem.is_verbose_mode():
+				ArgodeSystem.log("🎭 Character animation triggered for char %d at time %.2f with initial values: %s" % [char_index, current_time, str(char_anim.current_values)])
 
 ## カスタム設定で文字アニメーションをトリガー
 func trigger_character_animation_with_config(char_index: int, animation_config: Dictionary):

@@ -9,6 +9,7 @@ func _ready():
 	command_execute_name = "wait"
 	is_also_tag = true
 	tag_name = "w"  # {w=1.0}のように使用
+	is_decoration_command = true  # 装飾コマンドとして認識（元に戻す）
 
 func validate_args(args: Dictionary) -> bool:
 	# 待機時間が指定されているかチェック
@@ -39,8 +40,15 @@ func execute_core(args: Dictionary) -> void:
 	else:
 		ArgodeSystem.log("⏱️ WaitCommand: Waiting for %.1f seconds" % wait_time)
 	
-	# Engine.get_main_loop().create_timerを使用して待機
-	ArgodeSystem.log("⏲️ WaitCommand: Starting wait for %.1f seconds" % wait_time)
+	# GlyphSystemが利用可能な場合は、GlyphManagerの一時停止機能を使用
+	var glyph_manager = _get_glyph_manager()
+	if glyph_manager and glyph_manager.has_method("pause_typewriter"):
+		ArgodeSystem.log("⏲️ WaitCommand: Using GlyphManager pause for %.1f seconds" % wait_time)
+		glyph_manager.pause_typewriter(wait_time)
+		return  # GlyphManagerが待機完了を自動処理
+	
+	# フォールバック: 従来のタイマー方式
+	ArgodeSystem.log("⏲️ WaitCommand: Starting fallback wait for %.1f seconds" % wait_time)
 	await Engine.get_main_loop().create_timer(wait_time).timeout
 	
 	# 待機完了処理
@@ -77,7 +85,15 @@ func _on_wait_completed():
 
 ## タイプライターを一時停止
 func pause_typewriter():
-	var typewriter_service = ArgodeSystem.TypewriterService
+	# GlyphSystemの一時停止を優先
+	var glyph_manager = _get_glyph_manager()
+	if glyph_manager and glyph_manager.has_method("is_typewriter_paused"):
+		# GlyphSystemが利用可能な場合はGlyphManagerに委譲
+		ArgodeSystem.log("⏸️ WaitCommand: Delegating pause to GlyphManager")
+		return  # pause_typewriter(duration)は既にGlyphManagerで呼ばれている前提
+	
+	# フォールバック: 従来のTypewriterService
+	var typewriter_service = ArgodeSystem.get_service("TypewriterService")
 	if typewriter_service:
 		typewriter_service.pause_typing()
 		ArgodeSystem.log("⏸️ WaitCommand: Typewriter paused via TypewriterService")
@@ -86,9 +102,35 @@ func pause_typewriter():
 
 ## タイプライターを再開
 func resume_typewriter():
-	var typewriter_service = ArgodeSystem.TypewriterService
+	# GlyphSystemの再開を優先
+	var glyph_manager = _get_glyph_manager()
+	if glyph_manager and glyph_manager.has_method("is_typewriter_paused"):
+		# GlyphSystemが利用可能な場合はGlyphManagerに委譲
+		ArgodeSystem.log("▶️ WaitCommand: Delegating resume to GlyphManager")
+		return  # _resume_typewriter()は既にGlyphManagerで呼ばれている前提
+	
+	# フォールバック: 従来のTypewriterService
+	var typewriter_service = ArgodeSystem.get_service("TypewriterService")
 	if typewriter_service:
 		typewriter_service.resume_typing()
 		ArgodeSystem.log("▶️ WaitCommand: Typewriter resumed via TypewriterService")
 	else:
 		ArgodeSystem.log("⚠️ WaitCommand: TypewriterService not available")
+
+## GlyphManagerの取得ヘルパー
+func _get_glyph_manager():
+	"""GlyphManagerを取得するヘルパーメソッド"""
+	# 複数の経路でGlyphManagerを探索
+	if ArgodeSystem.has_method("get_manager"):
+		var glyph_manager = ArgodeSystem.get_manager("GlyphManager")
+		if glyph_manager:
+			return glyph_manager
+	
+	# MessageRendererからGlyphManagerを取得
+	var ui_manager = ArgodeSystem.UIManager
+	if ui_manager and ui_manager.has_method("get_message_renderer"):
+		var message_renderer = ui_manager.get_message_renderer()
+		if message_renderer and message_renderer.has_property("glyph_manager"):
+			return message_renderer.glyph_manager
+	
+	return null

@@ -7,6 +7,7 @@ func _ready():
 	is_also_tag = true
 	has_end_tag = true
 	tag_name = "color"
+	is_decoration_command = true  # 装飾コマンドとして認識
 	command_description = "テキストの色を変更します"
 	command_help = "{color=#ff0000}文字色を変更したいテキスト{/color}の形式で使用します"
 

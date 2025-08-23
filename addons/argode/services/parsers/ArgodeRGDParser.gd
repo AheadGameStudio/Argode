@@ -385,8 +385,27 @@ func _parse_menu_options(option_indent: int) -> Array:
 		var option_text = ""
 		var is_option = false
 		
-		if clean_line.begins_with('"') and clean_line.ends_with('":'):
-			# "テキスト": 形式
+		# デバッグログ：実際の行内容を確認
+		print("🔍 MENU PARSE: Checking line: '%s'" % clean_line)
+		print("🔍 MENU PARSE: Begins with quote: %s, ends with colon: %s" % [clean_line.begins_with('"'), clean_line.ends_with(':')])
+		
+		if clean_line.begins_with('"') and clean_line.ends_with(':'):
+			# "テキスト": 形式（修正版）
+			var quote_end = clean_line.find('"', 1)  # 2番目のクォートを検索
+			if quote_end > 0:
+				option_text = clean_line.substr(1, quote_end - 1)
+				is_option = true
+				print("🔍 MENU PARSE: Found option: '%s'" % option_text)
+		elif clean_line.begins_with('"') and clean_line.ends_with('":'):
+			# "テキスト": 形式（重複、削除予定）
+			option_text = clean_line.substr(1, clean_line.length() - 3)
+			is_option = true
+		elif clean_line.begins_with('"') and clean_line.ends_with('":'):
+			# "テキスト": 形式（標準）
+			option_text = clean_line.substr(1, clean_line.length() - 3)
+			is_option = true
+		elif clean_line.begins_with('"') and clean_line.find('":') == clean_line.length() - 2:
+			# "テキスト": 形式（より確実なチェック）
 			option_text = clean_line.substr(1, clean_line.length() - 3)
 			is_option = true
 		elif clean_line.begins_with('"') and clean_line.ends_with('"'):

@@ -1,0 +1,33 @@
+# Universal Block Execution Phase 5 動作テスト
+
+label test_phase5_start:
+	"こんにちは。"
+    "Phase 5: Command自己管理化のテストを開始します"
+
+label test_say_command:
+    "SayCommandの直接UI制御テスト"
+    narrator "このメッセージはSayCommandがArgodeSystem.UIManagerを直接使用して表示しています"
+    "✅ SayCommand自己管理化テスト完了"
+
+label test_menu_command:
+    "MenuCommandの選択肢UI直接制御テスト"
+    menu:
+        "選択肢1":
+            "選択肢1が選ばれました"
+        "選択肢2":
+            "選択肢2が選ばれました"
+        "テスト完了":
+            "✅ MenuCommand自己管理化テスト完了"
+
+label test_jump_command:
+    "JumpCommandのExecutionPathManager統合テスト"
+    "ジャンプ先に移動します..."
+    jump test_jump_target_phase5
+
+label test_jump_target_phase5:
+    "✅ JumpCommand ExecutionPathManager統合テスト完了"
+    "Universal Block Executionが正常に動作しています"
+
+label test_phase5_complete:
+    "🎉 Phase 5: Command自己管理化テスト完了"
+    "すべてのコマンドが自己完結型でUI制御を実行できています"

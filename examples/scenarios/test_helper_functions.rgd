@@ -1,0 +1,28 @@
+# ArgodeCommandBase ヘルパー関数テスト
+
+label test_helper_functions:
+    "ArgodeCommandBaseのヘルパー関数をテストします"
+
+label test_say_helper:
+    "SayCommandのヘルパー関数テスト"
+    narrator "このメッセージはget_ui_manager()とwait_for_input_with_autoplay()ヘルパー関数を使用しています"
+    "✅ SayCommandヘルパー関数テスト完了"
+
+label test_jump_helper:
+    "JumpCommandのヘルパー関数テスト"
+    "jump_to_label()ヘルパー関数でジャンプします"
+    jump test_jump_target
+
+label test_jump_target:
+    "✅ jump_to_label()ヘルパー関数テスト完了"
+    "get_label_info()でラベル情報取得、debug_execution_path()で実行パス確認済み"
+
+label test_if_helper:
+    "IfCommandのヘルパー関数テスト"
+    set test.value = 5
+    if test.value == 5:
+        "✅ create_variable_resolver()とexecute_statements_block()ヘルパー関数テスト完了"
+
+label test_helper_complete:
+    "🎉 ArgodeCommandBaseヘルパー関数テスト完了"
+    "カスタムコマンド開発がより簡潔になりました！"

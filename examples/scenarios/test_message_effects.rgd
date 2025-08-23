@@ -1,0 +1,58 @@
+# メッセージエフェクト・インラインタグテスト
+
+# メッセージアニメーション定義
+message_animation add fade 0.5
+message_animation add dramatic 1.0 
+message_animation add slow 2.0
+
+label test_effects_start:
+    "メッセージエフェクト・インラインタグのテストを開始します"
+
+label test_message_animations:
+    "標準のタイプライターエフェクトです"
+    
+    message_animation preset fade
+    "フェードイン効果のテストです"
+    
+    message_animation preset dramatic  
+    "ドラマチック効果のテストです"
+    
+    message_animation preset slow
+    "ゆっくりとした効果のテストです"
+    
+    message_animation clear
+    "エフェクトをクリアしました"
+
+label test_inline_tags:
+    "インラインタグのテストを行います"
+    
+    # カラータグテスト
+    "これは{color=#ff0000}赤色{/color}のテキストです"
+    "これは{color=#00ff00}緑色{/color}のテキストです"
+    "これは{color=#0000ff}青色{/color}のテキストです"
+    
+    # アニメーションタグテスト
+    "これは{animation=dramatic}ドラマチック{/animation}なテキストです"
+    "これは{animation=fade}フェード{/animation}するテキストです"
+    
+    # 待機タグテスト
+    "少し待って{w=1.0}から続きます"
+    "もう少し待って{w=2.0}から最後です"
+
+label test_ruby:
+    "ルビ（ふりがな）のテストです"
+    
+    "【漢字｜かんじ】の読み方テストです"
+    "【美しい｜うつくしい】花が咲いています"
+    "【複雑｜ふくざつ】な処理を実行中です"
+
+label test_combined:
+    "複合タグのテストです"
+    
+    "これは{color=#ff0000}【赤色｜あかいろ】{/color}の文字です"
+    "これは{animation=dramatic}{color=#00ff00}緑色でドラマチック{/color}{/animation}です"
+    "待機付き{w=1.0}{color=#0000ff}青色{/color}テキストです"
+
+label test_effects_complete:
+    "🎉 メッセージエフェクト・インラインタグテスト完了"
+    "すべての効果が正常に動作しました"

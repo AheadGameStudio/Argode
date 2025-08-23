@@ -208,11 +208,119 @@ func debug_print_state():
 
 ## 位置ベースコマンド付きタイプライター効果を開始
 func start_typing_with_position_commands(text: String, position_commands: Array, inline_command_manager: ArgodeInlineCommandManager, speed: float = 0.05):
-	# 通常のタイプライター効果を開始
-	start_typing(text, speed)
+	# テキストと設定を保存
+	current_text = text.replace("\\n", "\n")
+	typing_speed = speed
+	display_text = ""
+	current_index = 0
+	is_typing = true
+	ArgodeSystem.log_workflow("🔧 TypewriterService: is_typing set to TRUE (start_typing_with_position_commands)")
+	is_paused = false
+	was_skipped = false
+	pending_inline_waits.clear()
 	
-	# 位置ベースコマンドを監視するタイマーを設定
-	_monitor_position_commands(position_commands, inline_command_manager)
+	ArgodeSystem.log("⌨️ Starting typewriter with position commands: '%s'" % current_text.substr(0, 20) + ("..." if current_text.length() > 20 else ""))
+	
+	# 位置コマンド情報をログ出力
+	ArgodeSystem.log("🎯 TypewriterService: Starting with %d position commands" % position_commands.size())
+	for i in range(position_commands.size()):
+		var cmd = position_commands[i]
+		ArgodeSystem.log("🎯   Command %d: %s at position %d" % [i, cmd.get("command_name", "unknown"), cmd.get("display_position", -1)])
+	
+	# 統合処理を開始
+	_process_typing_with_commands(position_commands, inline_command_manager)
+
+## 位置コマンド統合処理（二重ループ問題を解決）
+func _process_typing_with_commands(position_commands: Array, inline_command_manager: ArgodeInlineCommandManager):
+	while is_typing and not is_paused and current_index < current_text.length():
+		# === 位置コマンド実行判定（文字処理前） ===
+		for command_info in position_commands:
+			if command_info.get("executed", false):
+				continue  # 既に実行済み
+			
+			var should_execute = false
+			if command_info.get("command_name", "") == "w":
+				# 待機コマンド：指定位置の文字数が表示済みの時点で実行
+				# position 0: 0文字表示後（最初）、position 2: 2文字表示後
+				should_execute = (current_index == command_info.display_position)
+			else:
+				# 他のコマンド：表示済み位置で実行
+				should_execute = (command_info.display_position <= (current_index - 1) and current_index > 0)
+			
+			if should_execute:
+				ArgodeSystem.log("🎯 TypewriterService: Executing inline command '%s' at position %d (current_index: %d)" % [command_info.get("command_name", "unknown"), command_info.display_position, current_index])
+				inline_command_manager.execute_commands_at_position(command_info.display_position)
+				command_info["executed"] = true
+				ArgodeSystem.log("✅ TypewriterService: Inline command executed and marked")
+		
+		# === 通常文字処理 ===
+		var char = current_text[current_index]
+		
+		# 特殊文字の処理
+		if skip_brackets and _is_special_character_start(char):
+			var skip_length = _get_skip_length()
+			if skip_length > 0:
+				var special_text = current_text.substr(current_index, skip_length)
+				display_text += special_text
+				current_index += skip_length
+				
+				if on_character_typed.is_valid():
+					on_character_typed.call(special_text, display_text)
+				character_typed.emit(special_text, display_text)
+				continue
+		
+		# 通常の文字を追加
+		display_text += char
+		current_index += 1
+		
+		# 文字タイプイベントを発行
+		if on_character_typed.is_valid():
+			on_character_typed.call(char, display_text)
+		character_typed.emit(char, display_text)
+		
+		# === 文字表示後の位置コマンド実行判定 ===
+		for command_info in position_commands:
+			if command_info.get("executed", false):
+				continue  # 既に実行済み
+			
+			var should_execute = false
+			if command_info.get("command_name", "") == "w":
+				# 待機コマンド：文字表示後、表示済み文字数と一致したら実行
+				# current_indexは次に処理する位置なので、表示済み文字数は(current_index)
+				should_execute = (command_info.display_position == current_index)
+			else:
+				# 他のコマンド：表示済み位置で実行
+				should_execute = (command_info.display_position <= (current_index - 1))
+			
+			if should_execute:
+				ArgodeSystem.log("🎯 TypewriterService: Executing inline command '%s' at position %d after char display (current_index: %d)" % [command_info.get("command_name", "unknown"), command_info.display_position, current_index])
+				inline_command_manager.execute_commands_at_position(command_info.display_position)
+				command_info["executed"] = true
+				ArgodeSystem.log("✅ TypewriterService: Inline command executed and marked after char display")
+		
+		# タイピング速度に応じた待機
+		var wait_time = typing_speed
+		if char == "\n":
+			wait_time *= 2.0
+		
+		await Engine.get_main_loop().create_timer(wait_time).timeout
+	
+	# === 完了処理 ===
+	if is_typing and current_index >= current_text.length():
+		# 残りの未実行コマンドを実行
+		for command_info in position_commands:
+			if not command_info.get("executed", false):
+				ArgodeSystem.log("🎯 TypewriterService: Executing remaining command at position %d" % command_info.display_position)
+				inline_command_manager.execute_commands_at_position(command_info.display_position)
+		
+		is_typing = false
+		ArgodeSystem.log_workflow("🔧 TypewriterService: is_typing set to FALSE (natural completion with commands)")
+		is_paused = false
+		
+		if on_typing_finished.is_valid():
+			on_typing_finished.call(display_text)
+		typing_finished.emit(display_text)
+		ArgodeSystem.log("✅ Typewriter with position commands completed naturally")
 
 ## 位置ベースコマンドの監視
 func _monitor_position_commands(position_commands: Array, inline_command_manager: ArgodeInlineCommandManager):
@@ -223,16 +331,26 @@ func _monitor_position_commands(position_commands: Array, inline_command_manager
 	
 	# タイプライター進行中に位置をチェック
 	while is_typing:
-		var current_position = display_text.length()
+		var current_position = current_index - 1  # 表示済み文字数は current_index - 1
 		
-		# 現在位置のコマンドを実行
-		for command_info in position_commands:
-			if command_info.display_position <= current_position and not command_info.get("executed", false):
-				# コマンドを実行
-				ArgodeSystem.log("🎯 TypewriterService: Executing inline command at position %d (current_position: %d)" % [command_info.display_position, current_position])
-				inline_command_manager.execute_commands_at_position(command_info.display_position)
-				command_info["executed"] = true  # 実行済みマーク
-				ArgodeSystem.log("✅ TypewriterService: Inline command executed and marked")
+		# 現在位置のコマンドを実行（負の値を避ける）
+		if current_position >= 0:
+			for command_info in position_commands:
+				# 待機コマンドは current_index がタグ位置を超えた時点で実行
+				var should_execute = false
+				if command_info.get("command_name", "") == "w":
+					# 待機コマンドは display_position < current_index で実行 (前の文字表示完了後)
+					should_execute = (command_info.display_position < current_index and not command_info.get("executed", false))
+				else:
+					# 他のコマンドは従来通り <= で実行
+					should_execute = (command_info.display_position <= current_position and not command_info.get("executed", false))
+				
+				if should_execute:
+					# コマンドを実行
+					ArgodeSystem.log("🎯 TypewriterService: Executing inline command at position %d (current_position: %d, current_index: %d)" % [command_info.display_position, current_position, current_index])
+					inline_command_manager.execute_commands_at_position(command_info.display_position)
+					command_info["executed"] = true  # 実行済みマーク
+					ArgodeSystem.log("✅ TypewriterService: Inline command executed and marked")
 		
 		# 少し待機してから次のチェック
 		await _wait_frame()

@@ -17,6 +17,9 @@ var animation_coordinator: ArgodeAnimationCoordinator = null
 # タイプライターサービス
 var typewriter_service: ArgodeTypewriterService = null
 
+# インラインコマンド処理サービス
+var inline_processor_service: RefCounted = null
+
 # 状態管理
 var current_text: String = ""  # 現在のテキスト
 var current_display_length: int = 0  # 現在の表示文字数
@@ -97,6 +100,14 @@ func _initialize_renderers():
 	decoration_renderer = ArgodeDecorationRenderer.new()
 	animation_coordinator = ArgodeAnimationCoordinator.new()
 	
+	# インラインコマンド処理サービスを初期化
+	var inline_processor_script = load("res://addons/argode/services/ArgodeInlineProcessorService.gd")
+	if inline_processor_script:
+		inline_processor_service = inline_processor_script.new()
+		ArgodeSystem.log("✅ MessageRenderer: InlineProcessorService initialized", ArgodeSystem.LOG_LEVEL.DEBUG)
+	else:
+		ArgodeSystem.log("❌ Failed to load InlineProcessorService", ArgodeSystem.LOG_LEVEL.CRITICAL)
+	
 	# アニメーションシステムを初期化
 	animation_coordinator.initialize_character_animation()
 	
@@ -144,6 +155,9 @@ func _find_message_canvas():
 		ArgodeSystem.log("✅ MessageCanvas found and configured")
 	else:
 		ArgodeSystem.log("❌ MessageCanvas not found in message window", 2)
+		# デバッグ: 子ノードを列挙
+		ArgodeSystem.log("🔍 Available child nodes in message window:")
+		_debug_print_node_tree(message_window, 0, 3)
 
 ## クラス型でノードを検索
 func _find_node_by_class(node: Node, target_class_name: String) -> Node:
@@ -230,11 +244,70 @@ func _notify_message_completion():
 	else:
 		ArgodeSystem.log_workflow("⚠️ Typewriter completion callback not set")
 
+# ===========================
+# UIManager Compatibility Methods
+# ===========================
+func display_message(text: String, character_name: String = "", properties: Dictionary = {}) -> void:
+	"""
+	UIManager compatibility method for displaying messages.
+	This bridges UIManager's display_message call to our render_message method.
+	
+	Args:
+		text: The message text to display
+		character_name: Optional character name
+		properties: Additional display properties
+	"""
+	ArgodeSystem.log("🔍 MessageRenderer.display_message called - text: '%s', character: '%s'" % [text, character_name], ArgodeSystem.LOG_LEVEL.DEBUG)
+	
+	# === 新しいメッセージ開始時：完全なエフェクトクリア ===
+	_clear_all_effects_for_new_message()
+	
+	# インラインコマンド処理を行う
+	if inline_processor_service:
+		var process_result = inline_processor_service.process_text_with_inline_commands(text)
+		
+		if process_result.success:
+			var display_text = process_result.display_text
+			var position_commands = process_result.position_commands
+			
+			# インラインコマンドがある場合は専用メソッドを使用
+			if position_commands.size() > 0:
+				ArgodeSystem.log("🔍 Using render_message_with_position_commands - commands: %d" % position_commands.size(), ArgodeSystem.LOG_LEVEL.DEBUG)
+				render_message_with_position_commands(character_name, display_text, position_commands, inline_processor_service.inline_command_manager)
+			else:
+				# インラインコマンドがない場合は通常のレンダリング
+				ArgodeSystem.log("🔍 Using standard render_message", ArgodeSystem.LOG_LEVEL.DEBUG)
+				render_message(character_name, display_text)
+		else:
+			# インラインコマンド処理が失敗した場合はフォールバック
+			ArgodeSystem.log("⚠️ Inline processing failed: %s - using fallback" % process_result.error, ArgodeSystem.LOG_LEVEL.WORKFLOW)
+			render_message(character_name, text)
+	else:
+		# InlineProcessorServiceがない場合はフォールバック
+		ArgodeSystem.log("⚠️ InlineProcessorService not available - using fallback", ArgodeSystem.LOG_LEVEL.WORKFLOW)
+		render_message(character_name, text)
+
+# ===========================
+# Main Message Rendering Pipeline
+# ===========================
+
 ## メッセージをレンダリング
 func render_message(character_name: String, text: String):
+	ArgodeSystem.log("🔍 render_message called - canvas available: %s, window available: %s" % [message_canvas != null, message_window != null])
+	
 	if not message_canvas:
 		ArgodeSystem.log("❌ MessageCanvas not available for rendering", 2)
-		return
+		# 再度MessageCanvasを検索
+		if message_window:
+			ArgodeSystem.log("🔄 Attempting to re-find MessageCanvas...")
+			_find_message_canvas()
+			if message_canvas:
+				ArgodeSystem.log("✅ MessageCanvas found on retry")
+			else:
+				ArgodeSystem.log("❌ MessageCanvas still not found after retry")
+				return
+		else:
+			return
 	
 	# メッセージウィンドウを表示
 	if message_window:
@@ -268,9 +341,21 @@ func render_message(character_name: String, text: String):
 
 ## 位置ベースコマンド付きメッセージをレンダリング
 func render_message_with_position_commands(character_name: String, display_text: String, position_commands: Array, inline_command_manager: ArgodeInlineCommandManager):
+	ArgodeSystem.log("🔍 render_message_with_position_commands called - canvas available: %s" % [message_canvas != null])
+	
 	if not message_canvas:
 		ArgodeSystem.log("❌ MessageCanvas not available for rendering", 2)
-		return
+		# 再度MessageCanvasを検索
+		if message_window:
+			ArgodeSystem.log("🔄 Attempting to re-find MessageCanvas...")
+			_find_message_canvas()
+			if message_canvas:
+				ArgodeSystem.log("✅ MessageCanvas found on retry")
+			else:
+				ArgodeSystem.log("❌ MessageCanvas still not found after retry")
+				return
+		else:
+			return
 	
 	# 各レンダラーにデータを設定
 	ruby_renderer.extract_ruby_data(position_commands)
@@ -457,3 +542,62 @@ func _apply_statement_manager_animations():
 			ArgodeSystem.log("⚠️ No valid animation effects could be converted")
 	else:
 		ArgodeSystem.log("⚠️ AnimationCoordinator or CharacterAnimation not available")
+
+## デバッグ: ノードツリーを出力
+func _debug_print_node_tree(node: Node, depth: int, max_depth: int):
+	if depth > max_depth:
+		return
+	
+	var indent = "  ".repeat(depth)
+	var node_info = "%s%s (%s)" % [indent, node.name, node.get_class()]
+	if node.get_script():
+		node_info += " [%s]" % node.get_script().get_global_name()
+	
+	ArgodeSystem.log(node_info)
+	
+	for child in node.get_children():
+		_debug_print_node_tree(child, depth + 1, max_depth)
+
+## 新しいメッセージ開始時の完全エフェクトクリア
+func _clear_all_effects_for_new_message():
+	"""新しいメッセージ表示開始時に前のメッセージの全エフェクトを完全クリア"""
+	ArgodeSystem.log("🧹 MessageRenderer: Clearing all effects for new message")
+	
+	# MessageCanvasのアニメーション停止
+	if message_canvas:
+		message_canvas.stop_animation_updates()
+		ArgodeSystem.log("⏹️ Animation updates stopped on MessageCanvas")
+	
+	# DecorationRendererのデータクリア
+	if decoration_renderer:
+		decoration_renderer.clear_decoration_data()
+		ArgodeSystem.log("🎨 Decoration data cleared")
+	
+	# RubyRendererのデータクリア
+	if ruby_renderer and ruby_renderer.has_method("clear_ruby_data"):
+		ruby_renderer.clear_ruby_data()
+		ArgodeSystem.log("💎 Ruby data cleared")
+	
+	# TypewriterServiceの状態クリア（待機コマンド対応）
+	var typewriter_service = ArgodeSystem.get_service("TypewriterService")
+	if typewriter_service:
+		typewriter_service.pending_inline_waits.clear()
+		typewriter_service.is_paused = false
+		ArgodeSystem.log("⌨️ TypewriterService state cleared (waits and pause)")
+	else:
+		ArgodeSystem.log("⚠️ TypewriterService not found in ArgodeSystem services")
+	
+	# InlineCommandManagerの状態クリア（位置ベースコマンド対応）
+	if inline_processor_service and inline_processor_service.inline_command_manager:
+		inline_processor_service.inline_command_manager.position_commands.clear()
+		ArgodeSystem.log("🎯 InlineCommandManager position commands cleared")
+	
+	# AnimationCoordinatorの状態クリア
+	if animation_coordinator:
+		animation_coordinator.range_animation_configs.clear()
+		if animation_coordinator.character_animation:
+			animation_coordinator.character_animation.current_time = 0.0
+			animation_coordinator.character_animation.character_animations.clear()
+		ArgodeSystem.log("✨ Animation coordinator state cleared")
+	
+	ArgodeSystem.log("✅ All effects cleared for new message")
