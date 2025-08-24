@@ -1,0 +1,26 @@
+# Phase 4: GlyphSystemテスト
+# 既存の高度なエフェクトシステムの動作確認
+
+label phase4_start:
+    "Phase 4: GlyphSystemテストを開始します"
+    
+    # 基本機能テスト
+    "まず基本的なメッセージ表示をテストします"
+    
+    # カラーエフェクトテスト
+    "カラーエフェクト：{color=#ff0000}赤い文字{/color}が表示されます"
+    
+    # スケールエフェクトテスト
+    "スケールエフェクト：{scale=1.5,0.5}文字が大きく{/scale}なります"
+    
+    # 待機エフェクトテスト（Phase 3で修正済み）
+    "待機エフェクト：{w=1.0}ここで1秒待機"
+    
+    # 複合エフェクトテスト
+    "複合エフェクト：{color=#00ff00}{scale=1.2,0.3}緑色で大きく{/scale}{/color}"
+    
+    jump phase4_complete
+
+label phase4_complete:
+    "Phase 4テスト完了"
+    "GlyphSystemの動作を確認してください"

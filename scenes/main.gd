@@ -1,17 +1,18 @@
 extends Node
 
 func _ready():
-	print("🧪 Call/Return Simple Design Test Starting...")
+	print("🎨 Stage 6: Rich Text System Test Starting...")
 	
 	# ArgodeSystem準備完了を待つ
 	if not ArgodeSystem.is_system_ready:
 		print("⏳ Waiting for ArgodeSystem...")
 		await ArgodeSystem.system_ready
 	
+	print("✅ ArgodeSystem ready - starting Stage 6 Rich Text test")
 	
-	# ArgodeSystem.play()でシナリオを開始（ラベル名を指定）
-	ArgodeSystem.play("test_start")
-	# print("✅ Scenario started successfully")
+	# Stage 6: リッチテキストテストを実行
+	ArgodeSystem.play("start")
+	print("✅ Stage 6 Rich Text test started successfully")
 	
 	# # テスト完了まで少し待つ
 	# await get_tree().create_timer(10.0).timeout

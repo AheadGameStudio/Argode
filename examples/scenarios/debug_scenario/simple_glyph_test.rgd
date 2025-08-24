@@ -1,0 +1,6 @@
+# === GlyphSystem描画テスト ===
+
+label start:
+    "Hello World!"
+    "This is a {color=red}red text{/color} test."
+    "Scale test: {scale=2.0}BIG TEXT{/scale} normal"

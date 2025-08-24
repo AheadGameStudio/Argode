@@ -6,7 +6,7 @@ class_name ArgodeCommandBase
 var is_define_command: bool = false
 
 # 装飾コマンドかどうかのフラグ（GlyphSystemで使用）
-var is_decoration_command: bool = false
+var is_decoration_command: bool = false : set = set_is_decoration_command
 
 # コマンドの名前
 var command_execute_name: String
@@ -27,6 +27,23 @@ var command_keywords: Array = []
 var is_also_tag: bool = false
 var has_end_tag:bool = false
 var tag_name: String
+
+# タグ関連の設定（v1.2.0拡張性対応）
+var custom_tag_patterns: Array[String] = []
+var tag_removal_priority: int = 100
+
+# =============================================================================
+# プロパティセッター（自動設定）
+# =============================================================================
+
+## is_decoration_command設定時の自動処理
+func set_is_decoration_command(value: bool) -> void:
+	"""装飾コマンドフラグ設定時に自動的にペアタグフラグも設定"""
+	is_decoration_command = value
+	if value:
+		has_end_tag = true
+		is_also_tag = true
+		ArgodeSystem.log("🏷️ 装飾コマンド設定: %s -> ペアタグ自動有効化" % command_class_name)
 
 # =============================================================================
 # 共通処理メソッド (Stage 3追加)
@@ -245,6 +262,35 @@ func wait_for_input_with_autoplay(auto_delay: float = 0.1) -> void:
 			await ui_manager.wait_for_input()
 			log_debug("入力受信完了")
 
+## タイプライターエフェクト完了待ち + 入力待ち
+func wait_for_typewriter_and_input() -> void:
+	"""タイプライターエフェクトが完了してから入力待ちを行う"""
+	# タイプライターエフェクトの完了を待つ
+	log_debug("🔤 タイプライターエフェクト完了待ち開始")
+	
+	# オートプレイモードの場合、タイプライターエフェクトの文字数に基づいた適切な待機時間を計算
+	if ArgodeSystem.is_auto_play_mode():
+		var statement_manager = get_statement_manager()
+		if statement_manager and statement_manager.has_method("get_current_message_length"):
+			var message_length = statement_manager.get_current_message_length()
+			# 1文字あたり0.05秒 + 最低0.5秒の基本待機時間
+			var calculated_delay = max(0.5, message_length * 0.05)
+			log_debug("AUTO-PLAY MODE - タイプライター計算待機 (chars: %d, delay: %s)" % [message_length, calculated_delay])
+			await Engine.get_main_loop().create_timer(calculated_delay).timeout
+		else:
+			# フォールバック: 固定2秒待機
+			log_debug("AUTO-PLAY MODE - タイプライター固定待機 (delay: 2.0)")
+			await Engine.get_main_loop().create_timer(2.0).timeout
+	else:
+		# 通常モード: 入力待ち
+		var ui_manager = get_ui_manager()
+		if ui_manager:
+			log_debug("通常モード - タイプライター完了後の入力待ち開始")
+			await ui_manager.wait_for_input()
+			log_debug("タイプライター完了後の入力受信完了")
+	
+	log_debug("🔤 タイプライターエフェクト + 入力待ち完了")
+
 ## 変数値の安全な取得
 func get_variable_value(variable_name: String, default_value: Variant = null) -> Variant:
 	"""変数値の安全な取得（エラーハンドリング付き）"""
@@ -349,3 +395,46 @@ func is_typewriter_active() -> bool:
 	if statement_manager:
 		return statement_manager.is_typewriter_active()
 	return false
+
+## タグパターン自動生成（v1.2.0 拡張性対応）
+func get_tag_patterns() -> Array[String]:
+	"""このコマンドが使用するタグパターンを動的に生成"""
+	var patterns: Array[String] = []
+	
+	if not is_also_tag or tag_name.is_empty():
+		return patterns
+	
+	# 基本的なタグパターンを生成
+	if has_end_tag:
+		# 開始タグと終了タグのペア
+		patterns.append("\\{%s=([^}]*)\\}" % tag_name)  # {tag=param}
+		patterns.append("\\{/%s\\}" % tag_name)         # {/tag}
+	else:
+		# 単体タグ
+		patterns.append("\\{%s(?:=([^}]*))?\\}" % tag_name)  # {tag} or {tag=param}
+	
+	return patterns
+
+## タグ除去優先度を取得
+func get_tag_removal_priority() -> int:
+	"""タグ除去の優先度（数値が小さいほど先に処理）"""
+	return tag_removal_priority
+
+## カスタムタグパターンを取得
+func get_custom_tag_patterns() -> Array[String]:
+	"""カスタムタグパターンを取得"""
+	return custom_tag_patterns
+
+## v1.2.0: 開発者向け便利API
+func set_tag_removal_priority(priority: int) -> void:
+	"""タグ除去優先度を設定"""
+	tag_removal_priority = priority
+
+func add_custom_tag_pattern(pattern: String) -> void:
+	"""カスタムタグパターンを追加"""
+	if not custom_tag_patterns.has(pattern):
+		custom_tag_patterns.append(pattern)
+
+func clear_custom_tag_patterns() -> void:
+	"""カスタムタグパターンをクリア"""
+	custom_tag_patterns.clear()

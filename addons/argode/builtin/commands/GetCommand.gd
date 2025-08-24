@@ -24,14 +24,29 @@ func execute_core(args: Dictionary) -> void:
 	if variable_name == null:
 		return  # エラーは既にログ出力済み
 	
-	# ArgodeVariableManagerから値を取得
-	if ArgodeSystem and ArgodeSystem.has_method("get") and ArgodeSystem.get("VariableManager"):
-		var variable_manager = ArgodeSystem.get("VariableManager")
-		var value = variable_manager.get_variable(variable_name)
-		
-		if value != null:
-			log_info("変数取得: %s = %s" % [variable_name, str(value)])
-		else:
-			log_warning("変数が見つかりません: %s" % variable_name)
-	else:
+	# ✅ Task 6-3: GlyphSystem統合による変数展開処理
+	var variable_manager = get_variable_manager()
+	if not variable_manager:
 		log_error("VariableManager not available")
+		return
+	
+	var value = variable_manager.get_variable(variable_name)
+	if value == null:
+		log_warning("変数が見つかりません: %s" % variable_name)
+		return
+	
+	log_info("変数取得: %s = %s" % [variable_name, str(value)])
+	
+	# GlyphSystemを通して変数値を表示
+	var ui_manager = get_ui_manager()
+	if not ui_manager:
+		log_error("UIManager not available")
+		return
+	
+	var statement_manager = get_statement_manager()
+	if statement_manager and statement_manager.has_method("show_message_via_glyph_system"):
+		# 変数値をメッセージとして表示
+		statement_manager.show_message_via_glyph_system(str(value), "")
+		log_info("✅ GetCommand: Variable value displayed via GlyphSystem - '%s' = '%s'" % [variable_name, str(value)])
+	else:
+		log_error("StatementManager GlyphSystem method not available")

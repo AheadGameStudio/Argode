@@ -1031,3 +1031,40 @@ func get_message_animation_effects() -> Array[Dictionary]:
 ## メッセージアニメーション効果が設定されているかチェック
 func has_message_animation_effects() -> bool:
 	return not message_animation_effects.is_empty()
+
+# ===========================
+# Phase 4: UIControlService Integration
+# ===========================
+
+## Phase 4: UIControlServiceを取得（StatementManagerから使用）
+func get_ui_control_service():
+	"""UIControlServiceインスタンスを取得"""
+	return ArgodeSystem.get_service("UIControlService")
+
+## タイプライター効果を強制完了
+func complete_typewriter():
+	"""現在のメッセージウィンドウのタイプライター効果を強制完了"""
+	var message_window = get_ui("message")
+	if not message_window:
+		ArgodeSystem.log("⚠️ [UIManager] No message window found for typewriter completion")
+		return
+	
+	# メッセージウィンドウ内のMessageRendererを探して完了させる
+	if message_window.has_method("complete_typewriter"):
+		message_window.complete_typewriter()
+		ArgodeSystem.log("✅ [UIManager] Typewriter completed via message window")
+	else:
+		# 代替手段: 子ノードからMessageRendererを探す
+		_complete_typewriter_fallback(message_window)
+
+## タイプライター完了のフォールバック処理
+func _complete_typewriter_fallback(message_window: Node):
+	"""MessageWindow内のMessageRendererを直接探して完了させる"""
+	var children = message_window.get_children()
+	for child in children:
+		if child.has_method("complete_typewriter"):
+			child.complete_typewriter()
+			ArgodeSystem.log("✅ [UIManager] Typewriter completed via fallback method")
+			return
+	
+	ArgodeSystem.log("⚠️ [UIManager] No typewriter completion method found in message window")

@@ -60,6 +60,9 @@ func create_glyphs_from_text(text: String) -> void:
 		glyph.set_font_info(default_font, default_font_size)
 		glyph.set_base_color(default_color)
 		
+		# 🆕 初期状態で非表示に設定（タイプライター効果のため）
+		glyph.set_visible(false, current_time)
+		
 		# 改行処理
 		if char == "\n":
 			current_pos.y += line_height
@@ -75,6 +78,10 @@ func create_glyphs_from_text(text: String) -> void:
 			
 			glyph.set_base_position(current_pos)
 			current_pos.x += char_width + character_spacing
+			
+			# デバッグ: 最初の数文字の位置情報をログ出力
+			if i < 5:  # 最初の5文字のみ
+				ArgodeSystem.log_workflow("🔤 Glyph[%d] '%s' positioned at %s (width: %.1f)" % [i, char, str(current_pos), char_width])
 		
 		text_glyphs.append(glyph)
 	
@@ -84,6 +91,14 @@ func create_glyphs_from_text(text: String) -> void:
 func clear_glyphs() -> void:
 	text_glyphs.clear()
 	all_glyphs_visible = false
+
+## すべてのグリフを非表示にする（タイプライター効果リセット用）
+func hide_all_glyphs() -> void:
+	"""タイプライター効果開始前にすべてのグリフを非表示にする"""
+	for glyph in text_glyphs:
+		glyph.set_visible(false, current_time)
+	all_glyphs_visible = false
+	ArgodeSystem.log("👻 GlyphManager: All glyphs hidden for typewriter reset")
 
 ## 指定インデックスのグリフを表示
 func show_glyph(index: int) -> void:

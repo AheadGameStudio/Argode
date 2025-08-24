@@ -9,7 +9,11 @@ func _ready():
 	command_execute_name = "wait"
 	is_also_tag = true
 	tag_name = "w"  # {w=1.0}のように使用
-	is_decoration_command = true  # 装飾コマンドとして認識（元に戻す）
+	is_decoration_command = true
+	
+	# v1.2.0: 便利API使用
+	set_tag_removal_priority(50)           # 待機タグは高優先度
+	add_custom_tag_pattern("\\{w=([0-9.]+)\\}")  # {w=1.0} 省略形
 
 func validate_args(args: Dictionary) -> bool:
 	# 待機時間が指定されているかチェック
@@ -134,3 +138,4 @@ func _get_glyph_manager():
 			return message_renderer.glyph_manager
 	
 	return null
+

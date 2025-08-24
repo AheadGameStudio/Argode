@@ -94,8 +94,8 @@ func _process_simple_typing():
 ### **Phase 4: エフェクト機能**
 
 #### 4.1 TypewriterEffectManager実装 (80-120行)
-- GlyphInfoベースのエフェクト管理
-- TextEffect enum使用
+- ArgodeGlyphInfoベースのエフェクト管理  
+- ArgodeGlyphEffect enum使用
 - メッセージエフェクトとの連携
 
 #### 4.2 TypewriterUIBridge完成 (40-60行)

@@ -29,21 +29,36 @@ func execute_core(args: Dictionary) -> void:
 	
 	log_info("SayCommand parsed - character: '%s', message: '%s'" % [character_name, message_text])
 	
-	# Universal Block Execution: 直接UIManagerを使用（メッセージウィンドウ自動作成）
-	var ui_manager = get_ui_manager()  # ヘルパー関数使用
-	if not ui_manager:
-		return
+	# Phase 4: GlyphSystemを優先して使用
+	var use_glyph_system = true  # Phase 4: GlyphSystem有効化
 	
-	log_info("SayCommand calling UIManager.show_message (auto-create window)")
-	await ui_manager.show_message_with_auto_create(message_text, character_name)
-	log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
+	if use_glyph_system:
+		log_info("SayCommand using Phase 4 GlyphSystem rendering")
+		var statement_manager = get_statement_manager()
+		if statement_manager and statement_manager.has_method("show_message_via_glyph_system"):
+			await statement_manager.show_message_via_glyph_system(message_text, character_name)
+			log_info("✅ [Phase 4] GlyphSystem message rendering completed")
+		else:
+			log_error("❌ [Phase 4] StatementManager GlyphSystem method not available - falling back to UIManager")
+			use_glyph_system = false
 	
-	# オートプレイ対応の統一入力待ち
-	await wait_for_input_with_autoplay()  # ヘルパー関数使用
+	if not use_glyph_system:
+		# Universal Block Execution: 直接UIManagerを使用（メッセージウィンドウ自動作成）
+		var ui_manager = get_ui_manager()  # ヘルパー関数使用
+		if not ui_manager:
+			return
+		
+		log_info("SayCommand calling UIManager.show_message (auto-create window)")
+		await ui_manager.show_message_with_auto_create(message_text, character_name)
+		log_info("メッセージ表示: キャラクター='%s', テキスト='%s'" % [character_name, message_text])
+	
+	# タイプライターエフェクト完了後の入力待ち
+	await wait_for_typewriter_and_input()  # 新しいヘルパー関数使用
 	
 	# Phase 3.5: Say完了時にContinuePromptを非表示
-	if ui_manager:
-		var message_window = ui_manager.get_message_window()
+	var ui_manager_final = get_ui_manager()
+	if ui_manager_final:
+		var message_window = ui_manager_final.get_message_window()
 		if message_window and message_window.has_method("hide_continue_prompt"):
 			message_window.hide_continue_prompt()
 			log_info("Continue prompt hidden at SayCommand completion")

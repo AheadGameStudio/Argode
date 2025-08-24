@@ -1,0 +1,5 @@
+label test_glyph_debug:
+    "デバッグ: GlyphSystemテスト 最初の数文字を表示"
+    "Hello {color=#ff0000}World{/color}!"
+    "{scale=1.5}大きな文字{/scale}"
+    "通常の文字列"

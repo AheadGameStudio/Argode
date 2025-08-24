@@ -14,6 +14,9 @@ var execution_service: ArgodeExecutionService
 # ファイルキャッシュは設計思想に反するため削除
 # LabelRegistry + RGDParserの分離設計を尊重し、メモリ効率を重視
 
+# メッセージ状態管理（タイプライター効果用）
+var current_message_length: int = 0
+
 # ====================================================================================
 # 基盤インフラ
 # ====================================================================================
@@ -137,15 +140,69 @@ func validate_services() -> bool:
 	return true
 
 # ====================================================================================
+# Phase 4: GlyphSystemメッセージ表示統合
+# ====================================================================================
+
+## Phase 4: GlyphSystemを使用してメッセージを表示（UIControlService経由）
+func show_message_via_glyph_system(text: String, character_name: String = "") -> void:
+	"""Phase 4: GlyphSystemを使用したメッセージ表示（高度版）"""
+	ArgodeSystem.log_workflow("🎨 [Phase 4] StatementManager: GlyphSystem message display requested")
+	
+	# メッセージ長を保存（タイプライター効果のオートプレイ時間計算用）
+	current_message_length = text.length()
+	ArgodeSystem.log_debug_detail("📏 Current message length stored: %d" % current_message_length)
+	
+	var ui_control_service = _get_ui_control_service()
+	if not ui_control_service:
+		ArgodeSystem.log_critical("🚨 [Phase 4] UIControlService not available for GlyphSystem")
+		return
+	
+	if ui_control_service.has_method("render_message_with_glyph_system"):
+		ui_control_service.render_message_with_glyph_system(character_name, text)
+		ArgodeSystem.log_workflow("✅ [Phase 4] GlyphSystem message rendering initiated")
+		
+		# タイプライターエフェクト開始の短い待機
+		await Engine.get_main_loop().process_frame
+		ArgodeSystem.log_debug_detail("🎬 [Phase 4] GlyphSystem rendering frame processed")
+	else:
+		ArgodeSystem.log_critical("❌ [Phase 4] UIControlService missing GlyphSystem method")
+
+## UIControlServiceを取得（UIManagerから）
+func _get_ui_control_service():
+	"""UIManagerからUIControlServiceを取得"""
+	var ui_manager = ArgodeSystem.UIManager
+	if not ui_manager:
+		return null
+	
+	if ui_manager.has_method("get_ui_control_service"):
+		return ui_manager.get_ui_control_service()
+	
+	return null
+
+## Phase 4: GlyphSystemが動作中かチェック
+func is_glyph_system_active() -> bool:
+	"""GlyphSystemによるメッセージレンダリングが動作中かチェック"""
+	var ui_control_service = _get_ui_control_service()
+	if ui_control_service and ui_control_service.has_method("is_glyph_system_active"):
+		return ui_control_service.is_glyph_system_active()
+	return false
+
+# ====================================================================================
 # ユーティリティ関数
 # ====================================================================================
+
+## 現在のメッセージ長を取得（タイプライター効果のオートプレイ時間計算用）
+func get_current_message_length() -> int:
+	"""現在表示中のメッセージの文字数を返す"""
+	return current_message_length
 
 ## デバッグ用のサービス統計を取得
 func get_service_stats() -> Dictionary:
 	return {
 		"execution_service_available": execution_service != null,
 		"is_execution_paused": is_execution_paused(),
-		"current_position": get_current_position()
+		"current_position": get_current_position(),
+		"current_message_length": current_message_length
 	}
 
 ## 簡易診断チェック
@@ -153,4 +210,4 @@ func health_check() -> void:
 	ArgodeSystem.log_workflow("🔧 StatementManager ヘルスチェック:")
 	var stats = get_service_stats()
 	for key in stats.keys():
-		ArgodeSystem.log_debug("  %s: %s" % [key, str(stats[key])])
+		ArgodeSystem.log_debug_detail("  %s: %s" % [key, str(stats[key])])

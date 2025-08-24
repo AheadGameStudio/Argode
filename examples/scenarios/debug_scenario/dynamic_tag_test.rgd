@@ -1,0 +1,12 @@
+# 動的タグシステムテスト用RGDファイル
+
+label test_dynamic_tags:
+    "通常のテキストです"
+    "{color=#FF0000}赤い文字{/color}で{scale=1.5}大きくして{/scale}から"
+    "{wait=1.0}一秒待機して{color=#00FF00}緑に変更{/color}します"
+    "{w=0.5}半秒待機{color=#0000FF}青い文字{/color}の表示"
+    "すべてのタグパターンが{scale=2.0}動的に認識{/scale}されます"
+    jump end
+
+label end:
+    "テスト完了"

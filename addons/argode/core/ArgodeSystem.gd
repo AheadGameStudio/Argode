@@ -502,6 +502,26 @@ func get_command_dictionary() -> Dictionary:
 		return {}
 	return CommandRegistry.command_dictionary
 
+## タグレジストリを取得
+func get_tag_registry() -> ArgodeTagRegistry:
+	if not is_system_ready:
+		ArgodeSystem.log("❌ System not ready", 2)
+		return null
+	return TagRegistry
+
+## レジストリを名前で取得（汎用アクセス）
+func get_registry(registry_name: String):
+	match registry_name.to_lower():
+		"tag", "tags":
+			return TagRegistry
+		"command", "commands":
+			return CommandRegistry
+		"label", "labels":
+			return LabelRegistry
+		_:
+			ArgodeSystem.log("❌ Unknown registry: %s" % registry_name, 2)
+			return null
+
 ## システム初期化完了まで待機
 func wait_for_system_ready():
 	while not is_system_ready:

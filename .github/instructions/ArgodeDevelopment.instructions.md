@@ -168,5 +168,37 @@ label game_start:
 * Service Layer の内部実装を隠蔽し、Manager Layer の統一APIを保持してください。
 * 将来のv1.2.1（双方向イベント統合）、v1.3（セーブシステム強化）を考慮した提案を行ってください。
 
+### **11. 既存システム調査の必須実施（重要教訓）**
+
+**新規クラス・機能作成前に必ず既存システムの調査を実施してください。**
+
+#### **調査必須項目**
+* **semantic_search**: 類似機能の検索（"text processing", "ruby", "variable"等）
+* **grep_search**: 関連クラス名・メソッド名の検索
+* **アーキテクチャ文書**: `Argode_v1_2_Complete_Architecture.md`の確認
+
+#### **避けるべき重大ミス**
+```gdscript
+# ❌ 調査なしの新規作成例
+class_name TextProcessingService  # 既存のArgodeTagTokenizerと重複
+func process_ruby_text()         # 既存のArgodeVariableResolverと重複
+```
+
+#### **既存システム活用例**
+* **`ArgodeTagTokenizer`**: ルビ・変数・タグのトークン化処理
+* **`ArgodeVariableResolver`**: 変数展開 `[player.name]` 処理  
+* **`TypewriterTextParser`**: テキスト解析とコマンド抽出
+* **`ArgodeRubyRenderer`**: ルビ表示専用レンダラー
+
+#### **設計原則違反の防止**
+* **StatementManager肥大化防止**: 実行制御専用、テキスト処理は専門サービスに委譲
+* **Single Responsibility遵守**: 1クラス1責任の徹底
+* **重複実装の回避**: 既存の専門化されたサービスを最大限活用
+
+**この教訓により、v1.2.0のService Layer Pattern設計思想が維持され、
+技術負債の蓄積と設計品質の劣化を防止できます。**
+
+### **12. 最終確認事項**
+
 これらの指示を遵守することで、Argodeフレームワークの設計思想を維持しながら、
 技術的品質の継続的向上と安定した機能拡張が実現できます。

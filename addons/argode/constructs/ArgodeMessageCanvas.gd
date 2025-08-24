@@ -7,6 +7,11 @@ var draw_callback: Callable
 # メッセージデータ（レンダラーが設定）
 var current_text: String = ""
 
+# GlyphSystem統合（Task 6-3: GlyphRenderer実装）
+var glyph_manager: ArgodeGlyphManager = null
+var glyph_renderer: ArgodeGlyphRenderer = null
+var direct_draw_mode: bool = false  # 直接描画モード
+
 # アニメーション更新用
 var animation_update_enabled: bool = false
 var animation_update_callback: Callable
@@ -23,6 +28,10 @@ var cached_font_dirty: bool = true
 func _ready():
 	# 最小サイズを設定
 	custom_minimum_size = Vector2(100, 100)
+	
+	# GlyphRendererを初期化
+	glyph_renderer = ArgodeGlyphRenderer.new()
+	ArgodeSystem.log_workflow("🎨 MessageCanvas: GlyphRenderer initialized")
 	# フォントキャッシュを初期化
 	_update_font_cache()
 
@@ -133,21 +142,132 @@ func set_message_text(text: String):
 	current_text = text
 	queue_redraw()  # 再描画をリクエスト
 
-## 描画処理 - Rendererのコールバックを呼び出す
+## GlyphManagerを設定（Task 6-3: GlyphRenderer統合）
+func set_glyph_manager(manager: ArgodeGlyphManager):
+	"""GlyphManagerを設定してGlyphSystemを有効化"""
+	glyph_manager = manager
+	if glyph_manager:
+		ArgodeSystem.log_workflow("🎨 MessageCanvas: GlyphManager set [ID: %s], GlyphSystem rendering enabled" % str(glyph_manager.get_instance_id()))
+	else:
+		ArgodeSystem.log_workflow("⚠️ MessageCanvas: GlyphManager set to null")
+	queue_redraw()
+
+## GlyphRendererの設定を変更
+func configure_glyph_renderer(debug_mode: bool = false, max_glyphs: int = 100, batch_mode: bool = true):
+	"""GlyphRendererのパフォーマンス・デバッグ設定"""
+	if glyph_renderer:
+		glyph_renderer.set_debug_mode(debug_mode)
+		glyph_renderer.set_performance_settings(max_glyphs, batch_mode)
+		ArgodeSystem.log_workflow("🎨 MessageCanvas: GlyphRenderer configured (debug: %s, max: %d, batch: %s)" % [debug_mode, max_glyphs, batch_mode])
+
+## 描画処理 - GlyphSystem専用（デバッグ強化版）
 func _draw():
-	# Phase 2: 直接的なテキスト描画を追加
-	if current_text and current_text.length() > 0:
-		var font = get_argode_font()
-		if font:
-			var text_position = Vector2(10, 30)  # 基本的な位置
-			var text_color = Color.WHITE
-			draw_string(font, text_position, current_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, text_color)
-			ArgodeSystem.log_workflow("[Phase 2] Canvas drew text: '%s'" % current_text)
+	ArgodeSystem.log_workflow("🎨 [DRAW] Canvas _draw() called")
 	
-	# 従来のコールバック処理も維持
-	if draw_callback.is_valid():
-		# Phase 1: ArgodeMessageTypewriter._draw_message_contentは2つの引数を期待
-		draw_callback.call(self, "")
+	# Phase 1: 基本状態確認
+	ArgodeSystem.log_workflow("🔍 [DRAW] glyph_manager: %s" % str(glyph_manager != null))
+	ArgodeSystem.log_workflow("🔍 [DRAW] glyph_renderer: %s" % str(glyph_renderer != null))
+	
+	# Phase 2: エフェクト更新（重要！）
+	if glyph_manager:
+		var delta = get_process_delta_time()
+		glyph_manager.update_all_effects(delta)
+		ArgodeSystem.log_workflow("🔄 [DRAW] Updated effects with delta: %.3f" % delta)
+	
+	# Phase 3: GlyphManager統合の中核描画（ログ削除でパフォーマンス向上）
+	if glyph_manager and glyph_manager.text_glyphs.size() > 0:
+		var visible_count = 0
+		for glyph in glyph_manager.text_glyphs:
+			if glyph.is_visible:
+				visible_count += 1
+		
+		# 可視グリフがある場合のみ描画処理を実行
+		if visible_count > 0:
+			_draw_glyphs_directly()
+			return
+		else:
+			# グリフはあるが可視グリフがない場合は何もしない
+			pass
+	
+	# Phase 3: エラー状態表示（GlyphSystemが準備されていない場合）
+	var error_font = get_argode_font()
+	if error_font:
+		draw_string(error_font, Vector2(10, 30), "ERROR: GlyphSystem not initialized", HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color.RED)
+		draw_string(error_font, Vector2(10, 60), "glyph_manager: " + str(glyph_manager != null), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color.YELLOW)
+		if glyph_manager:
+			draw_string(error_font, Vector2(10, 90), "glyphs count: " + str(glyph_manager.text_glyphs.size()), HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, Color.YELLOW)
+
+## GlyphSystemの直接描画（_draw()内で呼び出し専用）
+func _draw_glyphs_directly():
+	"""_draw()メソッド内でグリフを直接描画"""
+	if not glyph_manager:
+		return
+	
+	var rendered_count = 0
+	
+	# 表示可能なグリフのみを描画
+	for glyph in glyph_manager.text_glyphs:
+		if glyph.is_visible:
+			_draw_single_glyph_direct(glyph)
+			rendered_count += 1
+	
+	ArgodeSystem.log_workflow("🎨 [Direct Draw] Rendered %d glyphs" % rendered_count)
+
+func _draw_single_glyph_direct(glyph: ArgodeTextGlyph):
+	"""単一グリフを直接描画（_draw()内専用）"""
+	if not glyph:
+		ArgodeSystem.log_workflow("❌ [Direct Draw] Glyph is null")
+		return
+	
+	if not glyph.font:
+		ArgodeSystem.log_workflow("❌ [Direct Draw] Font is null for glyph '%s'" % glyph.character)
+		# フォントがnullの場合、MessageCanvasのフォントを使用
+		glyph.font = get_argode_font()
+		if glyph.font:
+			ArgodeSystem.log_workflow("🔧 [Direct Draw] Applied MessageCanvas font to glyph '%s'" % glyph.character)
+		else:
+			ArgodeSystem.log_workflow("❌ [Direct Draw] MessageCanvas font is also null!")
+			return
+	
+	# 改行文字はスキップ
+	if glyph.character == "\n":
+		return
+	
+	# 最終描画情報を取得
+	var render_info = glyph.get_render_info()
+	var final_position = render_info.get("position", Vector2.ZERO)
+	var final_color = render_info.get("color", Color.WHITE)
+	var final_scale = render_info.get("scale", 1.0)
+	var font = render_info.get("font", glyph.font)
+	var font_size = render_info.get("font_size", glyph.font_size)
+	
+	# スケール適用されたフォントサイズを計算
+	var scaled_font_size = int(font_size * final_scale)
+	
+	# 詳細デバッグ情報
+	ArgodeSystem.log_workflow("🔤 Drawing '%s' at %s, color: %s, scale: %.2f, size: %d" % [
+		glyph.character, str(final_position), str(final_color), final_scale, scaled_font_size
+	])
+	
+	# Canvas境界チェック
+	var canvas_size = get_rect().size
+	if final_position.x < 0 or final_position.y < 0 or final_position.x > canvas_size.x or final_position.y > canvas_size.y:
+		ArgodeSystem.log_workflow("⚠️ [Direct Draw] Glyph '%s' position %s is outside canvas bounds %s" % [
+			glyph.character, str(final_position), str(canvas_size)
+		])
+	
+	# _draw()内なので直接draw_stringが使用可能
+	draw_string(
+		font,
+		final_position,
+		glyph.character,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		scaled_font_size,
+		final_color
+	)
+	
+	ArgodeSystem.log_workflow("✅ [Direct Draw] Successfully drew '%s'" % glyph.character)
 
 ## Canvasの描画領域サイズを取得
 func get_canvas_size() -> Vector2:
@@ -189,3 +309,42 @@ func stop_animation_updates():
 	animation_update_enabled = false
 	animation_update_callback = Callable()
 	ArgodeSystem.log("⏹️ Animation updates stopped on MessageCanvas")
+
+## タイプライター効果を強制完了
+func complete_typewriter():
+	"""MessageCanvas内のタイプライター効果を強制完了"""
+	# 親ノードでMessageRendererを探す
+	var parent_node = get_parent()
+	if parent_node and parent_node.has_method("complete_typewriter"):
+		parent_node.complete_typewriter()
+		ArgodeSystem.log("✅ [MessageCanvas] Typewriter completed via parent node")
+		return
+	
+	# MessageCanvasの子ノードからMessageRendererを探す
+	_find_and_complete_typewriter_in_children()
+
+## 子ノードでMessageRendererを探してタイプライターを完了
+func _find_and_complete_typewriter_in_children():
+	"""子ノード階層を探索してMessageRendererのcomplete_typewriterを呼び出す"""
+	for child in get_children():
+		if child.has_method("complete_typewriter"):
+			child.complete_typewriter()
+			ArgodeSystem.log("✅ [MessageCanvas] Typewriter completed via child node: %s" % child.name)
+			return
+		
+		# 再帰的に子ノードを探索
+		if child.get_child_count() > 0:
+			_find_typewriter_in_node(child)
+
+## ノード内でMessageRendererを探す
+func _find_typewriter_in_node(node: Node):
+	"""指定ノード内でMessageRendererを探索"""
+	for child in node.get_children():
+		if child.has_method("complete_typewriter"):
+			child.complete_typewriter()
+			ArgodeSystem.log("✅ [MessageCanvas] Typewriter completed via nested node: %s" % child.name)
+			return
+		
+		# 再帰的に探索
+		if child.get_child_count() > 0:
+			_find_typewriter_in_node(child)

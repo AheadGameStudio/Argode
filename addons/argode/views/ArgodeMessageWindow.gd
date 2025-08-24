@@ -246,3 +246,27 @@ func _draw_message_callback(canvas: ArgodeMessageCanvas, character_name: String)
 	
 	# メッセージテキストの描画は ArgodeMessageCanvas で行われる
 	ArgodeSystem.log("✅ Message callback executed for character: '%s'" % character_name, ArgodeSystem.LOG_LEVEL.DEBUG)
+
+## タイプライター効果を強制完了
+func complete_typewriter():
+	"""メッセージウィンドウ内のタイプライター効果を強制完了"""
+	# MessageCanvasがある場合、その内部のMessageRendererを探す
+	if message_label and message_label.has_method("complete_typewriter"):
+		message_label.complete_typewriter()
+		ArgodeSystem.log("✅ [MessageWindow] Typewriter completed via message label")
+		return
+	
+	# 子ノードを探索してMessageRendererを見つける
+	_find_and_complete_typewriter(self)
+
+## MessageRendererを探してタイプライターを完了
+func _find_and_complete_typewriter(node: Node):
+	"""ノード階層を探索してMessageRendererのcomplete_typewriterを呼び出す"""
+	for child in node.get_children():
+		if child.has_method("complete_typewriter"):
+			child.complete_typewriter()
+			ArgodeSystem.log("✅ [MessageWindow] Typewriter completed via child node: %s" % child.name)
+			return
+		
+		# 再帰的に子ノードを探索
+		_find_and_complete_typewriter(child)

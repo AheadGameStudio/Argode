@@ -17,13 +17,13 @@ var typewriter_pause_count: int = 0
 # ArgodeUIManagerの参照
 var ui_manager: ArgodeUIManager = null
 
-# メッセージシステム管理（新規追加）
+# メッセージシステム管理（Phase 4: GlyphSystem統合）
 var message_window: ArgodeMessageWindow = null
-# var message_renderer: ArgodeMessageRenderer = null  # 削除済み - Phase 1
-# var inline_command_manager: ArgodeInlineCommandManager = null  # 削除済み - Phase 1
+var message_renderer = null  # ArgodeMessageRenderer (Phase 4: GlyphSystem統合版)
 
 # Phase 1: プロトタイプタイプライター
-# var typewriter: ArgodeMessageTypewriter = null  # 動的読み込み版に変更
+# ❌ Task 6-2: 旧システム使用停止 ❌
+# var typewriter = null  # ArgodeMessageTypewriter (Phase 2: 旧システム削除予定)
 var typewriter: RefCounted = null
 
 # 実行制御参照（入力待ちコールバック用）
@@ -56,7 +56,7 @@ func ensure_message_system_ready() -> void:
 
 func _create_default_message_window() -> void:
 	"""デフォルトのメッセージウィンドウを作成"""
-	ArgodeSystem.log_debug_detail("🎮 UIControlService: デフォルトメッセージウィンドウ作成")
+	ArgodeSystem.log_workflow("🎮 UIControlService: デフォルトメッセージウィンドウ作成開始")
 	
 	# UIManagerの準備状態を再確認
 	if not _ensure_ui_manager_ready():
@@ -66,19 +66,22 @@ func _create_default_message_window() -> void:
 	# 既存のメッセージウィンドウがあるかUI Managerで確認
 	message_window = ui_manager.get_ui("message")
 	if message_window:
-		ArgodeSystem.log_debug_detail("🎮 UIControlService: 既存のメッセージウィンドウを発見")
+		ArgodeSystem.log_workflow("🎮 UIControlService: 既存のメッセージウィンドウを発見")
 		return
 	
 	# メッセージウィンドウが存在しない場合は新規作成
-	ArgodeSystem.log_debug_detail("🎮 UIControlService: 新しいメッセージウィンドウを作成します")
+	ArgodeSystem.log_workflow("🎮 UIControlService: 新しいメッセージウィンドウを作成します")
 	var message_window_path = "res://addons/argode/builtin/scenes/default_message_window/default_message_window.tscn"
 	
 	# メッセージウィンドウをUIManagerに追加
+	ArgodeSystem.log_workflow("🎮 UIControlService: メッセージウィンドウファイル読み込み中: %s" % message_window_path)
 	var add_result = ui_manager.add_ui(message_window_path, "message", 100)
+	ArgodeSystem.log_workflow("🎮 UIControlService: add_ui結果: %s" % str(add_result))
+	
 	if add_result:
 		message_window = ui_manager.get_ui("message")
 		if message_window:
-			ArgodeSystem.log_workflow("✅ UIControlService: Default message window created and added")
+			ArgodeSystem.log_workflow("✅ UIControlService: Default message window created successfully: %s" % str(message_window))
 		else:
 			ArgodeSystem.log_critical("❌ UIControlService: Window created but retrieval failed")
 	else:
@@ -102,51 +105,14 @@ func show_message(text: String, character: String = "") -> void:
 	"""メッセージを表示する（StatementManagerから移譲された機能）"""
 	ensure_message_system_ready()
 	
-	# Phase 2: ArgodeMessageTypewriterを使用（UIBridge簡素化）
-	var typewriter = _get_or_create_typewriter()
-	if not typewriter:
-		ArgodeSystem.log_critical("❌ UIControlService: Typewriter not available")
-		return
+	# ✅ Task 6-2: 正しいService Layer Pattern実装 ✅
+	# UIControlService → MessageRenderer (GlyphSystem) 直接呼び出し
+	# UIManagerの肥大化を避け、Service間の責任を明確化
 	
-	ArgodeSystem.log_workflow("📺 [Phase 2] Enhanced message via ArgodeMessageTypewriter: %s: %s" % [character, text])
+	ArgodeSystem.log_workflow("📺 [Phase 4] Enhanced message via GlyphSystem: %s: %s" % [character, text])
 	
-	# メッセージウィンドウにキャラクター名設定
-	if message_window:
-		if character:
-			ArgodeSystem.log_workflow("🎬 [Phase 3.5] Setting character name: '%s'" % character)
-			if message_window.has_method("set_character_name"):
-				message_window.set_character_name(character)
-			else:
-				ArgodeSystem.log_workflow("🎬 [Phase 3.5] set_character_name method not found")
-		else:
-			# キャラクターが指定されていない場合はNamePlateを非表示
-			ArgodeSystem.log_workflow("🎬 [Phase 3.5] No character name provided - hiding name plate")
-			if message_window.has_method("hide_name_plate"):
-				message_window.hide_name_plate()
-			else:
-				ArgodeSystem.log_workflow("🎬 [Phase 3.5] hide_name_plate method not found")
-	else:
-		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Message window not available")
-	
-	# Phase 3.5: メッセージ開始時にContinuePromptを非表示
-	if message_window and message_window.has_method("hide_continue_prompt"):
-		message_window.hide_continue_prompt()
-		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt hidden at message start")
-	
-	# Canvas取得とタイプライター開始
-	var canvas = null
-	if message_window:
-		canvas = message_window.find_child("*Canvas", true, false)
-	
-	if canvas:
-		# Phase 2: UIBridgeなしで直接タイプライター実行
-		ArgodeSystem.log_workflow("🌉 [Phase 2] Starting typewriter with canvas: %s" % canvas)
-		typewriter.start_typing(text, canvas, 0.05)
-	else:
-		ArgodeSystem.log_warning("❌ No canvas found for message display")
-	
-	# レンダリング完了シグナルを送信
-	message_rendering_completed.emit()
+	# GlyphSystem統合版MessageRendererを直接使用
+	render_message_with_glyph_system(character, text)
 	
 	# Phase 1では以下をコメントアウト
 	# ArgodeSystem.log_debug_detail("🎮 UIControlService: show_message - renderer=%s, window=%s, inline_manager=%s" % [message_renderer, message_window, inline_command_manager])
@@ -397,30 +363,37 @@ func display_message_via_window(text: String, character: String, message_window,
 	else:
 		ArgodeSystem.log_workflow("❌ ExecutionService not available for input waiting")
 
-## === Phase 1: ArgodeMessageTypewriter管理 ===
+## === ❌ Task 6-2: 旧システム削除予定 ❌ ===
+# Phase 1システム（ArgodeMessageTypewriter）は削除予定
+# 新しいPhase 4システム（GlyphSystem）に統合済み
 
-func _get_or_create_typewriter() -> RefCounted:
-	"""タイプライターインスタンスを取得または作成"""
-	if not typewriter:
-		# 動的読み込み
-		var typewriter_script = load("res://addons/argode/services/ArgodeMessageTypewriter.gd")
-		if not typewriter_script:
-			ArgodeSystem.log_critical("❌ Failed to load ArgodeMessageTypewriter")
-			return null
-		
-		typewriter = typewriter_script.new()
-		
-		# メッセージキャンバスを設定
-		var canvas = _get_message_canvas()
-		if canvas:
-			typewriter.set_message_canvas(canvas)
-		
-		# コールバック設定
-		typewriter.set_callbacks(_on_character_typed, _on_typing_finished)
-		
-		ArgodeSystem.log_workflow("🎬 [Phase 1] ArgodeMessageTypewriter created and configured")
-	
-	return typewriter
+# func _get_or_create_typewriter() -> RefCounted:
+# 	"""タイプライターインスタンスを取得または作成"""
+# 	# 既存インスタンスのクリーンアップ（重要：タイマー重複防止）
+# 	if typewriter and typewriter.has_method("cleanup"):
+# 		typewriter.cleanup()
+# 		typewriter = null
+# 	
+# 	if not typewriter:
+# 		# 動的読み込み
+# 		var typewriter_script = load("res://addons/argode/services/ArgodeMessageTypewriter.gd")
+# 		if not typewriter_script:
+# 			ArgodeSystem.log_critical("❌ Failed to load ArgodeMessageTypewriter")
+# 			return null
+# 		
+# 		typewriter = typewriter_script.new()
+# 		
+# 		# メッセージキャンバスを設定
+# 		var canvas = _get_message_canvas()
+# 		if canvas:
+# 			typewriter.set_message_canvas(canvas)
+# 		
+# 		# コールバック設定
+# 		typewriter.set_callbacks(_on_character_typed, _on_typing_finished)
+# 		
+# 		ArgodeSystem.log_workflow("🎬 [Phase 1] ArgodeMessageTypewriter created and configured")
+# 	
+# 	return typewriter
 
 func _get_message_canvas() -> Control:
 	"""メッセージキャンバスを取得"""
@@ -447,3 +420,69 @@ func _on_typing_finished():
 	
 	# タイプライター完了シグナル
 	typewriter_completed.emit()
+
+## Phase 4: GlyphSystem統合メッセージレンダリング ============================
+
+func render_message_with_glyph_system(character_name: String, text: String):
+	"""Phase 4: GlyphSystemを使用したメッセージレンダリング"""
+	if not _ensure_message_renderer_ready():
+		ArgodeSystem.log_critical("🚨 [Phase 4] MessageRenderer not available")
+		return
+	
+	ArgodeSystem.log_workflow("🎨 [Phase 4] Starting GlyphSystem message rendering")
+	
+	# GlyphSystem版MessageRendererでレンダリング
+	message_renderer.render_message(character_name, text)
+	
+	# レンダリング完了コールバック設定
+	message_renderer.set_typewriter_completion_callback(_on_glyph_system_completed)
+
+func _ensure_message_renderer_ready() -> bool:
+	"""MessageRenderer（GlyphSystem統合版）の準備状態を確認"""
+	
+	# メッセージウィンドウを優先して確保
+	if not message_window:
+		ArgodeSystem.log_workflow("🎮 [Phase 4] Message window not available, creating now...")
+		_create_default_message_window()
+	
+	if not message_renderer:
+		# GlyphSystem統合版MessageRendererを動的読み込み
+		var renderer_script = load("res://addons/argode/renderer/ArgodeMessageRenderer.gd")
+		if not renderer_script:
+			ArgodeSystem.log_critical("❌ [Phase 4] Failed to load ArgodeMessageRenderer")
+			return false
+		
+		message_renderer = renderer_script.new()
+		
+		# メッセージウィンドウを設定
+		if message_window:
+			message_renderer.set_message_window(message_window)
+			ArgodeSystem.log_workflow("✅ [Phase 4] MessageRenderer connected to MessageWindow: %s" % str(message_window))
+		else:
+			ArgodeSystem.log_critical("🚨 [Phase 4] Failed to create message window for MessageRenderer")
+		
+		ArgodeSystem.log_workflow("✅ [Phase 4] GlyphSystem MessageRenderer initialized")
+	
+	return message_renderer != null and message_window != null
+
+func _on_glyph_system_completed():
+	"""GlyphSystemレンダリング完了時のコールバック"""
+	ArgodeSystem.log_workflow("🎬 [Phase 4] GlyphSystem rendering completed - setting input wait")
+	
+	# Phase 3.5: レンダリング完了時にContinuePromptを表示
+	if message_window and message_window.has_method("show_continue_prompt"):
+		message_window.show_continue_prompt()
+		ArgodeSystem.log_workflow("🎬 [Phase 3.5] Continue prompt shown at GlyphSystem completion")
+	
+	# 入力待ち状態を設定
+	if execution_service and execution_service.has_method("set_waiting_for_input"):
+		execution_service.set_waiting_for_input(true)
+	
+	# 完了シグナル
+	message_rendering_completed.emit()
+
+func is_glyph_system_active() -> bool:
+	"""GlyphSystemが現在動作中かチェック"""
+	if message_renderer and message_renderer.has_method("is_typewriter_active"):
+		return message_renderer.is_typewriter_active()
+	return false
